@@ -1,0 +1,4 @@
+urd
+===
+
+Usenet Resource Downloader
