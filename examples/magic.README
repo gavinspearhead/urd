@@ -1,0 +1,6 @@
+This contains some examples to enables other filetypes, file usually does not recognise by default. Copy or append them to 
+/etc/magic and 
+/ect/magic.mime respectively
+
+and run file -C -m /etc/magic
+and file -C -m /etc/magic.mime

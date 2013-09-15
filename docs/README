@@ -1,0 +1,39 @@
+Usenet Resource Downloader (URD)
+--------------------------------
+
+
+1. What is URD?
+
+URD is a program to download binaries from usenet (newsgroups) via a web based interface. It's written entirely in PHP, besides making use of a few external programs to do some of the CPU intensive work. It stores all the information it needs in a generic database (like MySQL, or PostGreSQL). Articles are aggregated into sets of files that belong together. Downloading requires only a few clicks. Optionally, an NZB file can be created. When the download is finished it can automatically verify the par2 or sfv files and decompress the results. 
+
+In the background URD uses a download program called URDD or the URD Daemon. This daemon handles nearly all of the activity with respect to the newsgroups, the sets and the downloads. 
+
+URD is licenced under GPL 3. See the file COPYING for details on the licence.
+
+
+2. Where does the name come from?
+
+URD is a backronym of Usenet Resource Downloader. The term Urd is derived from Nordic cultures referring to the Well of Urd, which is the holy well, the Well Spring, the source of water for the world tree Yggdrasil. The old English term for it is Wyrd. Conceptually the meaning of Urd is closest to Fate.
+
+
+3. How to use it?
+
+After installation you can log in to your URD web interface and click on newsgroups and search for the newsgroup you wish to subscribe to. If there are no newsgroups found go to the admin panel and click 'Update newsgroup list'. If that doesn't help check the preferences. In the newsgroup overview the expire column shows the number of days after which articles will expire. It is also possible to automatically update the newsgroup. Enter a number, select 'days', 'hours' or 'weeks' and enter the time at which the update will take place and press the go button. Removing a scheduled update can be done by removing the time and pressing the go button. 
+
+After the update is complete, go to 'browse sets' which shows the available sets. Click on the '?' in front of the set shows the details of the set. The small '+' selects a set to download. After selecting sets, press the large '+' button and the '\/' button to start the download. The NZB button saves the selected sets as an NZB file. The 'X' deselects the sets. The buttons on the right can be used to lookup more information on a set. First select the text on a set, then click either (from left to right) Subtitles, Releaselog, IMDB, and Google (if you have the default buttons).
+
+When a download has started its progress can be seen in transfers. A direct link to the download directory is provided there. The download can also be renamed, the name of the download is used as the download folder name when it is finished, e.g. urdpath/done/My Download/file.rar.
+
+Through the view files tab, all the downloaded files are visible and can be browsed, renamed and deleted. 
+
+The Admin tab can be used for most administrative functions like starting or stopping the URD daemon, cancelling or pausing all actions, remove the tasks from the database. It can also be used to update all the newsgroup or expire all old messages in newsgroups, manage the users and optimise the database. Furthermore it gives an overview of the recent tasks and the status of the URDD daemon. Most importantly is the configuration page where all configuration settings are editable.
+
+The Preferences tab can be used to modify user specific settings, such as display preferences and the search buttons to display in the 'browse sets' page.
+
+On the left of the screen there always is a status overview with the status of the URD daemon, online or offline, the current tasks and the available disk space. If you have version checking enabled, it will also show if your URD version is up to date or not.
+
+
+4. What it case it doesn't work?
+
+First, check your settings and see if you can get a connection to the NNTP server. Check the apache log and URD log (default: /tmp/urdd.log). If it is a bug, please report it at the sourceforge website. Otherwise discuss it at the forum there (see http://sourceforge.net/projects/urd/) You may also contact the authors through e-mail at dev@urdland.com.
+

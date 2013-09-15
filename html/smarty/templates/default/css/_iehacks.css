@@ -1,0 +1,13 @@
+/* Special overrides for crappy IE that just wants to do stuff its own way: */
+tr.menutr
+{
+	height: 22px;
+}
+td.invisiblesubmenutab
+{
+	height: 24px;
+}
+.transparent
+{
+      filter: alpha(opacity=20);
+}

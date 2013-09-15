@@ -1,0 +1,88 @@
+command
+
+// We don't want anybody (even locally) to be able to start/stop/view downloads
+USER ###		331 		// Input username
+PASS ###		240, 530 	// Input password
+// We don't need encryption, locally only root can sniff, and over network the user should use ssh (ok maybe we need ssl later on)
+
+EXIT			221     // end connection
+QUIT			221	// end connection
+UPDATE ###		201, 530, 403, 402	// update newsgroup with id ### (db id)
+UPDATE ALL              202, 530, 404      // update all newsgroups
+PURGE ###		201, 530, 403, 402	// remove all binaries from newsgroup ### (db id)
+PURGE ALL		202, 530, 404, 501 	// remove all binaries from all newsgroups
+STATUS                  251, 530     // retrieve the status of undd
+HELP                    252     // list all commands
+EXPIRE ###		201, 503, 501, 402, 403     // expire old articles from newsgroup ### (db id)
+EXPIRE ALL		202     // expire all old articles
+NOOP			231, 530     // no operation (keep connection open)
+ECHO			254, 530     // echo the response (test action)
+GROUPS			201, 403, 530	// update groups
+GROUP ###		258, 403, 530	// get group info for ng ### (db id)
+SCHEDULE CMD @ TIME     201, 530     // schedule a command at the given time (accepted by strtotime - eg +1 minute, next Thursday etc, see http://nl3.php.net/manual/en/function.strtotime.php)
+UNSCHEDULE ###		200, 530 501	// remove scheduled job from list with id ###
+UNSCHEDULE ALL		200, 530 501	// remove all scheduled jobs from list
+
+ENQUEUE filename	201	// Add NZB file to download queue
+DOWNLOAD ###		201     // Start downloading this dl (pause current one)
+DOWNLOAD PREVIEW	201	// start a preview ... thread preempts another thread if it exists
+PAUSE ###		200, 530, 510 	// Pause this download (urdd id)
+PAUSE ALL		200, 530	// Pause all downloads
+CONTINUE ###		200, 530, 510,     // continue paused download
+CONTINUE ALL		200, 530,	// continue all paused download
+
+CANCEL ###		200, 530, 510 	// Cancel this download (urdd id)
+CANCEL ALL		200, 510 	// Cancel all downloads
+DLINFO ###		212     // Bytes dl'ed, bytes to go, complete status, ETA, current file dl'ing, is downloading, queued or processing, etc.
+
+STATS			257 	// Total MB downloaded last day, week, month, year, total
+				// Store daily total in database? Easy to make graphs later on.
+SHOW QUEUE		253, 530, 501     // show the urdd queue
+SHOW THREATS		253, 530, 501 	// show the urdd threats
+SHOW USERS		253, 530, 501	// show all logged in users
+SHOW JOBS		253, 530, 501	// show all scheduled jobs
+SHOW NEWSGROUPS		253, 530, 501   // show all newsgroups
+SHOW SUBSCRIBED		253, 530, 501   // show all subscribed newsgroups
+SUBSCRIBE #1 on|off #2  201, 530, 402, 501 // subscribe or unsubscribe to a newsgroup with id #1 and optional expire time in days #2
+DISKFREE		256, 530
+DEBUG			240 // Show last 10 errors/warnings (for testing/debugging only)
+SHUTDOWN		222     // shuts down urdd
+UPTIME			259	// shows the uptime of the URD daemon
+TIME			260   // shows the local time of the URD daemon
+
+
+
+
+200 Command okay. Queued
+201 Command okay. Queued
+202 Command okay. Queued
+211 System status
+212 Download info
+220 Service ready for new user.
+221 Service closing connection.
+222 shutting down urdd
+231 Ok
+
+251 status
+252 Help message.
+253 Show data
+254 Echo reply.
+255 Debug info follows;
+256 Diskspace available on download disk
+257 Statistical info
+258 Group info
+
+331 User name okay, need password
+332 Need account for login.
+
+401 NNTP host not available
+402 Queue full
+403 Item already queued
+404 Queue full but some tasks are scheduled
+
+500 Syntax error, command unrecognized.
+501 Syntax error in parameters or arguments.
+502 Command not implemented.
+510 No such task
+530 Not logged in.
+531 Invalid username or password.

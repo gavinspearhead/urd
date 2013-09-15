@@ -1,0 +1,199 @@
+/*
+ *  This file is part of Urd.
+ *  vim:ts=4:expandtab:cindent
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate$
+ * $Rev$
+ * $Author$
+ * $Id$
+ */
+html
+{
+	border: none;
+}
+
+body
+{
+    color: #555555;
+    background-color: #f5f5f5;
+    margin-left: 50px;
+    padding: 0px;
+    font-family: Geneva, Arial, Helvetica, Sans-Serif;
+    font-size: 10pt;
+}
+
+
+#install
+{
+	width: 50%;
+	color: white;
+}
+td.install_OK
+{
+	font-size: large;
+	font-weight: bold;
+	color: green;
+	text-align: center;
+}
+td.install_Failed
+{
+	font-size: large;
+	font-weight: bold;
+	color: red;
+	text-align: center;
+}
+td.install1
+{
+	font-weight: bold;
+	width: 25%;
+}
+td.install2
+{
+	width: 75%;
+	text-align: left;
+}
+a
+{
+    color: #333333;
+    text-decoration: none;
+}
+table.installation
+{
+    width: 100%;
+    max-width:1024px;
+}
+.noborder
+{
+	border-style: none;
+}
+img
+{
+	border-style: none;
+}
+.info
+{
+	font-style: oblique;
+	font-size: x-small;
+	color: red;
+}
+#installation
+{
+	overflow: scroll;
+	overflow-x: auto;
+	overflow-y: auto;
+}
+#nojs
+{
+    background-color: yellow;
+    color: black;
+    border: thick solid red;
+    padding: 5px;
+    display: table;
+}
+
+.buttonlike
+{
+	cursor: pointer;
+}
+
+#message
+{
+	font-weight: bold;
+    display: none;
+    background-color: yellow;
+    color: black;
+    max-width: 50%;
+    border: 2px solid red;
+    font-size: x-large;
+}
+input[type=text], textarea, select, input[type=password], input[type=checkbox], input[type=radio], input[type=file]
+{
+    background-color: #F1F1F1;
+    border: solid 1px;
+    color: #444444;
+    border-color: #a3a3a3 #919191 #b3b3b3 #919191;
+    padding-bottom:0px;
+    padding-top:0px;
+    font-size: x-small;
+}
+
+option
+{
+    background: #F1F1F1;
+    border: solid 0px;
+    color: #444444;
+    border-color: #a3a3a3 #919191 #b3b3b3 #919191;
+}
+
+input[readonly] 
+{
+    background-color: #F1F1F1;
+    color : #444444;
+    border: solid 1px;
+    font-style: italic;
+    padding-bottom:0px;
+    padding-top:0px;
+    border-color: #a3a3a3 #919191 #b3b3b3 #919191;
+}
+
+h2
+{
+    color:#DD4B39;
+}
+
+#separator
+{
+    width: 100%;
+    float: left;
+    height: 5px;
+}
+
+input.passwordweak,
+input.passwordincorrect
+{
+    background-color:#FFC0C0;
+}
+input.passwordmedium
+{
+    background-color:#FFFFC0;
+}
+input.passwordstrong,
+input.passwordcorrect
+{
+    background-color:#C0FFC0;
+}
+.showpassicon
+{
+    background-color:#588458;
+    background-image:url('../html/smarty/templates/default/img/icon_light_on.png');
+    background-repeat: no-repeat;
+}
+
+.iconsizeplus
+{
+    width: 16px;
+    height: 16px;
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    margin-right: 1px;
+}
+
+
+div.inline
+{
+    display: inline-block;
+}

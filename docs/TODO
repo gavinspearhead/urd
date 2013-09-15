@@ -1,0 +1,100 @@
+/*
+ *  This file is part of Urd.
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate: 2008-07-18 12:15:33 +0200 (Fri, 18 Jul 2008) $
+ * $Rev: 1302 $
+ * $Author: styck $
+ * $Id: TODO 1302 2008-07-18 10:15:33Z styck $
+ */
+
+- security checks for ajax pages
+
+// see also sourceforge for requests and bugs
+
+X This is a bug
+= means high prio (should be done before next release)
+- means medium prio
+. means low prio
+? needed feature? needs discussion
+
+
+X Fix fatal error in ajax code
+X sometimes time gives a really really long number (in years) in browse
+
+- change directory name after renaming a finished transfer 
+- add download speed to update
+- Test with other databases (Postgresql)
+	+ Update code so that is uses most of the adodb... like qstr, selectLimit, etc now it is mostly mixed bunch of fns and native mysql (somewhat WIP)
+- improve admin
+ 	+ be able to search tasks?
+	+ sorting
+	+ filter on timestamps
+	+ remove tasks (on eg all ready or individual tasks)
+- improve admin / schedule
+	+ sorting
+	+ add scheduled jobs
+- improve log file viewer
+	+ clear log file?
+- ajax-style changing of priorities/order of search buttons
+- add the ability to merge sets together
+W handling multiple ng servers
+	+ Move all status data to one big class that handles all the data (threads, schedules, servers, queue)
+	+ Select correct server for downloading based on priority, available slots etc
+	+ Attempt next server for article if download failed or server is not reachable
+	+ set retry account on article
+. Urdd must use a default ini file instead of a php file 
+
+
+
+
+Community system:
+- Central database on urdland.com that keeps track of 'stuff', initially for say 1 week, if np we could increase to several weeks (not much point in much longer than that)
+- 'stuff':
+	:Update: -> Set was valid, this changes name, description, rating, archive password, whatnot
+	:Delete: -> Set was invalid (ie 10 sets for 1 actual download, say a cd where all tracks are seperate sets)
+	:Add: -> Set was invalid (ie 1 set for 2 downloads, say two episodes that are merged into 1 set), this would be 1 :Delete: and 2 :Add:'s
+	:Comment: -> Comments for sets
+or..
+	:Merge:
+	:Split: ?
+	Problem is that the client needs to know which articles to put in the set... just an Add won't be enough, and we don't want to store all
+	articles too, way too much data.
+
+- When URD updates a newsgroup, after completing it will check the central database and download additional info for the newsgroup (within the expire period)
+- The user will see the 'beautified' info, such as:
+
+[5156]-[#a.b.hdtv.x264@EFNet]-[Persepolis.720p.BluRay.x264-BoNE]-[000/104] "bone-pp.nzb" 
+becomes:
+Persepolis [2007] [imdblink] 720p DTS
+Content score: 8.1
+Quality: excellent
+
+The user can click some button to see other 'versions', like the first 2 alternatives
+
+Central database: 
+table Sets (setid bigint auto_increment, setname, type (update/delete/add), 
+- x, 'Big Buck Bunny', ':Update:'
+- a, 'Random File', ':Delete:'
+
+table Tags (setid bigint auto_increment, tagname, tagvalue userid)
+- x, 'format', '720p', 'cruz'
+- y, 'quality', 'bad', 'cruz'
+- z, 'imdblink', 'http://www.imdb.com/title/tt0808417/', 'cruz'
+- a, 'comment', 'has virus!1111', 'piet'
+
+
+
+

@@ -1,0 +1,62 @@
+# Install manual:
+
+Urd is now pretty stable. That doesn't means that everything always runs 
+smoothly. Nevertheless, it is quite functional. And in case of any trouble
+we are there to help or fix things at the forum: http://www.urdland.com/forum
+
+There are two ways to install URD
+1. By using the tar ball
+2. By using the deb package (ony any system that looks like debian or uses 
+   apt-get.
+
+
+
+
+Prerequisites:
+
+Required:
+- PHP >5.1.0 (Web and CLI version)
+- MySQL 5.0 or other database
+- a webserver (apache)
+- yydecode (required)
+- unrar    (highly recommended)
+- par2     (highly recommended)
+- cksfv    (recommended)
+- trickle  (if you want to use traffic shaping)
+
+
+Installation by tar ball
+1) Install the required programs mentioned above manually
+2) Untar the URD tarball to a directory readable by the webserver or copy the 
+   urd.conf file to the apache conf directory and restart apache.
+3) Open 'install.php' in your web browser and follow the install procedure
+4) Optionally: Run the install.sh from the console as root (eg 
+   sudo ./install.php) to create a system user and group for urd
+5) Edit the configuration of URD and fix all the red "hand" (admin/config in 
+   the menu)
+6) Start urdd (by clicking on the URD offline image top left) - the newsgroup
+   list should automatically be downloaded. (Otherwise this can be done 
+   manually in admin/control)
+7) Subscribe to newsgroups or rss feeds
+8) Wait for newsgroup/feed updating to finish
+9) Browse some sets and start downloading, creating nzbs etc.
+
+Installation by .deb file
+1) run 
+   sudo dpkg -i urd-x.y.z-n.deb
+   This should install all the needed packages
+2) Proceed to step 3 of the tarball install.
+
+
+You can change preferences in the Preferences page, such as the number of lines 
+per page, length of set names, search buttons etc.
+
+If there are any problems please go to the forum for known problems and 
+solutions:
+http://www.urdland.com/forum
+
+Check the URD website at:
+http://www.urdland.com/
+
+Or contact the authors: dev@urdland.com
+

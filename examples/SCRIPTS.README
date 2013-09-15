@@ -1,0 +1,62 @@
+Scripts in URD
+
+Urd has the capability to run scripts after a download completed independent of
+whether the download completed or failed for some reason. This is the last 
+action that is taken on a download.
+
+There are two kinds of scripts. 
+1) Scripts installed by an admin. These are in the $urd_download_dir/scripts/
+2) Scripts installed by the user. There are in the $urd_download_dir/scripts/$username
+
+Both can be dis- or enabled in admin/config separately, but admin scripts must
+be enabled if user scripts are to be enabled as well.
+
+Each user can select, if permitted by the admin, which scripts to run after
+a download finished. 
+
+First all the global scripts will run, after which all the user scripts will 
+run; each in alphabetical order. Scripts are therefore best named as e.g. 
+'S10_rename_files.urdd_sh', 'S20_move_to_dir.urdd_sh' in case you first want
+to rename the files in the directory and then move it to a new directory.
+
+The file name of the script is restricted to letters, numbers and some special
+characters; basically each character must be in the set  [A-Za-z0-9_\-.+]. 
+(Thence that means no spaces, slashes or other nasty characters). Also scripts 
+must end in urdd_sh
+
+Each scripts is started with three parameters:
+1) The download directory (the location where the download is stored)
+2) The database ID - to get more information from the database about the 
+   download
+3) The download status. This can be any of :
+	DOWNLOAD_READY - 0 - ready to put on queue
+	DOWNLOAD_ACTIVE - 1 - downloading
+	DOWNLOAD_QUEUED - 2 - put on queue
+	DOWNLOAD_PAUSED - 3 - download paused
+	DOWNLOAD_FINISHED - 4 - download succeeded and rar/par successful
+	DOWNLOAD_CANCELLED - 5 - download cancelled
+	DOWNLOAD_STOPPED' - 6 - download is terminated, but requeued
+
+	DOWNLOAD_SHUTDOWN - 7 - used when process is sent kill term command
+	DOWNLOAD_COMPLETE - 8 - download succeeded but need to run par/unrar now
+	DOWNLOAD_RAR_FAILED - 9 -download but rar failed
+	DOWNLOAD_CKSFV_FAILED - 10 - download but rar failed
+	DOWNLOAD_PAR_FAILED - 11 - download but par2 failed
+	DOWNLOAD_FAILED - 12 - Article could not be dled or complete dl failed (esp preview). 
+	DOWNLOAD_ERROR - 255 - an error unspecified error occurred
+
+Scripts are not restricted to any specific type, but must be executable. Hence
+this can be a shell script, a PHP script or a compiled ELF file. (i.e. while in
+the directory the script is stored, ./script.urdd_sh must run the script). The
+script must therefore have its x permission bit set, and must be executable by 
+the user the webserver runs as (if URDD is started by the webserver, or other-
+wise the user the URD daemon(!) runs as). Also this means that all directories 
+and commands in the script must also be accessible to that user. Each script
+must return 0 in case it completes successfully, or any other value in case of 
+an error. Scripts are run after the group is set and the permissions are 
+updated (see admin/config 'Download permissions' and 'Group').
+
+Note that each directory contains a '.urdd_lock' file, which is created as the 
+download directory is created and removed after URD is finished with the dir, 
+and hence after running the scripts.
+

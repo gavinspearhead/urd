@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# scripts need to end in urdd.sh
+# basically any scripts can be run here - no limitations - only the script
+# runs as the webbrowser user, so has probably limited rigths (should have). 
+# using SUDO is the recommended way to overcome this.
+
+# If you need any help with scripting post at the forum
+# http://www.urdland.com/forum
+
+
+#the directory where the files are placed
+download_dir="$1"
+
+# the ID of the download, so you may look it up in the database
+# you can grep the database config parameters from the db_config.php in the
+# URD directory
+
+dlid="$2"
+
+# the status of the download: failed, succeeded, etc. 
+# functions/defines.php has the possible values as
+# DOWNLOAD_XXX
+dlstatus="$3"
+
+# do some stuff here 
+
+# return 0 on success
+# any other value is assumed to be an error
+exit 0

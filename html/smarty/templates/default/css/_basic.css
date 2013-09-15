@@ -1,0 +1,668 @@
+/*
+ *  This file is part of Urd.
+ *  vim:ts=4:expandtab:cindent
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate$
+ * $Rev$
+ * $Author$
+ * $Id$
+ */
+
+
+html
+{
+    border: none;
+    overflow: hidden;
+}
+
+h1,.h1
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 14pt;
+    font-weight: bold;
+}
+h2,.h2
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    font-weight: bold;
+}
+h3,.h3
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    font-weight: bold;
+}
+.noborder
+{
+    border-width: 0px;
+}
+td
+{
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-width : 0px;
+}
+td.preview_right
+{
+    text-align: right;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-family: verdana;
+    font-size: x-small;
+}
+
+td.preview
+{
+    text-align: left;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-family: verdana;
+    font-size: x-small;
+    vertical-align: middle;
+    overflow: hidden;
+}
+td.setbuttons
+{
+    width: 10px;
+}
+td.fixwidth20p, th.fixwidth20p
+{
+    width: 20%;
+    text-align: center;
+}
+td.fixwidth1, th.fixwidth1
+{
+    width: 20px;
+    text-align: center;
+}
+td.fixwidth2, th.fixwidth2
+{
+    width: 40px;
+    text-align: right;
+}
+td.fixwidth2a, th.fixwidth2a
+{
+    width: 65px;
+    text-align: right;
+}
+td.fixwidth3, th.fixwidth3
+{
+    width: 75px;
+    text-align: right;
+}
+td.fixwidth4, th.fixwidth4
+{
+    width: 65px;
+    text-align: right;
+}
+td.fixwidth5, th.fixwidth5
+{
+    width: 85px;
+    text-align: right;
+}
+td.fixwidth5c, th.fixwidth5c
+{
+    width: 85px;
+    text-align: center;
+}
+td.fixwidth6, th.fixwidth6
+{
+    width: 105px;
+    text-align: right;
+}
+td.fixwidth6c, th.fixwidth6c
+{
+    width: 105px;
+    text-align: center;
+}
+td.fixwidth7, th.fixwidth7
+{
+    width: 17px;
+    text-align: center;
+}
+td.fixwidth8, th.fixwidth8
+{
+    width: 130px;
+    text-align: right;
+}
+td.fixwidth8c, th.fixwidth8c
+{
+    width: 130px;
+    text-align: center;
+}
+td.fixwidth9, th.fixwidth9
+{
+    width: 190px;
+    text-align: right;
+}
+td.fixwidth9c, th.fixwidth9c
+{
+    width: 190px;
+    text-align: center;
+}
+
+#stats_div
+{
+    padding-top: 10px;
+    margin-top: 10px;
+}
+td.spacer
+{
+    width: 2px;
+}
+
+tr.preference
+{
+    vertical-align: top;
+}
+
+th
+{
+    text-align: left;
+}
+.hidden
+{
+   visibility: collapse;
+    display: none;
+}
+.buttonlike
+{
+    cursor: pointer;
+}
+.fullwidth
+{
+    width: 100%;
+}
+.hmid
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+.vbot
+{
+    vertical-align: bottom;
+}
+.vtop
+{
+    vertical-align: top;
+}
+.bold
+{
+    font-weight: bold;
+}
+.transparent
+{
+    opacity: 0.2;
+}
+.vcenter {
+    vertical-align: middle;
+}
+.italic
+{
+    font-style: italic;
+}
+
+.leftbut
+{
+    text-align: left;
+    vertical-align: bottom;
+    margin-right: auto;
+    width: 170px;
+}
+.midbut
+{
+    text-align: center;
+    vertical-align: bottom;
+}
+.rightbut
+{
+    text-align: right;
+    vertical-align: bottom;
+    white-space: nowrap;
+}
+.left
+{
+    text-align: left;
+}
+.right
+{
+    text-align: right;
+}
+.center
+{
+    text-align: center;
+}
+#center
+{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.inline
+{
+    display: inline;
+}
+
+.centered
+{
+    left: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+table.compact
+{
+    border-collapse: collapse;
+    padding: 0px;
+    margin: 0px;
+}
+td.minimalistic
+{
+    padding: 0px;
+    margin: 0px;
+}
+.nowrap
+{
+    white-space: nowrap;
+    overflow-x:hidden;
+}
+.small
+{
+    padding: 0px;
+}
+.binicon
+{
+    vertical-align: middle;	
+    padding: 0px;
+}
+.basketbuttonsize
+{
+    width: 64px;
+    height: 30px;
+}
+
+.iconsize
+{
+    width: 16px;
+    height: 16px;
+}
+.floatleft
+{
+    float: left;
+}
+.floatright
+{
+    float: right;
+}
+td.general, th.general 
+{
+} /* dummy for the selection of table in newsgroup/rss feeds */
+td.admin, th.admin 
+{
+}/* dummy for the selection of table in newsgroup/rss feeds */
+td.user, th.user 
+{/* dummy for the selection of table in newsgroup/rss feeds */
+}
+
+.width80p
+{
+    min-width: 80%
+}
+
+.width300 
+{
+    width: 300px;
+}
+.width32
+{
+    width: 32px;
+}
+.width25
+{
+    width: 25px;
+}
+.width20
+{
+    width: 20px;
+}
+
+.width15
+{
+    width: 15px;
+}
+
+.width60
+{
+    width: 60px;
+}
+.donotoverflowdamnit
+{
+    overflow: hidden;
+    white-space: nowrap;
+    width: 1px;
+}
+.iconsizeplus
+{
+    width: 16px;
+    height: 16px;
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    margin-right: 1px;
+}
+
+
+.down2
+{
+    margin-top:2px;
+}
+
+.down4
+{
+    margin-top:6px;
+}
+
+.down3
+{
+    margin-top:3px;
+}
+
+.cleartop3
+{
+    position: relative;
+    display: inline;
+    top: 4px;
+}
+
+.downm8
+{
+    margin-top:-8px;
+}
+
+
+.overflow
+{
+    overflow:auto;
+}
+
+.nooverflow
+{
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.down5
+{
+    top:5px;
+}
+.down20
+{
+    top:20px;
+}
+img.max100x100 
+{
+    max-width: 100px;
+    max-height: 100px;
+}
+.minsize100
+{
+    min-height: 100px;
+}
+
+.left4
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.attop
+{
+    top: 0px;
+}
+.invisible
+{
+    visibility: hidden;
+}
+
+div.tablecell
+{
+    display: table-cell;
+}
+
+div.inline
+{
+    display: inline-block;
+}
+
+.centered2
+{
+    width: 100%;
+    height: 22px;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.rmargin30
+{
+    margin-right: 50px;
+}
+.lmargin3
+{
+    margin-left: 4px;
+}
+.fixedright20
+{
+    float:right;
+    position: relative;
+    right: 20px; 
+}
+
+.fixedright
+{
+    float:right;
+    position: relative;
+    right: 10px; 
+}
+
+
+table.uploads 
+{
+    width: 95%;
+}
+
+table.search
+{
+    min-width: 800px;
+}
+
+td.righted
+{
+    text-align:right;
+}
+
+.width100
+{
+    width:100%;
+}
+
+.padding10
+{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.margin10
+{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+
+th.round_left, td.round_left 
+{
+    border-radius: 9px 0 0 0;
+    border-collapse: collapse;
+}
+th.round_right , td.round_right
+{
+    border-radius: 0 9px 0 0;
+    border-collapse: collapse;
+}
+th.round_both, td.round_both 
+{
+    border-radius: 9px 9px 0 0;
+    border-collapse: collapse;
+}
+
+.submit_button 
+{
+    margin-right:20%; 
+    margin-top:10px;
+}
+
+.submit_button_right 
+{
+    margin-right:5%; 
+    margin-top:5px;
+}
+
+
+.on_top 
+{
+    z-index:100000;
+}
+
+#overlay_content
+{
+    position:fixed;
+    display: none;
+    z-index: 1000010;
+    overflow: hidden;
+}
+
+
+#overlay_content2
+{
+    position:fixed;
+    display: none;
+    z-index: 10000020;
+    overflow: hidden;
+}
+
+#overlay_back
+{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 1000001;
+    background-image: url('../img/overlay.png');
+    vertical-align: bottom;
+    display: none;
+}
+   
+#overlay_back2
+{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 1000002;
+    background-image: url('../img/overlay.png');
+    vertical-align: bottom;
+    display: none;
+}
+   
+#overlay_back3
+{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 1000003;
+    background-image: url('../img/overlay.png');
+    vertical-align: bottom;
+    display: none;
+}
+    
+
+pre.small
+{
+    font-size: 8px;
+}
+
+.spot_thumbnail
+{
+    position: absolute;
+    right: 20px;
+    top: 15px;
+}
+
+
+div.sets_inner
+{
+    position: relative;
+    overflow: auto;
+    max-height: 420px; 
+}
+
+.save_subcat
+{
+    margin-right: 40px;
+    text-align: right;
+}
+
+.reset_button 
+{
+    position: absolute;
+    display: block;
+    right: 25px;
+    top: 40px;
+}
+
+.popup_wrapper525x300
+
+{
+    display: table;
+    height:266px;
+    width:100%;
+
+}
+.popup_wrapper700x400
+
+{
+    display: table;
+    height:366px;
+    width:100%;
+
+}
+
+.popup_centered525x300,
+.popup_centered700x400
+{
+    display: table-cell;
+    vertical-align: middle;
+}
+

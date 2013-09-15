@@ -1,0 +1,59 @@
+{* Smarty *}
+{*
+ *  This file is part of Urd.
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate: 2013-08-28 00:47:19 +0200 (wo, 28 aug 2013) $
+ * $Rev: 2905 $
+ * $Author: gavinspearhead@gmail.com $
+ * $Id: ajax_adminjobs.tpl 2905 2013-08-27 22:47:19Z gavinspearhead@gmail.com $
+ *}
+
+{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{if $sort == "command"}{if $sort_dir=='desc'}{$command_sort=$up}{else}{$command_sort=$down}{/if}{else}{$command_sort=""}{/if}
+{if $sort == "username"}{if $sort_dir=='desc'}{$username_sort=$up}{else}{$username_sort=$down}{/if}{else}{$username_sort=""}{/if}
+{if $sort == "at_time"}{if $sort_dir=='desc'}{$at_time_sort=$up}{else}{$at_time_sort=$down}{/if}{else}{$at_time_sort=""}{/if}
+{if $sort == "interval"}{if $sort_dir=='desc'}{$interval_sort=$up}{else}{$interval_sort=$down}{/if}{else}{$interval_sort=""}{/if}
+
+<input type="hidden" name="order" id="order" value="{$sort}"/>
+<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir}"/>
+
+<table class="tasks">
+<tr>
+<th id="descr_td" onclick="javascript:submit_search_jobs('command', 'asc');" class="buttonlike head round_left">{$LN_jobs_command} {$command_sort}</th>
+<th onclick="javascript:submit_search_jobs('username', 'asc');" class="fixwidth8c buttonlike head">{$LN_jobs_user} {$username_sort}</th>
+<th onclick="javascript:submit_search_jobs('at_time', 'asc');" class="fixwidth9 buttonlike head">{$LN_time} {$at_time_sort}</th>
+<th onclick="javascript:submit_search_jobs('interval', 'asc');" class="fixwidth5 buttonlike head">{$LN_jobs_period} {$interval_sort}</th>
+<th class="fixwidth5 round_right head">{$LN_actions}</th>
+</tr>
+
+{foreach $alljobs as $job}
+<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+<td><div class="donotoverflowdamnit">{$job.task} <b>{$job.arg}</b></div></td>
+<td>{$job.user}</td>
+<td class="right">{$job.time}</td>
+<td class="right">{$job.period}</td>
+<td>
+{if $urdd_online neq 0}
+    <div class="floatright iconsize killicon buttonlike" {urd_popup type="small" text=$LN_cancel}  onclick="javascript:job_action('unschedule', '{$job.cmd|escape:javascript}');"></div>
+{else}&nbsp;{/if}
+</td>
+</tr>
+{foreachelse}
+<tr><td colspan="5" class="centered highlight textback">{$LN_error_nojobsfound}</td></tr>
+{/foreach}
+</table>
+

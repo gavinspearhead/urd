@@ -1,0 +1,42 @@
+#tutorial : http://videos1.showmedo.com/ShowMeDos/extras/linuxJensMakingDeb/from_py_to_deb.pdf
+
+#install needed packages
+
+sudo apt-get install dpkg-dev
+sudo apt-get install dh-make
+
+# make a sandbox to create the package in
+mkdir sandbox
+cd sandbox
+
+# make a dir for the proper version
+mkdir urd-x.y.z
+cd urd-x.y.z
+
+#make the build environment
+dh_make -e dev@urdland.com -c GPL -f /some/where/urd-x.y.z.tar.gz --single
+
+cp  /some/where/urd-x.y.z.tar.gz .
+
+tar -zxf /some/where/urd-x.y.z.tar.gz 
+
+
+
+# copy / modify the files needed
+vi ../control ../rules ../postinst ../dirs ../postrm ../prerm ../preinst
+cp ../control ../rules ../postinst ../dirs ../postrm ../prerm ../preinst debian/
+
+# remove unneeded files
+rm debian/*.ex debian/*.EX
+
+rm ../urd-x.y.z_orig.tgz
+
+
+vi debian/source/format
+:s/quilt/native
+
+#build the tarbal
+sudo dpkg-buildpackage 
+
+
+

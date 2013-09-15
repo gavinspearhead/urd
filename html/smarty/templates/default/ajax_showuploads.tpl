@@ -1,0 +1,129 @@
+{* Smarty *}
+{*
+ *  This file is part of Urd.
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
+ * $Rev: 2909 $
+ * $Author: gavinspearhead@gmail.com $
+ * $Id: ajax_showuploads.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ *}
+{* Ajax page, doesn't need a head/foot tpl *}
+
+{if ($poster neq 0 || $isadmin neq 0) && $show_post neq 0}
+<table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
+<thead>
+<tr>
+<th class="left head round_left">{$LN_transfers_head_started}</th>
+<th class="left head">{$LN_transfers_head_subject}</th>
+<th class="left head">{$LN_transfers_head_progress}</th>
+<th class="center head">{$LN_size}</th>
+<th class="center head">{$LN_transfers_head_speed}</th>
+<th class="left head">{$LN_eta}</th>
+{if $isadmin neq 0}
+<th class="left head">{$LN_transfers_head_username}</th>
+{/if}
+<th class="right head round_right">{$LN_transfers_head_options}</th>
+</tr>
+</thead>
+
+{function name=display_status status='' infoarray=''}
+
+{$stat=$infoarray[0]->status|replace:' ':'_'}
+<tbody>
+<tr class="transferstatus"><td colspan="{if $isadmin neq 0}7{else}6{/if}">{$status}</td>
+		<td>
+        <div class="black floatright iconsize noborder buttonlike">
+		<div id="{$stat}post" class="floatright iconsize blackbg {if $post_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" onclick="javascript:fold_transfer('{$stat}', 'post');">        </div>
+        </div>
+		</td>
+</tr>
+</tbody>
+
+
+{foreach $infoarray as $a}
+{$stat=$a->status|replace:' ':'_'}
+<tbody id="data_post_{$stat}" class="{if $post_hide_status.$stat == 1}hidden{/if}">
+
+{capture name=opts assign="options"}
+{strip}
+<div class="floatright">
+{if $a->status == "rarfailed" && $a->directory != ''}
+<div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badrarinfo } alt="" onclick="javascript:show_contents('{$a->destination}/rar.log', 0);"></div><
+{/if}
+{if $a->status == "par2failed" && $a->directory != ''}
+<div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badparinfo } alt="" onclick="javascript:show_contents('{$a->destination}/par2.log', 0);"></div>
+{/if}
+<div class="inline iconsizeplus editicon buttonlike" onclick="ShowEditPost('{$a->postid}');"></div>
+{if ($a->status == "paused" OR $a->status == "ready") AND $urdd_online}
+<div class="inline iconsizeplus playicon buttonlike" onclick="post_edit('start','{$a->postid}')" {urd_popup type="small" text=$LN_transfers_linkstart }></div>
+{/if}
+
+{if ($a->status == "active" OR $a->status == "queued") AND $urdd_online}
+<div class="inline iconsizeplus pauseicon buttonlike" onclick="post_edit('pause','{$a->postid}')" {urd_popup type="small" text=$LN_pause }></div>
+{/if}
+
+{if ($a->status == "queued" OR $a->status == "paused" OR $a->status == "active" OR $a->status == "ready") AND $urdd_online}
+<div class="inline iconsizeplus killicon buttonlike" onclick="post_edit('cancel','{$a->postid}')" {urd_popup type="small" text=$LN_cancel }></div>
+{/if}
+
+{if $urdd_online}
+<div class="inline iconsizeplus deleteicon buttonlike" onclick="post_edit('delete','{$a->postid}')" {urd_popup type="small" text=$LN_delete }></div>
+{/if}
+</div>
+{/strip}
+{/capture}
+
+	<tr class="even" onmouseover="javascript:ToggleClass(this, 'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+		<td>{$a->startdate}</td>
+		<td><b>{$a->name|truncate:$maxstrlen|escape:htmlall}</b></td>
+		<td>
+
+{urd_progressbar width=100 complete=$a->progress}
+ {$a->progress}%</td>
+		<td class="right">{$a->size}</td>
+		<td>{$a->speed}</td>
+		<td class="center">{$a->ETA}</td>
+{if $isadmin neq 0}
+		<td>{$a->username|escape:htmlall}</td>
+{/if}
+		<td class="rightbut">{$options}</td>
+	</tr>
+{/foreach}
+</tbody>
+{/function}
+
+{if isset($infoarray_upload['active'])}{display_status status=$LN_transfers_status_postactive infoarray=$infoarray_upload['active']}{/if}
+{if isset($infoarray_upload['rarred'])}{display_status status=$LN_transfers_status_rarred infoarray=$infoarray_upload['rarred']}{/if}
+{if isset($infoarray_upload['par2ed'])}{display_status status=$LN_transfers_status_par2ed infoarray=$infoarray_upload['par2ed']}{/if}
+{if isset($infoarray_upload['ready'])}{display_status status=$LN_transfers_status_ready infoarray=$infoarray_upload['ready']}{/if}
+{if isset($infoarray_upload['queued'])}{display_status status=$LN_transfers_status_queued infoarray=$infoarray_upload['queued']}{/if}
+{if isset($infoarray_upload['paused'])}{display_status status=$LN_transfers_status_paused infoarray=$infoarray_upload['paused']}{/if}
+{if isset($infoarray_upload['finished'])}{display_status status=$LN_transfers_status_finished infoarray=$infoarray_upload['finished']}{/if}
+{if isset($infoarray_upload['cancelled'])}{display_status status=$LN_transfers_status_cancelled infoarray=$infoarray_upload['cancelled']}{/if}
+{if isset($infoarray_upload['stopped'])}{display_status status=$LN_transfers_status_stopped infoarray=$infoarray_upload['stopped']}{/if}
+{if isset($infoarray_upload['error'])}{display_status status=$LN_transfers_status_error infoarray=$infoarray_upload['error']}{/if}
+{if isset($infoarray_upload['shutdown'])}{display_status status=$LN_transfers_status_shutdown infoarray=$infoarray_upload['shutdown']}{/if}
+{if isset($infoarray_upload['yyencoded'])}{display_status status=$LN_transfers_status_yyencoded infoarray=$infoarray_upload['yyencoded']}{/if}
+{if isset($infoarray_upload['rarfailed'])}{display_status status=$LN_transfers_status_rarfailed infoarray=$infoarray_upload['rarfailed']}{/if}
+{if isset($infoarray_upload['par2failed'])}{display_status status=$LN_transfers_status_par2failed infoarray=$infoarray_upload['par2failed']}{/if}
+{if isset($infoarray_upload['yyencodefailed'])}{display_status status=$LN_transfers_status_yyencodefailed infoarray=$infoarray_upload['yyencodefailed']}{/if}
+{if empty($infoarray_upload)}
+<tr><td colspan="8" class="centered highlight textback">{$LN_error_nouploadsfound}</td></tr>
+{/if}
+
+</table>
+{/if}
+

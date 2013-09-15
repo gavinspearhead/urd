@@ -1,0 +1,64 @@
+{* Smarty *}
+{*
+ *  This file is part of Urd.
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate: 2013-04-22 19:50:11 +0200 (ma, 22 apr 2013) $
+ * $Rev: 2818 $
+ * $Author: gavinspearhead@gmail.com $
+ * $Id: ajax_editfile.tpl 2818 2013-04-22 17:50:11Z gavinspearhead@gmail.com $
+ *}
+
+<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
+<div class="set_title centered">
+{if $new_file}
+{$LN_viewfiles_newfile}
+{else}
+{$LN_edit_file} - {$filename|escape:htmlall|truncate:$maxstrlen:'...':false:true}
+{/if}
+</div>
+<div class="light padding10">
+{if isset($message) && $message != ''}
+{$message}
+{else}
+<br/>
+<table>
+{if $new_file}
+<tr>
+<td>{$LN_filename}:
+</td>
+<td >
+<input type="text" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile" size="40"/>
+{urd_checkbox name="newdir" id="newdir" post_js="toggle_textarea('filecontents_editfile', 'newdir');"} {$LN_post_directory}
+<input type="hidden" value="new" name="newfile" id="newfile"/>
+<input type="hidden" value="{$LN_error_needfilenames}" name="filename_err" id="filename_err"/>
+</td></tr>
+<tr>
+<td colspan="2">
+{else}
+<tr>
+<td colspan="2">
+<input type="hidden" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile"/>
+{/if}
+<input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
+<textarea class="filecontents" name="filecontents" id="filecontents_editfile">{$file_contents}</textarea>
+</td></tr>
+<tr><td colspan="2"><input type="button" class="submitsmall floatright" value="{$LN_viewfiles_savefile}" onclick="javascript:save_file();"/>
+</td>
+</tr>
+
+</table>
+</div>
+{/if}

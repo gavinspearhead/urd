@@ -1,0 +1,61 @@
+Updating an existing URD version to a newer version is basically pretty simple. 
+It will retain all database values, so all your subscriptions to newsgroups 
+and all are still there after the upgrade. Upgrading is pretty simple really:
+
+Step 0: 
+Stop the URD daemon by clicking the "URDD is online" button.
+
+Step 1:
+Extract the new tarball to the directory where URD is installed. In case of a
+.deb packages, this will work automatically.
+
+Step 2:
+URD now has an update script in the sub directory install/. Chdir to the 
+install directory and you can run it as:
+./update.sh 
+
+And it will try to find out the currently configured version and the updated 
+version. Or run it with the currently configured version if it fails; as 
+./update.sh x.y.z
+(where x.y.z is the current version)
+
+If you got the deb package this should be done automatically as well. If it 
+gives an error try to run the update script anyway.
+
+If all this fails somehow, you can manually update the database as pointed out
+in step 2A. 
+
+Step 2A: (try only if the step 2 failed!)
+Update the database. This depends a bit on the database you use. For MySQL 
+something like:
+
+# mysql -u db_user db_password urddb < update_x.y.z_to_a.b.c_mysql.sql
+
+will do the trick. You have to fill in the correct values for db_user 
+(often root), db_password and urddb (which is the default database name). For 
+postgres you need the file  update_x.y.z_to_a.b.c_pgsql.sql. And run the psql command.
+
+Here x.y.z is the installed version and a.b.c is the version you wish to 
+upgrade to. database scripts are only provided from one version to 
+the next. If you need to upgrade more versions you have to run all the 
+applicable update scripts.
+
+
+Step 3:
+In very rare cases, you may have to update the config.php. 
+
+Step 4:
+Restart the URD daemon by clicking the "URDD is offline" button.
+
+Step 5:
+That is all there is. There is no step 5. Happy URD'ing again with your brand 
+new version :D
+
+
+If anything goes wrong have a look at the log file (admin/log in the menu, or 
+/tmp/urdd.log) to see what is wrong.
+
+In case you run into any trouble, don't hesitate to contact us at 
+http://www.urdland.com/forum .
+
+

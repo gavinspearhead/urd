@@ -1,0 +1,942 @@
+1.10.0
+- Added option for creating a keystore on the command line
+- Made the location of the keystore configurable
+
+
+1.9.0 
+- Browse pages add more data when scrolling to the end of the page
+- Stopped supporting version of php before 5.3.0
+- Updated smarty to 3.1.14
+- Updated jquery to version 1.10.2
+- Updated the way previews are shown is user interface
+- Made challenge verification (XSS prevention) optional
+- Changed the order of downloads and uploads in the overview
+- Updated some extsetdata types
+- Updated style of message bar, moved it to bottom and bigger with border
+- Added rating to spots overview
+- Enabled displaying extset information for Spots
+- par2 now also works when the archive files have been renamed
+- Added next/previous buttons to page skipper
+- Store usenet server password encrypted in the database
+- Installer can now handle the case where the only one user can exist in the database
+- Password changes include a check for weak passwords
+- Password creation in installer include a check for weak passwords
+- Changed style of installer to light
+- Changed darkness theme to blueish
+- Ajaxified the preferences and configuration pages
+- Preferences will now be automatically saved after editting
+- Ajaxified admin/log
+- Rewrote registration and forgot password pages
+- Add option to calendar to chose no download delay
+- Fixed bug with subcat selector in spots
+- Fixed a bug in importing RSS feeds / groups settings
+- Fixed bug deleting the image files of expired spots from the cache
+- Fixed bug in editting extended set info
+- Fixed bug not sending messages when download failed
+- Fixed bug in showing total diskspace in stead of available diskspace
+- Fixed bug in not setting the adult flag correctly on saving newsgroup settinsg
+- Fixed a bug in handling nzb files with a single quote in it
+- Fixed an problem displaying special characters in some statistics images 
+- Fixed bug in adding stats info about downloads from NZB files
+- Fixed bug not restoring the proper status on URDD restart for some (paused) tasks 
+- Cleaned up error handling in web interface
+- Added option to remove spots when a configurable limit of spam reports is received 
+- Correct spot timestamps that are in the future
+
+
+
+1.8.0
+- Added initial usenet configuration to installer
+- Added support for PDO_mysql and PDO_pgsql database interface
+- highlighted actions menu in light/darkness stylesheet (like other css)
+- enabled inline images to be shown
+- added php implementation of yydecode to replace the binary (alpha release)
+- Improved user interface a bit
+- Enabling authentication in usenet overview now uses a popup to ask for credentials
+- added #, // and ; as comments to urdd interface
+- Fixed bug in parsing set sizes from RSS feeds
+- Added spots statistics per spot subcategory
+- Fixed a bug in creating NZB files from spots
+- Show text files and images in a popup 
+
+
+
+1.7.0
+- Updated search string parsing; now supports not and or as keywords, eg foo or not bar
+- When a new usenet server is added, it is set as an indexing server if no other indexing server is set.
+- Keep pop up open in case an error happens in the upload 
+- Add defualt schedules after installation
+- Fixed bug in selecting download path for spots
+- Fixed bug in saved searches next and previous buttons
+- Added quickmenu to spot details
+- Fixed some minor issues with statistics about supply
+- Added white list for spots
+- Fixed some issues with DB updating
+- Fixed error in statistics with regard to imported nzb file size
+- Fixed issue with saved searches 
+- Hide categories when no categories are present
+- Added filter options to throw away too large sets
+- Changes in basket are kept when changing between supply types
+- Added mini download basket as an option
+- Switch default style sheet to "light"
+- Sets marked as x-rated are alse hidden when user is not permitted to see adult sets
+- Fixed bug in searching on tags in spots
+- Added search buttons for MovieMeter
+- Show size of the previewed file in preview
+- Fix bug not showing (c) and pw images when ext set data is set for spots
+- Update to smarty 3.1.13
+
+
+1.6.1 
+- Fix bug in subscribing
+
+
+
+1.6.0
+- Fix bug in filtering by spots spam reports (thx @ Grombulk)
+- Added option to create a new directory in view_files
+- Kept pop up open incase creating file or dir failed in view_files
+- Fixed a small bug in desert CSS not rounding bottom corners of menu
+- Added URD version number to hover below URD logo in menu
+- Added number of spot reports to spot details popup
+- Show number of comments in spots over (if comments are enabled)
+- Added more statistics on spots
+- Added configuration option to set the spots expire time
+- Speed up of expiring spot comments / reports by adding some indices
+- Split up commands for getting spots into spots, reports and comments 
+- Fixed bug when articles not found on one server leads to a failed download when urd is still busy on another server 
+- NZB downloading from spots now can run on any server
+- Fixed bug in editting saved searches
+- Added close button to preview images
+- Moved CSS and JS files to separate directories
+- Upgraded to ADODB 5.18
+- Added postgresql 9 support for adodb and added to installer 
+- Quick menu will not show the search sub menu if there is only one button selected, the first button will be used directly instead
+- Added search buttons for Baidu, Dictionary, DuckDuckGo, Googlemaps 
+- Added nice template for updating db pages
+- Added comment to download info to put additional information (such as canceled because of encrypted rar or by user)
+- Fixed small bug setting the last updated value wrongly when adding an RSS set
+- Hide the merge button in the basket unless there are 2 or more sets that can be merged
+- Fixed some minor issues with saved searches
+- Fixed a bug in importing RSS feeds with non ASCII characters
+- Fixed a bug in showing RSS sets with non ascii characters
+- Dynamically size statistics graphs according to screensize
+- added icon for ebooks
+- Updated smarty to 3.1.12
+- bug fix escaping special chars in confirmation popups
+- bug fix in editting files not having proper permissions
+- automatically scale images in preview
+- reorganised preferences somewhat
+
+
+1.5.0
+- Added mapping of saved searches to categories
+- Added next/previous/etc buttons on viewing image files in a directory
+- Cleaned up image directory
+- renamed all .inc files to .php files
+- Fixed bug in browsing rss sets - quickmenu not showing hide this set option
+- Fixed a small bug showing two type images in spots after editing set info
+- Added day of the week to daily statistics
+- Printed all days of the week for months that had no data instead of just one lonely '0'
+- Fixed bug in downloading comments
+- Speed up of downloading comments
+- Overhaul of all stylesheets. Esp spots and sets details and other popups
+- Fixed a few bugs in rss pages
+- Fixed a bug not showing the remove from basket buttons on reloading
+- Updates for all stylesheets
+- Fixed issues with not removing task status after error during getting spots
+- Use a popup when clicking download NZB in viewfiles
+- Added option to installer to chose MySQL database Engine
+- Fixed bug not showing set updating tab in config when sync module was disabled
+- Fixed bug in importing RSS feeds settings
+- Added option to select database engine for MySQL in installer
+- Added message to installer when creating database
+- Uncluttered some more popups
+- fixed a bug in searching sets based on set completeness
+
+
+
+1.4.0
+- Fixed an issue with smarty initiation on php > 5.4
+- Made all URLs in spot info clickable
+- Fixed an incorrect error message for sending certain mails would fail
+- Fixed an issue with failing to send reset password messages
+- Implemented mail templates
+- Added light stylesheet with limited images
+- Added dark stylesheet with limited images
+- Updated other stylesheets
+- Improvements to the post pages
+- Updated smarty to 3.1.11
+- Config permits auto download by default
+- Fixed a bug in autodownload functionality (thx ProD)
+- Cleaned up some divs for saving searches 
+- Fixed a small bug in returning count of added rss sets
+- Upgraded phplot to 5.8.0
+- Fixed bug in socket library
+- Fixed a bug in handling filenames with a / in editing files
+- Fixed a bug in some confirmation messages
+- Fixed a couple of minor issues in HTML
+- Switched to HTML5
+- Fixed bug in parsing UBB codes
+- Fixed bug in parsing messages
+- Fixed bug in storing downloaded files
+- Added check for date.timezone in php.ini to installer
+- Fixed database issue with rss sets missing column
+- Fixed rare issue with future dates/times and calculating age for sets
+- Many smaller tweaks and fixes
+- Moved preferences to the top of the settings menu
+- Fixed bug resulting in some groups appearing twice in the grouplist
+- Added more statistics for spots, groups, rss-feeds
+
+
+
+
+1.3.0
+- Fix for libxml_parsehuge option missing in older libxml versions
+- Hide some errors parsing nfo files
+- Added extra check for URL when parsing nfo files
+- fixed bug in show newsgroups command
+- Added adult content filter
+- Fine grained access to update/expire command for non-admin users
+- Fixed a notice message in spots (thx @grombulk)
+- Fixed a rare bug due to negative ETA (thx @senax)
+- Fixed a bug in not properly setting session info when changing the users password in preferences
+- Updated smarty to 3.1.7
+- Added google style search to view files, allowing quotes and minus as special chars
+- Added sorting indicators to the browse pages
+- Added external blacklist for spots based on spotter IDs
+- Added option to obtain spot spam reports
+- Added option to report spam
+- Fixed a rare bug happening restoring the queue/schedules on restart with stale downloads 
+- Fixed a bug in validating the magpie directory cache (thx @ipump)
+- Fixed an issue with handling stale pid files
+- Fixed an issue with handling doubly appearing spots
+- Updated style of view/edit set info to match view spot info
+- Fixed small bug in handling error when log file could not be read in admin/logs
+- Updated format information for download path
+- Fixed a bug importing search options
+- Non-admin users are now allowed to clean up their transfers too
+- Fixed a bug in handling saving nfo info when user is no set editor
+- Added download selector to download dirname is basket and upload nzb
+- Fixed security bug for opening root directory if user dir was not found in viewfiles (thx @olafkewl)
+- Hidden spots groups from newsgroups overview, unless specifically sought for them
+- Updated smarty to 3.1.8
+- added autodownload support for spots
+- dashboard will now show server names in threads
+- added button to toggle showing/hiding passwords
+- Fixed bug in sorting in viewfiles
+
+
+
+1.2.0
+- Close popup windows when loading sets
+- Added config option to disallow robots indexing pages (meta tag)
+- New database update and install scripting
+- Fixed bug in handling of mime encoded files without multipart headers
+- Fixed bug in handling spots for which no data / nzb could be found
+- Fixed issue with not resetting page offset when changing saved searches
+- Added comments to spots
+- Updated view for spots details
+- Fixed bug when adding sets to downloads not showing the right size in transfers
+- Updated smarty to 3.1.6
+- Fixed issue in selecting saved searches
+- cleanup install directory
+- Added check for db version
+- Added URDD offline message to all pages
+- Clicking messagebar hides it
+- Fixed a bug in handling images that are not images in spots
+- Fixed handling indexing server on autoconfig in usenetserver page
+- Fixed a bug in handling errors when listening on sockets
+- Fixed a bug handling non ascii characters is the basket
+- Fixed bug in restarting downloads with queued adddata/addspotdata commands not reseting the dl lock
+- Added setname to upload NZB dialog
+- Improved error handling when showing some dialogs while URDD is offline
+- added clickjack prevention
+- added previous/next buttons on saved searches
+- Fixed a race condition is setting the size of a download
+- Fixed bug in handling spots with NZBs in multiple segments (usually very large spots)
+- Fixed small bug in selecting rss feed
+- Fixed bug not showing newsgroups pageskippers
+- Fixed a small issue with displaying the ETA on downloads
+- Returned the test search option funcition
+- Changed default many search options to use HTTPS
+- Added a few search options: Twitter, Facebook, Bing, Google images
+
+
+
+1.1.0
+- Fixed bug in unhiding sets
+- Fixed bug in handling settings
+- moved unhide/hide sets to quickmenu
+- moved follow link to NZB to quickmenu
+- Added option to show statistics per day
+- Added hover effect to transfers/uploads, viewfiles and admin pages
+- edit rss feed now authentication is a checkbox with hiding u/p fields
+- changing user level in config is now saved into prefs too
+- added storing of spot searches
+- Fixed bug in rss-feeds and groups with max/minsetsize
+- Fixed issue with NZB file handling in some cases
+- Now unique id for spots - fixes issues with marking sets as downloaded, interesting, etc
+- added preview download name to document title
+- reset download parameters if all elements are removed from basket, such as dl_dir
+- added spot categories to dl dir formatting
+- added option to automatically clean inactive users
+- Added mapping spots to urd categories
+- Added default group/ feed for browse pages
+- Fixed bug in displaying category names with funny characters
+- Fixed issue not showing type of data in statistics (e.g. GB or kB)
+- fixed bug in sorting rss feeds
+- Fixed showing correct tab in rss_feeds after applying settings
+- Fixed saving user setting on inactive rss_feeds
+- Fixed small bug with displaying deleting spots commands
+- Uploading an NZB does not refresh the page anymore
+- Fixed a bug in hiding spots
+- Added black list for posters when updating groups for more spam control
+- Fixed small giving harmless database update errors
+- Updated ADODB to 5.14
+- Added silver stylesheet
+- Updated dessert style to "fresher" colours
+- search spots on poster field
+
+
+
+1.0.9
+- Switched to Smarty 3.0
+- Added downloading from Spots
+- Fixed a small bug in editting dl dir in transfers
+- Sorted the order of the spots categories
+- Fixed some spot categories
+- Added categories in spot lists
+- Updated presentation of error messages
+- Fixed handling of downloading nfo info
+- altered a some selectors to smartly handle numbers, e.g. 1K, 10M, or 33G, etc.
+- Fixed layout slightly
+- Added URL and image info to spot details
+- Fixed bug in posting messages
+- Fixed some minor issues with spots storage
+- fixed some issues in language files
+- fixed a bug in setting tabs in prefs and config
+- fixed a bug in exporting groups settings using postgres
+
+
+
+1.0.8
+- Added spam filter to update function to weed out too small sets
+- fixed issue with setting download directory in NZB downloads and auto downloads
+- auto download and parse nfo files after gensets
+- fixed issue with auto downloading files multiple times sas nzb files
+- Added support for spots
+- Fixed some issues with handling some commands in urdd
+- Rewrote updating grouplist algorithm to handle really large sets of groups
+- Allowed more than 1 pattern to match groups against when using grouplist update
+- Fixed small issue with calendar not closing on pressing basket buttons
+- New menu style for URD
+- Login now remembers username and settings when wrong password was entered
+- Fixed bug in groupssettings, not saving maxsetsize
+- changed the behaviour of searches slightly, so that min set size is also used
+- added link to nfo file in view_files if it exists in the directory
+- rewrote delete account handler
+- Fixed an issue with the download name when importing NZB files from view_files or the spool dir
+- added user right to allow edit/deletion of files in the file viewer
+- added nzb index and binsearch to search options
+- show download name in preview
+- removed URDD commands VERSION, TIME and UPTIME in favour of SHOW version|time|uptime
+- Removed support for synchronising information with urdland in favour of the news server
+- Fixed an issue with wrapping long popups
+
+
+
+1.0.7
+- Fixed a small problem in preview
+- Huge speed up of generating sets and minor speed up of update
+- Fixed a bug in autodownload code
+- Fixed annoying issue with white background when background image was not loaded
+- Added default download delay option
+- Added option to automatically download as an NZB file
+- Fixed a bug in saving configuration blanking maintenance times
+- Added option to set download directory in browse basket
+- Fixed a small bug in getting time in the timepicker
+- Added stylesheet chooser in prefs/config
+- Added second stylesheet (blues)
+- Replaced article count in browse - groupselector by set count
+- Added set counter to categories in browse
+- Added set counter to categories and feeds in rss feeds
+- Fixed a bug in estimating the header count
+- Removed standard alert / confirm by custom popup
+- Fixed a bug in handling invalid or empty NZB files
+- Fixed small bug in selecting next group, not resetting page offset
+- Fixed a bug in installer not detecting gd extension
+- Fixed a bug in rescheduling tasks that could not connect
+- Added third stylesheet (desert)
+- Ajaxified newsgroups and rss feeds pages
+- Cleanup of control page
+- Cleanup search page
+- Fix check for preview size so that 0 means no limit
+- Detect selecting text in viewfiles
+- fixed bug in selecting year for statistics
+- Option to load colours for statistics from stylesheet
+- fixed bug in viewing files with weird characters in it (like amp)
+- Added option to only download par2 files when needed
+- Added search option to users
+- Made checkboxes in admin/users work like buttons
+- Fixed bug in preview progress indicator
+- Fixed a bug in handling database intensive threads correctly
+
+
+1.0.6
+- Fixed bug in setting rights in view_files rename
+- Added option to edit files in the webbrowser
+- Fixed some stuff with html tags in text files while viewing
+- Added possibility to group newsgroups / rss feeds into categories
+- Fixed small bug in status screen with rar failing
+- Fixed bug in handling posting failure
+- Fixed bug in installer check on subdl
+- Fixed bug in editing uploads
+- Added option to distribute extset info through newsgroups
+- Fixed a bug in editing usenet servers
+- Fixed a bug in the installer: setting subl path, yencode path in case they aren't found
+- Fixed a bug in the installer: creating account _after_ all checks have been performed
+- Fixed a bug in the move up/down in the queue 
+- Added account lockout option after failed login attempts
+- Added optional captcha to registration screen
+- added calendar to download scheduler
+- Fixed small bug in previewing when not a set editor
+- Split rss/newsgroups page to use two tabs --> global and user settings
+- Fixed bug causing high CPU when scheduler is off and a task should run
+- Fixed a bugs when calling some commands without arguments
+- Started making URD more modular
+- Tabbed settings, transfers
+- Fixed a bug in statistics showing all users when a user is non-admin and only current user when user is admin
+- Fixed a bug in showing only known users in statistics
+- Reworked statistics page with tabs and ajax code
+- Ajaxified browse and rss sets page
+- Added ability to send an email upon cancelling a pw encrypted download
+- Fixed a few bugs in the preview code
+- Speedup the browsepage a bit
+- Speed up the viewfiles pages
+- Added preliminary support for SQLite database backend
+- Added preview max filesize option
+- Fixed some issues with completion percentage
+- Fixed issue with log file. If it cannot be opened for writing we escape to /dev/null - not pretty but at least we can start then
+- Fixed a bug in handling failed authentication to a usenet server
+- Fixed a bug in newsgroups and rss feeds while URDD is offline and switching online
+- Added option to add search terms and blocked terms from a menu in the browse page
+- Added possibility to set the download name by selecting text
+- Design updated, orb buttons changed
+- Quickmenu changed to a text menu
+- Searchbuttons removed because of change to text menu
+- Setnames that do not fit on page are now automatically cut off so layout is optimal
+- added sorting to buttons
+- Usenet server page cleaned up
+- Remove par2/rar logfiles after successful download
+- Fixed security bug where posting rights were not properly checked everywhere
+- Updated the statistics page with real png bar graphs, using phplot
+
+1.0.5
+- Fixed a bug in parse nfo
+- Added option to nice external programs like rar and par2
+- Added option to limit the number of download threads per download
+- Fixed a bug in browse/rss sets page when searching within hidden groups/feeds
+- Fixed a bug in installer when saving admin email
+- Fixed a problem with running multiple get/sent setinfo commands at the same time
+- Fixed bug in downloading file in getfile.php
+- Fixed bug in importing settings in admin/control - made the XML reading code more error resistent
+- Fixed bug in handling lacking /s in viewfiles
+- Fixed bug in importing usenetservers
+- Fixed a bug in transfers when showing posts as non-admin
+- Improved algorithm to speed-up generating set data
+- Fixed some depricated warnings on php 5.3
+- Fixed bug in sending mail after download is complete
+- Added option to set the text that replaces unwanted characters in the download name
+- Fixed bug in early expire of incomplete sets
+- Limited data stored in the db, save about 30-40% diskspace
+- Added support for subdownloader - to automatically search for subs
+- Fixed bug in rescheduling tasks because of database locks
+- Fixed small bug in creating NZB files
+- Added flag to indicate set is password protected and is copyrighted
+- Added option to detect encrypted rar archives
+- Added support to post (text) message in newsgroup
+- Fixed bug in browse page showing empty page after hiding sets on the last page
+- Improved handling cancelled nzb creations
+- SFV checking is now working
+- Show when gensets is executing in status instead of just updating
+- Added option to reschedule downloads
+- Fixed bug in uudecode of multiple files
+- Fixed bug in rss feed generation of rss feeds
+- Fixed numerous small HTML issues
+- Fixed bug in task list 
+- Fixed bug in changing password
+- Improved layout of upload nzb screen
+
+
+
+1.0.4
+- Added compression of created NZB files
+- Improved handling of deleting sets
+- Improved guessing ETA for updates
+- Added support for compressed headers
+- button to hide the menu 
+- added upload functionality
+- added format string option to alter download dir name
+- changed exported settings filename to all start with urd_
+- better ajaxification of import settings
+- autodownload permission per user
+- apply visible groups when auto-downloading
+- fix bug in marking sets with strings containing only spaces
+- fix rare bug in previewing code
+- added option to download message without attachments
+- small improvements to error handling
+- fixed bug in download code with small files
+- fixed XSS bugs in rssfeeds and newsgroup pages
+- browse pages and marking as interesting and autodownload now support - to exclude keywords from searches
+- added Swedish translation
+
+
+1.0.3
+- added capability to save settings to a file and load from a file (as backup)
+- added capability to save newsgroup and rss subscriptions and load from file (as backup)
+- added capability to save buttons, users and usenet servers and load from file (as backup)
+- fixed bug in groups table
+- fixed small bug in nntp error codes
+- fixed a bug with update newsgroups in certain cases (now uses gmp)
+- updated Adodb version to the latest (v5.10)
+- fixed bug in unsubscribe function for rss feeds
+- fixed small bug in -f option
+- added option to remove incomplete sets earlier than complete sets
+- fixed handling some odd characters in viewfiles
+- added owner, rights and group properties to viewfiles
+- fixed a inconsistency with default expire times in newsgroups
+- fixed a problem with setting expire times largen than 255 in mysql
+- fixed a problem with charsets in database
+- fixed a small problem showing the correct dir name in view_files
+- fixed a small bug in statistics (div by zero)
+- improved gensets by doing an early expire on the group
+- added a remove set button to browse groups/rss pages - removes set entirely from urd's database - renamed old remove set to hide set
+- added "yellow" light to indicate URDD is starting up + a percentage of its startup progress
+- altered file format for logfiles, so that a standard urd logfile has the same format as syslog messages + added an example rsyslog file for filtering
+- made multiselects and textareas by default smaller, so that they take less room, but they can be folded out to the old size
+- improved handling of newsgroups/rss feeds when urdd is offline
+- changed transfers, admin/tasks, admin/jobs so that when URDD is offline buttons are removed for actions that require URDD online
+- Added option to download small messages as text files, if there is no attachment found
+- added option to run par2/rar again after download has completed
+- added search options to admin/tasks
+- fixed a pretty serious bug in checking connection time outs
+- fixed setID size to not truncate off 2 bytes
+- added a French language file
+- added option to login to select the language
+- upon first login the language is automatically set to the one selected in login
+
+
+
+1.0.2
+- Added advanced search, with search on rating, completeness, size and age
+- Customizable setnames
+- fix bug in multi selecting sets in browse page
+- fix bug in edit window, esp a nuisance in view_files
+- fix a couple of bugs in the rss sets pages
+- added nzb created marking to browse page
+- added option to not include interesting sets in the "remove all sets" button
+- added filter for autodownload on min/maxsetsize for groups and rss
+- added filter for autodownload on completeness for groups
+- fixed bug in purging rss sets
+- fixed a bug in autodownload that would delete sets twice under some conditions (both subject and extsetinfo match searchterm)
+- improved extsetinfo download performance
+- added support for merging sets
+- added option to keep interesting sets on expire
+- added option to limit updating a newsgroup by number of articles
+- added delete account button in preferences
+- more info on download path settings in the debug page
+- fixed bug in setting status of tasks after completing downloads
+- added sorting to users, tasks and jobs
+- fixed a bug in getfile with downloading non-image binaries
+- added some more checking on paths at startup 
+- fixed bug in generate sets on all groups
+- fixed some issues with installer
+- added download dir to installer, switch next page after installer naar usenetserver config
+- added basic usenet server autoconfiguration
+- added automatic login option
+- fixed small bug with queue status and downloads
+- fixed bug in setting completeness in transfers
+- made download batchsizes more random, so the downloads should by slightly smoother
+- some big speed improvements in socket/get_article/download code 
+- added aifd links to parse nfo
+- added previous/next buttons to browse pages
+- added restart option
+- changed run unrar even if par2 fails
+- fixed bug in purge, not setting postcount
+- fixed bug in messages with urls having multiple //
+- fixed bug in selecting an empty group in newsgroup overview
+- fixed small bug in viewfiles on directories beginning or ending with a space
+- added reload button to viewfiles
+
+
+1.0.1
+- Fix bug in newsgroup applying with no groups active
+- Fix bug in quick menu on rss feeds, showing nfo and img preview buttons
+- Fixed bug in postrm script for deb package
+- ajaxified admin/usenet_servers
+- ajaxified admin/jobs
+- ajaxified admin/users
+- ajaxified admin/buttons
+- ajaxified viewfiles
+- improved upload nzb looks
+- fixed problem with marking rss sets in preferences
+- fixed a bug in reading / using yydecode parameters
+- fixed a small issue in resetting config to defaults
+- added few more options to cleandb (now and number of days)
+- fixed a bug in update/expire/purge all rss feeds
+- fixed bug in adding new users
+- fixed a bug in browse page, where total counter and per page query are not in sync
+- fixed a bug in generating nzb files, where the size is not set
+- changed download statistics to actual downloaded size.
+- Imported NZB file stats now show the size of the NZB file, not its contents
+- fixed bug in unscheduling rss feeds upon unsubscribing through edit
+- added http authentication to updating RSS feeds
+- added commands/actions to jobs and tasks
+- parsing nfo files in preview, to generate ext set info
+- improved finding of .nfo and jpg files in sets for preview
+- fixed some minor bugs in urdd queueing --> previews should be 'snappier'
+- improved URL detection in .nfo files
+- fixed bug in expiring extsetinfo
+- added server load info to control
+- Added support for shift-click in browse set-pages, to toggle ranges
+- Improved the guess-extsetinfo usability, now doesn't require validation anymore
+- Added support for performing guess-extsetinfo over all sets in the basket
+- Made the lenght of the download name a setting
+- Improved resillience to memory exhaustion in get/send extset info
+- Fixed bug in queueing gensets and update at the same time
+
+
+1.0.0
+- Added support for NZB files from RSS feeds
+- Fixed bug in restoring paused queue items upon restart
+- Fixed bug in rescheduling downloads
+- Fixed ordering of periods
+- Fixed a small bug in parsing nzb files
+- Fixed a bug in creating nzb files
+- Fixed a bug in emailing download status
+- Added support of scripts running after a download is complete
+- Fixed bug in status screen
+- Fixed bug in version check display
+- Sped up status screen
+- Marking / unmarking sets in browse (groups and rss) should only update visible sets, instead of all sets
+- Made groups in transfers foldable
+- Improved some images (viz delete/purge, follow link)
+- Updated file type recognition for download files based on mime type
+- Fixed a bug in unscheduling data
+- Changed schedule restore code, so that delayed downloads are also continued upon restart
+- Fixed a bug in preview handling that occurs when all slots are in use
+- Added max size for previews (2MB)
+- Fixed menusize so that it is still usable on smaller screens
+- Fixed a bug in clean dir command
+- Made age after which temp files are removed a config option
+- Improved detection of running URDD by pidfile
+- More debug info in debug.php
+- Drastically improved speed of browse page
+- Added option to test which of the configured servers can be used (-T, --test)
+- Added option to test connection to URDland
+- Added option to disable get/sendsetinfo from command line
+- Improved some messages concerning common errors
+- Lots of small bugfixes here and there
+- Added quick preview to quickmenu in browse page
+- Fixed annoying popup message in viewfiles when backing to a sorted directory
+- Fixed the downloadarticles table from filling up endlessly
+- Removed ETA/dl speed from completed downloads
+- improved cleandb function (a lot ) - remove more stale data and runs as a separate thread
+
+
+0.6.2
+- Fixed bug decompressing zip files
+- Fixed bug in download size available error message
+- Fixed bug in preview occurring sometimes, giving an error message then showing the file anyway
+- Fixed bug in js.js that caused extset values with an & to be interpreted as HTTP data, breaking off the value
+- Fixed bug in ajax_showquickwindow that saves extset values into the database... it needed some escaping
+- Fixed bug in errormessage for getsetinfo in config
+- Cleaner code for preferences and config; uses one tpl now: settings.tpl
+- Added search option to view_files
+- Improved look of viewing images (inside URD web and images scaled if too large)
+- Fixed bug in unmark_all interesting on browse page
+- Fixed a couple of bugs in marking and unmarking code
+- Fixed selection in browse for hidden sets
+- Actually added unmark_all kill on browse page
+- Fixed bug in browse skipper, flag was missing from params
+- ETA/Progress in status and transfer are now the same
+- Added auto download option based on searchterms; if on block list or already dl'ed it isn't dl'ed again
+- Added Update-howto document
+- Fixed a problem with reposting forms in near_fatals with arrays posted
+- Fixed problems with submit forms and inputs name submit
+- Moved default values to separate file
+- Added nntp check connections option to admin config
+- Clean up some code wrt LIKE/REGEXP in queries and postgres/mysql incompatibilities
+- Auto insert missing prefs/config at urdd startup, resp showing prefs / config pages
+- Added login link to forgot password page
+- Fixed redirect problem to login page
+- Fixed problem in user registration pages
+- Fixed rights issue in viewfiles. Normal users could not access nzb dir
+- Fixed problem with setting incorrect values for schedules in admin/config
+- Improved creating directory structures at urdd startup and admin/config save
+- Updated valid TLDs in email addresses
+- Cleaned full names is user table of invalid characters
+- Fixed a minor issue with mailing status updates when changing user information now only sends when active state is changed
+- Fixed xss error in fatal_error page
+- More directories are created upon urdd startup
+- Fixed bug in handling files in spool directory
+- Added salted passwords to db interface
+- Fixed a bug in handling timed out connections to nntp servers
+- Ajaxified tasks
+- Added the possibility to modify download name in basket
+- Fixed a couple of bugs in status changes (dl would not appear cancelled if it was cancelled while pause)
+- Fixed a couple of bugs in cancelling tasks
+- Added option to limit db intensive tasks (eg gensets, optimise and make_NZB)
+- Fixed a bug in preview in case the total NNTP slots < sum of the nntp slots per server
+- Fixed a bug in running non-nntp threads when all nntp slots were full
+- Added pidfile in install dir
+- Improvements to guessing set info
+- Some security fixes (mostly obscure XSS stuff)
+- Added an update script (still in alpha)
+- Improved .deb scripts
+- Ajaxified actions in newsgroup page (fixes sorting problem too)
+
+
+0.6.1
+- Fixed bug in preempting code
+- Fixed small bug in decompressing
+- Fixed bug in group updating
+- Fixed a bug in thread management
+- Fixed a bug that prevents connecting to ssl servers
+- Added statistics page 
+- Split update command into 2 --> getting parts, generating sets. This frees the nntp thread earlier. Also did expire parts before generating binaries and sets, making smaller sets. Ultimately URD is getting faster
+- Implemented an alternate update function. Other one is selectable through config.php
+- Added uptime to admin/control
+- Fixed some problems with preview crashing URDD
+- Added min log level search to admin/log
+- offloaded adding articles to URDD instead of the webpage... browsepage is much faster/responsive now when adding large sets
+- Downloading of NZB files are handled by URDD now too, to the nzb/user directory
+- Added submenu to viewfiles for nzb, downloads and preview
+- Debug will show usenet servers even if urdd offline
+- Added spool directory for nzb files
+- Added nzb files to clean dir
+- Changed cleandir from inline to queued command
+- Added download directly from NZB to viewfiles for nzb files
+- Added postcount to group selection in browse page
+- Implemented blacklist searchterms
+- Capability to view restore hidden sets (eg when blacklist matches)
+- Fixed XSS bug in browse page
+- Added default name to extsetinfo
+- Fixed titles in many pages
+- Hid the password hash from the debug log entries
+- Changed annoying redirects in control page
+- Switched to SHA256 for password hashes
+- Ajaxified preview
+- Images redone for generic bars
+- Images redone for red/green/orange etc color indicators
+- Made parameters to most external progs configurable
+- Added option to URDD to disable check of nntp connections at startup
+- Added several levels of user experience to hide some preferences / config items
+- Fixed a bug in downloading when unrar/unpar was not activated
+- Added option to re-generate set info in ng page
+- Improved handling invalid timestamp in download action in browse page
+- Improved look & feel of the status window
+- Fixed bug in the communication with the urdland.com server that broke uploading extsetdata
+- Added eBooks as a binarytype for extsetinfo
+- Tweaked display of ETA time values
+- Improved look of the login page, also fixed the error message for invalid login attempts
+
+0.6.0
+- Fixed small bug in adding newsserver with a duplicate name
+- Added special ADODB select and insert functions
+- Added option to disable/enable sending mail messages
+- Added priority to usenet servers
+- Automatically connect to highest priority usenet server (the config option is now disabled)
+- Fixed a bug in getting usenet server information
+- Fixed a small bug in config with setting the cleandir schedules
+- Some rearrangements of the download code; added more  info in case of failures in unrar/par etc
+- Fixed a bug in unmarking sets as interesting
+- Added -u and -g options, so the user/group can be started from the cmd ln
+- Fixed bug in not reading the -l option
+- Fixed bug in reading some long options
+- Improved writing options help (urdd.sh -?);
+- Added user pref to set minimum set completeness
+- 7za supported as alternative to 7zr, rar as an alternative to unrar
+- Improved handling of XSRF (challenges)
+- Cleanup of usenet servers, adding enable/disable to usenetservers
+- Fixed small bug in newsgroups where daily schedules would first be run tomorrow
+- Added setting to set which page to go to by default, instead of just always browse
+- Added scheduling of cleandb to configuration
+- Added show servers command
+- Fixed getting mime type if mime_content_type() does not exist
+- Fix bug in setting status when delete_files is not checked
+- Added 7z as possible 7zip archive prog; prefer 7za over 7zr (plus small bugfix in installer for 7z)
+- Fix bug in unzipping 7z archives
+- Fix icon for flash files
+- Fix bug in checking par2 files
+- Added check in installer for valid username. Also excluded 'root' from any username
+- Option to download from more than one server at the same time (download/preview only)
+- Preview will automatically preemt a running thread if necessary in URDD
+- Added scheduling of downloads
+- Fixed minor problem in unparring - stderr msgs repressed
+- Fixed problem with queue ordering; newly added downloads are now added to the bottom of the list of items with the same priority
+- Fixed a bug in socket where an infinite loop would be created if the connection terminated before completion
+- Added cookie length for only a month
+- Logging in till the browser closes does not store the username / password in the cookie anymore (uses session)
+- removed unsupported databases from installer; db connect will also check if the db type is supported
+- Added postgres support to URD
+- Fixed many smaller bugs, typos etc
+- Set default download permissions to 644 (maybe less secure but gives less trouble with permission... real unix gurus will chose a better setup tho)
+- Improved handling of timeouts of socket functions
+- Added an install script for SUSE
+- Added % indicator to status bar
+- Improved priority handling in urdd
+- Added move up/down command to move commands up/down the queue
+- Fixed some stuff dealing with the db download status of command, especially when restoring actions
+- Added direct downloading of an NZB file from preview
+- Fixed small security bug where all files on the harddisk could be loaded as an nzb file. Restricted that to either exteral urls or a path within $dlpath
+- Fixed a small bug about default sort order in log viewer
+- Added purge all newsgroups to control page
+- Added option to prevent downloading files as a tarball
+- Added option to specify the maximum download size in view files
+- Added interesting filter to RSS too
+- In extended set info, the .nfo file is always at the top
+- Re-did the design of the browse page by adding a 'quick menu' feature
+- Added a 'view nfo file' button to the quickmenu
+- Added a 'quick display' feature to display in-page data, to be used with the quick menu
+- The search buttons are now accessible through the quick menu
+- Editing and showing set information is done via the quick menu / display
+- For sets with a .nfo file, the quickmenu has a 'show nfo' button
+- Updated all icon images to 16x16 size, and the preview loading image
+- Only admins may delete files now in view_files
+- Added username to downloads overview
+- Improved handling of NFO files
+- URLs in NFO files are hyperlinked
+- Added the GPL3 licence to the menu as required
+- Optimised generating sets algorithm thanx to marcus
+- Made socket timeout a config setting
+- Made separate dl / preview directory per user, and access limits
+- Added last active information to user
+- Fixed bug in checking values in admin/config
+- Added capability to extract mime encoded files... maybe a bit slow tho, but usually small files anyway
+- Significantly improved performance in IE by using a bigger backgroundimage
+- 'Mark interesting' image now toggles in browse page
+
+0.5.5
+- Fixed bug in check version
+- Added manual check version to the control page
+- Fixed bug in parsenzb
+- Fixed bug in log viewer sort order on date
+- Fixed bug in log viewer where clicking on the header gives a js error
+- Fixed bug in update headers where urdd thread would crash with memory overflow
+- Fixed bug in subscribe if the group or part tables already exist
+- Fixed bug: max_urddthreads could not be set anymore. 
+- Some code cleanup
+- Fixed a bug where updating a non-existing group would be paused
+- Fixed a small bug trying to purge a non-subscribed group
+- Added "keep broken" switch to rar command
+- Fixed bug in cleandir; added cleandir option to admin/control
+- Fixed a bug in usenet_servers that occurs sometimes with a incorrect query
+- Added unarj as an alternative to arj in the installer
+- Fixed bugs where really, really large ages would be displayed in the sets
+- Fixed bug where download complete messages are not set for previews anymore
+- Added a central server interface for Extended SetInfo (extsetinfo) via XML RPC
+- Added functions to download from and upload to the central server
+- Added URDland.com forum credential fields to configuration, required for communication with the central server interface
+- Added scheduling of get/send info
+- Extended SetInfo is now used for determining download names, searching, and such
+- Cleaned up the logging output by moving all the spammy stuff to DEBUG level
+- Downloaded files will now be moved to the done directory after URDD is entirely done with it and not after the download is complete, but unpar etc must still be run
+- Fixed bug with preview directing to a not existing /tmp folder instead of the existing /preview one
+- Fixed bug in unsetting schedules in admin/config
+- Fixed bug in urdd command line options wrt -r
+- Fixed bug in unrar_unpar, crashing when no argument is supplied
+- Fixed bug where ^C in telnet would block urdd
+- Fixed bugs in generating NZB file
+- Fixed bug in getfile for large files (> ~128MB == mem limit)
+- Fixed bug in optimise-database function that stopped it from working
+- Fixed bug in opening logfile when it was owned by a different user
+- Fixed a bug in usenet servers where it wouldn't work if a language other than English was used
+- Fixed a bug in users where it wouldn't work if a language other than English was used
+- Fixed small bug in logging code for create Download, if the directory could not be created
+- Fixed bug where mail messages could not be send
+
+
+0.5.4
+- Fixed a couple of small bugs in URDD
+- Made permissions in config language independent
+- Changes to the scheduling code in config and newsgroups
+- Fixed bug in selecting the right scheduling period in newsgroups and config
+- Fixed a critical bug in the download code
+- Re-done the browse sets page (uses more ajax stuff)
+- Implemented 'extended set info', where more information over a set can be specified
+- Small bugfixes related to displaying 'fatal errors' in ajax code
+- Menu is hidden when user hasn't logged in yet
+- Fixed a bug in logging in
+- Forgot password option
+- Added login menu button to register
+- Clean up of old files
+- Fixed a bug in handling nntp responses causing to crash a download thread
+
+
+0.5.3
+- Improve rename in view files
+- Add possible IP check to bind session to IP
+- Groups get selected from /etc/groups instead of free form text field, in config
+- Bugfix in newsgroups where time 0:00 would not be shown
+- Some code cleanup and optimisations
+- Installer improvements: find more tools, autoselect the URL and urdd.sh locatios
+- Added marking the newests sets since previous login
+- IPv6 support improved and tested, for both URDD and newsgroup access
+- Speed up in update newsgroups
+- Fixed a minor bug in downloading articles counter
+- Minor speed up in downloading
+- Improved downloading newsgroup list (speed up and memory usage limitation)
+- Fixed bug in installer
+- Changed usenet server configuration, for future support of multi server support
+- Some small bug fixes in URDD
+- Some fixes in urdd_client (added status, version)
+- Added buttons in browse to the bottom
+- Enabling / disabling of the urdd scheduler added to config screen
+- Fixes to the debug page
+
+
+
+0.5.2
+- Bug fix in installer
+- Default google search button fixed
+- Added confirm msg to "delete" actions for buttons, users, and files
+- Fix newsgroup - subscribed text
+- fix default values for many tools in installer
+- fix page skipper in view files and newsgroups
+- Configurable number of search buttons possible
+
+
+0.5.1
+- Bug fix in setting directory permissions
+- Update buttons look in default template
+- New logo
+- Logfile line count bug fix
+- Fixed a nasty bug in installer
+- Fixed a couple of bugs in parsing NZB files
+- Implemented RSS (2.0) support
+- Added new buttons
+- Added debug.php to show config information
+- Improved XSRF protection vs usability
+- A couple of minor bugs here and there
+
+
+
+0.5
+
+- Completely new interface design
+- Template based interface
+- Multiple language support
+- Newsgroup filtering in browse page based on minimal set size per and subscription to a newsgroup per user
+- Improved filtering of files
+- Dynamic setting of log level in URDD
+- Support for more archive formats: zip, arj, 7z, ace
+- Support for automatic concatenation of split files
+- Compressed downloading of a folder or file
+- Better log file viewer
+- Improved search button management
+- Uploading of an NZB file
+- Setting of permissions to downloaded files
+- Setting of group to downloaded filesa
+- Better support for remaning downloaded files 
