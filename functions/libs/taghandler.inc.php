@@ -47,10 +47,9 @@ class TagHandler
                 'allowedchildren' => array(NULL),
                 'handler' => array('TagHandler', 'handle_italic') ),
             'img' =>
-            array('closetags' => array(NULL),
-                'allowedchildren' => array(''),
-                'handler' => array('TagHandler', 'handle_img') )
-
+            array('closetags' => array('img'),
+                'allowedchildren' => array(NULL),
+                'handler' => array('TagHandler', 'handle_empty') )
             ),
             'q'	=>
             array('quote' =>
@@ -174,13 +173,12 @@ class TagHandler
             } else {
                 $origAppend = $contents;
                 $content = TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]];
-                if (substr($content, 0, 7) != 'http://' && substr($content, 0,8) != 'https://') {
+                if (substr($content, 0, 7) != 'http://' && substr($content, 0, 8) != 'https://') {
                     return TagHandler::handle_empty($params, $contents);
                 }
             }
         }
-
-        return array('prepend' => '<span class="buttonlike" onclick="javascript:jump(\'' . $content . '\', true );">' . $content . '</span>',
+        return array('prepend' => '<span class="buttonlike" onclick="javascript:jump(\'' . $content . '\', true );">XXX' . $content . 'YYY</span>',
             'content' => $origAppend,
             'append' => '');
     }

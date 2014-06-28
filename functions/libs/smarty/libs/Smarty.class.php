@@ -2,7 +2,7 @@
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        Smarty.class.php
- * SVN:         $Id: Smarty.class.php 4742 2013-06-17 13:30:49Z Uwe.Tews@googlemail.com $
+ * SVN:         $Id: Smarty.class.php 4828 2014-04-04 23:38:36Z Uwe.Tews@googlemail.com $
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,7 +70,7 @@ if (!defined('SMARTY_RESOURCE_DATE_FORMAT')) {
     /**
      * @deprecated in favor of Smarty::$_DATE_FORMAT
      */
-    define('SMARTY_RESOURCE_DATE_FORMAT', '%b %e, %Y');
+    define('SMARTY_RESOURCE_DATE_FORMAT', '%b %-e, %Y');
 }
 
 /**
@@ -113,7 +113,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * smarty version
      */
-    const SMARTY_VERSION = 'Smarty-3.1.14';
+    const SMARTY_VERSION = 'Smarty-3.1.18';
 
     /**
      * define variable scopes
@@ -299,6 +299,11 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @var boolean
      */
     public $merge_compiled_includes = false;
+    /**
+     * template inheritance merge compiled includes
+     * @var boolean
+     */    
+    public $inheritance_merge_compiled_includes = true;
     /**
      * cache lifetime in seconds
      * @var integer
@@ -830,7 +835,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     {
         $this->template_dir = array();
         foreach ((array) $template_dir as $k => $v) {
-            $this->template_dir[$k] = rtrim($v, '/\\') . DS;
+            $this->template_dir[$k] = str_replace(array('//','\\\\'), DS, rtrim($v, '/\\')) . DS;
         }
 
         $this->joined_template_dir = join(DIRECTORY_SEPARATOR, $this->template_dir);
@@ -853,20 +858,24 @@ class Smarty extends Smarty_Internal_TemplateBase
 
         if (is_array($template_dir)) {
             foreach ($template_dir as $k => $v) {
+                $v = str_replace(array('//','\\\\'), DS, rtrim($v, '/\\')) . DS;
                 if (is_int($k)) {
                     // indexes are not merged but appended
-                    $this->template_dir[] = rtrim($v, '/\\') . DS;
+                    $this->template_dir[] = $v;
                 } else {
                     // string indexes are overridden
-                    $this->template_dir[$k] = rtrim($v, '/\\') . DS;
+                    $this->template_dir[$k] = $v;
                 }
             }
-        } elseif ($key !== null) {
-            // override directory at specified index
-            $this->template_dir[$key] = rtrim($template_dir, '/\\') . DS;
-        } else {
-            // append new directory
-            $this->template_dir[] = rtrim($template_dir, '/\\') . DS;
+        } else {           
+            $v = str_replace(array('//','\\\\'), DS, rtrim($template_dir, '/\\')) . DS;
+            if ($key !== null) {
+                // override directory at specified index
+                $this->template_dir[$key] = $v;
+                } else {
+                // append new directory
+                $this->template_dir[] = $v;
+                }
         }
         $this->joined_template_dir = join(DIRECTORY_SEPARATOR, $this->template_dir);
 
@@ -898,7 +907,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     {
         $this->config_dir = array();
         foreach ((array) $config_dir as $k => $v) {
-            $this->config_dir[$k] = rtrim($v, '/\\') . DS;
+            $this->config_dir[$k] = str_replace(array('//','\\\\'), DS, rtrim($v, '/\\')) . DS;
         }
 
         $this->joined_config_dir = join(DIRECTORY_SEPARATOR, $this->config_dir);
@@ -920,20 +929,24 @@ class Smarty extends Smarty_Internal_TemplateBase
 
         if (is_array($config_dir)) {
             foreach ($config_dir as $k => $v) {
+            $v = str_replace(array('//','\\\\'), DS, rtrim($v, '/\\')) . DS;
                 if (is_int($k)) {
                     // indexes are not merged but appended
-                    $this->config_dir[] = rtrim($v, '/\\') . DS;
+                    $this->config_dir[] = $v;
                 } else {
                     // string indexes are overridden
-                    $this->config_dir[$k] = rtrim($v, '/\\') . DS;
+                    $this->config_dir[$k] = $v;
                 }
             }
-        } elseif ($key !== null) {
-            // override directory at specified index
-            $this->config_dir[$key] = rtrim($config_dir, '/\\') . DS;
         } else {
-            // append new directory
-            $this->config_dir[] = rtrim($config_dir, '/\\') . DS;
+            $v = str_replace(array('//','\\\\'), DS, rtrim($config_dir, '/\\')) . DS;
+            if ($key !== null) {
+                // override directory at specified index
+                $this->config_dir[$key] = rtrim($v, '/\\') . DS;
+                } else {
+                // append new directory
+                $this->config_dir[] = rtrim($v, '/\\') . DS;
+                }
         }
 
         $this->joined_config_dir = join(DIRECTORY_SEPARATOR, $this->config_dir);
@@ -1510,10 +1523,11 @@ if (Smarty::$_CHARSET !== 'UTF-8') {
  */
 class SmartyException extends Exception
 {
-    public static $escape = true;
-    public function __construct($message)
+    public static $escape = false;
+
+    public function __toString()
     {
-        $this->message = self::$escape ? htmlentities($message) : $message;
+        return ' --> Smarty: ' . (self::$escape ? htmlentities($this->message) : $this->message)  . ' <-- ';
     }
 }
 
@@ -1523,6 +1537,30 @@ class SmartyException extends Exception
  */
 class SmartyCompilerException extends SmartyException
 {
+    public function __toString()
+    {
+        return ' --> Smarty Compiler: ' . $this->message . ' <-- ';
+    }
+    /**
+     * The line number of the template error
+     * @type int|null
+     */
+    public $line = null;
+    /**
+     * The template source snippet relating to the error
+     * @type string|null
+     */
+    public $source = null;
+    /**
+     * The raw text of the error message
+     * @type string|null
+     */
+    public $desc = null;
+    /**
+     * The resource identifier or template name
+     * @type string|null
+     */
+    public $template = null;
 }
 
 /**
@@ -1531,7 +1569,7 @@ class SmartyCompilerException extends SmartyException
 function smartyAutoload($class)
 {
     $_class = strtolower($class);
-    $_classes = array(
+    static $_classes = array(
         'smarty_config_source' => true,
         'smarty_config_compiled' => true,
         'smarty_security' => true,

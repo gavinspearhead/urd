@@ -122,17 +122,18 @@ class socket
      */
     public function connect($addr, $port = 0, $persistent = FALSE, $timeout = DEFAULT_SOCKET_TIMEOUT, $options = NULL)
     {
-        assert(is_numeric($port) && (is_numeric($timeout)||is_null($timeout)) && is_bool($persistent));
+        assert(is_numeric($port) && (is_numeric($timeout) || is_null($timeout)) && is_bool($persistent));
         $this->force_disconnect();
-        if (!$addr)
+        if (!$addr) {
             throw new exception('$addr cannot be empty');
+        }
 
         $this->addr = @gethostbyname($addr); // is this needed as fsockopen does this too;
         if (!is_numeric($port) || $port > 65535 || $port < 1) {
-            throw new exception ('port must be between 1 and 65535');
+            throw new exception ('Port must be between 1 and 65535');
         }
         $this->port = $port;
-        $this->persistent = $persistent === TRUE;
+        $this->persistent = ($persistent === TRUE);
         $this->timeout = $timeout;
 
         $openfunc = ($this->persistent === TRUE)? 'pfsockopen' : 'fsockopen';
@@ -155,11 +156,11 @@ class socket
 
         }
         if ($fp === FALSE) {
-            throw new exception_nntp_connect($errstr . ' ('. $errno. ')');
+            throw new exception_nntp_connect($errstr . ' (' . $errno . ')');
         }
         $this->fp = $fp;
 
-        return $this->setBlocking($this->blocking);
+        return $this->set_blocking($this->blocking);
     }
 
     /**
@@ -187,7 +188,7 @@ class socket
      * Find out if the socket is in blocking mode.
      * @return boolean The current blocking mode.
      */
-    public function isBlocking()
+    public function is_blocking()
     {
         return $this->blocking;
     }
@@ -201,8 +202,9 @@ class socket
      * @param  boolean $mode True for blocking sockets, false for nonblocking.
      * @return mixed   true on success or an error object otherwise
      */
-    public function setBlocking($mode)
+    public function set_blocking($mode)
     {
+        assert(is_bool($mode));
         $this->check_connected();
 
         $this->blocking = $mode;
@@ -219,7 +221,7 @@ class socket
      * @param  integer $microseconds Microseconds.
      * @return mixed   true on success or an error object otherwise
      */
-    public function setTimeout($seconds, $microseconds=0)
+    public function set_timeout($seconds, $microseconds=0)
     {
         assert(is_numeric($seconds) && is_numeric($microseconds));
         $this->check_connected();
@@ -239,18 +241,18 @@ class socket
     public function check_readable()
     {
         if (!$this->is_readable()) {
-            echo_debug('Timeout occurred', DEBUG_MAIN);
+            echo_debug('Read timeout occurred', DEBUG_MAIN);
             $this->force_disconnect();
-            throw new exception_nntp_connect('Timeout occurred');
+            throw new exception_nntp_connect('Read timeout occurred');
         }
     }
 
     public function check_writeable()
     {
         if (!$this->is_writeable()) {
-            echo_debug('Timeout occurred', DEBUG_MAIN);
+            echo_debug('Write timeout occurred', DEBUG_MAIN);
             $this->force_disconnect();
-            throw new exception_nntp_connect('Timeout occurred');
+            throw new exception_nntp_connect('Write timeout occurred');
         }
     }
     protected function is_readable()
@@ -279,7 +281,7 @@ class socket
         $start_time = time();
         while (1) {
             $null = NULL;
-            $r = array ($this->fp);
+            $r = array($this->fp);
             $rv = stream_select($r, $null, $null, $timeout);
             if ($rv === FALSE) {
                 $timeout = max(0, $timeout - (time() - $start_time));
@@ -314,8 +316,8 @@ class socket
         $start_time = time();
         while (1) {
             $null = NULL;
-            $w = array ($this->fp);
-            $rv = stream_select($null, $w, $null, $this->timeout);
+            $w = array($this->fp);
+            $rv = stream_select($null, $w, $null, $timeout);
             if ($rv === FALSE) {
                 $timeout = max(0, $timeout - (time() - $start_time));
                 continue;
@@ -342,7 +344,7 @@ class socket
      * @param  integer $size Write buffer size.
      * @return mixed   on success or an exception thrown object otherwise
      */
-    public function setWriteBuffer($size)
+    public function set_write_buffer($size)
     {
         assert(is_numeric($size));
         $this->check_connected();
@@ -367,13 +369,14 @@ class socket
      *
      * @return mixed Array containing information about existing socket resource or an error object otherwise
      */
-    public function getStatus()
+    public function get_status()
     {
         $this->check_connected();
 
         return stream_get_meta_data($this->fp);
     }
 
+    
     /**
      * Get a specified line of data
      *
@@ -389,12 +392,13 @@ class socket
     }
     public function gets($size)
     {
+        assert(is_numeric($size));
         $this->check_connected();
         $this->check_readable();
 
         return fgets($this->fp, $size);
     }
-
+        
     /**
      * Read a specified amount of data. This is guaranteed to return,
      * and has the added benefit of getting everything in one fread()
@@ -407,11 +411,13 @@ class socket
      */
     public function read($size)
     {
+        assert(is_numeric($size));
         $this->check_connected();
         $this->check_readable();
 
-        return @fread($this->fp, $size);
+        return fread($this->fp, $size);
     }
+
 
     /**
      * Write a specified amount of data.
@@ -429,6 +435,7 @@ class socket
             $blocksize = 1024;
         }
 
+        assert(is_numeric($blocksize));
         $pos = 0;
         $size = strlen($data);
 
@@ -449,12 +456,12 @@ class socket
      *
      * @return mixed fputs result, or an error
      */
-    public function writeLine($data)
+    public function write_line($data)
     {
         $this->check_connected();
 
         if ($this->timeout !== NULL)
-        $this->setTimeout($this->timeout);
+        $this->set_timeout($this->timeout);
         $this->check_writeable();
         $rv = @fwrite($this->fp, $data . "\r\n");
         if ($this->has_timedout()) {
@@ -482,7 +489,7 @@ class socket
      * @return 1 byte of data from the socket, or a exception thrown if
      *         not connected.
      */
-    public function readByte()
+    public function read_byte()
     {
         $this->check_readable();
         $buf = @fread($this->fp, 1);
@@ -499,7 +506,7 @@ class socket
      * @return 1 word of data from the socket, or a exception thrown if
      *         not connected.
      */
-    public function readWord()
+    public function read_word()
     {
         $this->check_readable();
         $buf = @fread($this->fp, 2);
@@ -516,7 +523,7 @@ class socket
      * @return integer 1 int of data from the socket, or a exception thrown if
      *                  not connected.
      */
-    public function readInt()
+    public function read_int()
     {
         $this->check_readable();
         $buf = @fread($this->fp, 4);
@@ -533,7 +540,7 @@ class socket
      * @return Dot formated string, or a exception thrown if
      *         not connected.
      */
-    public function readIPAddress()
+    public function read_ipaddress()
     {
         $this->check_readable();
         $buf = @fread($this->fp, 4);
@@ -541,7 +548,7 @@ class socket
             return FALSE;
         }
 
-        return sprintf("%d.%d.%d.%d", ord($buf[0]), ord($buf[1]), ord($buf[2]), ord($buf[3]));
+        return sprintf('%d.%d.%d.%d', ord($buf[0]), ord($buf[1]), ord($buf[2]), ord($buf[3]));
     }
 
     /**
@@ -552,7 +559,7 @@ class socket
      *         newline, or until the end of the socket, or a exception thrown if
      *         not connected.
      */
-    public function readLine()
+    public function read_line()
     {
         $this->check_connected();
         if (feof($this->fp)) {
@@ -571,7 +578,7 @@ class socket
             if (substr_compare($line, "\n", -1) == 0) {
                 return rtrim($line, "\r\n");
             }
-            if (($this->timeout !== NULL) &&  $this->has_timedout()) {
+            if (($this->timeout !== NULL) && $this->has_timedout()) {
                 return FALSE;
             }
         }
@@ -590,7 +597,7 @@ class socket
      * @return string All data until the socket closes, or a exception thrown if
      *                 not connected.
      */
-    public function readAll()
+    public function read_all()
     {
         $this->check_connected();
 
@@ -619,6 +626,7 @@ class socket
      */
     public function select($state, $tv_sec, $tv_usec = 0)
     {
+        assert(is_numeric($tv_sec) && is_numeric($tv_usec) && is_numeric($state) && $state > 0);
         $this->check_connected();
 
         $read = $write = $except = NULL;
@@ -661,7 +669,7 @@ class socket
      *         user should try again (non-blocking sockets only). A exception thrown object
      *         is returned if the socket is not connected
      */
-    public function enableCrypto($enabled, $type)
+    public function enable_crypto($enabled, $type)
     {
         if (extension_loaded('openssl')) {
             $this->check_connected();

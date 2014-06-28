@@ -556,7 +556,7 @@ class Crypt_Hash
     public function _sha512($m)
     {
         if (!class_exists('Math_BigInteger')) {
-            require_once 'Math/BigInteger.php';
+            require_once 'bigInteger.php';
         }
 
         static $init384, $init512, $k;
@@ -798,7 +798,7 @@ class Crypt_Hash
         $result = 0;
         $arguments = func_get_args();
         foreach ($arguments as $argument) {
-            $result+= $argument < 0 ? ($argument & 0x7FFFFFFF) + 0x80000000 : $argument;
+            $result += $argument < 0 ? ($argument & 0x7FFFFFFF) + 0x80000000 : $argument;
         }
 
         return fmod($result, $mod);

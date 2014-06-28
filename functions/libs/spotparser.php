@@ -33,14 +33,12 @@ require_once "$pathspf/spot_signing.php";
 
 class spotparser
 {
-    public function parseFull($xmlStr)
+    public function parse_full($xmlStr)
     {
         # Gebruik een spot template zodat we altijd de velden hebben die we willen
         $tpl_spot = array(
             'category' => '',
-    //        'sabnzbdurl' => '',
             'messageid' => '',
-    //      'searchurl' => '',
             'description' => '',
             'sub' => '',
             'size' => '',
@@ -51,13 +49,13 @@ class spotparser
             'key-id' => '',
             'spotid'=>'',
             'url' => '',
-          //  'image' => '',
             'subcatlist' => array(),
             'subcata' => '',
             'subcatb' => '',
             'subcatc' => '',
             'subcatd' => '',
             'subcatz' => '',
+            'subcat_count' => '',
             'imageid' => '',
             'spotter_id'=> '',
         );
@@ -88,11 +86,11 @@ class spotparser
         } else {
             $tpl_spot['image'] = Array(
                'height' => (string) $xml->Image['Height'],
-               'width' => (string) $xml->Image['Width']
+               'width'  => (string) $xml->Image['Width']
             );
             foreach ($xml->xpath('/Spotnet/Posting/Image/Segment') as $seg) {
             # Make sure the messageid's are valid so we do not throw an NNTP error
-                if (!$this->validMessageId((string) $seg)) {
+                if (!$this->valid_message_id((string) $seg)) {
                     $tpl_spot['image']['segment'] = array();
                     break;
                 } else {
@@ -133,120 +131,31 @@ class spotparser
                 $subCatVal = strtolower($tmpMatches[2]) . ((int) $tmpMatches[3]);
                 $tpl_spot['subcatlist'][] = $subCatVal;
                 $tpl_spot['subcat' . $subCatVal[0]] .= $subCatVal . '|';
+                $tpl_spot['subcat_count'] ++;
             }
         }
         if (empty($tpl_spot['subcatz'])) {
             $tpl_spot['subcatz'] = SpotCategories::createSubcatZ($tpl_spot['category'], $tpl_spot['subcata'] . $tpl_spot['subcatb'] . $tpl_spot['subcatd']);
-        } # if
+        } 
 
         return $tpl_spot;
     }
 
-    private static function fixPadding($strInput)
+    private static function fix_padding($strInput)
     {
-        while ((strlen($strInput) % 4) != 0) {
-            $strInput .= '=';
-        }
+       return $strInput . str_repeat('=', (4 - (strlen($strInput) %4 )) %4);
+    }
+
+    public static function unspecial_string($strInput)
+    {
+        $strInput = self::fix_padding($strInput);
+        $strInput = str_replace(array('-s', '-p'), array('/', '+'), $strInput);
 
         return $strInput;
     }
 
-    public static function unspecialString($strInput)
+    private function valid_message_id($messageId)
     {
-        $strInput = self::fixPadding($strInput);
-        $strInput = str_replace('-s', '/', $strInput);
-        $strInput = str_replace('-p', '+', $strInput);
-
-        return $strInput;
+         return (strpos($messageId, '<') === FALSE) && (strpos($messageId, '>') === FALSE);
     }
-
-
-    private function splitBySizEx($strInput, $iSize)
-    {
-        $length = strlen($strInput);
-        $index = 0;
-        $tmp = array();
-
-        for ($i = 0; ($i + $iSize) <= ($length + $iSize); $i += $iSize) {
-            $tmp[$index] = substr($strInput, $i, $iSize);
-            $index++;
-        }
-
-        return $tmp;
-    }
-
-    private function validMessageId($messageId)
-    {
-        $invalidChars = '<>';
-
-        $msgIdLen = strlen($messageId);
-        for ($i = 0; $i < $msgIdLen; $i++) {
-            if (strpos($invalidChars, $messageId[$i]) !== FALSE) {
-                return FALSE;
-            }
-        }
-
-        return TRUE;
-    } # validMessageId
-
-    public function parseEncodedWord($inputStr)
-    {
-        $builder = '';
-
-        if (substr($inputStr, 0, 1) !== '=') {
-            return $inputStr;
-        }
-
-        if (substr($inputStr, strlen($inputStr) - 2) !== '?=') {
-            return $inputStr;
-        }
-
-        $name = substr($inputStr, 2, strpos($inputStr, '?', 2) - 2);
-        if (strtoupper($name) == 'UTF8') {
-            $name = 'UTF-8';
-        }
-
-        $c = $inputStr[strlen($name) + 3];
-        $startIndex = strlen($name) + 5;
-
-        switch (strtolower($c)) {
-        case 'q' : {
-            while ($startIndex < strlen($input)) {
-                $ch2 = $strInput[$startIndex];
-                $chArray = null;
-
-                switch ($ch2) {
-                case '=': {
-                    if ($startIndex >= (strlen($input) - 2)) {
-                        $chArray = substr($strInput, $startIndex + 1, 2);
-                    }
-                    if ($chArray == null) {
-                        //								// 'Untested code path,'
-                        $builder .= $chArray . chr(10);
-                        $startIndex += 3;
-                    }
-                    continue;
-                }
-
-                case '?': {
-                    if ($strInput[$startIndex + 1] == '=') {
-                        $startIndex += 2;
-                    }
-                    continue;
-                }
-                }
-                $builder .= $ch2;
-                $startIndex++;
-            }
-            break;
-        }
-        case 'b' : {
-            $builder .= base64_decode(substr($inputStr, $startIndex, ((strlen($inputStr) - $startIndex) - 2)));
-            break;
-        }
-        }
-
-        return $builder;
-    }
-
-} # class Spot
+}

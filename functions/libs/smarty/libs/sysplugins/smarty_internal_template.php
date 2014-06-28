@@ -167,15 +167,13 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         if (!$this->source->recompiled) {
             $this->properties['file_dependency'] = array();
             if ($this->source->components) {
+                // for the extends resource the compiler will fill it
                 // uses real resource for file dependency
-                $source = end($this->source->components);
-                $this->properties['file_dependency'][$this->source->uid] = array($this->source->filepath, $this->source->timestamp, $source->type);
+                // $source = end($this->source->components);
+                // $this->properties['file_dependency'][$this->source->uid] = array($this->source->filepath, $this->source->timestamp, $source->type);
             } else {
                 $this->properties['file_dependency'][$this->source->uid] = array($this->source->filepath, $this->source->timestamp, $this->source->type);
             }
-        }
-        if ($this->smarty->debugging) {
-            Smarty_Internal_Debug::start_compile($this);
         }
         // compile locking
         if ($this->smarty->compile_locking && !$this->source->recompiled) {
@@ -203,9 +201,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             $this->compiled->exists = true;
             $this->compiled->isCompiled = true;
         }
-        if ($this->smarty->debugging) {
-            Smarty_Internal_Debug::end_compile($this);
-        }
         // release compiler object to free memory
         unset($this->compiler);
     }
@@ -222,7 +217,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             return false;
         }
         $this->properties['cache_lifetime'] = $this->cache_lifetime;
-        $this->properties['unifunc'] = 'content_' . str_replace('.', '_', uniqid('', true));
+        $this->properties['unifunc'] = 'content_' . str_replace(array('.',','), '_', uniqid('', true));
         $content = $this->createTemplateCodeFrame($content, true);
         $_smarty_tpl = $this;
         eval("?>" . $content);
@@ -248,7 +243,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     {
         // already in template cache?
         if ($this->smarty->allow_ambiguous_resources) {
-            $_templateId = Smarty_Resource::getUniqueTemplateName($this->smarty, $template) . $cache_id . $compile_id;
+            $_templateId = Smarty_Resource::getUniqueTemplateName($this, $template) . $cache_id . $compile_id;
         } else {
             $_templateId = $this->smarty->joined_template_dir . '#' . $template . $cache_id . $compile_id;
         }
@@ -404,7 +399,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         }
         $this->properties['version'] = Smarty::SMARTY_VERSION;
         if (!isset($this->properties['unifunc'])) {
-            $this->properties['unifunc'] = 'content_' . str_replace('.', '_', uniqid('', true));
+            $this->properties['unifunc'] = 'content_' . str_replace(array('.',','), '_', uniqid('', true));
         }
         if (!$this->source->recompiled) {
             $output .= "\$_valid = \$_smarty_tpl->decodeProperties(" . var_export($this->properties, true) . ',' . ($cache ? 'true' : 'false') . "); /*/%%SmartyHeaderCode%%*/?>\n";
@@ -413,7 +408,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         $output .= $plugins_string;
         $output .= $content;
         if (!$this->source->recompiled) {
-            $output .= '<?php }} ?>';
+            $output .= "<?php }} ?>\n";
         }
 
         return $output;

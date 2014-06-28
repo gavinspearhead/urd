@@ -53,8 +53,6 @@ class SpotSigning
          * extract($rsa->createKey());
          * $spotSigning = new SpotSigning();
          * $x = $spotSigning->signMessage($privatekey, 'testmessage');
-         * var_dump($x);
-         * var_dump($spotSigning->checkRsaSignature('testmessage', $x['signature'], $x['publickey']));
          *
          */
 
@@ -77,7 +75,7 @@ class SpotSigning
      */
     public function pubkeyToXml($pubkey)
     {
-        return "<RSAKeyValue><Modulus>" . $pubkey['n'] . '</Modulus><Exponent>' . $pubkey['e'] . '</Exponent></RSAKeyValue>';
+        return '<RSAKeyValue><Modulus>' . $pubkey['n'] . '</Modulus><Exponent>' . $pubkey['e'] . '</Exponent></RSAKeyValue>';
     }
 
     /*
@@ -99,7 +97,7 @@ class SpotSigning
     public function verifyFullSpot($spot)
     {
         if ((empty($spot['user-signature'])) || (empty($spot['user-key']))) {
-            return false;
+            return FALSE;
         }
 
         $verified = $this->checkRsaSignature('<' . $spot['messageid'] . '>', $spot['user-signature'], $spot['user-key']);
@@ -117,10 +115,10 @@ class SpotSigning
     {
         $verified = FALSE;
         if ((!empty($comment['user-signature'])) && (!empty($comment['user-key']))) {
-            $verified = $this->checkRsaSignature('<' . $comment['messageid'] .  '>', $comment['user-signature'], $comment['user-key']);
+            $verified = $this->checkRsaSignature('<' . $comment['messageid'] . '>', $comment['user-signature'], $comment['user-key']);
             if (!$verified) {
                 $verified = $this->checkRsaSignature(
-                    '<' . $comment['messageid'] .  '>' .  implode("\r\n", $comment['body']) . "\r\n" . $comment['from'],
+                    '<' . $comment['messageid'] . '>' . implode("\r\n", $comment['body']) . "\r\n" . $comment['from'],
                     $comment['user-signature'],
                     $comment['user-key']);
             }
@@ -142,7 +140,7 @@ class SpotSigning
     /*
      * 'Bereken' de userid aan de hand van z'n publickey
      */
-    public function calculateUserid($userKey)
+    public function calculate_userid($userKey)
     {
         $userSignCrc = crc32(base64_decode($userKey));
 

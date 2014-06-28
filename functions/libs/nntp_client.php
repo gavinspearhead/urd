@@ -78,10 +78,7 @@ class NNTP_Client extends Base_NNTP_Client
      * @var array
      */
     private $_selectedGroupSummary;
-
-    /** * @var array */
     private $_overviewFormatCache;
-
     private $_compressed_headers;
 
     public function __construct()
@@ -93,6 +90,7 @@ class NNTP_Client extends Base_NNTP_Client
     }
     public function __destruct()
     {
+        echo_debug_function(DEBUG_WORKER, __FUNCTION__);
         $this->disconnect();
         parent::__destruct();
     }
@@ -124,7 +122,7 @@ class NNTP_Client extends Base_NNTP_Client
     {
         $msg = '';
         try {
-            parent::cmdQuit($msg);
+            parent::cmd_quit($msg);
         } catch (exception $e) {
             // do nothing
         }
@@ -134,7 +132,7 @@ class NNTP_Client extends Base_NNTP_Client
 
     public function set_compressed_headers($on)
     {
-        $this->_compressed_headers = ($on?TRUE:FALSE);
+        $this->_compressed_headers = ($on ? TRUE : FALSE);
     }
 
     /**
@@ -158,7 +156,7 @@ class NNTP_Client extends Base_NNTP_Client
             throw new exception('No username supplied', ERR_INVALID_USERNAME);
         }
 
-        return $this->cmdAuthinfo($user, $pass);
+        return $this->cmd_authinfo($user, $pass);
     }
 
     /**
@@ -182,13 +180,13 @@ class NNTP_Client extends Base_NNTP_Client
     public function select_group($group, $articles = FALSE)
     {
         // Select group (even if $articles is set, since many servers does not select groups when the listgroup command is run)
-        $summary = $this->cmdGroup($group);
+        $summary = $this->cmd_group($group);
 
         // Store group info in the object
         $this->_selectedGroupSummary = $summary;
 
         if ($articles !== FALSE) {
-            $summary2 = $this->cmdListgroup($group, ($articles === TRUE ? NULL : $articles));
+            $summary2 = $this->cmd_listgroup($group, ($articles === TRUE ? NULL : $articles));
 
             // Make sure the summary array is correct...
             if ($summary2['group'] == $group) {
@@ -218,14 +216,14 @@ class NNTP_Client extends Base_NNTP_Client
     public function select_previous_article($_ret = 0)
     {
         try {
-            $response = $this->cmdLast();
+            $response = $this->cmd_last();
         } catch (exception $e) {
             return FALSE;
         }
 
         switch ($_ret) {
         case -1:
-            return array('Number' =>  $response[0], 'Message-ID' =>  (string) $response[1]);
+            return array('Number' => $response[0], 'Message-ID' => (string) $response[1]);
             break;
         case 0:
             return $response[0];
@@ -254,11 +252,11 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function select_next_article($_ret = 0)
     {
-        $response = $this->cmdNext();
+        $response = $this->cmd_next();
 
         switch ($_ret) {
         case -1:
-            return array('Number' => $response[0], 'Message-ID' =>  (string) $response[1]);
+            return array('Number' => $response[0], 'Message-ID' => (string) $response[1]);
             break;
         case 0:
             return $response[0];
@@ -285,11 +283,11 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function select_article($article = NULL, $_ret = 0)
     {
-        $response = $this->cmdStat($article);
+        $response = $this->cmd_stat($article);
 
         switch ($_ret) {
         case -1:
-            return array('Number' => $response[0], 'Message-ID' =>  (string) $response[1]);
+            return array('Number' => $response[0], 'Message-ID' => (string) $response[1]);
             break;
         case 0:
             return $response[0];
@@ -322,7 +320,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_article($article = NULL, $implode = FALSE)
     {
-        $data = $this->cmdArticle($article);
+        $data = $this->cmd_article($article);
         if ($implode == TRUE) {
             $data = implode("\r\n", $data);
         }
@@ -350,7 +348,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_header($article = NULL, $implode = FALSE)
     {
-        $data = $this->cmdHead($article);
+        $data = $this->cmd_head($article);
 
         if ($implode === TRUE) {
             $data = implode("\r\n", $data);
@@ -379,7 +377,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_body($article = NULL, $implode = FALSE)
     {
-        $data = $this->cmdBody($article);
+        $data = $this->cmd_body($article);
 
         if ($implode === TRUE) {
             $data = implode("\r\n", $data);
@@ -390,7 +388,7 @@ class NNTP_Client extends Base_NNTP_Client
 /*
     public function get_body_adv($article, article_writer &$aw)
     {
-        $this->cmdBodyAdv($article, $aw);
+        $this->cmd_body_adv($article, $aw);
     }
  */
     /**
@@ -411,9 +409,9 @@ class NNTP_Client extends Base_NNTP_Client
         if (!is_array($article) && !is_string($article)) {
             throw new exception('No article found: Should not happen', ERR_INTERNAL_ERROR);
         }
-        $this->cmdPost();
+        $this->cmd_post();
 
-        return $this->cmdPost2($article, $articleid);
+        return $this->cmd_post2($article, $articleid);
     }
 
     /**
@@ -446,7 +444,7 @@ class NNTP_Client extends Base_NNTP_Client
             $header .= $additional;
         }
 
-        return $this->cmdPost(array($header, $body));
+        return $this->cmd_post(array($header, $body));
     }
 
     /**
@@ -467,7 +465,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_date($format = 1)
     {
-        $date = $this->cmdDate();
+        $date = $this->cmd_date();
 
         switch ($format) {
         case 0:
@@ -516,7 +514,7 @@ class NNTP_Client extends Base_NNTP_Client
             throw new exception('$time must be either a string or an integer/timestamp!', ERR_INVALID_TIMESTAMP);
         }
 
-        return $this->cmdNewgroups($time, $distributions);
+        return $this->cmd_newgroups($time, $distributions);
     }
 
     /**
@@ -548,7 +546,7 @@ class NNTP_Client extends Base_NNTP_Client
             throw new exception('$time must be either a string or an integer/timestamp!',ERR_INVALID_TIMESTAMP);
         }
 
-        return $this->cmdNewnews($time, $groups, $distribution);
+        return $this->cmd_newnews($time, $groups, $distribution);
     }
     /**
      * Fetch valid groups.
@@ -569,7 +567,7 @@ class NNTP_Client extends Base_NNTP_Client
 
         // Get groups
         try {
-            $groups = $this->cmdListActive($nzb, $wildmat);
+            $groups = $this->cmd_list_active($nzb, $wildmat);
         } catch (exception $e) {
             switch ($e->getCode()) {
             case 500:
@@ -585,7 +583,7 @@ class NNTP_Client extends Base_NNTP_Client
             if (!is_null($wildmat)) {
                 write_log("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter! Trying without...", LOG_WARNING);
             }
-            $groups2 = $this->cmdList($nzb);
+            $groups2 = $this->cmd_list($nzb);
             $groups = $groups2;
         }
 
@@ -615,7 +613,7 @@ class NNTP_Client extends Base_NNTP_Client
         }
 
         // Get group descriptions
-        $descriptions = $this->cmdListNewsgroups($wildmat);
+        $descriptions = $this->cmd_list_newsgroups($wildmat);
 
         // TODO: add xgtitle as backup
         return $descriptions;
@@ -665,9 +663,9 @@ class NNTP_Client extends Base_NNTP_Client
 
         // Fetch overview from server
         if ($this->_compressed_headers === TRUE) {
-            $overview = $this->cmdXZver($range);
+            $overview = $this->cmd_xzver($range);
         } else {
-            $overview = $this->cmdXOver($range);
+            $overview = $this->cmd_xover($range);
         }
         // Use field names from overview format as keys?
         if ($_names) {
@@ -716,7 +714,7 @@ class NNTP_Client extends Base_NNTP_Client
                 } else {
                     return reset($overview);
                 }
-            } else {
+        } else {
             return $overview;
         }
     }
@@ -726,9 +724,9 @@ class NNTP_Client extends Base_NNTP_Client
         // Fetch overview from server
         $range = "$from-$to";
         if ($this->_compressed_headers) {
-            $overview = $this->cmdFastXZver($range);
+            $overview = $this->cmd_fast_xzver($range);
         } else {
-            $overview = $this->cmdFastXOver($range);
+            $overview = $this->cmd_fast_xover($range);
         }
 
         return $overview;
@@ -750,7 +748,7 @@ class NNTP_Client extends Base_NNTP_Client
     public function get_overview_format($_forceNames = TRUE, $_full = FALSE)
     {
         assert(is_bool($_forceNames) && is_bool($_full));
-        $format = $this->cmdListOverviewFmt();
+        $format = $this->cmd_list_overview_fmt();
 
         // Force name of first seven fields
         if ($_forceNames) {
@@ -793,7 +791,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_header_field($field, $range = NULL)
     {
-        $fields = $this->cmdXHdr($field, $range);
+        $fields = $this->cmd_xhdr($field, $range);
         if (is_null($range) ||
             is_int($range) ||
             (is_string($range) && ctype_digit($range))||
@@ -822,7 +820,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_group_articles($range = NULL)
     {
-        $summary = $this->cmdListgroup();
+        $summary = $this->cmd_listgroup();
 
         // Update summary cache if group was also 'selected'
         if ($summary['group'] !== NULL) {
@@ -858,7 +856,7 @@ class NNTP_Client extends Base_NNTP_Client
     {
         $backup = FALSE;
         try {
-            $references = $this->cmdXHdr('References', $range);
+            $references = $this->cmd_xhdr('References', $range);
         } catch (exception $e) {
             switch ($e->getCode()) {
             case 500:
@@ -875,7 +873,7 @@ class NNTP_Client extends Base_NNTP_Client
         }
         if ($backup === TRUE) {
             try {
-                $references2 = $this->cmdXROver($range);
+                $references2 = $this->cmd_xrover($range);
                 $references = $references2;
             } catch (exception $e) { // just ignore it
             }
@@ -956,7 +954,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function is_connected()
     {
-        return parent::_isConnected();
+       return parent::_is_connected();
     }
 
 }
