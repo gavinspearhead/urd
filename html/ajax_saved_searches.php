@@ -31,8 +31,7 @@ require_once "$pathpr/../functions/pref_functions.php";
 $cmd = get_request('cmd', '');
 $name = get_request('name', NULL);
 $type = get_request('type', '');
-
-if ($cmd == ''  || $type == '') {
+if ($cmd == '' || $type == '') {
     throw new exception($LN['error_missingparameter'] );
 }
 $saved_searches  = new saved_searches($userid);
@@ -50,6 +49,7 @@ function get_options()
     $_options['maxcomplete']    = get_request('maxcomplete', '');
     $_options['group']          = get_request('group', '');
     $_options['feed']           = get_request('feed', '');
+    $_options['flag']           = get_request('flag', '');
     $_options['cat']            = get_request('cat', '');
     $_options['search']         = get_request('search', '');
     $_options['poster']         = get_request('poster', '');
@@ -79,7 +79,6 @@ case 'save':
     if ($name === NULL || !is_string($name) || $name == '') {
         throw new exception($LN['error_missingparameter']);
     }
-    $search = get_request('search', '');
     $options = get_options();
     $category_id = get_request('save_category', '');
 
@@ -108,7 +107,7 @@ case 'save':
     } catch (exception $e) {
         throw new exception($LN['error_nameexists']);
     }
-    die_html('OK' . $LN['saved'] . ' "'  . htmlentities($name) . '"');
+    die_html('OK' . $LN['saved'] . ' "' . htmlentities($name) . '"');
     break;
 case 'get':
     // gets the subcat values for a given name, category combi
@@ -124,19 +123,10 @@ case 'get':
     } catch (exception $e) {
         throw new exception($LN['error_searchnamenotfound']);
     }
-    $str = '';
     $options = $option['options'];
-    foreach ($options as $key => $opt) {
-        $str .= $key . ':' . $opt . '|';
-    }
-    // we return the values as a3:1|b4:2|a1:1|
-    foreach ($option['subcats'] as $key => $opt) {
-        //$s = substr($key, 1);
-        $opt = str_replace('|', '', $opt);
-        $str .= $key . ':' . $opt . '|';
-    }
-    $str .= 'category:' . $option['category'];
-    die_html('OK' . $str);
+    $options['subcats'] = $option['subcats'];
+    $options['category'] = $option['category'];
+    die_html('OK' . json_encode($options));
     break;
 case 'names':
     $saved_searches->load($db);
@@ -147,9 +137,8 @@ case 'names':
         $names[$k] = htmlentities(utf8_decode($v));
     }
     if (count($names) == 0) {
-        throw new exception($LN['error_searchnamenotfound']);
+        die_html('EMPTY');
     }
-
     init_smarty('', 0);
     natcasesort($names);
     $smarty->assign('saved_searches',	$names);

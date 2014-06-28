@@ -22,14 +22,14 @@
  *}
 
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$title|escape:htmlall} ({$size})</div>
+<div class="set_title centered">{$title|escape:htmlall} ({$size}) {$current + 1}/{$lastidx + 1}</div>
 
 <div class="center down3">
 <img src="{$url}" id="overlay_image" alt="" {if $width gt 0}width="{$width}"{/if} {if $height gt 0}height="{$height}"{/if} onclick="javascript:jump('{$url}');" class="buttonlike noborder"/>
 
 <div class="centered">
 {if $firstidx != -1}
-<div class="firsticon iconsize inline buttonlike" onclick="javascript:show_image('{$first|escape:javascript}',{$firstidx}  );"></div>
+<div class="firsticon iconsize inline buttonlike" onclick="javascript:show_image('{$first|escape:javascript}', {$firstidx});"></div>
 {/if}
 {if $previousidx != -1}
 <div class="previousicon iconsize inline buttonlike" onclick="javascript:show_image('{$previous|escape:javascript}', {$previousidx});"></div>

@@ -15,22 +15,49 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-04 00:06:41 +0200 (wo, 04 sep 2013) $
- * $Rev: 2915 $
+ * $LastChangedDate: 2014-06-18 23:47:21 +0200 (wo, 18 jun 2014) $
+ * $Rev: 3097 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: install.php 2915 2013-09-03 22:06:41Z gavinspearhead@gmail.com $
+ * $Id: install.php 3097 2014-06-18 21:47:21Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
 // Suppress warning messages:
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR | E_PARSE|);
+// for testing purpose
+error_reporting(E_ALL|E_STRICT|E_DEPRECATED);
+// make PHP verbose
 
+// quickfix to an error in the installer when including a language file; should do this better tho
+
+$process_name = 'urd_web'; // needed for message format in syslog and logging
 // Store variables in $_SESSION so they're remembered:
 $pathlo = realpath(dirname(__FILE__));
 $pathca = realpath($pathlo . '/../functions/');
-require "$pathca/lang/english.php"; 
 session_name('URD_WEB' . md5($pathca)); // add the hashed path so we can have more than 1 session to different urds in one browser
 @session_start();
+
+require_once $pathca . '/defines.php'; 
+require_once $pathca . '/extset_functions.php'; 
+require_once $pathca . '/lang/english.php'; 
+require_once $pathca . '/functions.php';
+require_once $pathca . '/file_functions.php';
+require_once $pathca . '/web_functions.php';
+require_once $pathca . '/defaults.php';
+require_once $pathca . '/user_functions.php';
+require_once $pathca . '/config_functions.php';
+require_once $pathca . '/pref_functions.php';
+require_once $pathca . '/module_functions.php';
+require_once $pathca . '/../urdd/urdd_protocol.php';
+require_once $pathca . '/../urdd/urdd_command.php';
+require_once $pathca . '/db/urd_db_structure.php';
+require_once $pathca . '/buttons.php';
+require_once $pathca . '/usenet_functions.php';
+require_once $pathca . '/keystore_functions.php';
+require_once $pathca . '/db_sqlite.php';
+require_once $pathca . '/db_mysql.php';
+require_once $pathca . '/db_psql.php';
+require_once $pathlo . '/install.funcs.inc.php';
 
 // Installer script:
 
@@ -46,7 +73,7 @@ echo <<<CT
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="SHORTCUT ICON" href="../html/favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" href="install.css" type="text/css"/>
-<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="install.js"></script>
 </head>
 <body>
@@ -57,7 +84,6 @@ echo <<<CT
 <br/><br/><br/>
 &nbsp;or
 <h2>Proceed to <a href="../index.php">URD</a></h2>
-
 </body>
 </html>
 
@@ -80,7 +106,7 @@ $OUT = <<<CT
 <link rel="SHORTCUT ICON" href="../html/favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" href="install.css" type="text/css"/>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="install.js"></script>
 </head>
 <body>
@@ -106,15 +132,10 @@ $OUT = <<<CT
 <table class="installation">
 CT;
 
-
 $continuepic = '<img src="../html/smarty/templates/default/img/forward.png" alt="" title="Continue" class="buttonlike"/>';
 $refreshpic  = '<img src="../html/smarty/templates/default/img/reload.png" alt="" title="Reload" class="buttonlike"/>';
-//$showpasspic = '<img src="../html/smarty/templates/default/img/icon_light_on.png" alt="" title="Show password" class="buttonlike"/>';
 $showpasspic = '<div class="inline iconsizeplus showpassicon buttonlike" alt="" title="Show password"></div>';
 
-require_once('install.funcs.inc.php');
-require_once('../functions/defines.php');
-require_once('../functions/keystore_functions.php');
 // An actual installation page or the frontpage?:
 if ($page == 0) {
 	$OUT .= <<<BDY
@@ -129,20 +150,16 @@ BDY;
 	$OUT .= '<tr><td colspan="2" class="install1">Pre-install check:</td></tr>' . "\n";
 
 	$OUT .= '<tr><td class="install2">config.php can be written</td>';
-    $OUT .= GenRetVal(touch('../config.php'), $rv1);
+    $OUT .= GenRetVal(@touch('../config.php'), $rv1);
     // leave this config file otherwise the installer will fail
 
 	// And also check the smarty dir:
 	$OUT .= '<tr><td class="install2">Smarty cache directory can be written to</td>';
-    $OUT .= GenRetVal(touch('../html/smarty/c_templates/default/installcheck'), $rv2);
+    $OUT .= GenRetVal(@touch('../html/smarty/c_templates/default/installcheck'), $rv2);
     @unlink('../html/smarty/c_templates/default/installcheck');
     
- /*   $OUT .= '<tr><td class="install2">Magpie cache directory</td>';
-    $OUT .= GenRetVal(touch('../functions/libs/magpierss/cache/installcheck'), $rv3);
-    @unlink('../functions/libs/magpierss/cache/installcheck');
-*/
     $OUT .= '<tr><td class="install2">URD PID directory</td>';
-    $OUT .= GenRetVal(touch('../urdd/pid/installcheck'), $rv4);
+    $OUT .= GenRetVal(@touch('../urdd/pid/installcheck'), $rv3);
     @unlink('../urdd/pid/installcheck');
 
 	if (!$rv1) {
@@ -153,19 +170,15 @@ BDY;
         $OUT .= ShowHelp('Error: /html/smarty/c_templates/default/ could not be written to, please make sure that the directory permissions are correct!<br>' .
         'run the command <br/>chmod a+w ' . realpath('../html/smarty/c_templates/default/'));
 	}
-/*	if (!$rv3) {
-        $OUT .= ShowHelp('Error: functions/libs/magpierss/cache/ could not be written to, please make sure that the directory permissions are correct!<br>' .
-        'run the command <br/>chmod a+w ' . realpath('../functions/libs/magpierss/cache/'));
-	}
-  */  
-    if (!$rv4) {
+ 
+    if (!$rv3) {
         $OUT .= ShowHelp('Error: urdd/pid could not be written to, please make sure that the directory permissions are correct!<br>' .
         'run the command <br/>chmod a+w ' . realpath('../urdd/pid/'));
 	}
 
-	if (!$rv1 || !$rv2 /*|| !$rv3*/ || !$rv4) {
+	if (!$rv1 || !$rv2 || !$rv3) {
 		$OUT .= ShowHelp('The installer will not work until this has been fixed. You can refresh to check again.');
-		$OUT .= '<tr><td><a href="install.php" class="noborder" title="Refresh">'.$refreshpic.'</a></td></tr>';
+		$OUT .= '<tr><td><a href="install.php" class="noborder" title="Refresh">' . $refreshpic . '</a></td></tr>';
 	} else {
 		$OUT .= '<tr><td colspan="2"><br/><a onclick="LoadPage(1);" class="buttonlike">Start Installation Wizard</a></td></tr>';
 	}
@@ -178,8 +191,7 @@ BDY;
 
 	// Catch exceptions (installation errors) by stopping
 	try {
-		require_once('../functions/functions.php');
-		require('install.' . $page . '.inc.php');
+		require 'install.' . $page . '.inc.php';
 	} catch (exception $e) {
 		$OUT .= 'Oops, uncaught exception! : ' . $e->getMessage();
 	}

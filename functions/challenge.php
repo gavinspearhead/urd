@@ -26,7 +26,6 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-
 class challenge
 {
     const CHALLENGE_LENGTH = 16;
@@ -41,19 +40,18 @@ class challenge
     public static function verify_challenge_text($c)
     {
         global $LN;
-        if (!self::$need_challenge) { 
-            return; 
+        if (!self::$need_challenge) {
+            return;
         }
         if (!isset($_SESSION['challenge']) || $c != $_SESSION['challenge'] || $_SESSION['challenge_timeout'] < time()) {
             throw new exception($LN['error_invalidchallenge']);
         }
-
     }
 
     public static function set_challenge()
     {
-        if (!self::$need_challenge) { 
-            return FALSE; 
+        if (!self::$need_challenge) {
+            return FALSE;
         }
         $now = time();
         if (!isset ($_SESSION['challenge']) || ($_SESSION['challenge_timeout'] + 3600) < ($now)) { // if the challenge is valid for less than the current time -1 hour
@@ -67,5 +65,3 @@ class challenge
         return $challenge;
     }
 }
-
-

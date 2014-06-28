@@ -25,6 +25,7 @@
 function smarty_function_urd_checkbox($params, &$smarty)
 {
     $value = isset($params['value']) ? $params['value'] : '';
+    $classes = isset($params['classes']) ? $params['classes'] : '';
     $id = isset($params['id']) ? $params['id'] : '';
     $name = isset($params['name']) ? $params['name'] : '';
     $tristate = isset($params['tristate']) ? $params['tristate'] : '';
@@ -37,7 +38,7 @@ function smarty_function_urd_checkbox($params, &$smarty)
     } else {
         $buttonlike = 'buttonlike';
     }
-    $rv = '<div class="inline" ';
+    $rv = "<div class=\"inline $classes\"  ";
     if (!$readonly) {
         $rv .= "onclick=\"javascript:change_checkbox('$id'";
         if ($tristate) {

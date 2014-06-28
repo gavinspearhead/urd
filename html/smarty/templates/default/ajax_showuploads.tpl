@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-27 23:31:25 +0200 (vr, 27 jun 2014) $
+ * $Rev: 3122 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showuploads.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showuploads.tpl 3122 2014-06-27 21:31:25Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
@@ -66,7 +66,7 @@
 {if $a->status == "par2failed" && $a->directory != ''}
 <div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badparinfo } alt="" onclick="javascript:show_contents('{$a->destination}/par2.log', 0);"></div>
 {/if}
-<div class="inline iconsizeplus editicon buttonlike" onclick="ShowEditPost('{$a->postid}');"></div>
+<div class="inline iconsizeplus editicon buttonlike" onclick="show_edit_post('{$a->postid}');"></div>
 {if ($a->status == "paused" OR $a->status == "ready") AND $urdd_online}
 <div class="inline iconsizeplus playicon buttonlike" onclick="post_edit('start','{$a->postid}')" {urd_popup type="small" text=$LN_transfers_linkstart }></div>
 {/if}
@@ -86,15 +86,14 @@
 {/strip}
 {/capture}
 
-	<tr class="even" onmouseover="javascript:ToggleClass(this, 'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+	<tr class="even" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 		<td>{$a->startdate}</td>
-		<td><b>{$a->name|truncate:$maxstrlen|escape:htmlall}</b></td>
+		<td><b>{$a->name|truncate:$maxstrlen:'...':TRUE:TRUE|escape:htmlall}</b></td>
 		<td>
-
-{urd_progressbar width=100 complete=$a->progress}
- {$a->progress}%</td>
+            {urd_progressbar width="100" complete="{$a->progress}" colour="green" background="grey" classes="down2" text="{$a->progress}%"}
+        </td>
 		<td class="right">{$a->size}</td>
-		<td>{$a->speed}</td>
+		<td class="right">{$a->speed}</td>
 		<td class="center">{$a->ETA}</td>
 {if $isadmin neq 0}
 		<td>{$a->username|escape:htmlall}</td>
@@ -124,6 +123,7 @@
 <tr><td colspan="8" class="centered highlight textback">{$LN_error_nouploadsfound}</td></tr>
 {/if}
 
+<tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td></tr>
 </table>
 {/if}
 

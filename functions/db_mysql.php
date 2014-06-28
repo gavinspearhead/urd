@@ -29,19 +29,18 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathdbc = realpath(dirname(__FILE__));
 
-require_once "$pathdbc/../config.php";
-require_once "$pathdbc/config_functions.php";
-require_once "$pathdbc/defines.php";
 require_once "$pathdbc/urd_exceptions.php";
-require_once "$pathdbc/db/urd_db_structure.php";
-require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
-require_once "$pathdbc/libs/adodb/adodb.inc.php";
 
 class DatabaseConnection_mysql extends DatabaseConnection
 {
-    public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $force_new_connection=FALSE, $persistent=FALSE, $dbengine='')
+    public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
-        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $force_new_connection=FALSE, $persistent=FALSE, $dbengine='');
+        if ($databasetype == 'pdo_mysql') {
+            $this->uri = "mysql:host=$hostname;dbname=$database;" . (($port != '') ? "port=$port;" : '');
+        } else {
+            $this->uri .= $hostname . (($port != '') ? ":$port" : '');
+        }
+        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine);
     }
     public function get_dow_timestamp($from)
     {
@@ -83,11 +82,11 @@ class DatabaseConnection_mysql extends DatabaseConnection
     }
     public function drop_user($user, $host='localhost')
     {
-        $this->escape($user);
         $host = ($host == 'localhost') ? 'localhost' : '%';
-        $sql = "SELECT User FROM mysql.user WHERE User = '$user' AND Host = '$host'";
-        $res = $this->execute_query($sql);
+        $sql = 'User FROM mysql.user WHERE "User" = ? AND "Host" = ?';
+        $res = $this->select_query($sql, array($user, $host));
         if (isset($res[0]['User'])) {
+            $this->escape($user);
             $sql = 'DROP USER "' . $user . '"@' . $host;
             $this->execute_query($sql);
         }
@@ -145,7 +144,7 @@ class DatabaseConnection_mysql extends DatabaseConnection
         return $this->execute_query('SHOW TABLES');
     }
 
-    public function connect($force_new_connection=FALSE)
+    public function connect()
     {
         echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
 
@@ -158,13 +157,7 @@ class DatabaseConnection_mysql extends DatabaseConnection
             } else {
                 $this->DB = ADONewConnection($this->databasetype);
             }
-            if (!$this->force_new_connection || $force_new_connection) {
-                $this->DB->Connect($this->uri, $this->username, $this->password, $databasename);
-            } elseif (!$this->persistent) {
-                $this->DB->NConnect($this->uri, $this->username, $this->password, $databasename);
-            } else {
-                $this->DB->PConnect($this->uri, $this->username, $this->password, $databasename);
-            }
+            $this->DB->NConnect($this->uri, $this->username, $this->password, $databasename);
             $this->execute_query("SET sql_mode='ANSI_QUOTES'"); //Needed so we can use the same queries on postgres and mysql
             $this->execute_query('SET CHARACTER SET UTF8');
         } catch (exception $e) {

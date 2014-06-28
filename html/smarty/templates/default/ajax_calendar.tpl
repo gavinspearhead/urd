@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_calendar.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_calendar.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button2"></div>
@@ -72,7 +72,7 @@
 <tr>
 <td>
 <div>
-<input name="time" id="time1" type="text" value="{$hour}:{$minute}" size="5"/>
+<input name="time" id="time1" type="text" value="{$hour|escape:htmlall}:{$minute|escape:htmlall}" size="5"/>
 </div></td>
 </tr>
 </table>
@@ -86,9 +86,9 @@
 <input class="submit" type="button" name="submit_no_delay" value="{$LN_atonce}" onclick="javascript:submit_calendar('atonce');"/>
 <input class="submit" type="button" name="submit" value="{$LN_ok}" onclick="javascript:submit_calendar();"/>
 </div>
-<input type="hidden" id="month" value="{$month}"/>
-<input type="hidden" id="year" value="{$year}"/>
-<input type="hidden" id="day" value="{$selected_day}"/>
-<input type="hidden" id="hour" value="{$hour}"/>
-<input type="hidden" id="minute" value="{$minute}"/>
-<input name="date" id="date1" type="hidden" value="{$year}-{$month}-{$selected_day}"/>
+<input type="hidden" id="month" value="{$month|escape:htmlall}"/>
+<input type="hidden" id="year" value="{$year|escape:htmlall}"/>
+<input type="hidden" id="day" value="{$selected_day|escape:htmlall}"/>
+<input type="hidden" id="hour" value="{$hour|escape:htmlall}"/>
+<input type="hidden" id="minute" value="{$minute|escape:htmlall}"/>
+<input name="date" id="date1" type="hidden" value="{$year|escape:htmlall}-{$month|escape:htmlall}-{$selected_day|escape:htmlall}"/>

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-05-29 01:03:02 +0200 (do, 29 mei 2014) $
+ * $Rev: 3058 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: parse_nfo.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: parse_nfo.php 3058 2014-05-28 23:03:02Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
@@ -260,7 +260,7 @@ class nfo_parser
         }
     }
 
-    private static function set_info (array &$file_nfo, $index, $value)
+    private static function set_info(array &$file_nfo, $index, $value)
     {
         if ((!isset($file_nfo[$index]) || strlen($file_nfo[$index]) < 2) && strlen($value) > 2) {
             $file_nfo[$index] = trim($value);
@@ -386,7 +386,7 @@ class nfo_parser
                 $line = html_entity_decode($line);
                 $line = preg_replace('/([^a-z| ])|(see)|(more)/i', '',  $line);
                 if ($line != '') {
-                    $rv['genre'] = trim(str_replace(' more', '', strip_tags($line))) ;
+                    $rv['genre'] = trim(str_replace(' more', '', strip_tags($line)));
                     $next_is_genre = 0;
                     $got_genre = TRUE;
                 } else {
@@ -407,7 +407,7 @@ class nfo_parser
         $file_nfo = array();
         $fn = array();
         switch ($key) {
-        case SETTYPE_MOVIE:
+        case urd_extsetinfo::SETTYPE_MOVIE:
             $fn[] = array('match_imdb_link', 'link');
             $fn[] = array('match_iafd_link', 'link');
             $fn[] = array('match_url', 'link');
@@ -420,7 +420,7 @@ class nfo_parser
             $fn[] = array('match_rating', 'score');
             $fn[] = array('match_duration', 'runtime');
             break;
-        case SETTYPE_TVSERIES:
+        case urd_extsetinfo::SETTYPE_TVSERIES:
             $fn[] = array('match_imdb_link', 'link');
             $fn[] = array('match_tvrage_link', 'link');
             $fn[] = array('match_tvcom_link', 'link');
@@ -435,7 +435,7 @@ class nfo_parser
             $fn[] = array('match_rating', 'score');
             $fn[] = array('match_duration', 'runtime');
             break;
-        case SETTYPE_ALBUM:
+        case urd_extsetinfo::SETTYPE_ALBUM:
             $fn[] = array('match_url', 'link');
             $fn[] = array('match_genre', 'musicgenre');
             $fn[] = array('match_albumtitle', 'name');
@@ -445,7 +445,7 @@ class nfo_parser
             $fn[] = array('match_rating', 'score');
             $fn[] = array('match_duration', 'runtime');
             break;
-        case SETTYPE_SOFTWARE:
+        case urd_extsetinfo::SETTYPE_SOFTWARE:
             $fn[] = array('match_url', 'link');
             $fn[] = array('match_softwaretitle', 'name');
             $fn[] = array('match_software_os', 'os');
@@ -453,11 +453,11 @@ class nfo_parser
             $fn[] = array('match_software_format', 'softwareformat');
             $fn[] = array('match_software_genre', 'softwaregenre');
             break;
-        case SETTYPE_EBOOK: // usually no nfo files :(
+        case urd_extsetinfo::SETTYPE_EBOOK: // usually no nfo files :(
             $fn[] = array('match_url', 'link');
             $fn[] = array('match_format', 'ebookformat');
             break;
-        case SETTYPE_GAME:
+        case urd_extsetinfo::SETTYPE_GAME:
             $fn[] = array('match_url', 'link');
             $fn[] = array('match_softwaretitle', 'name');
             $fn[] = array('match_software_os', 'os');
@@ -465,7 +465,7 @@ class nfo_parser
             $fn[] = array('match_software_format', 'gameformat');
             $fn[] = array('match_software_genre', 'gamegenre');
             break;
-        case SETTYPE_DOCUMENTARY:
+        case urd_extsetinfo::SETTYPE_DOCUMENTARY:
             $fn[] = array('match_imdb_link', 'link');
             $fn[] = array('match_url', 'link');
             $fn[] = array('match_genre', 'moviegenre');
@@ -476,7 +476,7 @@ class nfo_parser
             $fn[] = array('match_rating', 'score');
             $fn[] = array('match_duration', 'runtime');
             break;
-        case SETTYPE_TVSHOW:
+        case urd_extsetinfo::SETTYPE_TVSHOW:
             $fn[] = array('match_url', 'link');
             $fn[] = array('match_serietitle', 'name');
             $fn[] = array('match_title', 'name');
@@ -487,7 +487,7 @@ class nfo_parser
             $fn[] = array('match_duration', 'runtime');
             break;
 
-        case SETTYPE_IMAGE:
+        case urd_extsetinfo::SETTYPE_IMAGE:
         default:
             break;
         }
@@ -501,7 +501,7 @@ class nfo_parser
             nfo_parser::get_link_info($file_nfo);
         }
 
-        if ($key == SETTYPE_ALBUM) {
+        if ($key == urd_extsetinfo::SETTYPE_ALBUM) {
             if (isset($file_nfo['name']) && isset($file_nfo['band'])) {
                 $file_nfo['name'] = $file_nfo['band'] . ' - ' . $file_nfo['name'];
             } elseif (isset($file_nfo['band'])) {

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_browse.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_browse.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -28,12 +28,11 @@ if (!defined('ORIGINAL_PAGE')) {
 $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
-require_once "$pathidx/../functions/html_includes.php";
+require_once "$pathidx/../functions/ajax_includes.php";
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
-
 verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid, TRUE);
 $adult = urd_user_rights::is_adult($db, $userid);
 
@@ -85,6 +84,7 @@ class group_viewer
 
     public function __construct(DatabaseConnection $db, $userid)
     {
+        assert(is_numeric($userid));
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
@@ -125,6 +125,7 @@ class group_viewer
             $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL) ';
         }
         $sql .= " ORDER BY {$this->Qorder}";
+         
         return $sql;
     }
     private function get_sets_count($interesting_only)
@@ -145,6 +146,7 @@ class group_viewer
 
     public function get_page_count($perpage, $offset, $skip_total=FALSE)
     {
+        assert(is_numeric($perpage) && is_numeric($offset));
         if (! $skip_total) {
             $this->totalsets = $this->get_sets_count(FALSE);
         }
@@ -154,6 +156,7 @@ class group_viewer
 
     public function get_set_data($perpage, $offset)
     {
+        assert(is_numeric($perpage) && is_numeric($offset));
         global $LN;
 
         $setres = array();
@@ -243,14 +246,14 @@ class group_viewer
     }
     public function set_qorder($order)
     {
-        if ($order == 'subject') {
-            $order = 'better_subject';
-        }
         // Validation of order:
         $def_sort = get_pref($this->db, 'defaultsort', $this->userID, 'better_subject');
         $orderfield = str_ireplace(' desc', '', $order); // $order should be 'complete/subject/date/size' and optional ' desc' or 'asc'.
         $orderfield = trim(str_ireplace(' asc', '', $orderfield));
 
+        if ($order == 'subject') {
+            $order = 'better_subject';
+        }
         if (!in_array(strtolower($orderfield), self::$sort_orders)) {
             $order = $def_sort;
         }
@@ -267,6 +270,7 @@ class group_viewer
 
     public function get_rss_url($perpage)
     {
+        assert(is_numeric($perpage));
         $rss_limit = $perpage;
         $url = get_config($this->db, 'url');
         $type = USERSETTYPE_GROUP;
@@ -354,15 +358,24 @@ class group_viewer
         if ($ominsetsize != '') {
             try {
                 $ominsetsize = unformat_size($ominsetsize, 1024, 'M');
+                if ($ominsetsize < 0) { 
+                    $ominsetsize = NULL;
+                }
+
             } catch (exception $e) {
                 $ominsetsize = NULL;
             }
         } else {
             $ominsetsize = NULL;
         }
+        
         if ($omaxsetsize != '') {
             try {
                 $omaxsetsize = unformat_size($omaxsetsize, 1024, 'M');
+                if ($ominsetsize !== NULL && $omaxsetsize < $ominsetsize) {
+                    $omaxsetsize = NULL;
+                }
+
             } catch (exception $e) {
                 $omaxsetsize = NULL;
             }
@@ -373,7 +386,7 @@ class group_viewer
             $this->db->escape($ominsetsize, TRUE);
             $this->Qsize = " AND (setdata.\"size\" >= $ominsetsize) ";
         } else {
-            $this->Qsize = ' AND (setdata."size" >= ((SELECT CASE WHEN usergroupinfo."minsetsize" IS NULL THEN 0 ELSE usergroupinfo."minsetsize" END) ))';
+            $this->Qsize = ' AND (setdata."size" >= ((SELECT CASE WHEN usergroupinfo."minsetsize" IS NULL THEN 0 ELSE usergroupinfo."minsetsize" END)))';
         }
 
         if (is_numeric($omaxsetsize)) {
@@ -452,11 +465,13 @@ class group_viewer
     {
         if (is_numeric($maxage) && $maxage > 0) {
             $this->maxage = $maxage;
-            $this->Qage .= "AND (" . $this->now . " - date) / 3600 / 24 <= $maxage ";
+            $maxage = $this->now - ($maxage * 3600 * 24);
+            $this->Qage .= " AND \"date\" >= $maxage";
         }
         if (is_numeric($minage) && $minage > 0) {
             $this->minage = $minage;
-            $this->Qage .= "AND (" . $this->now . " - date) / 3600 / 24 >= $minage ";
+            $minage = $this->now - ($minage * 3600 * 24);
+            $this->Qage .= " AND \"date\" <= $minage";
         }
 
     }
@@ -473,22 +488,21 @@ class group_viewer
         $this->set_qsize($minsetsize, $maxsetsize);
         $this->set_qorder($order);
     }
-
 }
 
 $search = html_entity_decode(trim(get_request('search', '')));
-$offset  =  get_request('offset', 0);
+$offset  = get_request('offset', 0);
 
-$order   =  get_request('order', '');
-$flag    =  get_request('flag', '');
-$maxage  =  get_request('maxage', '');
-$minage  =  get_request('minage', '');
+$order   = get_request('order', '');
+$flag    = get_request('flag', '');
+$maxage  = get_request('maxage', '');
+$minage  = get_request('minage', '');
 $minsetsize = get_request('minsetsize', NULL);
 $maxsetsize = get_request('maxsetsize', NULL);
 $groupID = get_request('groupID', 0);
 
 $maxrating  = get_request('maxrating', '');
-$minrating  =  get_request('minrating', '');
+$minrating  = get_request('minrating', '');
 $maxcomplete = get_request('maxcomplete', '');
 $mincomplete = get_request('mincomplete', '');
 
@@ -496,7 +510,6 @@ $setid = get_request('setid', '');
 $perpage = get_maxperpage($db, $userid);
 $perpage = get_request('perpage', $perpage);
 $only_rows  = get_request('only_rows', 0);
-
 $sets_viewer = new group_viewer($db, $userid);
 $sets_viewer->set_search_options($search, $groupID, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $mincomplete, $maxcomplete, $order);
 list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);

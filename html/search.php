@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 16:28:23 +0200 (di, 03 sep 2013) $
- * $Rev: 2910 $
+ * $LastChangedDate: 2014-05-26 01:07:16 +0200 (ma, 26 mei 2014) $
+ * $Rev: 3054 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: search.php 2910 2013-09-03 14:28:23Z gavinspearhead@gmail.com $
+ * $Id: search.php 3054 2014-05-25 23:07:16Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -42,9 +42,8 @@ foreach ($saved_searches->get() as $key => $ss) {
 }
 
 $saved_searches = $new_ss;
-
 $show_groups = $show_rss = 0;
-$subscribedfeeds = $subscribedgroups= array();
+$subscribedfeeds = $subscribedgroups = array();
 init_smarty($LN['menusearch'], 1);
 
 $smarty->assign('saved_searches', $saved_searches);

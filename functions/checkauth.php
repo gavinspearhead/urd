@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: checkauth.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: checkauth.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -29,18 +29,15 @@ if (!defined('ORIGINAL_PAGE')) {
 
 function reset_failed_login(DatabaseConnection $db, $username)
 {
-    $db->escape($username, TRUE);
-    $sql = "UPDATE users SET \"failed_login_count\"=0, \"failed_login_time\"=0 WHERE \"name\" = $username";
-    $db->execute_query($sql);
+    $db->update_query_2('users', array('failed_login_count'=>0, 'failed_login_time'=>0), '"name"=?', array($username));
 }
 
 function increase_failed_login(DatabaseConnection $db, $username)
 {
     $time = time();
-    $db->escape($username,TRUE);
     $db->escape($time, TRUE);
-    $sql = "UPDATE users SET \"failed_login_count\"=\"failed_login_count\" + 1, \"failed_login_time\" = $time WHERE \"name\" = $username";
-    $db->execute_query($sql);
+    $sql = "UPDATE users SET \"failed_login_count\"=\"failed_login_count\" + 1, \"failed_login_time\" = $time WHERE \"name\"=?";
+    $db->execute_query($sql, array($username));
 }
 
 function set_session_cookie($username, $password, $period, $token)
@@ -64,7 +61,6 @@ function set_session_cookie($username, $password, $period, $token)
     $_SESSION['urd_token'] = $token;
 }
 
-
 function hash_password($plain_password, $salt, $token)
 {
     $salt_pw = $salt . $plain_password . $salt;
@@ -75,7 +71,6 @@ function hash_password($plain_password, $salt, $token)
     return array($password, $md5pass);
 }
 
-
 function check_password(DatabaseConnection $db, $username, $plain_password, $password, $md5pass, $token, &$res)
 {
     try {
@@ -84,13 +79,13 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
         // maybe the value isn't in the database yet, we chose to disable it
         $max_login_count = 0;
     }
-
-    $sql = "* FROM users WHERE \"name\" = '$username' AND \"active\" = '". user_status::USER_ACTIVE ."'";
+    $input_arr= array($username, user_status::USER_ACTIVE);
+    $sql = '* FROM users WHERE "name"=? AND "active"=?';
     if ($max_login_count > 0) {
-        $db->escape($max_login_count, TRUE);
-        $sql .= " AND \"failed_login_count\" < $max_login_count";
+        $sql .= ' AND "failed_login_count" < ?';
+        $input_arr[] = $max_login_count;
     }
-    $res = $db->select_query($sql, 1);
+    $res = $db->select_query($sql, 1, $input_arr);
     if ($res === FALSE) { // no valid user found
 
         return FALSE;
@@ -100,8 +95,8 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
     if ($md5pass != '') { // check if the md5 stuff still matches... if not, we set the new pasword with salt
         if ($plain_password != '' && $md5pass == md5($token. $res[0]['pass'] . $token)) {
             set_password($db, $res[0]['ID'], $plain_password, FALSE);
-            $sql = "* FROM users WHERE  \"name\" = '$username' AND \"active\" = '". user_status::USER_ACTIVE ."'";
-            $res = $db->select_query($sql, 1);
+            $sql = '* FROM users WHERE "name" = ? AND "active" = ?';
+            $res = $db->select_query($sql, 1, array($username, user_status::USER_ACTIVE));
             if ($res === FALSE) {// no valid user found
 
                 return FALSE;
@@ -115,15 +110,15 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
     if ($salt_db == '') {
         if ($plain_password != '' && $password == hash('sha256', $token . $password_db . $token)) {// set the salt in de db
             set_password($db, $res[0]['ID'], $plain_password, FALSE);
-            $sql = "* FROM users WHERE \"name\" = '$username' AND \"active\" = '". user_status::USER_ACTIVE ."'";
-            $res = $db->select_query($sql, 1);
+            $sql = '* FROM users WHERE "name" = ? AND "active" = ?';
+            $res = $db->select_query($sql, 1, array($username, user_status::USER_ACTIVE));
             if ($res === FALSE) {// no valid user found
 
                 return FALSE;
             }
             $password_db = $res[0]['pass'];
             $salt_db = $res[0]['salt'];
-            $password = hash('sha256', $token . hash('sha256', $salt_db. $plain_password. $salt_db) . $token);
+            $password = hash('sha256', $token . hash('sha256', $salt_db . $plain_password . $salt_db) . $token);
             set_session_cookie($username, $password, $_SESSION['urd_period'], $token);
         } else {
             return FALSE;
@@ -137,7 +132,7 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
 
 /*
  * the password is stored in the database hashed with a salt hence the database contains
- * username, salt, hash(salt, password, salt)   // where password is the plaintext password
+ * username, salt, hash(salt, password, salt) // where password is the plaintext password
  * the cookie stores:
  * username, token, hash(token, hash(salt, password, salt), token)
  *
@@ -213,8 +208,7 @@ try {
     // Found credentials? Check!
     $valid = $isadmin = FALSE;
     $ipaddr = $_SERVER['REMOTE_ADDR'];
-
-    if (isset($username, $password, $token)) {
+    if (isset($username, $password, $token) && $username != '') {
         if (check_password($db, $username, $plain_password, $password, $md5pass, $token, $res)) {
             if ($form_login === TRUE) {
                 $valid = TRUE;
@@ -275,7 +269,7 @@ try {
                     $_SESSION['urd_pass'] = '';
                     $_SESSION['urd_period'] = NULL;
                     $valid = TRUE;
-                    $isadmin = urd_user_rights::is_admin($db, $username);
+                    $isadmin = urd_user_rights::is_admin($db, $userid);
                 }
             } catch (exception $e) {
                 $valid = FALSE;
@@ -284,11 +278,9 @@ try {
     }
 
     if ($valid !== TRUE) {
-        $message = $LN['error_nosuchuser'];
         // Invalid login
         // Write error message in case user tried to log in (this code is also accessed when user tries to access but not login yet):
-        if (isset($username)) {
-            $message = $LN['error_nosuchuser'];
+        if (isset($username) && $username != '') {
             write_log("Login failed for account '$username', IP address is " . $_SERVER['REMOTE_ADDR'], LOG_WARNING);
             increase_failed_login($db, $username);
         }
@@ -304,7 +296,6 @@ try {
         if (isset($__auth) && $__auth == 'silent') {
             die();
         }
-
         // Otherwise, show login form
         if (isset($_POST['username']) && $_POST['username'] != '') {
             $message = $LN['login_failed'] . '.';

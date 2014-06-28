@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urd_log.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: urd_log.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -29,9 +29,6 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathul = realpath(dirname(__FILE__));
 
-require_once "$pathul/defines.php";
-require_once "$pathul/../config.php";
-require_once "$pathul/functions.php";
 
 function trace_str($trace)
 {
@@ -111,6 +108,7 @@ function socket_error_handler($die=FALSE)
 
 function echo_debug_trace(exception $e, $dbg_lvl)
 {
+
     echo_debug($e->getTraceAsString(), $dbg_lvl);
 }
 
@@ -118,10 +116,9 @@ function echo_debug_function($dbg_lvl, $function)
 {
     global $config;
     if (debug_match($dbg_lvl, $config['urdd_debug_level'])) {
-        $pid = posix_getpid();
         $mmu = memory_get_usage (TRUE);
         $mmpu = memory_get_peak_usage (TRUE);
-        $msg = "fn:{$function}() pid:$pid ($mmu $mmpu)";
+        $msg = "fn:{$function}() ($mmu $mmpu)";
         echo_debug($msg, $dbg_lvl);
     }
 }
@@ -129,7 +126,7 @@ function echo_debug_function($dbg_lvl, $function)
 function echo_debug_file($file, $val, $val2=FALSE, $source=NULL)
 {
     $t = microtime(TRUE);
-    file_put_contents($file, "$t " . ($source !== NULL? basename($source): '') . ': ' .  $val . "\n", FILE_APPEND);
+    file_put_contents($file, "$t " . ($source !== NULL? basename($source): '') . ': ' . $val . "\n", FILE_APPEND);
     if ($val2 !== FALSE) {
         echo_debug_var_file($file, $val2);
     }
@@ -232,6 +229,7 @@ class logfile
         if ($this->last_line == $message) {
             return;
         }
+        $pid = posix_getpid();
         $date = date('M d H:i:s');
         $this->last_line = $message;
         $lines = explode("\n", $message);
@@ -248,17 +246,17 @@ class logfile
                         $this->open_logfile($config['log_file'], $this->process_name);
                     }
 
-                    fwrite($this->LOGFILE, $date . ' ' . $hostname . " $this->process_name: " .  $log_str[$priority] . ' ' . $msg . "\n");
+                    fwrite($this->LOGFILE, $date . ' ' . $hostname . " $this->process_name: " . $log_str[$priority] . ' ' . $msg . " (pid: $pid)\n");
                     fflush($this->LOGFILE);
                     break;
                 case 'stderr':
                     if ((!isset($config['urdd_daemonise']) || ($config['urdd_daemonise'] === FALSE)) && ((defined('ORIGINAL_PAGE') === FALSE) || ORIGINAL_PAGE === 'URDD')) {
-                        fwrite(STDERR, $date . ' ' .  $hostname . " $this->process_name: " . $log_str[$priority] . ' ' . $msg . "\n");
+                        fwrite(STDERR, $date . ' ' . $hostname . " $this->process_name: " . $log_str[$priority] . ' ' . $msg . " (pid: $pid)\n");
                         fflush(STDERR);
                     }
                     break;
                 case 'syslog':
-                    syslog($priority, $log_str[$priority] . ' ' .$msg);
+                    syslog($priority, $log_str[$priority] . ' ' . $msg . " (pid: $pid)");
                     break;
                 default:
                     echo "Unknown log option\n";

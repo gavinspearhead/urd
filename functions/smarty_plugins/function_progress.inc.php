@@ -25,6 +25,9 @@
 function smarty_function_urd_progress($params, &$smarty)
 {
     $width = isset($params['width']) ? $params['width'] : 100;
+    $colour = isset($params['colour']) ? $params['colour'] : 'grey';
+    $text = isset($params['text']) ? $params['text'] : '';
+    $background = isset($params['background']) ? $params['background'] : '';
     $classes = isset($params['classes']) ? $params['classes'] : '';
     $complete = isset($params['complete']) ? $params['complete'] : 100; // percentage
     $complete = max(min($complete, 100), 0);
@@ -41,29 +44,15 @@ function smarty_function_urd_progress($params, &$smarty)
 
     $random_id = mt_rand();
 
-    $style = <<<STYLE
-<div class="floatleft"><style type="text/css" scoped="">
-div.width_done_$random_id { width: {$width_done}px ;}
-div.width_remain_$random_id { width: {$width_remain}px;}
-</style>
-STYLE;
-
-    $bar = <<<BAR
-<div class="floatleft $left $classes"></div>
-<div class="floatleft $done width_done_$random_id $classes"></div>
-BAR;
-
-    if ($complete != 100 && $complete != 0) {
-        $bar .= <<<BAR2
-<div class="floatleft $middle $classes"></div>
-BAR2;
+    $style = "<div style=\"display:inline; float:left;\"><div class=\"progressbar $background $classes\" style=\"width:{$width}px\">";
+    $style .= "<span class=\"{$colour}\" style=\"width:$complete%;\">";
+    $style .= "</span></div></div><div class=\"progress_text\">";
+    if ($text != '') {
+        $style .= "&nbsp;$text";
     }
-    $bar .= <<<BAR3
-<div class="floatleft $remain width_remain_$random_id $classes"></div>
-<div class="floatleft $right $classes"></div>
-</div>
-BAR3;
+    $style .= "</div>";
 
-    return $style . "\n" . $bar;
+    return $style ;
 
 }
+

@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_includes.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_includes.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -30,12 +30,10 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $__auth = 'silent';
 
-//ini_set('error_reporting', E_ALL|E_STRICT|E_DEPRECATED);
 define ('SKIP_LANG', 1);
 
 // Is URD actually installed?
 if (!file_exists('../.installed')) {
-    // header('Location: ../install/install.php');
     die;
 }
 
@@ -43,6 +41,7 @@ $process_name = 'urd_web'; // needed for message format in syslog and logging
 
 $pathhtmli = realpath(dirname(__FILE__));
 require_once "$pathhtmli/defines.php";
+require_once "$pathhtmli/defaults.php";
 require_once "$pathhtmli/error_codes.php";
 require_once "$pathhtmli/../config.php";
 
@@ -54,11 +53,12 @@ if (isset($config['urdweb_logfile'])) {
 
 require_once "$pathhtmli/urd_log.php";
 require_once "$pathhtmli/functions.php";
+require_once "$pathhtmli/file_functions.php";
 require_once "$pathhtmli/db.class.php";
 
 // initialise some stuff
 try {
-    $db = connect_db(TRUE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     echo "Connection to database failed.\n";
     die;
@@ -70,7 +70,6 @@ require_once "$pathhtmli/checkauth.php";
 $prefs = load_prefs($db, $userid); // load the prefs
 
 require_once "$pathhtmli/usenet_functions.php";
-require_once "$pathhtmli/file_functions.php";
 
 // first include all the php files that only define stuff
 require_once "$pathhtmli/web_functions.php";

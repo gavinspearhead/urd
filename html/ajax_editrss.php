@@ -16,16 +16,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-08 00:30:19 +0200 (zo, 08 jun 2014) $
+ * $Rev: 3087 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_editrss.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_editrss.php 3087 2014-06-07 22:30:19Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 
 $pathaet = realpath(dirname(__FILE__));
-require_once "$pathaet/../functions/html_includes.php";
+require_once "$pathaet/../functions/ajax_includes.php";
 require_once "$pathaet/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, '', $userid, TRUE);
@@ -55,9 +55,8 @@ function show_edit_rss(DatabaseConnection $db, $id)
     global $smarty, $LN, $periods;
     // Get download info:
     if (is_numeric($id)) {
-        $db->escape($id);
-        $sql = "SELECT * FROM rss_urls WHERE \"id\" = '$id'";
-        $res = $db->execute_query($sql);
+        $sql = "* FROM rss_urls WHERE \"id\" = ?";
+        $res = $db->select_query($sql, array($id));
         if (!isset($res[0])) {
             throw new exception($LN['error_invalidfeedid']);
         }
@@ -83,7 +82,7 @@ function show_edit_rss(DatabaseConnection $db, $id)
         $oldrefresh_time = $oldrefresh_period = $oldname = $oldurl = $oldpassword = $oldusername = '';
         $oldexpire = get_config($db, 'default_expire_time');
         $oldadult = 0;
-        $oldsubscribed = RSS_SUBSCRIBED;
+        $oldsubscribed = rssfeed_status::RSS_SUBSCRIBED;
         $oldtime1 = $oldtime2 = NULL;
     } else {
         throw new exception($LN['error_invalidfeedid']);
@@ -120,17 +119,15 @@ function update_rss(DatabaseConnection $db, $id, $userid)
     $password = trim(get_post('rss_password'));
     $newexpire = trim(get_post('rss_expire'));
     $newadult = trim(get_post('rss_adult', '0') == '1') ? 1 : 0;
-    $newsubscribed = (get_post('rss_subscribed', '0') == '1') ? RSS_SUBSCRIBED : RSS_UNSUBSCRIBED;
+    $newsubscribed = (get_post('rss_subscribed', '0') == '1') ? rssfeed_status::RSS_SUBSCRIBED : rssfeed_status::RSS_UNSUBSCRIBED;
     $uprefs = load_config($db);
     $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'], $userid);
 
     if ($newname == '' || $newurl == '') {
         throw new exception($LN['error_invalidvalue']);
     }
-    if ($newsubscribed == RSS_UNSUBSCRIBED) {
-        $sql = "UPDATE rss_urls SET \"refresh_time\"='0', \"refresh_period\"='0' WHERE \"id\"=$id";
-        $db->execute_query($sql);
-
+    if ($newsubscribed == rssfeed_status::RSS_UNSUBSCRIBED) {
+        $db->update_query_2('rss_urls', array('refresh_time'=>0, 'refresh_period'=>0), '"id"=?', array($id));
         $uc->cancel(get_command(urdd_protocol::COMMAND_UPDATE_RSS) . " $id");
         $uc->cancel(get_command(urdd_protocol::COMMAND_EXPIRE_RSS) . " $id");
         $uc->unsubscribe($id, USERSETTYPE_RSS);

@@ -15,40 +15,24 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-27 23:58:52 +0200 (vr, 27 jun 2014) $
+ * $Rev: 3125 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: install.6.inc.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: install.6.inc.php 3125 2014-06-27 21:58:52Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) { die('This file cannot be accessed directly.'); }
 
 
-if(!function_exists('echo_debug')) { function echo_debug(){}; }
-if(!function_exists('echo_debug_function')) { function echo_debug_function(){}; }
-if(!function_exists('echo_debug_file')) { function echo_debug_file(){}; }
-if(!function_exists('write_log')) { function write_log(){}; }
-
-
-function get_session($val, $default='') 
-{
-    if (isset($_SESSION[$val])) { 
-        return ($_SESSION[$val]); 
-    } else {
-        return $default;
-    }
-}
-
-
 // Finish up
-$urduser = $_REQUEST['urduser'];
-$urdpass1 = $_REQUEST['urdpass1'];
-$urdpass2 = $_REQUEST['urdpass2'];
-$urdfullname = $_REQUEST['urdfullname'];
-$urdemail = $_REQUEST['urdemail'];
-$urddownloaddir = $_REQUEST['urddownloaddir'];
-$urdupdate = isset($_REQUEST['urdupdatecheck']) ? TRUE : FALSE;
+$urduser = get_request('urduser');
+$urdpass1 = get_request('urdpass1');
+$urdpass2 = get_request('urdpass2');
+$urdfullname = get_request('urdfullname');
+$urdemail = get_request('urdemail');
+$urddownloaddir = get_request('urddownloaddir');
+$urdupdate = (get_request('urdupdatecheck', FALSE) == FALSE) ? FALSE : TRUE;
 
 // Store in session:
 $_SESSION['urdusername'] = $urduser;
@@ -62,20 +46,11 @@ $_SESSION['urddownloaddir'] = $urddownloaddir;
 get_urdd_path();
 get_url();
 
-require_once '../functions/db.class.php';
-require_once '../functions/functions.php';
-require_once '../functions/defaults.php';
-require_once '../functions/user_functions.php';
-require_once '../functions/config_functions.php';
-require_once '../functions/pref_functions.php';
-require_once '../functions/module_functions.php';
-require_once '../urdd/urdd_protocol.php';
-
 
 // This SHOULD work now:
 $OUT .= '<tr><td class="install2">Connecting to db using stored settings</td>';
 try{
-	$db = connect_db();
+	$db = connect_db(FALSE);
 	$rv_cdb = TRUE;
 } catch (exception $e) {
 	$rv_cdb = FALSE;
@@ -93,7 +68,7 @@ try {
     $rv_un = valid_username($urduser, 2);
 } catch (exception $e) {
     $rv_un = FALSE;
-	$error = $e->getMessage(). '. ';
+	$error = $e->getMessage() . '. ';
 } 
 
 $OUT .= GenRetVal($rv_un === TRUE, $rv_uv);
@@ -126,10 +101,12 @@ if (!$rv_dd) {
 
 $OUT .= '<tr><td class="install2">Creating URD user account</td>';
 try{
-	if ($rv_cdb === FALSE) 
+	if ($rv_cdb === FALSE) {
 		throw new exception('Database connection required.');
-	if (!$rv_pex || !$rv_ps || !$rv_uem || !$rv_ufn || !$rv_uv || !$rv_pe || !$rv_dd) 
-		throw new exception("Valid data required");
+    }
+	if (!$rv_pex || !$rv_ps || !$rv_uem || !$rv_ufn || !$rv_uv || !$rv_pe || !$rv_dd) {
+		throw new exception('Valid data required');
+    }
     // Make user with admin rights:
 	add_user($db, $urduser, $urdfullname, $urdemail, $urdpass1, user_status::USER_ADMIN, user_status::USER_ACTIVE, 'CRUDPAE');
     //
@@ -139,6 +116,7 @@ try{
     set_config($db, 'admin_email', $urdemail);
     set_config($db, 'urdd_path', get_session('urdd'));
     set_config($db, 'url', get_session('url'));
+    set_config($db, 'default_language', detect_language());
 
     set_config($db, 'yydecode_path', get_session('yydecode'));
     set_config($db, 'subdownloader_path', get_session('subdownloader'));
@@ -162,9 +140,9 @@ try{
 	$error = $e->getMessage();
 }
 $OUT .= GenRetVal($rv_cu);
-if ($rv_cu === FALSE)
+if ($rv_cu === FALSE) {
 	$OUT .= '<tr colspan="2"><td><span class="info">' . $error . '</span></td></tr>';
-
+}
 // schedule version checks:
 $rv_uu = TRUE;
 if ($urdupdate) {
@@ -176,7 +154,6 @@ if ($urdupdate) {
 		if (!$rv_pex || !$rv_ps || !$rv_uem || !$rv_ufn || !$rv_uv || !$rv_cu || !$rv_pe || !$rv_dd) {
             throw new exception('Valid data required');
         }
-		//add_schedule($db, 'CHECK_VERSION', 1205060400, 604800, $urduser);
         set_config($db, 'period_update', 8);
 
         $rv_uu = TRUE;
@@ -191,8 +168,10 @@ if ($urdupdate) {
 } else {
     set_config($db, 'period_update', 0);
 }
-
-add_default_schedules($db, $urduser);
+$userid = get_userid($db, $urduser);
+if (is_numeric($userid)) {
+    add_default_schedules($db, $userid);
+}
 
 // Config file:
 $OUT .= '<tr><td class="install2">Generating config file</td>';

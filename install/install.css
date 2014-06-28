@@ -86,7 +86,7 @@ img
 .info
 {
 	font-style: oblique;
-	font-size: x-small;
+	font-size: small;
 	color: red;
 }
 #installation
@@ -119,7 +119,7 @@ img
     border: 2px solid red;
     font-size: x-large;
 }
-input[type=text], textarea, select, input[type=password], input[type=checkbox], input[type=radio], input[type=file]
+input[type=text], textarea, select, input[type=password], input[type=checkbox], input[type=radio], input[type=file], input[type=email]
 {
     background-color: #F1F1F1;
     border: solid 1px;

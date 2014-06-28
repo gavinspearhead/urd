@@ -16,14 +16,13 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: html_includes.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: html_includes.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 //ini_set('error_reporting', E_ALL|E_STRICT|E_DEPRECATED);
-$time_a = microtime(TRUE);
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
@@ -51,12 +50,13 @@ if (isset($config['urdweb_logfile'])) {
 require_once $pathhtmli . '/defaults.php';
 require_once $pathhtmli . '/web_functions.php';
 require_once $pathhtmli . '/urd_log.php';
+require_once $pathhtmli . '/file_functions.php';
 require_once $pathhtmli . '/db.class.php';
 require_once $pathhtmli . '/functions.php';
 // initialise some stuff
 
 try {
-    $db = connect_db(TRUE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     die_html("Connection to database failed. $msg\n");
@@ -65,16 +65,15 @@ try {
 require_once "$pathhtmli/config_functions.php";
 require_once "$pathhtmli/user_functions.php";
 require_once "$pathhtmli/checkauth.php";
+$db->check_db_version();
 $prefs = load_prefs($db, $userid); // load the prefs
 
 require_once "$pathhtmli/usenet_functions.php";
-require_once "$pathhtmli/file_functions.php";
 // first include all the php files that only define stuff
 require_once "$pathhtmli/exception.php";
 require_once "$pathhtmli/autoincludes.php";
-require_once "$pathhtmli/buttons.php";
-require_once "$pathhtmli/module_functions.php";
 require_once "$pathhtmli/../html/fatal_error.php";
+require_once "$pathhtmli/buttons.php";
 
 require_once "$pathhtmli/smarty.php";
 // then execute code we always need

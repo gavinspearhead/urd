@@ -55,8 +55,7 @@ class download_type
         foreach ($article as $line) {
             if (!isset($line[0])) { // empty line
                 continue;
-            }
-            if (isset($line[1]) && substr_compare($line, '=y', 0, 2) == 0) {
+            } elseif (isset($line[1]) && substr_compare($line, '=y', 0, 2) == 0) {
                 return self::TYPE_YYENCODED;
             } elseif ($line[0] == 'M') {
                 if ($possible_uuencode === TRUE) {
@@ -71,7 +70,7 @@ class download_type
                 } else {
                     $possible_xxencode = TRUE;
                 }*/
-            } elseif ($cnt < 5 && stripos ($line, 'This is a multipart message in MIME format.') !== FALSE) {
+            } elseif ($cnt < 5 && stripos($line, 'This is a multipart message in MIME format.') !== FALSE) {
                 return self::TYPE_MIMEENCODED;
             } // else dunno - need to look further
             ++$cnt;
@@ -165,5 +164,3 @@ class download_type
         return FALSE; // No encryption flags found if we get here
     }
 }
-
-

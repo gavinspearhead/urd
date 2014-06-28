@@ -15,20 +15,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: thread.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: thread.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$paththr = realpath(dirname(__FILE__));
-require_once "$paththr/../functions/autoincludes.php";
-require_once "$paththr/../functions/functions.php";
 
 class thread
 {
@@ -124,7 +120,6 @@ class thread_list
             $a = $t->get_action();
             $thread['id'] = $a->get_id();
             $thread['pid'] = $t->get_pid();
-            $thread['username'] = $a->get_username();
             $thread['userid'] = $a->get_userid();
             $thread['command'] = $a->get_command();
             $thread['args'] = $a->get_args();

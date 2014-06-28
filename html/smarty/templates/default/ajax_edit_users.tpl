@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-15 00:41:23 +0200 (zo, 15 jun 2014) $
+ * $Rev: 3095 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edit_users.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_edit_users.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
@@ -27,15 +27,15 @@
 <div class="light">
 <br/>
 <div>
-<input type="hidden" name="id" id="id" value="{$id}"/></td>
+<input type="hidden" name="id" id="id" value="{$id|escape}"/></td>
 </div>
 <table class="hmid">
-<tr><td colspan="2">{$LN_username}</td><td colspan="2"><input type="text" name="username" id="username" value="{$name|escape}" size="{$text_box_size}"/></td></tr>
-<tr><td colspan="2">{$LN_fullname}</td><td colspan="2"><input type="text" name="fullname" id="fullname" value="{$fullname|escape}" size="{$text_box_size}"/></td></tr>
-<tr><td colspan="2">{$LN_email}</td><td colspan="2"><input type="text" name="email" id="email" value="{$email|escape}" size="{$text_box_size}"/></td></tr>
+<tr><td colspan="2">{$LN_username}</td><td colspan="2"><input type="text" name="username" id="username" placeholder="{$LN_username}" required value="{$name|escape}" size="{$text_box_size}"/></td></tr>
+<tr><td colspan="2">{$LN_fullname}</td><td colspan="2"><input type="text" name="fullname" id="fullname" placeholder="{$LN_fullname}" required value="{$fullname|escape}" size="{$text_box_size}"/></td></tr>
+<tr><td colspan="2">{$LN_email}</td><td colspan="2"><input type="email" name="email" id="email" placeholder="{$LN_email}" required value="{$email|escape}" size="{$text_box_size}"/></td></tr>
 {if $id == 'new' || $emailallowed == 0}
 <tr><td colspan="2">{$LN_password}</td><td colspan="2"> 
-    <input type="text" name="password" id="password" size="{$text_box_size}"/>
+    <input type="text" name="password" id="password" size="{$text_box_size}" placeholder="{$LN_password}" required/>
 </td> </tr>
 
 {/if}

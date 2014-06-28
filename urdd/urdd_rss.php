@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_rss.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: urdd_rss.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -40,19 +40,11 @@ class urdd_rss
         $this->cache_dir = get_magpie_cache_dir($db);
     }
 
- /*   private static function make_rss_setid($rss_url, $link)
-    {
-        return md5($rss_url . $link);
-    }
-  */
-
     private static function check_link(DatabaseConnection $db, $id, $link)
     {
         // check if a link already exists in the db for that rss feed
-        $db->escape($link, TRUE);
-        $db->escape($id, TRUE);
-        $qry = "\"setid\" FROM rss_sets WHERE \"nzb_link\" = $link AND \"rss_id\" = $id";
-        $res = $db->select_query($qry, 1);
+        $qry = '"setid" FROM rss_sets WHERE "nzb_link"=? AND "rss_id"=?';
+        $res = $db->select_query($qry, 1, array($link, $id));
         if (isset($res[0]['setid'])) {
             return $res[0]['setid'];
         }
@@ -89,10 +81,9 @@ class urdd_rss
         if ($size == 0) {
             $size = self::get_size_from_description($summary);
         }
-        $db->escape($setid, TRUE);
-        $db->update_query('rss_sets',
-            array('setname', 'timestamp', 'description', 'summary', 'size'),
-            array($title, $timestamp, $description, $summary, $size), "\"setid\" = $setid");
+        $db->update_query_2('rss_sets',
+            array('setname'=>$title, 'timestamp'=>$timestamp, 'description'=>$description, 'summary'=>$summary, 'size'=>$size),
+            '"setid"=?', array($setid));
     }
 
     public function insert_rss_set(DatabaseConnection $db, $rss_id, $link, $title, $timestamp, $description, $summary)
@@ -132,7 +123,7 @@ class urdd_rss
         $expire_time = $now - $expire;
         $rss = fetch_rss::do_fetch_rss($url, $this->cache_dir, $username, $password);
         foreach ($rss->items as $item) {
-            if (!isset($item['link']) || !isset($item['title'])) {
+            if (!isset($item['link'], $item['title'])) {
                 continue;
             }
 
@@ -165,40 +156,38 @@ class urdd_rss
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         assert (is_numeric($rss_id));
-        $orss_id = $rss_id;
         $rss_info = get_rss_info($db, $rss_id);
         $type = USERSETTYPE_RSS;
-        $db->escape($rss_id, TRUE);
 
-        $qry = "count(\"id\") AS cnt FROM rss_sets WHERE \"rss_id\" = $rss_id ";
-        $res = $db->select_query($qry);
-        if ($res === FALSE) {
+        $qry = 'count("id") AS cnt FROM rss_sets WHERE "rss_id"=?';
+        $res = $db->select_query($qry, array($rss_id));
+        if (!isset($res[0]['cnt'])) {
             throw new exception_db ('DB Error');
         }
         $cnt = $res[0]['cnt'];
 
-        $sql = "\"setID\" in (SELECT \"setid\" FROM rss_sets WHERE \"rss_id\" = $rss_id) AND \"type\" = '$type' ";
-        $db->delete_query('usersetinfo', $sql);
+        $sql = '"setID" in (SELECT "setid" FROM rss_sets WHERE "rss_id" = ?) AND "type" = ?';
+        $db->delete_query('usersetinfo', $sql, array($rss_id, $type));
 
         if ($dbid !== NULL) {
             update_queue_status ($db, $dbid, NULL, 0, 30);
         }
 
-        $sql = "\"setID\" in (SELECT \"setid\" FROM rss_sets WHERE \"rss_id\" = $rss_id) AND \"type\" = '$type' ";
-        $db->delete_query('extsetdata', $sql);
+        $sql = '"setID" in (SELECT "setid" FROM rss_sets WHERE "rss_id"=?) AND "type"=?';
+        $db->delete_query('extsetdata', $sql, array($rss_id, $type));
 
         if ($dbid !== NULL) {
             update_queue_status ($db, $dbid, NULL, 0, 60);
         }
 
-        $qry = "\"rss_id\" = $rss_id";
-        $db->delete_query('rss_sets', $qry);
+        $qry = '"rss_id"=?';
+        $db->delete_query('rss_sets', $qry, array($rss_id));
 
         if ($dbid !== NULL) {
             update_queue_status ($db, $dbid, NULL, 0, 90);
         }
-        $this->update_feedcount($db, $orss_id);
-        $db->execute_query("UPDATE rss_urls SET \"extset_update\" = '0' WHERE \"id\" = $rss_id");
+        $this->update_feedcount($db, $rss_id);
+        $db->update_query_2('rss_urls', array('extset_update'=>0), '"id"=?', array($rss_id));
         fetch_rss::delete_cache_entry($rss_info['url'], get_magpie_cache_dir($db));
         if ($dbid !== NULL) {
             update_queue_status ($db, $dbid, NULL, 0, 100);
@@ -224,7 +213,7 @@ class urdd_rss
         $prefs = load_config($db);
         $keep_int = '';
         if ($prefs['keep_interesting']) {
-            $keep_int = " AND \"setid\" NOT IN ( SELECT \"setID\" FROM usersetinfo WHERE \"type\" =  '$type' AND \"statusint\" = '$marking_on') ";
+            $keep_int = " AND \"setid\" NOT IN ( SELECT \"setID\" FROM usersetinfo WHERE \"type\" = '$type' AND \"statusint\" = '$marking_on') ";
         }
 
         $cnt = 0;
@@ -240,13 +229,13 @@ class urdd_rss
         update_queue_status ($db, $dbid, NULL, 0, 30);
 
         // then rm all usersetinfo that has a set id of a set we already removed
-        $sql = "\"setID\" NOT IN (SELECT \"setid\" FROM rss_sets ) AND \"type\" = '$type' ";
-        $res = $db->delete_query('usersetinfo', $sql);
+        $sql = '"setID" NOT IN (SELECT "setid" FROM rss_sets ) AND "type"=?';
+        $res = $db->delete_query('usersetinfo', $sql, array($type));
 
         update_queue_status ($db, $dbid, NULL, 0, 60);
         // ditto extsetinfo
-        $sql = "\"setID\" NOT IN (SELECT \"setid\" FROM rss_sets) AND \"type\" = '$type' ";
-        $res = $db->delete_query('extsetdata', $sql);
+        $sql = '"setID" NOT IN (SELECT "setid" FROM rss_sets) AND "type"=?';
+        $res = $db->delete_query('extsetdata', $sql, array($type));
 
         update_queue_status ($db, $dbid, NULL, 0, 90);
 

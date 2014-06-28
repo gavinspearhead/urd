@@ -28,14 +28,28 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathxf = realpath(dirname(__FILE__));
 
-require_once "$pathxf/defines.php";
-require_once "$pathxf/urdversion.php";
-require_once "$pathxf/functions.php";
 require_once "$pathxf/autoincludes.php";
-require_once "$pathxf/parse_nfo.php";
 
 class urd_extsetinfo
 {
+    const SETTYPE_UNKNOWN = 0;
+    const SETTYPE_MOVIE = 1;
+    const SETTYPE_ALBUM = 2;
+    const SETTYPE_IMAGE = 3;
+    const SETTYPE_SOFTWARE = 4;
+    const SETTYPE_TVSERIES = 5;
+    const SETTYPE_EBOOK = 6;
+    const SETTYPE_DOCUMENTARY = 7;
+    const SETTYPE_GAME = 8;
+    const SETTYPE_TVSHOW = 9;
+    const SETTYPE_OTHER = 100;
+
+    static $SETTYPES = array (
+            self::SETTYPE_UNKNOWN, self::SETTYPE_MOVIE, self::SETTYPE_ALBUM,self::SETTYPE_IMAGE,
+            self::SETTYPE_SOFTWARE, self::SETTYPE_TVSERIES, self::SETTYPE_EBOOK, self::SETTYPE_GAME,
+            self::SETTYPE_DOCUMENTARY, self::SETTYPE_TVSHOW, self::SETTYPE_OTHER
+    );
+
     public static function generate_set_info(array $extsetinfo)
     {
         global $LN;
@@ -48,17 +62,17 @@ class urd_extsetinfo
         // What fields do we show? Depends on the type of file. What files are there? Do we put it in the db or hardcode it?
         // Questions, questions! Let's start by hardcoding it for now.
         switch ($extsetinfo['binarytype']) {
-            case SETTYPE_MOVIE :       $addfields = array('year', 'quality', 'score', 'movieformat', 'lang', 'sublang', 'audioformat', 'moviegenre', 'link', 'xrated', 'note', 'runtime'); break;
-            case SETTYPE_ALBUM :       $addfields = array('year', 'quality', 'score', 'musicformat', 'musicgenre', 'link', 'xrated', 'note', 'runtime'); break;
-            case SETTYPE_IMAGE :       $addfields = array('quality', 'score', 'imageformat', 'imagegenre', 'xrated', 'note'); break;
-            case SETTYPE_SOFTWARE :    $addfields = array('quality', 'os', 'softwareformat', 'softwaregenre', 'lang', 'xrated', 'note'); break;
-            case SETTYPE_TVSERIES :    $addfields = array('quality', 'score', 'movieformat', 'moviegenre', 'audioformat', 'episode', 'link', 'xrated', 'note', 'runtime'); break;
-            case SETTYPE_EBOOK :       $addfields = array('author', 'score', 'quality', 'ebookformat', 'genericgenre'); break;
-            case SETTYPE_TVSHOW :      $addfields = array('quality', 'score', 'movieformat', 'moviegenre', 'audioformat', 'episode', 'link', 'xrated', 'note', 'runtime'); break;
-            case SETTYPE_DOCUMENTARY : $addfields = array('year', 'quality', 'score', 'movieformat', 'lang', 'sublang', 'audioformat', 'link', 'xrated', 'note'); break;
-            case SETTYPE_GAME :        $addfields = array('quality', 'score','os', 'gameformat', 'gamegenre', 'lang', 'xrated', 'note'); break;
-            case SETTYPE_OTHER :       $addfields = array('quality', 'genericgenre', 'xrated', 'note'); break;
-            case SETTYPE_UNKNOWN :     $addfields = array('link'); break;
+            case self::SETTYPE_MOVIE :       $addfields = array('year', 'quality', 'score', 'movieformat', 'lang', 'sublang', 'audioformat', 'moviegenre', 'link', 'xrated', 'note', 'runtime'); break;
+            case self::SETTYPE_ALBUM :       $addfields = array('year', 'quality', 'score', 'musicformat', 'musicgenre', 'link', 'xrated', 'note', 'runtime'); break;
+            case self::SETTYPE_IMAGE :       $addfields = array('quality', 'score', 'imageformat', 'imagegenre', 'xrated', 'note'); break;
+            case self::SETTYPE_SOFTWARE :    $addfields = array('quality', 'os', 'softwareformat', 'softwaregenre', 'lang', 'xrated', 'note'); break;
+            case self::SETTYPE_TVSERIES :    $addfields = array('quality', 'score', 'movieformat', 'moviegenre', 'audioformat', 'episode', 'link', 'xrated', 'note', 'runtime'); break;
+            case self::SETTYPE_EBOOK :       $addfields = array('author', 'score', 'quality', 'ebookformat', 'genericgenre'); break;
+            case self::SETTYPE_TVSHOW :      $addfields = array('quality', 'score', 'movieformat', 'moviegenre', 'audioformat', 'episode', 'link', 'xrated', 'note', 'runtime'); break;
+            case self::SETTYPE_DOCUMENTARY : $addfields = array('year', 'quality', 'score', 'movieformat', 'lang', 'sublang', 'audioformat', 'link', 'xrated', 'note'); break;
+            case self::SETTYPE_GAME :        $addfields = array('quality', 'score','os', 'gameformat', 'gamegenre', 'lang', 'xrated', 'note'); break;
+            case self::SETTYPE_OTHER :       $addfields = array('quality', 'genericgenre', 'xrated', 'note'); break;
+            case self::SETTYPE_UNKNOWN :     $addfields = array('link'); break;
         }
 
         // Add extra fields regardless of type:
@@ -76,8 +90,8 @@ class urd_extsetinfo
             $rating[] = $x;
         }
 
-        $movieformat = array('', '720p', '1080i', '1080p', 'xvid', 'divx', 'bluray', 'avi', 'mpg', 'mov', 'wmv', 'black/white', 'H.264', 'dvd', 'vhs', 'other', 'mp4');
-        $audioformat = array('', 'mono', 'stereo', 'Dolby Digital', 'DTS', 'other');
+        $movieformat = array('', '720p', '1080i', '1080p', '2160p', '4320p', 'xvid', 'divx', 'bluray', 'avi', 'mp4', 'mpg', 'mov', 'wmv', 'black/white', 'H.264', 'dvd', 'vhs', 'other');
+        $audioformat = array('', 'mono', 'stereo', 'Dolby Digital', 'DTS', 'Silent', 'other');
         $musicformat = array('', 'mp3', 'ogg', 'wma', 'ape', 'wav', 'flac', 'mpc', 'other');
         $imageformat = array('', 'jpg', 'png', 'bmp', 'psd', 'gif', 'raw', 'tiff', 'svg', 'other');
         $softwareformat = array('', 'iso', 'bin', 'zip', 'exe', 'msi', 'source', 'rpm', 'deb', 'rar', '7z', 'arc', 'zoo', 'arj', 'lha', 'other');
@@ -139,22 +153,21 @@ class urd_extsetinfo
         global $LN;
 
         $binarytypes = array(
-                SETTYPE_UNKNOWN 	=> $LN['bin_unknown'],
-                SETTYPE_MOVIE		=> $LN['bin_movie'],
-                SETTYPE_ALBUM 		=> $LN['bin_album'],
-                SETTYPE_IMAGE 		=> $LN['bin_image'],
-                SETTYPE_SOFTWARE 	=> $LN['bin_software'],
-                SETTYPE_TVSERIES 	=> $LN['bin_tvseries'],
-                SETTYPE_EBOOK	 	=> $LN['bin_ebook'],
-                SETTYPE_GAME	 	=> $LN['bin_game'],
-                SETTYPE_DOCUMENTARY	=> $LN['bin_documentary'],
-                SETTYPE_TVSHOW	 	=> $LN['bin_tvshow'],
-                SETTYPE_OTHER 		=> $LN['bin_other']
+                self::SETTYPE_UNKNOWN 	=> $LN['bin_unknown'],
+                self::SETTYPE_MOVIE		=> $LN['bin_movie'],
+                self::SETTYPE_ALBUM 		=> $LN['bin_album'],
+                self::SETTYPE_IMAGE 		=> $LN['bin_image'],
+                self::SETTYPE_SOFTWARE 	=> $LN['bin_software'],
+                self::SETTYPE_TVSERIES 	=> $LN['bin_tvseries'],
+                self::SETTYPE_EBOOK	 	=> $LN['bin_ebook'],
+                self::SETTYPE_GAME	 	=> $LN['bin_game'],
+                self::SETTYPE_DOCUMENTARY	=> $LN['bin_documentary'],
+                self::SETTYPE_TVSHOW	 	=> $LN['bin_tvshow'],
+                self::SETTYPE_OTHER 		=> $LN['bin_other']
                 );
 
         return $binarytypes;
     }
-
 
     private static function transpose_spot_to_extset($spot_cat, $subcata, $subcatb, $subcatc, $subcatd, $subcate, array &$match)
     {
@@ -194,12 +207,11 @@ class urd_extsetinfo
         }
     }
 
-
     private static function guess_set_type(DatabaseConnection $db, $setid, $groupname, $originalsetname, $origin_type)
     {
         $result = array();
-        $result[SETTYPE_MOVIE] = $result[SETTYPE_TVSERIES] = $result[SETTYPE_ALBUM] = $result[SETTYPE_IMAGE] = $result[SETTYPE_SOFTWARE] = 0;
-        $result[SETTYPE_EBOOK] = $result[SETTYPE_GAME] = $result[SETTYPE_DOCUMENTARY] = $result[SETTYPE_TVSHOW] = $result[SETTYPE_UNKNOWN] = 0;
+        $result[self::SETTYPE_MOVIE] = $result[self::SETTYPE_TVSERIES] = $result[self::SETTYPE_ALBUM] = $result[self::SETTYPE_IMAGE] = $result[self::SETTYPE_SOFTWARE] = 0;
+        $result[self::SETTYPE_EBOOK] = $result[self::SETTYPE_GAME] = $result[self::SETTYPE_DOCUMENTARY] = $result[self::SETTYPE_TVSHOW] = $result[self::SETTYPE_UNKNOWN] = 0;
 
         // Check the groupname for hints:
 
@@ -212,49 +224,48 @@ class urd_extsetinfo
             $subcatd = $groupname[4];
             $subcate = $groupname[5];
             if ($spot_cat == 0) {
-                $result[SETTYPE_MOVIE] += 6;
-                $result[SETTYPE_TVSERIES] += 6;
-                $result[SETTYPE_TVSHOW] += 3;
-                $result[SETTYPE_DOCUMENTARY] += 3;
-                $result[SETTYPE_IMAGE] += 3;
-                $result[SETTYPE_EBOOK] += 2;
+                $result[self::SETTYPE_MOVIE] += 6;
+                $result[self::SETTYPE_TVSERIES] += 6;
+                $result[self::SETTYPE_TVSHOW] += 3;
+                $result[self::SETTYPE_DOCUMENTARY] += 3;
+                $result[self::SETTYPE_IMAGE] += 3;
+                $result[self::SETTYPE_EBOOK] += 2;
                 if (strpos($subcata, 'z0|')!== FALSE) {
-                    $result[SETTYPE_MOVIE] +=10;
+                    $result[self::SETTYPE_MOVIE] +=10;
                 }
                 if (strpos($subcata, 'z1|')!== FALSE) {
-                    $result[SETTYPE_TVSERIES] +=10;
+                    $result[self::SETTYPE_TVSERIES] +=10;
                 }
                 if (strpos($subcata, 'z2|')!== FALSE) {
-                    $result[SETTYPE_BOOK] += 10;
+                    $result[self::SETTYPE_BOOK] += 10;
                 }
                 if (strpos($subcata, 'd6|')!== FALSE) {
-                    $result[SETTYPE_DOCUMENTARY] +=10;
+                    $result[self::SETTYPE_DOCUMENTARY] +=10;
                 }
                 if (strpos($subcata, 'd11|')!== FALSE) {
-                    $result[SETTYPE_TVSERIES] +=10;
+                    $result[self::SETTYPE_TVSERIES] +=10;
                 }
             } elseif ($spot_cat == 1) {
-                $result[SETTYPE_ALBUM] += 10;
+                $result[self::SETTYPE_ALBUM] += 10;
             } elseif ($spot_cat == 2) {
-                $result[SETTYPE_GAME] += 10;
+                $result[self::SETTYPE_GAME] += 10;
             } elseif ($spot_cat == 3) {
-                $result[SETTYPE_SOFTWARE] += 10;
+                $result[self::SETTYPE_SOFTWARE] += 10;
             }
         }
 
         $bintype = '';
         if ($origin_type != USERSETTYPE_SPOT) {
             $type = array();
-            $type[SETTYPE_MOVIE] = array('movie', 'hdtv', 'xvid', 'divx', 'multimedia', 'dvd', 'vcd');
-            $type[SETTYPE_TVSERIES] = array('movie', 'hdtv', 'xvid', 'divx', 'multimedia', 'dvd', 'vcd', 'tvseries', '.tv');
-            $type[SETTYPE_ALBUM] = array('mp3', 'album', 'music', 'sounds', 'metal', 'rock', 'trance', 'dance', 'jazz');
-            $type[SETTYPE_IMAGE] = array('images', 'pictures');
-            $type[SETTYPE_SOFTWARE] = array('.x', '.core', 'boneless', 'warez', 'osx');
-            $type[SETTYPE_EBOOK] = array('ebook', 'e-book');
-            $type[SETTYPE_GAME] = array('game', 'xbox', 'playstation', 'wii', 'nintendo', 'ps3', 'ps2');
-            $type[SETTYPE_DOCUMENTARY] = array('documentary', 'documentaries', 'reportages');
-            $type[SETTYPE_TVSHOW] = array('xvid', 'divx', '.tv');
-
+            $type[self::SETTYPE_MOVIE] = array('movie', 'hdtv', 'xvid', 'divx', 'multimedia', 'dvd', 'vcd');
+            $type[self::SETTYPE_TVSERIES] = array('movie', 'hdtv', 'xvid', 'divx', 'multimedia', 'dvd', 'vcd', 'tvseries', '.tv');
+            $type[self::SETTYPE_ALBUM] = array('mp3', 'album', 'music', 'sounds', 'metal', 'rock', 'trance', 'dance', 'jazz');
+            $type[self::SETTYPE_IMAGE] = array('images', 'pictures');
+            $type[self::SETTYPE_SOFTWARE] = array('.x', '.core', 'boneless', 'warez', 'osx');
+            $type[self::SETTYPE_EBOOK] = array('ebook', 'e-book');
+            $type[self::SETTYPE_GAME] = array('game', 'xbox', 'playstation', 'wii', 'nintendo', 'ps3', 'ps2');
+            $type[self::SETTYPE_DOCUMENTARY] = array('documentary', 'documentaries', 'reportages');
+            $type[self::SETTYPE_TVSHOW] = array('xvid', 'divx', '.tv');
 
             foreach ($type as $bintype => $binarray) {
                 foreach ($binarray as $groupstring) {
@@ -270,15 +281,15 @@ class urd_extsetinfo
         unset($type);
         $type = array();
         $match = array();
-        $type[SETTYPE_MOVIE] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'bluray', 'blu-ray', 'bd5', 'bd9', 'x264', 'dts', 'ac3', 'vhs', 'mp4');
-        $type[SETTYPE_TVSERIES] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv', 'season', 'dts', 'bd5', 'bd9', 'ac3', 'mp4');
-        $type[SETTYPE_ALBUM] = array('.mp3', '.m3u', '.flac', '.wma', '.ogg', '.ape', '.wav', '.aac');
-        $type[SETTYPE_IMAGE] = array('.jpg', '.png', '.gif', '.bmp', '.jpeg', '.tiff');
-        $type[SETTYPE_SOFTWARE] = array('.iso', '.nrg', '.zip', 'osx');
-        $type[SETTYPE_EBOOK] = array('.pdf', '.prc', '.kml', 'ebook', 'e-book', 'magazine', 'isbn', 'epub', 'mobi');
-        $type[SETTYPE_GAME] = array('.iso', 'xbox', 'playstation', 'wii', 'nintendo');
-        $type[SETTYPE_DOCUMENTARY] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv', );
-        $type[SETTYPE_TVSHOW] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv');
+        $type[self::SETTYPE_MOVIE] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p',  '2160p', '4320p', 'bluray', 'blu-ray', 'bd5', 'bd9', 'x264', 'dts', 'ac3', 'vhs', 'mp4');
+        $type[self::SETTYPE_TVSERIES] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv', 'season', 'dts', 'bd5', 'bd9', 'ac3', 'mp4');
+        $type[self::SETTYPE_ALBUM] = array('.mp3', '.m3u', '.flac', '.wma', '.ogg', '.ape', '.wav', '.aac');
+        $type[self::SETTYPE_IMAGE] = array('.jpg', '.png', '.gif', '.bmp', '.jpeg', '.tiff');
+        $type[self::SETTYPE_SOFTWARE] = array('.iso', '.nrg', '.zip', 'osx');
+        $type[self::SETTYPE_EBOOK] = array('.pdf', '.prc', '.kml', 'ebook', 'e-book', 'magazine', 'isbn', 'epub', 'mobi');
+        $type[self::SETTYPE_GAME] = array('.iso', 'xbox', 'playstation', 'wii', 'nintendo');
+        $type[self::SETTYPE_DOCUMENTARY] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv', 'mp4', '2160p', '4320p',);
+        $type[self::SETTYPE_TVSHOW] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv');
 
         foreach ($type as $bintype => $binarray) {
             foreach ($binarray as $setstring) {
@@ -291,28 +302,28 @@ class urd_extsetinfo
 
         // Adding an extra series-check by looking for sXXeXX strings:
         if (preg_match('/s([0-9]{1,2})[._ ]{0,1}e([0-9]{1,2})/i', $originalsetname, $prmatch)) {
-            $result[SETTYPE_TVSERIES] += 5;
+            $result[self::SETTYPE_TVSERIES] += 5;
             $match['episode'] = 's' . $prmatch[1] . 'e' . $prmatch[2];
         } elseif (preg_match('/[^a-z0-9]([0-9]{1,2})x([0-9]{2})[^0-9]/i', $originalsetname, $prmatch)) {
-            $result[SETTYPE_TVSERIES] += 4;
+            $result[self::SETTYPE_TVSERIES] += 4;
             $match['episode'] = 's' . $prmatch[1] . 'e' . $prmatch[2];
         } elseif (preg_match('/s([0-9]{1,2})[._ ]{0,1}d([0-9]{1,2})/i', $originalsetname, $prmatch)) {
-            $result[SETTYPE_TVSERIES] += 4;
+            $result[self::SETTYPE_TVSERIES] += 4;
             $match['episode'] = 's' . $prmatch[1] . 'd' . $prmatch[2];
         } else {
             // If there's no episode thing, it's probably not a series or tvshow
-            $result[SETTYPE_TVSERIES] -= 2;
+            $result[self::SETTYPE_TVSERIES] -= 2;
         }
 
         // Look for year info, probably a movie or album then:
         if (preg_match('/[^0-9](19[0-9]{2}|20[012][0-9])[^0-9]/', $originalsetname, $prmatch)) {
-            $result[SETTYPE_MOVIE] += 2;
-            $result[SETTYPE_ALBUM] += 2;
+            $result[self::SETTYPE_MOVIE] += 2;
+            $result[self::SETTYPE_ALBUM] += 2;
             $match['year'] = $prmatch[1];
         }
         // Does it have a YYYYxMMxDD string or DDxMMxYYYY string?
         if (preg_match('/[^0-9](19[0-9]{2}|20[012][0-9])[^0-9]([0-9]{1,2})[^0-9]([0-9]{1,2})[^0-9]/', $originalsetname, $prmatch)) {
-            $result[SETTYPE_TVSHOW] += 8;
+            $result[self::SETTYPE_TVSHOW] += 8;
 
             // Trim leading 0's:
             $cleanprmatch[] = array();
@@ -321,7 +332,7 @@ class urd_extsetinfo
             }
             $match['episode'] = $cleanprmatch[3] . '-' . $cleanprmatch[2] . '-' . $cleanprmatch[1];
         } elseif (preg_match('/[^0-9]([0-9]{1,2})[^0-9]([0-9]{1,2})[^0-9](19[0-9]{2}|20[012][0-9])/', $originalsetname, $prmatch)) {
-            $result[SETTYPE_TVSHOW] += 8;
+            $result[self::SETTYPE_TVSHOW] += 8;
 
             // Trim leading 0's:
             $cleanprmatch[] = array();
@@ -330,7 +341,7 @@ class urd_extsetinfo
             }
             $match['episode'] = $cleanprmatch[1] . '-' . $cleanprmatch[2] . '-' . $prmatch[3];
         } else {
-            $result[SETTYPE_TVSHOW] -= 1;
+            $result[self::SETTYPE_TVSHOW] -= 1;
         }
 
         // Process by assuming the highest result is the right binarytype:
@@ -339,7 +350,6 @@ class urd_extsetinfo
 
         return array($key, $val, $match);
     }
-
 
     public static function guess_more_data($val, $key, $newsetname, $groupname, array $match, array &$save, $origin_type)
     {/// need to match to spots too
@@ -356,7 +366,7 @@ class urd_extsetinfo
 
         if ($val !== 0) {// If we don't know the filetype, we only set the name.
             switch ($key) {
-                case SETTYPE_MOVIE:
+                case self::SETTYPE_MOVIE:
                     if (isset($match['720p']))	$save['quality'] = '9';
                     if (isset($match['1080i']))	$save['quality'] = '9.5';
                     if (isset($match['1080p']))	$save['quality'] = '10';
@@ -377,7 +387,7 @@ class urd_extsetinfo
                     if (isset($match['ac3']))	$save['audioformat'] = 'Dolby Digital';
                     if (isset($match['year']))	$save['year'] = $match['year'];
                     break;
-                case SETTYPE_TVSERIES:
+                case self::SETTYPE_TVSERIES:
                     if (isset($match['720p']))	$save['quality'] = '9';
                     if (isset($match['1080i']))	$save['quality'] = '9.5';
                     if (isset($match['1080p']))	$save['quality'] = '10';
@@ -396,7 +406,7 @@ class urd_extsetinfo
                     if (isset($match['dts']))	$save['audioformat'] = 'DTS';
                     if (isset($match['episode']))	$save['episode'] = $match['episode'];
                     break;
-                case SETTYPE_ALBUM:
+                case self::SETTYPE_ALBUM:
                     if (isset($match['.mp3']))	$save['musicformat'] = 'mp3';
                     if (isset($match['.m3u']))	$save['musicformat'] = 'mp3';
                     if (isset($match['.flac']))	$save['musicformat'] = 'flac';
@@ -405,7 +415,7 @@ class urd_extsetinfo
                     if (isset($match['.ape']))	$save['musicformat'] = 'ape';
                     if (isset($match['year']))	$save['year'] = $match['year'];
                     break;
-                case SETTYPE_TVSHOW:
+                case self::SETTYPE_TVSHOW:
                     if (isset($match['720p']))	$save['quality'] = '9';
                     if (isset($match['1080i']))	$save['quality'] = '9.5';
                     if (isset($match['1080p']))	$save['quality'] = '10';
@@ -424,11 +434,11 @@ class urd_extsetinfo
                     if (isset($match['dts']))	$save['audioformat'] = 'DTS';
                     if (isset($match['episode']))	$save['episode'] = $match['episode'];
                     break;
-                case SETTYPE_IMAGE:
-                case SETTYPE_EBOOK:
-                case SETTYPE_GAME:
-                case SETTYPE_DOCUMENTARY:
-                case SETTYPE_SOFTWARE:
+                case self::SETTYPE_IMAGE:
+                case self::SETTYPE_EBOOK:
+                case self::SETTYPE_GAME:
+                case self::SETTYPE_DOCUMENTARY:
+                case self::SETTYPE_SOFTWARE:
                     break;
             }
 
@@ -438,8 +448,7 @@ class urd_extsetinfo
         if ($newsetname != '') {
             // Here's where HAL comes in.
             // Setname probably has underscores or periods that should be replaced by blanks:
-            $newsetname = str_replace('.', ' ', $newsetname);
-            $newsetname = str_replace('_', ' ', $newsetname);
+            $newsetname = str_replace(array('.', '_'), ' ', $newsetname);
 
             // Save the new setname:
             $save['name'] = trim($newsetname, "- \x0b\n\t\0\r");
@@ -474,7 +483,6 @@ class urd_extsetinfo
         }
     }
 
-
     public static function save_extsetinfo(DatabaseConnection $db, $setid, $userid, array $namevalues, $type, $overwrite = TRUE)
     {
         global $LN;
@@ -484,18 +492,14 @@ class urd_extsetinfo
         }
 
         // Save changes:
-        $db->escape($setid);
-
         $newsetname = self::generate_set_name($db, $namevalues);
-        $unsafensn = $newsetname;
-        $db->escape($newsetname, TRUE);
         foreach ($namevalues as $name => $value_x) {
             $value = (trim($value_x));
             $fieldEmpty = ($value == ''); // Empty field?
 
             // Does info exist?
-            $sql = " * FROM extsetdata WHERE \"setID\" = '$setid' AND \"name\" = '$name' AND \"type\" = '$type'";
-            $res = $db->select_query($sql, 1);
+            $sql = '* FROM extsetdata WHERE "setID" = ? AND "name" = ? AND "type" = ?';
+            $res = $db->select_query($sql, 1, array($setid, $name, $type));
             // Check if the field was empty, and if the stored field exists
 
             if ($res === FALSE && !$fieldEmpty) {
@@ -503,11 +507,7 @@ class urd_extsetinfo
                 $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value, ESI_NOT_COMMITTED, $type) );
             } elseif ($res !== FALSE && ($overwrite === TRUE || (isset($res[0]['value']) && trim($res[0]['value']) == ''))) {
                 // OK, something existed:
-
-                $db->escape($value);
-                $db->escape($name);
-                $sql = "UPDATE extsetdata SET \"value\" = '$value', \"committed\" = '" . ESI_NOT_COMMITTED . "' WHERE \"setID\" = '$setid' AND \"name\" = '$name' AND \"type\" = '$type'";
-                $db->execute_query($sql);
+                $db->update_query_2('extsetdata', array('value'=>$value, 'committed'=>ESI_NOT_COMMITTED), '"setID"=? AND "name"=? AND "type"=?', array($setid, $name, $type));
             } elseif ($res !== FALSE && $overwrite === FALSE) {
                 // skip it but set the value in the array to the original value
                 if (isset($res[0][$name])) {
@@ -517,38 +517,34 @@ class urd_extsetinfo
         }
         // Update setname:
 
-        $sql = "* FROM extsetdata WHERE \"setID\" = '$setid' AND \"name\" = 'setname' AND \"type\" = '$type'";
-        $res = $db->select_query($sql, 1);
+        $sql = "\"setID\" FROM extsetdata WHERE \"setID\" = ? AND \"name\" = ? AND \"type\" = ?";
+        $res = $db->select_query($sql, 1, array($setid, 'setname', $type));
         if ($res === FALSE) {
-            $sql = "INSERT INTO extsetdata (\"setID\", \"name\", \"value\", \"committed\", \"type\") VALUES ('$setid', 'setname', $newsetname, 0, $type)";
+            $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, 'setname', $newsetname, 0, $type));
         } else {
-            $sql = "UPDATE extsetdata SET \"value\" = $newsetname WHERE \"setID\" = '$setid' AND \"name\" = 'setname' AND \"type\" = '$type'";
+            $db->update_query_2('extsetdata', array('value'=>$newsetname, 'committed'=>ESI_NOT_COMMITTED),  '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
         }
-        $db->execute_query($sql);
 
-        return $unsafensn;
+        return $newsetname;
     }
-
 
     public static function do_magic_nfo_extsetinfo_file(DatabaseConnection $db, $path, $file, $binary_id, $group_id, $userid)
     {
         //	here we try to guess ext set info from the nfo file
-        //
         assert (is_numeric($group_id) && $binary_id != '' && is_numeric($userid));
-        $db->escape($binary_id, TRUE);
         $db->escape($group_id, FALSE);
-        $sql = "\"setID\" FROM binaries_$group_id WHERE \"binaryID\" = $binary_id";
-        $rv = $db->select_query($sql, 1);
+        $sql = "\"setID\" FROM binaries_$group_id WHERE \"binaryID\" =?";
+        $rv = $db->select_query($sql, 1, array($binary_id));
         if ($rv === FALSE) {
             return;
         }
 
-        $setid = $rv[0]['setID'] ;
+        $setid = $rv[0]['setID'];
         $origine_type = USERSETTYPE_GROUP;
         try {
             list($originalsetname, $groupname, $size) = get_set_info($db, $setid, $origine_type);
         } catch (exception $e) {
-            return ;
+            return;
         }
         list($key, $val, $match) = self::guess_set_type($db, $setid, $groupname, $originalsetname, $size);
         if ($val == 0) {
@@ -561,26 +557,23 @@ class urd_extsetinfo
         self::save_extsetinfo($db, $setid, $userid, $save, $origine_type, FALSE);
     }
 
-
     private static function guess_type_by_size($size)
     {
         assert(is_numeric($size));
         if ($size > (500 * 1024 *1024)) {
-            $key = SETTYPE_MOVIE;
-        } elseif ($size >  (300 * 1024 *1024)) {
-            $key = SETTYPE_TVSERIES;
+            $key = self::SETTYPE_MOVIE;
+        } elseif ($size > (300 * 1024 * 1024)) {
+            $key = self::SETTYPE_TVSERIES;
         } elseif ($size > (60 * 1024 * 1024)) {
-            $key = SETTYPE_ALBUM;
+            $key = self::SETTYPE_ALBUM;
         } else {
-            $key = SETTYPE_IMAGE;
+            $key = self::SETTYPE_IMAGE;
         }
 
         return $key;
     }
 
-
     // partly redundant with ajax_showpreview xxx
-
     public static function do_magic_nfo_extsetinfo_contents(DatabaseConnection $db, $contents, $binary_id, $group_id, $userid, $setid)
     {
         //	here we try to guess ext set info from the nfo file
@@ -604,16 +597,14 @@ class urd_extsetinfo
         self::save_extsetinfo($db, $setid, $userid, $save, $origin_type, FALSE);
     }
 
-
     public static function check_extset_link_exists(DatabaseConnection $db, $setid, $type)
     {
         $search_type = $db->get_pattern_search_command('REGEXP');
-        $sql = " * FROM extsetdata WHERE \"setID\" = '$setid' AND \"type\"='$type' AND \"name\" = 'link' AND \"value\" $search_type '^https?://'";
-        $res = $db->select_query($sql, 1);
+        $sql = " * FROM extsetdata WHERE \"setID\" = ? AND \"type\"=? AND \"name\" = ? AND \"value\" $search_type ?";
+        $res = $db->select_query($sql, 1, array($setid, $type, 'link', '^https?://'));
 
         return $res !== FALSE;
     }
-
 
     public static function guess_extsetinfo_safe(DatabaseConnection $db, $setid, $origin_type, $userid)
     {
@@ -642,7 +633,6 @@ class urd_extsetinfo
         self::store_ext_setdata($db, $setid, $save, $origin_type, ESI_COMMITTED, TRUE);
         // We only save when there wasn't an existing value.. we're just guessing and if someone entered something, it's probably better.
     }
-
 
     public static function guess_extsetinfo(DatabaseConnection $db, $setid, $origin_type, $userid)
     {
@@ -710,12 +700,10 @@ class urd_extsetinfo
         }
     }
 
-
-        static function generate_set_name(DatabaseConnection $db, array $namevalues)
+    public static function generate_set_name(DatabaseConnection $db, array $namevalues)
     {
         return (trim(self::generate_set_name_1($db, $namevalues), "- \x0b\n\t\0\r"));
     }
-
 
     public static function generate_set_name_1(DatabaseConnection $db, array $namevalues)
     {
@@ -724,7 +712,7 @@ class urd_extsetinfo
             return '';
         }
         if (!isset($namevalues['binarytype'])) {
-            $namevalues['binarytype'] = SETTYPE_UNKNOWN;
+            $namevalues['binarytype'] = self::SETTYPE_UNKNOWN;
         }
         $format_string = get_config($db, 'settype_'. $namevalues['binarytype']);
         // language = ????
@@ -733,7 +721,7 @@ class urd_extsetinfo
         }
 
         switch ($namevalues['binarytype']) {
-            case SETTYPE_MOVIE:
+            case self::SETTYPE_MOVIE:
                 $chars = 'TtnylsmaNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
@@ -762,7 +750,7 @@ class urd_extsetinfo
                 $values['t'] = 'Movie';   // type
                 $values['T'] = ':_img_movie:';   //  image placeholder
                 break;
-            case SETTYPE_ALBUM:
+            case self::SETTYPE_ALBUM:
                 $chars = 'TntyqfgNPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
@@ -783,7 +771,7 @@ class urd_extsetinfo
                 $values['t'] = 'Album';   // type
                 $values['T'] = ':_img_album:';   //  image placeholder
                 break;
-            case SETTYPE_IMAGE:
+            case self::SETTYPE_IMAGE:
                 $chars = 'TtnfgxqNPC';
                 $name = GetAV($namevalues, 'name');
                 $format= GetAV($namevalues, 'imageformat');
@@ -804,7 +792,7 @@ class urd_extsetinfo
                 $values['t'] = 'Image';   // type
                 $values['T'] = ':_img_image:';   //  image placeholder
                 break;
-            case SETTYPE_SOFTWARE:
+            case self::SETTYPE_SOFTWARE:
                 $chars = 'TnotNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $os = GetAV($namevalues, 'os');
@@ -823,7 +811,7 @@ class urd_extsetinfo
                 $values['t'] = 'Software';   // type
                 $values['T'] = ':_img_software:';   // image placeholder
                 break;
-            case SETTYPE_TVSERIES:
+            case self::SETTYPE_TVSERIES:
                 $chars = 'TtnemqaxNyPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
@@ -849,7 +837,7 @@ class urd_extsetinfo
                 $values['t'] = 'Series';   // type
                 $values['T'] = ':_img_series:';   //  image placeholder
                 break;
-            case SETTYPE_EBOOK:
+            case self::SETTYPE_EBOOK:
                 $chars = 'TtnAfqgxyPC';
                 $name = GetAV($namevalues, 'name');
                 $author = GetAV($namevalues, 'author');
@@ -875,7 +863,7 @@ class urd_extsetinfo
                 $values['t'] = 'Ebook';   // type
                 $values['T'] = ':_img_ebook:';   //  image placeholder
                 break;
-            case SETTYPE_GAME:
+            case self::SETTYPE_GAME:
                 $chars = 'TnotNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $os = GetAV($namevalues, 'os');
@@ -894,7 +882,7 @@ class urd_extsetinfo
                 $values['t'] = 'Game';   // type
                 $values['T'] = ':_img_game:';   //  image placeholder
                 break;
-            case SETTYPE_DOCUMENTARY:
+            case self::SETTYPE_DOCUMENTARY:
                 $chars = 'TtnylsmaNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
@@ -922,7 +910,7 @@ class urd_extsetinfo
                 $values['t'] = 'Documentary';   // type
                 $values['T'] = ':_img_documentary:';   //  image placeholder
                 break;
-            case SETTYPE_TVSHOW:
+            case self::SETTYPE_TVSHOW:
                 $chars = 'TtnmaxeNyqPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
@@ -936,7 +924,7 @@ class urd_extsetinfo
 
                 $password = GetAV($namevalues, 'password');
                 $copyright = GetAV($namevalues, 'copyright');
-                $values['P'] = ($password != '' ?  ':_img_pw:' : '');
+                $values['P'] = ($password != '' ? ':_img_pw:' : '');
                 $values['C'] = ($copyright == '1' ? ':_img_copyright:' : '');
                 $values['n'] = $name;   // name
                 $values['y'] = $year;
@@ -949,8 +937,8 @@ class urd_extsetinfo
                 $values['t'] = 'TVShow';   // string
                 $values['T'] = ':_img_tvshow:';   // image placeholder
                 break;
-            case SETTYPE_UNKNOWN:
-            case SETTYPE_OTHER:
+            case self::SETTYPE_UNKNOWN:
+            case self::SETTYPE_OTHER:
             default:
                 $chars = 'ntTPC';
                 $password = GetAV($namevalues, 'password');
@@ -966,7 +954,6 @@ class urd_extsetinfo
         return format_setname($format_string, $chars, $values);
     }
 
-
     public static function store_ext_setdata(DatabaseConnection $db, $setid, array $save, $type, $commit = ESI_COMMITTED, $overwrite=FALSE)
     {
         echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -975,61 +962,51 @@ class urd_extsetinfo
         if ($newsetname == '') {
             return FALSE; // We have no idea what kind of upload this is. So we don't set anything.
         }
-        $unsafensn = $newsetname;
-        $db->escape($newsetname, TRUE);
-        $db->escape($setid);
         // Save the individual extsetinfo's:
         foreach ($save as $name => $value) {
             if ($name == 'MERGE_SET') {
                 store_merge_sets_data($db, trim($value), $setid, $type, $commit);
             } else {
                 $value_x = trim($value);
-                $db->escape($name);
-                $db->escape($type);
                 // Does info exist?
-                $sql = " * FROM extsetdata WHERE \"setID\" = '$setid' AND \"name\" = '$name' AND \"type\" = '$type'";
-                $res = $db->select_query($sql, 1);
+                $sql = "* FROM extsetdata WHERE \"setID\" = ? AND \"name\" = ? AND \"type\" = ?";
+                $res = $db->select_query($sql, 1, array($setid, $name, $type));
 
                 // Check if the stored field exists
                 if ($res === FALSE) {
-                    $db->insert_query('extsetdata', array ('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type) );
+                    $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type) );
                 } elseif ($overwrite === TRUE) {
-                    $db->update_query('extsetdata', array ( 'value', 'committed'), array($value_x, $commit), "\"setID\" = '$setid' AND \"name\" = '$name' AND \"type\" = '$type'");
+                    $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=> $commit), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, $name, $type));
                 }
             }
         }
 
         // Store the new setname based on the extsetinfo:
-        $sql = "* FROM extsetdata WHERE \"setID\" = '$setid' AND \"name\" = 'setname' AND \"type\" = '$type'";
-        $res = $db->select_query($sql, 1);
+        $sql = '* FROM extsetdata WHERE "setID"=? AND "name"=? AND "type"=?';
+        $res = $db->select_query($sql, 1, array($setid, 'setname', $type));
         if ($res === FALSE) {
-            $sql = "INSERT INTO extsetdata (\"setID\", \"name\", \"value\", \"committed\", \"type\") VALUES ('$setid', 'setname', $newsetname, $commit, $type)";
+            $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, 'setname', $newsetname, $commit, $type));
         } else {
-            $sql = "UPDATE extsetdata SET \"value\" = $newsetname, \"committed\" = $commit WHERE \"setID\" = '$setid' AND \"name\" = 'setname' AND \"type\" = '$type'";
+            $db->update_query('extsetdata', array('value'=>$newsetname, 'committed'=>$commit), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, 'setname', $type));
         }
-        $db->execute_query($sql);
-
         // Return newsetname so we can use ajax to show it in the browse page without reloading it.
-        return $unsafensn; // Unsafe version, we don't want the added quotes thank you.
+        return $newsetname; // Unsafe version, we don't want the added quotes thank you.
     }
 
     public function add_ext_setdata(DatabaseConnection $db, $setid, array $save, $type, $commit = ESI_COMMITTED, $overwrite=FALSE)
     {
         foreach ($save as $name => $value) {
             $value_x = trim($value);
-            $db->escape($name);
-            $db->escape($type);
             // Does info exist?
-            $sql = " * FROM extsetdata WHERE \"setID\" = '$setid' AND \"name\" = '$name' AND \"type\" = '$type'";
-            $res = $db->select_query($sql, 1);
+            $sql = "* FROM extsetdata WHERE \"setID\" = ? AND \"name\" = ? AND \"type\" = ?";
+            $res = $db->select_query($sql, 1, array($setid, $name, $type));
 
             // Check if the stored field exists
             if ($res === FALSE) {
-                $db->insert_query('extsetdata', array ('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type) );
+                $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type));
             } elseif ($overwrite === TRUE) {
-                $db->update_query('extsetdata', array ( 'value', 'committed'), array($value_x, $commit), "\"setID\" = '$setid' AND \"name\" = '$name' AND \"type\" = '$type'");
+                $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=>$commit), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, $name, $type));
             }
         }
     }
-
 }

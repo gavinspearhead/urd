@@ -25,7 +25,7 @@
 <div class="set_title centered">{$LN_add_search}</div>
 <div id="savename_content">
 {$LN_save_search_as}:<br/>
-<input type="text" value="{$name|escape:htmlall}" id="savename_val"/></p>
+<input type="text" value="{$name|escape:htmlall}" id="savename_val" required placeholder="{$LN_name}" class="width300"/></p>
 <div {if $categories_count == 0} class="hidden"{/if}>
 {$LN_category}:<br/>
 <select name="category" id="category_id">

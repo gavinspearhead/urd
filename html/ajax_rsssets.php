@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-04 00:51:40 +0200 (wo, 04 sep 2013) $
- * $Rev: 2917 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_rsssets.php 2917 2013-09-03 22:51:40Z gavinspearhead@gmail.com $
+ * $Id: ajax_rsssets.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -28,7 +28,7 @@ if (!defined('ORIGINAL_PAGE')) {
 $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
-require_once "$pathidx/../functions/html_includes.php";
+require_once "$pathidx/../functions/ajax_includes.php";
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
@@ -97,8 +97,12 @@ class feed_viewer
             " LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = rss_sets.\"setid\") AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = '" . USERSETTYPE_RSS . "' " .
             " LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1.\"setID\" = rss_sets.\"setid\") AND extsetdata1.\"name\" = 'link' AND extsetdata1.\"type\" = '" . USERSETTYPE_RSS . "' " .
             " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = rss_sets.\"setid\") AND extsetdata3.\"name\" = 'score' AND extsetdata3.\"type\" = '" . USERSETTYPE_RSS . "' " .
-            " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = rss_sets.\"setid\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = '" . USERSETTYPE_RSS . "' ) " .
-            " WHERE (1=1 {$this->Qnewfeed2} {$this->Qfeed_id} {$this->Qsearch} {$this->Qflag} {$this->Qsetid} {$this->Qsize} {$this->Qkill} {$this->Qrating} ) AND (1=1 {$this->Qage} {$this->Qadult}) ";
+            " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = rss_sets.\"setid\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = '" . USERSETTYPE_RSS . "' ) ";
+        if ($this->Qsetid == '') {
+            $basic_browse_query .= " WHERE (1=1 {$this->Qnewfeed2} {$this->Qfeed_id} {$this->Qsearch} {$this->Qflag} {$this->Qsize} {$this->Qkill} {$this->Qrating} ) AND (1=1 {$this->Qage} {$this->Qadult}) ";
+        } else {
+            $basic_browse_query .= " WHERE 1=1 {$this->Qsetid}";
+        }
 
         return $basic_browse_query;
     }
@@ -112,7 +116,6 @@ class feed_viewer
             "(CASE WHEN extsetdata2.\"value\" IS NULL THEN rss_sets.\"setname\" ELSE extsetdata2.\"value\" END) AS better_subject ";
 
         $sql .= $this->get_basic_browse_query();
-
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         } else {
@@ -120,13 +123,12 @@ class feed_viewer
         }
 
         $sql .= " ORDER BY {$this->Qorder}";
-
         return $sql;
     }
     private function get_sets_count($interesting_only)
     {
         $basic_browse_query = $this->get_basic_browse_query();
-            $sql = "COUNT(rss_sets.\"id\") AS cnt " . $basic_browse_query;
+            $sql = 'COUNT(rss_sets."id") AS cnt ' . $basic_browse_query;
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }
@@ -187,7 +189,7 @@ class feed_viewer
             $thisset['setname'] = $arr['setname'];
             $thisset['link'] = $arr['nzb_link'];
             if ($arr['imdblink'] != NULL) {
-                $thisset['imdblink'] = $arr['imdblink'] ;
+                $thisset['imdblink'] = $arr['imdblink'];
             } else {
                 $thisset['imdblink'] = '';
             }
@@ -229,7 +231,6 @@ class feed_viewer
     {
         $this->minsetsize = $ominsetsize;
         $this->maxsetsize = $omaxsetsize;
-
         if ($ominsetsize != '') {
             try {
                 $ominsetsize = unformat_size($ominsetsize, 1024, 'M');
@@ -253,14 +254,14 @@ class feed_viewer
             $this->db->escape($ominsetsize, TRUE);
             $this->Qsize = " AND (rss_sets.\"size\" >= $ominsetsize) ";
         } else {
-            $this->Qsize = " AND (rss_sets.\"size\" >= ((SELECT CASE WHEN userfeedinfo.\"minsetsize\" IS NULL THEN 0 ELSE userfeedinfo.\"minsetsize\" END) ))";
+            $this->Qsize = ' AND (rss_sets."size" >= ((SELECT CASE WHEN userfeedinfo."minsetsize" IS NULL THEN 0 ELSE userfeedinfo."minsetsize" END) ))';
         }
 
         if (is_numeric($omaxsetsize)) {
             $this->db->escape($omaxsetsize, TRUE);
             $this->Qsize .= " AND (rss_sets.\"size\" <= $omaxsetsize ) ";
         } else {
-            $this->Qsize .= " AND (userfeedinfo.\"maxsetsize\" = 0 OR userfeedinfo.\"maxsetsize\" IS NULL OR rss_sets.\"size\" <= (userfeedinfo.\"maxsetsize\")) ";
+            $this->Qsize .= ' AND (userfeedinfo."maxsetsize" = 0 OR userfeedinfo."maxsetsize" IS NULL OR rss_sets."size" <= (userfeedinfo."maxsetsize")) ';
         }
     }
 
@@ -305,7 +306,7 @@ class feed_viewer
     {
         if ($setid != '') {
             $this->db->escape($setid, TRUE);
-            $this->Qsetid = " AND rss_sets.\"ID\"=$setid ";
+            $this->Qsetid = " AND rss_sets.\"setid\"=$setid ";
         }
     }
 
@@ -313,11 +314,13 @@ class feed_viewer
     {
         if (is_numeric($maxage) && $maxage > 0) {
             $this->maxage = $maxage;
-            $this->Qage .= "AND (" . $this->now . " - timestamp) / 3600 / 24 <= $maxage ";
+            $maxage = $this->now - ($maxage * 3600 * 24);
+            $this->Qage .= " AND \"timestamp\" >= $maxage";
         }
         if (is_numeric($minage) && $minage > 0) {
             $this->minage = $minage;
-            $this->Qage .= "AND (" . $this->now . " - timestamp) / 3600 / 24 >= $minage ";
+            $minage = $this->now - ($minage * 3600 * 24);
+            $this->Qage .= " AND \"timestamp\" <= $minage";
         }
 
     }
@@ -328,7 +331,6 @@ class feed_viewer
 
     public function set_qorder($order)
     {
-
         // Validation of order:
         $def_sort = map_default_sort(load_prefs($this->db, $this->userID), array('subject'=> 'better_subject', 'date'=>'timestamp'));
 
@@ -357,7 +359,7 @@ class feed_viewer
             if (!is_numeric($this->categoryID)) {
                 $this->categoryID = 0;
             }
-            $this->feed_id = 0 ;
+            $this->feed_id = 0;
         } elseif (isset($feed_id[5]) && substr_compare($feed_id, 'feed_',0, 5) == 0) {
             $this->feed_id = substr($feed_id, 5);
             if (!is_numeric($this->feed_id)) {
@@ -422,9 +424,8 @@ class feed_viewer
     {
         $rss_limit = $perpage;
         $url = get_config($this->db, 'url');
-        $minsetsize = get_pref( $this->db, 'minsetsize', $this->userID, 0);
-        $maxsetsize = get_pref( $this->db, 'maxsetsize', $this->userID, '');
-
+        $minsetsize = get_pref($this->db, 'minsetsize', $this->userID, 0);
+        $maxsetsize = get_pref($this->db, 'maxsetsize', $this->userID, '');
         $type = USERSETTYPE_RSS;
         if ($this->feed_id == 0) {
             $rss_feed_id = '0';

@@ -15,22 +15,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-28 00:47:19 +0200 (wo, 28 aug 2013) $
- * $Rev: 2905 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_help.php 2905 2013-08-27 22:47:19Z gavinspearhead@gmail.com $
+ * $Id: urdd_help.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$pathhlp = realpath(dirname(__FILE__));
-
-require_once "$pathhlp/../functions/urd_log.php";
-require_once "$pathhlp/../functions/autoincludes.php";
-require_once "$pathhlp/urdd_command.php";
 
 class urd_help
 {
@@ -47,7 +41,6 @@ class urd_help
         array ('-4', '', '--ipv4', 'URDD only listens on IPv4'),
         array ('-c<command>', '', '--commands=<command>', 'Show help about an urdd command'),
         array ('-D ', '', '--daemon', 'Run urdd as a daemon process'),
-//        array ('-E ', '', '--extsetinfo=<boolean>', 'Enable or disable getting extsetinfo from URDland'),
         array ('-fextendend', '', '--find=extended', 'Find server configurations for usenet servers, print them and exit. Without \'extended\', it only tries default port 119 and 563, with it also tries many other ports, but may be slower'),
         array ('-F', '', '--nodaemon', 'Run urdd as a foreground process'),
         array ('-g<group>', '', '--group=<group>', 'Set the group urdd will run as'),
@@ -65,6 +58,7 @@ class urd_help
         array ('-t<num>', '', '--timeout=<num>', 'Set the connection time-out'),
         array ('-T', '', '--test', 'Test which configured server can be used for indexing'),
         array ('-u<user>', '', '--user=<user>', 'Set the user urdd will run as'),
+        array ('-U', '', '--updatedb', 'Verify and update the database before starting'),
         array ('-v ', '', '--version ', 'Show urdd version')
     );
 
@@ -72,7 +66,7 @@ class urd_help
         "Usage: urdd.sh [OPTION]\n";
 
     private static $help_outro =
-        "Report URD bugs to urd-dev@urdland.com\nURD homepage: http://www.urdland.com\n" ;
+        "Report URD bugs to urd-dev@urdland.com\nURD homepage: http://www.urdland.com\n";
 
     public static function print_help()
     {
@@ -143,5 +137,4 @@ class urd_help
 
         return $hm;
     }
-
 }

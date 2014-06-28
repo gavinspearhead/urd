@@ -16,16 +16,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-29 01:03:02 +0200 (do, 29 mei 2014) $
+ * $Rev: 3058 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: transfers.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: transfers.php 3058 2014-05-28 23:03:02Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
 $pathtr = realpath(dirname(__FILE__));
 
-require_once "$pathtr/../functions/html_includes.php" ;
+require_once "$pathtr/../functions/html_includes.php";
 
 verify_access($db, urd_modules::URD_CLASS_DOWNLOAD | urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_USENZB, FALSE, '', $userid, FALSE);
 

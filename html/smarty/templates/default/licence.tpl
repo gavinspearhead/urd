@@ -14,10 +14,10 @@
  * along with this program. See the file "COPYING". If it does not
  * exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2012-05-22 00:05:19 +0200 (Tue, 22 May 2012) $
- * $Rev: 2523 $
- * $Author: gavinspearhead $
- * $Id: licence.tpl 2523 2012-05-21 22:05:19Z gavinspearhead $
+ * $LastChangedDate: 2013-11-22 23:41:14 +0100 (vr, 22 nov 2013) $
+ * $Rev: 2955 $
+ * $Author: gavinspearhead@gmail.com $
+ * $Id: licence.tpl 2955 2013-11-22 22:41:14Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
 
@@ -653,4 +653,12 @@ copy of the Program in return for a fee.</p>
 
 </div>
 <br/>
+<script>
+$(document).ready(function() {
+        update_search_bar_height();
+    }
+);
+</script>
+
+
 {include file="foot.tpl"}

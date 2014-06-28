@@ -40,7 +40,7 @@ function smarty_function_urd_popup($params, &$smarty)
         $text = strip_tags($text, '<p><a><i><b><br>');
         $retval = "onmouseover=\"javascript:show_small_help('" . htmlentities($text, ENT_QUOTES) . "', event);\" onmouseout=\"javascript:hide_small_help();\"";
     } else {
-        $retval = "onmouseover=\"javascript:show_help('$text', '$caption');\" onmouseout=\"javascript:hide_help();\"";
+        $retval = "onmouseover=\"javascript:show_help('$text', '$caption', $(this));\" onmouseout=\"javascript:hide_help();\"";
     }
 
     return $retval;

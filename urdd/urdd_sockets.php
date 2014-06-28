@@ -26,18 +26,17 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathus = realpath(dirname(__FILE__));
-
 class urdd_sockets
 {
 // time out for checking the queue
     const DEFAULT_CHECK_TIMEOUT = 5000000;
 //maximum buffer size for socket_read
     const MAX_BUFF_SIZE = 1024;
+
     private $listen_sock;
     public function __construct ()
     {
-        $this->listen_sock= array();
+        $this->listen_sock = array();
     }
 
     public function read_sockets(DatabaseConnection $db, array $sq, conn_list &$conn_list, server_data &$servers)
@@ -134,7 +133,6 @@ class urdd_sockets
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         assert (is_numeric($port));
-        //$success = 0;
         $sockets = array();
         if ($address != '') { // try and create an IPv4 socket first
             echo_debug("Listening on $address:$port", DEBUG_MAIN);

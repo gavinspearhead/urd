@@ -1,5 +1,9 @@
 *.swp
+config.php
 html/smarty/c_templates/default/*
-dbconfig
+dbconfig.php*
 .keystore.php
 .installed
+tools/*.tar.gz
+tools/*.tgz
+login.txt

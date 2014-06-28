@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-07 00:34:21 +0200 (za, 07 sep 2013) $
- * $Rev: 2924 $
+ * $LastChangedDate: 2014-02-15 00:27:46 +0100 (za, 15 feb 2014) $
+ * $Rev: 3008 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdversion.php 2924 2013-09-06 22:34:21Z gavinspearhead@gmail.com $
+ * $Id: urdversion.php 3008 2014-02-14 23:27:46Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -28,9 +28,9 @@ if (!defined('ORIGINAL_PAGE')) {
 
 class urd_version
 {
-    const urd_version       = '1.10.0';
+    const urd_version       = '1.12.0';
     const urd_status        = 'stable';
-    const copyright         = '2007-2013 &copy; Styck &amp; Spearhead';
+    const copyright         = '2007-2014 &copy; Styck &amp; Spearhead';
     const extset_version    = '1.0';
     const long_name         = 'Usenet Resource Downloader';
     const short_name        = 'URD';

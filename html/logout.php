@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-03 17:23:08 +0200 (di, 03 jun 2014) $
+ * $Rev: 3080 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: logout.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: logout.php 3080 2014-06-03 15:23:08Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -27,6 +27,8 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $pathlo = realpath(dirname(__FILE__));
 $process_name = 'urd_web';
 
+require_once "$pathlo/../config.php";
+require_once "$pathlo/../functions/fix_magic.php";
 require_once "$pathlo/../functions/autoincludes.php";
 require_once "$pathlo/../functions/functions.php";
 require_once "$pathlo/../functions/web_functions.php";

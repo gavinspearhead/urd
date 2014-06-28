@@ -15,12 +15,13 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: rsssets.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: rsssets.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title rssurl=$rssurl}
+
 {* Search form *}
 {capture assign="searchform"}
 <form id="searchform" method="get">
@@ -32,7 +33,7 @@
 
 <div id="advanced_search_button" class="floatleft iconsize dynimgplus noborder buttonlike" onclick="javascript:fold_adv_search('advanced_search_button', 'advanced_search');" {urd_popup type="small" text=$LN_advanced_search}>
 </div>&nbsp;
-    <input type="hidden" name="order" value="{$order}" id="searchorder"/>
+    <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="button" value="&lt;" class="submitsmall" {urd_popup type="small" text=$LN_previous } onclick='javascript:select_next("select_feedid",-1);'/>&thinsp;
     <select name="feed_id" class="search" id="select_feedid">
@@ -45,7 +46,7 @@
     {/foreach}
 	</select>&thinsp;
     <input type="button" value="&gt;" class="submitsmall" {urd_popup type="small" text=$LN_next } onclick='javascript:select_next("select_feedid",1);' />&nbsp;
-   	<input type="text" name="search" id="search" size="30" class="search" value="{if $search == ''}&lt;{$LN_search}&gt;{else}{$search|escape:htmlall}{/if}" onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/> &nbsp;
+   	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/> &nbsp;
 	<input type="hidden" value="" name="maxage"/>
     <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"/>
     &nbsp; 
@@ -72,19 +73,19 @@
 
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="minsetsize" size="6" value="{$minsetsize}"/></td> 
+<td><input type="text" id="minsetsize" size="6" value="{$minsetsize|escape:htmlall}"/></td> 
 <td><div id="setsize" style="width:100px;"></div></td>
-<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize}"/></td>
+<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize|escape:htmlall}"/></td>
 <td>{$LN_age}:</td>
-<td><input type="text" id="minage" name="minage" size="6" value="{$minage}"/></td> 
+<td><input type="text" id="minage" name="minage" size="6" value="{$minage|escape:htmlall}"/></td> 
 <td><div id="setage" style="width:100px;"></div></td>
-<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage}"/></td>
+<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage|escape:htmlall}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
-<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating}"/></td> 
+<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating|escape:htmlall}"/></td> 
 <td><div id="setrating" style="width:100px;"></div></td>
-<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating}"/></td>
+<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating|escape:htmlall}"/></td>
 <td>
  <select name="flag" class="search" id="flag">
 		<option {if $flag == ''}selected="selected"{/if} value="">{$LN_browse_allsets}</option>
@@ -114,18 +115,16 @@
 </div>
 {/capture}
 
-{$searchform}
-{$rss_link}
 
-{* Display the content: *}
+{capture assign="basketform"}
 <div id="basketdiv" class="down3"></div>
 
 {* We need this stuff to remember any the search options *}
 <div>
-<input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE}"/>
-<input type="hidden" name="offset" id="offset" value="{$offset}"/>
-<input type="hidden" name="feed_id" id="feed_id" value="{$feed_id}"/>
-<input type="hidden" name="setid" id="setid" value="{$setid}"/>
+<input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE|escape:htmlall}"/>
+<input type="hidden" name="offset" id="offset" value="{$offset|escape:htmlall}"/>
+<input type="hidden" name="feed_id" id="feed_id" value="{$feed_id|escape:htmlall}"/>
+<input type="hidden" name="setid" id="setid" value="{$setid|escape:htmlall}"/>
 <input type="hidden" name="dlname" value=""/>
 <input type="hidden" name="whichbutton" value="" id="whichbutton"/>
 <input type="hidden" name="previewBinID" value="" id="previewBinID"/>
@@ -134,7 +133,16 @@
 <input type="hidden" name="curScrollVal" id="curScrollVal" value=""/>
 <input type="hidden" name="type" id="type" value="rss"/>
 </div>
+{/capture}
 
+{$rss_link}
+<div id="searchformdiv" class="hidden">
+{$searchform}
+{$basketform}
+</div>
+
+
+{* Display the content: *}
 <div class="innerwaitingdiv" id="waitingdiv">
 <div class="waitingimg centered"></div>
 <p><br/></p>
@@ -147,9 +155,9 @@
 {* Load basket: *}
 <script type="text/javascript">
 $(document).ready(function() {
-    init_slider({$minsetsizelimit}, {$maxsetsizelimit}, "#setsize", "#minsetsize", "#maxsetsize");
-    init_slider({$minagelimit}, {$maxagelimit}, "#setage", "#minage", "#maxage");
-    init_slider({$minratinglimit}, {$maxratinglimit}, "#setrating", "#minrating", "#maxrating");
+    init_slider({$minsetsizelimit|escape:javascript}, {$maxsetsizelimit|escape:javascript}, "#setsize", "#minsetsize", "#maxsetsize");
+    init_slider({$minagelimit|escape:javascript}, {$maxagelimit|escape:javascript}, "#setage", "#minage", "#maxage");
+    init_slider({$minratinglimit|escape:javascript}, {$maxratinglimit|escape:javascript}, "#setrating", "#minrating", "#maxrating");
 
     set_scroll_handler('#contentout', load_sets);
 
@@ -159,11 +167,13 @@ $(document).ready(function() {
     {else}
         load_sets();
     {/if}
+    $('#searchbar').html($('#searchformdiv').html());
+    $('#searchformdiv').html('');
 });
 </script>
 
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
-<input type="hidden" id="perpage" value="{$perpage}"/>
+<input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 <div>
 &nbsp;<br/>
 &nbsp;<br/>

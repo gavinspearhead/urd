@@ -28,8 +28,8 @@ if (!defined('ORIGINAL_PAGE')) {
 
 class stored_files
 {
-    static private $cache_dir = '';
-    static private $file_list = NULL;
+    private static $cache_dir = '';
+    private static $file_list = NULL;
 
     public static function set_cache_dir($path)
     {
@@ -44,9 +44,9 @@ class stored_files
         file_put_contents($filename, serialize($file_list));
         chmod($filename, 0600);
     }
-            
+
     private static function read_from_cache($path)
-    { 
+    {
         $id = md5($path);
         $filename = self::$cache_dir . DIRECTORY_SEPARATOR . $id;
         if (file_exists($filename)) {
@@ -54,6 +54,7 @@ class stored_files
         } else {
             self::$file_list = NULL;
         }
+
         return self::$file_list;
     }
 
@@ -91,7 +92,6 @@ class stored_files
                 $f->set_index($k);
             }
 
-            //$_SESSION['stored_file_list'] = $file_list;
             self::write_to_cache($path, $file_list);
             $_SESSION['stored_file_list_path'] = $path;
             self::touch_path();

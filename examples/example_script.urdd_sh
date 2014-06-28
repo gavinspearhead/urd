@@ -23,6 +23,16 @@ dlid="$2"
 # DOWNLOAD_XXX
 dlstatus="$3"
 
+# the userid in the database, can be used to retrieve preferences
+# only set if the script is a global script; user scripts don't get this value
+
+userid="$4"
+
+# the base directory of the urd where functions/defines.php and dbconfig.php 
+# can be read
+# only set if the script is a global script; user scripts don't get this value
+urd_dir="$5"
+
 # do some stuff here 
 
 # return 0 on success

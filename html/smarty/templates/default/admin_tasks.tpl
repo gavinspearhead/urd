@@ -14,13 +14,14 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-04-28 00:55:09 +0200 (zo, 28 apr 2013) $
- * $Rev: 2823 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: admin_tasks.tpl 2823 2013-04-27 22:55:09Z gavinspearhead@gmail.com $
+ * $Id: admin_tasks.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
 
+<div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_tasks_title}</h3>
 
 <select name="status" id="status_select" size="1">
@@ -30,8 +31,9 @@
 {html_options options=$alltimes}
 </select>
 
-<input type="text" name="_search" value="&lt;{$LN_search}&gt;" id="tasksearch" onclick="javascript:clean_input('tasksearch', 'search')" onkeypress="javascript:submit_enter(event, load_tasks_no_offset);"/>
-<input type="button" onclick="javascript:load_tasks_no_offset(null, null);" id="search" value="{$LN_search}" class="submitsmall"/>
+<input type="text" name="_search" placeholder="{$LN_search}" id="tasksearch"/>
+<input type="button" id="search" value="{$LN_search}" class="submitsmall"/>
+</div>
 
 <div id="tasksdiv">
 </div>
@@ -39,6 +41,9 @@
 <script type="text/javascript">
 $(document).ready(function() {
     update_tasks();
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#search').click(function() { load_tasks_no_offset(null, null); } );
+    $('#tasksearch').keypress(function() { submit_enter(event, load_tasks_no_offset); } );
 });
 </script>
 

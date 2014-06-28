@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-04 23:41:51 +0200 (wo, 04 sep 2013) $
- * $Rev: 2921 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: xml_functions.php 2921 2013-09-04 21:41:51Z gavinspearhead@gmail.com $
+ * $Id: xml_functions.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -28,12 +28,8 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathx = realpath(dirname(__FILE__));
 
-require_once "$pathx/defines.php";
 require_once "$pathx/error_codes.php";
-require_once "$pathx/urdversion.php";
 require_once "$pathx/autoincludes.php";
-require_once "$pathx/defaults.php";
-require_once "$pathx/libs/magpierss/rss_fetch.php";
 
 class urd_xml_writer
 {
@@ -51,7 +47,7 @@ class urd_xml_writer
 
         $this->xml->setIndent(TRUE);
         $this->xml->startDocument('1.0', 'UTF-8');
-        $this->xml->writeComment("\n\nCreated by URD $version. http://www.urdland.com\n   on " .date('r') . "\n\n");
+        $this->xml->writeComment("\n\n   Created by URD $version. http://www.urdland.com\n   on " .date('r') . "\n\n");
         $this->xml->setIndent(TRUE);
         $this->xml->startElement('urdsettings');
     }
@@ -62,7 +58,7 @@ class urd_xml_writer
     public function finalise()
     {
         $this->xml->endElement(); // urdsettings
-        $this->xml->writeComment("\n\n === end of configuratie === \n\n");
+        $this->xml->writeComment("\n\n === end of configuration === \n\n");
         $this->xml->endDocument();
     }
     public function output_xml_data()
@@ -299,6 +295,47 @@ class urd_xml_writer
         }
         $this->xml->endElement(); // buttons
     }
+    public function write_spots_blacklist(DatabaseConnection $db, $userid=NULL)
+    {
+        try {
+            $blacklist = get_all_spots_blacklist($db, $userid);
+        } catch (exception $e) {
+            return;
+        }
+        $this->xml->setIndent(TRUE);
+        $this->xml->startElement('spots_blacklist');
+        foreach ($blacklist as $b) {
+            $this->xml->setIndent(TRUE);
+            $this->xml->startElement('spotter');
+            $this->xml->writeAttribute('spotter_id', $b['spotter_id']);
+            $this->xml->writeAttribute('source', $b['source']);
+            $this->xml->writeAttribute('status', $b['status']);
+            $this->xml->writeAttribute('userid', $b['userid']);
+            $this->xml->endElement(); // button
+
+        }
+
+    }
+    public function write_spots_whitelist(DatabaseConnection $db, $userid=NULL)
+    {
+        try {
+            $blacklist = get_all_spots_whitelist($db, $userid);
+        } catch (exception $e) {
+            return;
+        }
+        $this->xml->setIndent(TRUE);
+        $this->xml->startElement('spots_whitelist');
+        foreach ($blacklist as $b) {
+            $this->xml->setIndent(TRUE);
+            $this->xml->startElement('spotter');
+            $this->xml->writeAttribute('spotter_id', $b['spotter_id']);
+            $this->xml->writeAttribute('source', $b['source']);
+            $this->xml->writeAttribute('status', $b['status']);
+            $this->xml->writeAttribute('userid', $b['userid']);
+            $this->xml->endElement(); // spots_whitelist
+        }
+    }
+
     public function write_all_user_settings(DatabaseConnection $db)
     {
         try {
@@ -325,6 +362,8 @@ class urd_xml_writer
         $this->write_usenet_servers($db);
         $this->write_users($db);
         $this->write_buttons($db);
+        $this->write_spots_blacklist($db);
+        $this->write_spots_whitelist($db);
         foreach ($users as $u) {
             $this->write_user_settings($db, $u);
         }
@@ -341,6 +380,8 @@ class urd_xml_writer
         case 'all_user_settings': $this->write_all_user_settings($db); break;
         case 'usergroup_settings': $this->write_usergroup_settings($db, $userid); break;
         case 'userfeed_settings': $this->write_userfeed_settings($db, $userid); break;
+        case 'spots_blacklist': $this->write_spots_blacklist($db, $userid); break;
+        case 'spots_whitelist': $this->write_spots_whitelist($db, $userid); break;
         case 'categories': $this->write_categories($db, $userid); break;
         case 'newsgroups': $this->write_newsgroups($db); break;
         case 'rssfeeds': $this->write_rssfeeds($db); break;
@@ -704,6 +745,74 @@ class urd_xml_reader
 
         return $settings;
     }
+    public function read_spots_blacklist($userid)
+    {
+        if ($this->arr === NULL) {
+            return array();
+        }
+        $settings = array();
+        foreach ($this->arr as $t1) {
+            if (get_string($t1,'tag') == 'urdsettings' && isset($t1['value'])) {
+                foreach ($t1['value'] as $t2) {
+                    if (get_string($t2,'tag') == 'spots_blacklist' && isset($t2['value'])) {
+                        foreach ($t2['value'] as $t3) {
+                            if (get_string($t3,'tag') == 'spotter') {
+                                $spotter_id = get_string($t3['attributes'],'spotter_id');
+                                $source = get_string($t3['attributes'],'source');
+                                $status = get_string($t3['attributes'],'status');
+                                $userid = get_string($t3['attributes'],'userid');
+                                if ($spotter_id !== NULL && $source !== NULL && $status !== NULL&& $userid !== NULL) {
+                                    $set = array (
+                                        'spotter_id' => $spotter_id,
+                                        'source' => $source,
+                                        'status' => $status,
+                                        'userid' => $userid
+                                    );
+                                    $settings[$spotter_id] = $set;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $settings;
+    }
+    public function read_spots_whitelist($userid)
+    {
+        if ($this->arr === NULL) {
+            return array();
+        }
+        $settings = array();
+        foreach ($this->arr as $t1) {
+            if (get_string($t1,'tag') == 'urdsettings' && isset($t1['value'])) {
+                foreach ($t1['value'] as $t2) {
+                    if (get_string($t2,'tag') == 'spots_whitelist' && isset($t2['value'])) {
+                        foreach ($t2['value'] as $t3) {
+                            if (get_string($t3,'tag') == 'spotter') {
+                                $spotter_id = get_string($t3['attributes'],'spotter_id');
+                                $source = get_string($t3['attributes'],'source');
+                                $status = get_string($t3['attributes'],'status');
+                                $userid = get_string($t3['attributes'],'userid');
+                                if ($spotter_id !== NULL && $source !== NULL && $status !== NULL&& $userid !== NULL) {
+                                    $set = array (
+                                        'spotter_id' => $spotter_id,
+                                        'source' => $source,
+                                        'status' => $status,
+                                        'userid' => $userid
+                                    );
+                                    $settings[$spotter_id] = $set;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $settings;
+    }
 
     public function read_users()
     {
@@ -831,7 +940,7 @@ class urd_xml_reader
                                 $type = get_string($t3,'value');
                             }
                             if ($groupname !== NULL && $setid !== NULL && $name !== NULL && $value !== NULL && $type !== NULL) {
-                                $res[] = array(5=> $groupname, 0=>$setid, 1=>$name, 2=> $value, 3=>$type);
+                                $res[] = array(5 => $groupname, 0 =>$setid, 1 =>$name, 2 => $value, 3 =>$type);
                             }
                         }
                     }

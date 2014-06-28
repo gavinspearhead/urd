@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-07 17:12:45 +0200 (za, 07 jun 2014) $
+ * $Rev: 3082 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: install.funcs.inc.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: install.funcs.inc.php 3082 2014-06-07 15:12:45Z gavinspearhead@gmail.com $
  */
 
 // Checking functions (in functions to keep main code tidy)
@@ -35,20 +35,23 @@ $default_locations = array (
     '/opt/bin/',
     './' // current directory ??
 // more options? For Mac?
-	);
+);
 
+// functions we don't really need in the installer
+if(!function_exists('echo_debug')) { function echo_debug(){}; }
+if(!function_exists('echo_debug_function')) { function echo_debug_function(){}; }
+if(!function_exists('echo_debug_file')) { function echo_debug_file(){}; }
+if(!function_exists('write_log')) { function write_log(){}; }
 
 function CheckPHPVersion()
 {
 	return version_compare(PHP_VERSION, MIN_PHP_VERSION, '>=');
 }
 
-
 function CheckPHPVersion_rec()
 {
 	return version_compare(PHP_VERSION, RECOMMENDED_PHP_VERSION, '>=');
 }
-
 
 function check_timezone($cli, $php_path=NULL)
 {
@@ -73,20 +76,19 @@ function check_timezone($cli, $php_path=NULL)
     }
 }
 
-
 function CheckPHPExec()
 {
 	$tmp = ini_get('disable_functions');
-	if (!is_array($tmp)) $tmp = array($tmp);
-
-	foreach ($tmp as $fn)
-		if ($fn == 'exec') 
+	if (!is_array($tmp)) {
+        $tmp = array($tmp);
+    }
+	foreach ($tmp as $fn) {
+		if ($fn == 'exec') {
 			return FALSE;
-
+        }
+    }
 	return TRUE;
 }
-
-
 
 function CheckPHPSafeMode()
 {
@@ -108,20 +110,19 @@ function get_php_ini_path($cli, $php_path=NULL)
     }
 }
 
-
 function check_disabled_classes($php_path)
 {
     if ($php_path == NULL) $php_path = 'php';
 	exec("$php_path -r " . '"echo ini_get(\"disable_classes\") . \"\n\";"', $output);
-	if (!is_array($output)) 
+	if (!is_array($output)) {
         return FALSE;
+    }
     $tmp = trim($output[0]);
 	if ($tmp != '') {
         return FALSE;
     }
 	return TRUE;
 }
-
 
 function check_disabled_functions($php_path)
 {
@@ -137,7 +138,6 @@ function check_disabled_functions($php_path)
 	return TRUE;
 }
 
-
 function check_open_basedir($php_path)
 {
     if ($php_path == NULL) $php_path = 'php';
@@ -150,14 +150,13 @@ function check_open_basedir($php_path)
         return FALSE;
     } 
     
-    $obd = ini_get("open_basedir");
+    $obd = ini_get('open_basedir');
     if ($obd != '') { 
         return FALSE;
     }
 
 	return TRUE;
 }
-
 
 function CheckPHPMemory($php_path)
 {
@@ -175,7 +174,6 @@ function CheckPHPMemory($php_path)
 	return FALSE;
 }
 
-
 function check_locations($file, &$found_path)
 {
 	global $default_locations;
@@ -190,17 +188,16 @@ function check_locations($file, &$found_path)
 	return FALSE;
 }
 
-
 function CheckPHPCLI(&$php_path)
 {
 	$v = exec ('which php', $foo, $rv);
-	if ($rv != 0) 
+	if ($rv != 0) {
 		return check_locations('php', $php_path);
-	else 
+    } else {
 		$php_path = $v;
+    }
 	return TRUE;
 }
-
 
 function CheckPHPRegGlobals()
 {
@@ -209,17 +206,32 @@ function CheckPHPRegGlobals()
 	return TRUE;
 }
 
-
-
-function CheckPHPOpenssl($php_path)
+function CheckPHPmcrypt($php_path)
 {
 	if ($php_path == NULL) $php_path = 'php';
 	exec("$php_path -m",$output);
-	if (is_array($output))
-		foreach ($output as $row)
-			if ($row == 'openssl') return TRUE;
-
+	if (is_array($output)) {
+		foreach ($output as $row) {
+			if ($row == 'mcrypt') return TRUE;
+        }
+    }
 	return FALSE;
+}
+
+function CheckPHPOpenssl($php_path)
+{
+    if ($php_path == NULL) {
+        $php_path = 'php';
+    }
+    exec("$php_path -m",$output);
+    if (is_array($output)) {
+        foreach ($output as $row) { 
+            if ($row == 'openssl') { 
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
 }
 
 function CheckPHPgd()
@@ -227,53 +239,47 @@ function CheckPHPgd()
 	return extension_loaded('gd');
 }
 
-function CheckPHPposix($php_path)
+function CheckPHPmodule($php_path, $module)
 {
-	if ($php_path == NULL) $php_path = 'php';
+	if ($php_path == NULL) { 
+        $php_path = 'php';
+    }
 	exec("$php_path -m", $output);
-	if (is_array($output))
-		foreach ($output as $row)
-			if ($row == 'posix') return TRUE;
+	if (is_array($output)) {
+		foreach ($output as $row) {
+			if ($row == $module) { 
+                return TRUE;
+            }
+        }
+    }
 
 	return FALSE;
 }
 
+function CheckPHPposix($php_path)
+{
+    return CheckPHPmodule($php_path, 'posix');
+}
+
+function CheckPHPjson($php_path)
+{
+    return extension_loaded('json');
+}
 
 function CheckPHPsockets($php_path)
 {
-	if ($php_path == NULL) $php_path = 'php';
-	exec("$php_path -m",$output);
-	if (is_array($output))
-		foreach ($output as $row)
-			if ($row == 'sockets') return true;
-
-	return FALSE;
+    return CheckPHPmodule($php_path, 'sockets');
 }
-
 
 function CheckPHPSPL($php_path)
 {
-	if ($php_path == NULL) $php_path = 'php';
-	exec("$php_path -m",$output);
-	if (is_array($output))
-		foreach ($output as $row)
-			if ($row == 'SPL') return TRUE;
-
-	return FALSE;
+    return CheckPHPmodule($php_path, 'SPL');
 }
-
 
 function CheckPHPpcntl($php_path)
 {
-	if ($php_path == NULL) $php_path = 'php';
-	exec("$php_path -m",$output);
-	if (is_array($output))
-		foreach ($output as $row)
-			if ($row == 'pcntl') return TRUE;
-
-	return FALSE;
+    return CheckPHPmodule($php_path, 'pcntl');
 }
-
 
 function CheckPHPXMLRPC()
 {
@@ -290,12 +296,10 @@ function CheckPHPGMP()
 	return extension_loaded('gmp');
 }
 
-
 function CheckPHPCURL()
 {
 	return extension_loaded('curl');
 }	
-
 
 function CheckAdodb()
 {
@@ -306,7 +310,6 @@ function CheckAdodb()
     }
 	return FALSE;
 }
-
 
 function CheckYydecode()
 {
@@ -320,7 +323,6 @@ function CheckYydecode()
 	}
 }
 
-
 function CheckSubDl()
 {
 	exec('which subdownloader', $foo, $rv);
@@ -331,7 +333,6 @@ function CheckSubDl()
 		return TRUE;
 	}
 }
-
 
 function CheckPar2()
 {
@@ -344,29 +345,28 @@ function CheckPar2()
 	}
 }
 
-
 function CheckUnRar()
 {
 	exec ('which unrar', $foo1, $rv1);
 	exec ('which rar', $foo2, $rv2);
-	if ($rv2 == 0 && isset($foo2[0])  ) {
+	if ($rv2 == 0 && isset($foo2[0])) {
 		$_SESSION['unrar'] = $foo2[0];
 		return TRUE;
 	} elseif ($rv1 == 0 && isset($foo1[0])) {
 		$_SESSION['unrar'] = $foo1[0];
 		return TRUE;
 	} else {
-		if (!check_locations('rar', $_SESSION['unrar']))
+		if (!check_locations('rar', $_SESSION['unrar'])) {
 			return check_locations('unrar', $_SESSION['unrar']);
+        }
 		return TRUE;
 	}
 }
 
-
 function CheckRar()
 {
 	exec ('which rar', $foo2, $rv2);
-	if ($rv2 == 0 && isset($foo2[0])  ) {
+	if ($rv2 == 0 && isset($foo2[0])) {
 		$_SESSION['rar'] = $foo2[0];
 		return TRUE;
 	} else {
@@ -385,7 +385,6 @@ function CheckTar()
 	}
 }
 
-
 function CheckTrickle()
 {
 	exec ('which trickle', $foo, $rv);
@@ -397,25 +396,25 @@ function CheckTrickle()
 	}
 }
 
-
 function CheckCksfv()
 {
 	exec ('which cfv', $foo1, $rv1);
 	exec ('which cksfv', $foo2, $rv2);
 	if ($rv1 != 0 && $rv2 != 0) {
-		if (!check_locations('cfv', $_SESSION['cksfv']))
+		if (!check_locations('cfv', $_SESSION['cksfv'])) {
 			return check_locations('cksfv', $_SESSION['cksfv']);
+        }
+        
 		return TRUE;
 	} elseif ($rv1 == 0 && isset($foo1[0])) {
 		$_SESSION['cksfv'] = $foo1[0];
 		return TRUE;
 	} elseif ($rv2 == 0 && isset($foo2[0])){
-		$_SESSION['cksfv'] =  $foo2[0];
+		$_SESSION['cksfv'] = $foo2[0];
 		return TRUE;
 	} else
 		return FALSE;
 }
-
 
 function Check7zip()
 {
@@ -423,26 +422,26 @@ function Check7zip()
 	exec ('which 7zr', $foo2, $rv2); // if we can't find 7za, try 7zr anyway
 	exec ('which 7z', $foo3, $rv3); // if we can't find 7za, 7zr, maybe 7z is installed - try that one 
 	
-	if ($rv1 == 0 && isset($foo1[0]) )  {
-		$_SESSION['7zip'] = $foo1[0] ;
+	if ($rv1 == 0 && isset($foo1[0])) {
+		$_SESSION['7zip'] = $foo1[0];
 		return TRUE;
 	} elseif ($rv2 == 0 && isset($foo2[0]) ) {
-		$_SESSION['7zip'] = $foo2[0] ;
+		$_SESSION['7zip'] = $foo2[0];
 		return TRUE;
-	} elseif ($rv3 == 0 &&  isset($foo3[0])) {
-		$_SESSION['7zip'] = $foo3[0] ;
+	} elseif ($rv3 == 0 && isset($foo3[0])) {
+		$_SESSION['7zip'] = $foo3[0];
 		return TRUE;
 	} else {
 		$_SESSION['7zip'] = '';
-		if (check_locations('7za', $_SESSION['7zip']))
+		if (check_locations('7za', $_SESSION['7zip'])) {
 			return TRUE;
-		elseif (check_locations('7zr', $_SESSION['7zip']))
+        } elseif (check_locations('7zr', $_SESSION['7zip'])) {
 			return TRUE;
-		else 
+		} else {
 			return check_locations('7z', $_SESSION['7zip']);
+        }
 	}
 }
-
 
 function CheckGzip()
 {
@@ -455,7 +454,6 @@ function CheckGzip()
 	}
 }
 
-
 function CheckZip()
 {
 	exec ('which unzip', $foo, $rv);
@@ -466,7 +464,6 @@ function CheckZip()
 		return TRUE;
 	}
 }
-
 
 function CheckFile()
 {
@@ -479,7 +476,6 @@ function CheckFile()
 	}
 }
 
-
 function CheckYencode()
 {
 	exec ('which yencode', $foo, $rv);
@@ -491,7 +487,6 @@ function CheckYencode()
 	}
 }
 
-
 function CheckAce()
 {
 	exec ('which unace', $foo, $rv);
@@ -502,7 +497,6 @@ function CheckAce()
 		return TRUE;
 	}
 }
-
 
 function CheckArj()
 {
@@ -523,8 +517,7 @@ function CheckArj()
     }
 }
 
-
-function WriteDBConfig($dbtype,$dbuser,$dbpass,$dbname,$dbhost, $dbport)
+function WriteDBConfig($dbtype,$dbuser,$dbpass,$dbname,$dbhost, $dbport, $dbengine)
 {
 	$file = fopen('../dbconfig.php', 'w');
     if (!$file) {
@@ -553,46 +546,6 @@ CONT;
 	fclose($file);
 }
 
-
-
-function create_database_structure($database_type)
-{
-	switch (strtolower($database_type)) {
-		case 'postgres8':
-		case 'postgres7':
-			$file = 'URD_pgsql_db.sql';
-			break;
-		case 'mysql':
-		case 'mysqli':
-		case 'mysqlt':
-			$file = 'URD_mysql_db.sql';
-			break;
-        case 'pdo_sqlite':
-            $file = 'URD_sqlite_db.sql';
-            break;
-		case 'postgres':
-		case 'postgres64':
-		default :
-			throw new exception ("Database type {$database_type} not yet supported");
-			break;
-	}
-	$content = file_get_contents($file);
-	if ($content === FALSE) 
-		throw new exception("URD SQL file not found.");
-
-	// Strip all comments:
-	$lines = explode("\n",$content);
-	$newlines = '';
-	foreach ($lines as $line) {
-		if (strpos($line,'--')!==0 && trim($line)!='') 
-			$newlines .= $line . ' ';
-	}
-	$commands = explode(';',$newlines);
-	array_pop($commands); // Removes the last empty line
-	return $commands;
-}
-
-
 // Simple function to generate 'OK' or 'Failed':
 function GenRetVal($ok, &$rv='')
 {
@@ -604,13 +557,11 @@ function GenRetVal($ok, &$rv='')
 	return "<td class=\"install_$ans\">$ans</td></tr>\n";
 }
 
-
 // Help:
 function ShowHelp($mesg)
 {
 	return "<tr><td colspan=\"2\"><span class=\"info\">$mesg</span></td></tr>\n";
 }
-
 
 function get_url()
 {
@@ -620,14 +571,14 @@ function get_url()
     }
 	$url .= '://';
 	$url .= $_SERVER['SERVER_NAME'];
-	if ($_SERVER['SERVER_PORT'] != '80') 
+	if ($_SERVER['SERVER_PORT'] != '80') {
 		$url .= ':'.$_SERVER['SERVER_PORT'];
+    }
 	$url .= $_SERVER['REQUEST_URI'];
 	$url = preg_replace('/install\/install\.php/', '', $url);
 	$_SESSION['url'] = $url;
 	return $url;
 }
-
 
 function get_urdd_path()
 {
@@ -640,5 +591,4 @@ function get_urdd_path()
         return '';
     }
 }
-
 

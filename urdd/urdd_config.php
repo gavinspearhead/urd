@@ -17,24 +17,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-28 00:47:19 +0200 (wo, 28 aug 2013) $
- * $Rev: 2905 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_config.php 2905 2013-08-27 22:47:19Z gavinspearhead@gmail.com $
+ * $Id: urdd_config.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$pathu = realpath(dirname(__FILE__));
-require_once "$pathu/../functions/autoincludes.php";
-require_once "$pathu/../functions/defines.php";
-require_once "$pathu/../config.php";
-require_once "$pathu/../functions/functions.php";
-require_once "$pathu/../functions/urd_log.php";
-require_once "$pathu/urdd_error.php";
 
 function verify_bool($entry, array $config)
 {
@@ -57,7 +49,7 @@ function verify_dlpaths(DatabaseConnection $db, $path, test_result_list &$test_r
     if (strpos($path, '..') !== FALSE) {// we don't want relative paths (maybe slightly too tight tho)
         throw new exception('Invalid directory: ' . $path, ERR_CONFIG_ERROR);
     }
-
+    $path = my_realpath($path);
     clearstatcache(); // we want to be sure, so cache values are flushed.
     add_dir_separator($path);
 
@@ -80,7 +72,7 @@ function verify_dlpaths(DatabaseConnection $db, $path, test_result_list &$test_r
         if (!file_exists($p)) {
             $rv = create_dir($p, 0775); // and create the paths if they exist
             if ($rv === FALSE) {
-                throw new exception("Could not create directory $p", ERR_CONFIG_ERROR);
+                throw new exception("Could not create directory: $p", ERR_CONFIG_ERROR);
             }
             set_group($db, $p); // change the group if config is set
         }
@@ -148,9 +140,7 @@ function verify_config(DatabaseConnection $db, test_result_list &$test_results)
     check_prefs($db);
     $prefs = load_config($db);
     $dlpath = get_dlpath($db);
-
     verify_dlpaths($db, $dlpath, $test_results);
-
     /* verify parameters we have */
     verify_isnumeric('urdd_maxthreads', $prefs);
     verify_isnumeric('urdd_port', $config);
@@ -208,13 +198,14 @@ function verify_config(DatabaseConnection $db, test_result_list &$test_results)
     }
 }
 
-
 function check_pid_file($pid_file)
 {
     if (file_exists($pid_file)) {
         $pid = file_get_contents($pid_file);
         if (is_numeric($pid) && $pid > 0) {
+            $oldErrorLevel = error_reporting(0);
             $prio = @pcntl_getpriority($pid);
+            error_reporting($oldErrorLevel);
             if ($prio !== FALSE) {
                 // at least a process with this pid is running
                 $cmd = "ps ax | grep '^ *$pid '|grep -i 'php.*urdd\.php'";
@@ -245,7 +236,7 @@ function set_pid_file($pid_file)
 {
     $pid = posix_getpid();
     if (FALSE === file_put_contents($pid_file, $pid)) {
-        throw new exception('Cannot write pid file '. $pid_file);
+        throw new exception('Cannot write pid file ' . $pid_file);
     }
 }
 

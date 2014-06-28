@@ -14,20 +14,20 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-09 00:30:22 +0200 (di, 09 jul 2013) $
- * $Rev: 2870 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: viewfiles.tpl 2870 2013-07-08 22:30:22Z gavinspearhead@gmail.com $
+ * $Id: viewfiles.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
-
+<div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_viewfilesheading}: <span id="directory_top">{$directory|escape:htmlall|truncate:$maxstrlen:'...':false:true}</span></h3>
 <div>
-<input type="text" name="search" size="30" value="&lt;{$LN_search}&gt;" id="search"/>
+<input type="text" name="search" size="30" placeholder="{$LN_search}" id="search"/>
 <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_files_clean();"/>
 </div>
+</div>
 <div id="viewfilesdiv">
-
 <div class="innerwaitingdiv" id="waitingdiv">
 <div class="waitingimg centered"></div>
 <p><br/></p>
@@ -38,6 +38,8 @@
 $(document).ready(function() {
     show_files( { 'curdir':'{$directory|escape:javascript}' } );
     set_scroll_handler('#contentout', show_files);
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
 });
 </script>
 </div>
@@ -47,6 +49,6 @@ $(document).ready(function() {
 </div>
 {/if}
 
-<input type="hidden" id="perpage" value="{$perpage}"/>
+<input type="hidden" id="perpage" value="{$perpage|escape}"/>
 
 {include file="foot.tpl"}

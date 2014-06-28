@@ -26,17 +26,16 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-function my_realpath($dir)
+function my_realpath($odir)
 { // realpath returns FALSE if the directory doesn't exist, which is nasty. This one throws
     global $LN;
-    $dir = realpath($dir);
+    $dir = realpath($odir);
     if ($dir === FALSE) {
-        throw new exception ($LN['error_dirnotfound'] . ": $dir", ERR_PATH_NOT_FOUND);
+        throw new exception ($LN['error_dirnotfound'] . ": $odir", ERR_PATH_NOT_FOUND);
     }
 
     return $dir;
 }
-
 
 function cleanup_dir($directory, array $files)
 { // remove files left by par2
@@ -49,13 +48,11 @@ function cleanup_dir($directory, array $files)
     }
 }
 
-
 function my_escapeshellcmd($str, $hide_space=TRUE)
 { // alias
 
     return my_escapeshellarg($str, $hide_space);
 }
-
 
 function my_escapeshellarg($str, $hide_space=TRUE)
 { // you really have to do everything yourself in php...
@@ -68,7 +65,7 @@ function my_escapeshellarg($str, $hide_space=TRUE)
         $str = str_replace($c, '\\' . $c, $str);
     }
 
-    return $str ;
+    return $str;
 }
 
 function add_dir_separator(&$path)
@@ -214,7 +211,6 @@ function get_all_paths($base, $user='', $with_cache=FALSE)
     return $path_list;
 }
 
-
 function create_dir($path, $perms)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -228,7 +224,6 @@ function create_dir($path, $perms)
     return $rv;
 }
 
-
 function test_file_creation($path)
 {
     $rand = '.urd_test_file' . mt_rand(10000, 99999);
@@ -239,14 +234,17 @@ function test_file_creation($path)
     unlink($path . $rand); // remove test file
 }
 
-
-function is_cache_dir(DatabaseConnection$db, $path)
+function is_cache_dir(DatabaseConnection $db, $path)
 {
-    $dlpath = get_dlpath($db);
-    $cache_path = my_realpath($dlpath . CACHE_PATH);
-    if (substr($path, 0, strlen($cache_path)) == $cache_path) {
-        return TRUE;
-    } else {
+    try {
+        $dlpath = get_dlpath($db);
+        $cache_path = my_realpath($dlpath . CACHE_PATH);
+        if (substr($path, 0, strlen($cache_path)) == $cache_path) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    } catch (exception $e) {
         return FALSE;
     }
 }
@@ -262,7 +260,7 @@ function create_user_dirs(DatabaseConnection $db, $base, $user)
     foreach ($paths as $p) {
         $rv = create_dir($p, 0775);
         if ($rv === FALSE) {
-            throw new exception ($LN['error_notmakedir'] . " $p");
+            throw new exception($LN['error_notmakedir'] . " $p");
         }
         set_group($db, $p); // change the group if config is set
         if ((!is_dir($p) || !is_writable($p))) {// check if it valid now
@@ -271,7 +269,6 @@ function create_user_dirs(DatabaseConnection $db, $base, $user)
         test_file_creation($p);
     }
 }
-
 
 function create_required_user_dirs(DatabaseConnection $db, $base)
 {
@@ -284,7 +281,7 @@ function create_required_user_dirs(DatabaseConnection $db, $base)
         $path = $base . $user;
         $rv = create_dir($path, 0775);
         if ($rv === FALSE) {
-            throw new exception ($LN['error_notmakedir'] . " $path");
+            throw new exception($LN['error_notmakedir'] . " $path");
         }
         set_group($db, $path);
         if ((!is_dir($path) || !is_writable($path))) { // check if it valid now
@@ -292,7 +289,6 @@ function create_required_user_dirs(DatabaseConnection $db, $base)
         }
     }
 }
-
 
 function set_dirgroups($dir, $group)
 {
@@ -308,7 +304,6 @@ function set_dirgroups($dir, $group)
         }
     }
 }
-
 
 function set_group(DatabaseConnection $db, $dir)
 {
@@ -394,11 +389,9 @@ function real_file_size($file)
     return $fs;
 }
 
-
 function dirsize($path)
 {
     /* Updated from Aidan Lister <aidan@php.net>'s code */
-
     $size = 0;
     add_dir_separator($path);
     // Sanity check

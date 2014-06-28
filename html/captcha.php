@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-07 00:34:21 +0200 (za, 07 sep 2013) $
- * $Rev: 2924 $
+ * $LastChangedDate: 2014-06-03 17:23:08 +0200 (di, 03 jun 2014) $
+ * $Rev: 3080 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: captcha.php 2924 2013-09-06 22:34:21Z gavinspearhead@gmail.com $
+ * $Id: captcha.php 3080 2014-06-03 15:23:08Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -32,14 +32,15 @@ session_name('URD_WEB_REGISTER' . md5($pathca)); // add the hashed path so we ca
 @session_start();
 $process_name = 'urd_web'; // needed for message format in syslog and logging
 
-require_once "$pathcap/../functions/urd_log.php";
 require_once "$pathcap/../functions/autoincludes.php";
+require_once "$pathcap/../functions/urd_log.php";
 require_once "$pathcap/../functions/functions.php";
+require_once "$pathcap/../functions/file_functions.php";
 require_once "$pathcap/../functions/web_functions.php";
 require_once "$pathcap/../functions/db.class.php";
 
 try {
-    $db = connect_db();  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     die_html("Connection to database failed. $msg\n");
@@ -83,7 +84,7 @@ $_SESSION['register_captcha'] = $rand;
 ImageString($im, 5, 2, 2, $rand[0]. ' ' . $rand[1] . ' ' . $rand[2] . ' ', ImageColorAllocate($im, 0, 0, 0));
 $rand = generate_random(3);
 ImageString($im, 5, 2, 2, ' ' . $rand[0] . ' ' . $rand[1] . ' ' . $rand[2] , ImageColorAllocate($im, 255, 0, 0));
-header('Content-type: image/jpeg');
+header('Content-type: image/jpeg'); 
 imagejpeg($im, NULL, 100);
 ImageDestroy($im);
 die;

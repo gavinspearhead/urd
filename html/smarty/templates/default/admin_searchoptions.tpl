@@ -14,29 +14,31 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-11 00:38:41 +0200 (zo, 11 aug 2013) $
- * $Rev: 2895 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: admin_searchoptions.tpl 2895 2013-08-10 22:38:41Z gavinspearhead@gmail.com $
+ * $Id: admin_searchoptions.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
+<div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_buttons_title}</h3>
 
 <div>
-<input type="text" name="search" value="&lt;{$LN_search}&gt;" onfocus="javascript:clean_search('search');" id="search" size="30" onkeypress="javascript:submit_enter(event, show_buttons);"/>
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_buttons();"/></div>
-<br/>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
+<input type="button" value="{$LN_search}" class="submitsmall" id="searchbutton"/></div>
+</div>
 
 <script type="text/javascript">
 $(document).ready(function() {
-        show_buttons(); 
+    show_buttons(); 
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#search').keypress(function(e) { submit_enter(e, show_buttons); });
+    $('#searchbutton').click(function(e) { show_buttons(); });
 });
 </script>
 
 <div id="buttonsdiv">
 </div>
-
-
 
 <div><br/></div>
 

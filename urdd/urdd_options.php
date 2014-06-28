@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:50:58 +0200 (di, 03 sep 2013) $
- * $Rev: 2911 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_options.php 2911 2013-09-03 21:50:58Z gavinspearhead@gmail.com $
+ * $Id: urdd_options.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -27,17 +27,9 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathopt = realpath(dirname(__FILE__));
-
-require_once "$pathopt/../config.php";
-require_once "$pathopt/../functions/urd_log.php";
-require_once "$pathopt/../functions/functions.php";
-require_once "$pathopt/../functions/autoincludes.php";
-require_once "$pathopt/urdd_command.php";
-
 class urd_cli_options
 {
-    private static $shortopt = '46FDp:t:vh?k::l:L:H:rRc::u:g:NnPTf::';
+    private static $shortopt = '46FDp:t:vh?k::l:L:H:rRc::u:g:NnPTf::U';
     private static $longopt = array(
         'version',
         'help',
@@ -61,6 +53,7 @@ class urd_cli_options
         'pidfile',
         'test',
         'find==',
+        'updatedb',
     );
 
     public static function read_options()
@@ -216,6 +209,10 @@ class urd_cli_options
             case 'T':
             case '--test':
                 $config['test_servers'] = TRUE;
+                break;
+            case 'U':
+            case '--updatedb':
+                $config['updatedb'] = TRUE;
                 break;
             }
         }

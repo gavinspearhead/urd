@@ -6,7 +6,7 @@
 {if !$allow_robots}
 <meta name="robots" content="noindex, nofollow"/>
 {/if}
-<script type="text/javascript" src="{$JSDIR}/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="{$JSDIR}/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
 <link rel="stylesheet" href="{$CSSDIR}/_basic.css" type="text/css"/>
@@ -19,7 +19,10 @@
 
 </head>
 <body>
-<div class="Message hidden" id="message_bar" onclick="javascript:hide_message('message_bar', 0);"></div>
+<div class="Message hidden" id="message_bar" onclick="javascript:hide_message('message_bar', 0);">
+<div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
+<div id="message_content" class="inline" ></div>
+</div>
 <div id="overlay_back">
 <div id="overlay_content"></div>
 </div>

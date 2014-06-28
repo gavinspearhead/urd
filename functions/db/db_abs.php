@@ -27,10 +27,6 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathdba = realpath(dirname(__FILE__));
-
-require_once "$pathdba/../config_functions.php";
-
 abstract class db_update_abs
 {
     protected $quiet;
@@ -50,7 +46,7 @@ abstract class db_update_abs
         $this->db = $db;
         $this->quiet = $quiet;
         $this->html = $html;
-    } # __construct
+    } 
 
     /* converteert een "URD" datatype naar een mysql datatype */
     abstract public function swDtToNative($colType);
@@ -68,10 +64,10 @@ abstract class db_update_abs
     abstract public function dropIndex($idxname, $tablename);
 
     /* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
-    abstract public function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $auto_inc);
+    abstract public function addColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $auto_inc=NULL);
 
     /* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
-    abstract public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what, $auto_inc);
+    abstract public function modifyColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $what=NULL, $auto_inc=NULL);
 
     /* dropt een kolom (mits db dit ondersteunt) */
     abstract public function dropColumn($colName, $tablename);
@@ -146,7 +142,7 @@ abstract class db_update_abs
 # en creeer hem opnieuw
             $this->addIndex($idxname, $type, $tablename, $colList);
         }
-    } # validateIndex
+    }
 
     /* controleert of de fulltext structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
     public function validateFts($ftsname, $tablename, array $colList)
@@ -171,7 +167,7 @@ abstract class db_update_abs
             # en creeer hem opnieuw
             $this->createFts($ftsname, $tablename, $colList);
         }
-    } # validateFts
+    } 
 
     /* controleert of de index structuur hetzelfde is als de gewenste, zo niet, maak hem opnieuw aan */
     public function validateColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $auto_inc)
@@ -207,15 +203,12 @@ abstract class db_update_abs
         }
         # controleer het type
         if (strtolower($q['COLUMN_TYPE']) != strtolower($this->swDtToNative($colType))) {
-            #var_dump($q);
-            #var_dump($colType);
-            #var_dump($this->swDtToNative($colType));
             #die();
 
             return 'type';
         }
         # controleer default
-        if (strtolower($q['COLUMN_DEFAULT']) != strtolower($colDefault)) {
+        if (strtolower($q['COLUMN_DEFAULT']) !== strtolower($colDefault) && ($colType != 'BIGSERIAL') && ($colType != 'SERIAL')) {
             return 'default';
         }
 
@@ -257,7 +250,7 @@ abstract class db_update_abs
 
             if ($same) {
                 switch (strtolower($type)) {
-                case 'primary'      : $same = ($q[$i]['primary'] == TRUE) ; break;
+                case 'primary'      : $same = ($q[$i]['primary'] == TRUE); break;
                 case 'fulltext'		: $same = (strtolower($q[$i]['index_type']) == 'fulltext'); break;
                 case 'unique'		: $same = ($q[$i]['non_unique'] == 0); break;
                 case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($q[$i]['non_unique'] == 1);
@@ -265,9 +258,6 @@ abstract class db_update_abs
             }
 
             if (!$same) {
-                #var_dump($q[$i]);
-                #var_dump($type);
-                #	var_dump($colList);
                 #	die();
 
                 return FALSE;
@@ -275,7 +265,7 @@ abstract class db_update_abs
         }
 
         return TRUE;
-    } # compareIndex
+    }
 
     /* vergelijkt een FTS met de gewenste structuur */
     public function compareFts($ftsname, $tablename, array $colList)
@@ -297,7 +287,7 @@ abstract class db_update_abs
         }
 
         return TRUE;
-    } # compareFts
+    } 
     public function confirm_version()
     {
         $ver = DB_VERSION;

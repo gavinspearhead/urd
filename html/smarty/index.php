@@ -22,6 +22,4 @@
  * $Id: getfile.php 1161 2008-06-14 09:01:35Z styck $
  */
 
-
 header ('location: ../index.php');
-

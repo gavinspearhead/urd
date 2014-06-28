@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: buttons.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: buttons.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -28,13 +28,15 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathbut = realpath(dirname(__FILE__));
 
-require_once "$pathbut/defines.php";
 require_once "$pathbut/autoincludes.php";
 
 class button
 {
     private $name;
     private $url;
+
+    const MAX_SEARCH_BUTTONS = 10;
+
     public function __construct($n, $u)
     {
         $this->name = trim($n);
@@ -71,6 +73,7 @@ function insert_default_buttons(DatabaseConnection $db)
         new button('Movie Meter',               'http://www.moviemeter.nl/film/search/$q#results'),
         new button('MusicBrainz',               'https://musicbrainz.org/search/textsearch.html?query=$q&type=artist&an=1&as=1'),
         new button('NzbIndex',                  'https://www.nzbindex.com/search/?q=$q'),
+        new button('Nzb.cc',                    'https://www.nzb.cc/#$q'),
         new button('OpenSubs',                  'https://www.google.com/search?btnI&q=site:opensubtitles.org%20%22$q%22'),
         new button('RLS',                       'http://www.rlslog.net/?s=$q'),
         new button('Rotten Tomatoes',           'http://www.rottentomatoes.com/search/full_search.php?search=$q'),
@@ -92,18 +95,17 @@ function insert_default_buttons(DatabaseConnection $db)
 
 function add_button(DatabaseConnection $db, button $b)
 {
-    $db->insert_query('searchbuttons', array('name', 'search_url'), array ($b->get_name(), $b->get_url()));
+    $db->insert_query('searchbuttons', array('name', 'search_url'), array($b->get_name(), $b->get_url()));
 }
 
 function update_button(DatabaseConnection $db, $name, $search_url, $id)
 {
     assert(is_numeric($id));
-    $db->update_query('searchbuttons', array('name', 'search_url'), array(trim($name), trim($search_url)), "\"id\"=$id");
+    $db->update_query_2('searchbuttons', array('name'=>trim($name), 'search_url'=>trim($search_url)), '"id"=?', array($id));
 }
 
 function delete_button(DatabaseConnection$db, $id)
 {
     assert(is_numeric($id));
-    $db->escape($id, TRUE);
-    $db->delete_query('searchbuttons', "\"id\"=$id");
+    $db->delete_query('searchbuttons', '"id"=?', array($id));
 }

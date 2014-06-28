@@ -16,10 +16,10 @@
  *  along with this program. See the file 'COPYING'. If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-02-15 00:27:46 +0100 (za, 15 feb 2014) $
+ * $Rev: 3008 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_protocol.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: urdd_protocol.php 3008 2014-02-14 23:27:46Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -85,7 +85,6 @@ class urdd_protocol
     const COMMAND_SHOW = 22;
     const COMMAND_SHUTDOWN = 23;
     const COMMAND_START_POST = 60;
-//    const COMMAND_STATUS = 24;
     const COMMAND_STOP = 30;
     const COMMAND_SUBSCRIBE = 26;
     const COMMAND_SUBSCRIBE_RSS = 50;

@@ -26,25 +26,22 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-require_once '../functions/usenet_functions.php';
-require_once '../functions/db.class.php';
-
 // Select the first usenet server
 $hostname = isset($_SESSION['hostname']) ? $_SESSION['hostname'] : '';
 $port = isset($_SESSION['port']) ? $_SESSION['port'] : '119';
-$connection = isset($_SESSION['connection']) ? $_SESSION['connection'] : '' ;
+$connection = isset($_SESSION['connection']) ? $_SESSION['connection'] : '';
 $username =isset($_SESSION['username']) ?  $_SESSION['username'] : '';
 $password = isset($_SESSION['password']) ? $_SESSION['password'] : '';
 $server_id = isset($_SESSION['server_id']) ? $_SESSION['server_id'] : '';
 
 $OUT .= '<tr><td colspan="2" class="install1">Selecting usenet server</td></tr>' . "\n";
 
-$db = connect_db();
+$db = connect_db(FALSE);
 
 $servers = get_all_usenet_servers($db, FALSE);
 
 foreach($servers as $server) {
-    $OUT.= "<input type=\"hidden\" name=\"server_{$server[id]}\" id=\"server_{$server[id]}\"value=\"{$server['name']}|{$server['hostname']}|{$server['port']}|{$server['secure_port']}|{$server['connection']}\"/>\n";
+    $OUT.= "<input type=\"hidden\" name=\"server_{$server['id']}\" id=\"server_{$server['id']}\"value=\"{$server['name']}|{$server['hostname']}|{$server['port']}|{$server['secure_port']}|{$server['connection']}\"/>\n";
 }
 $OUT .= <<<USENET1
 
@@ -59,11 +56,10 @@ foreach($servers as $server) {
 }
 
 $connection = strtolower($connection);
-$off_conn =$ssl_conn =  $tls_conn = '';
-if ($connection == 'off') { $off_conn = "selected=\"selected\""; } 
-if ($connection == 'ssl') { $ssl_conn = "selected=\"selected\""; } 
-if ($connection == 'tls') { $tls_conn = "selected=\"selected\""; } 
-
+$off_conn = $ssl_conn = $tls_conn = '';
+if ($connection == 'off') { $off_conn = 'selected="selected"'; } 
+if ($connection == 'ssl') { $ssl_conn = 'selected="selected"'; } 
+if ($connection == 'tls') { $tls_conn = 'selected="selected"'; } 
 
 $OUT .= <<<USENET2
 </select>

@@ -153,7 +153,7 @@ class db_update_sqlite extends db_update_abs
         # Check eerst of de tabel bestaat, anders kan
         # indexExists mislukken en een fatal error geven
         if (!$this->tableExists($tablename)) {
-            return ;
+            return;
         }
 
         if ($this->indexExists($idxname, $tablename)) {
@@ -162,7 +162,7 @@ class db_update_sqlite extends db_update_abs
     } # dropIndex
 
     /* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
-    public function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $auto_inc)
+    public function addColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $auto_inc=NULL)
     {
         if (!$this->columnExists($tablename, $colName)) {
             # zet de DEFAULT waarde
@@ -224,19 +224,19 @@ class db_update_sqlite extends db_update_abs
     /* verandert een storage engine (concept dat enkel mysql kent :P ) */
     public function alterStorageEngine($tablename, $engine)
     {
-        return ; // null operatie
+        return; // null operatie
     } # alterStorageEngine
 
     /* creeert een foreign key constraint */
     public function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action)
     {
-        return ; // null
+        return; // null
     } # addForeignKey
 
     /* dropped een foreign key constraint */
     public function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action)
     {
-        return ; // null
+        return; // null
     } # dropForeignKey
 
     /* rename een table */
@@ -246,16 +246,16 @@ class db_update_sqlite extends db_update_abs
     } # renameTable
 
     /* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
-    public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what, $auto_inc)
+    public function modifyColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $what=NULL, $auto_inc=NULL)
     {
         # als het de NOT NULL is of de charset, dan negeren we de gevraagde wijziging
         if (($what == 'not null') || ($what == 'charset') | ($what == 'default')) {
-            return ;
+            return;
         }
 
         # sqlite kent niet echt types, dus ook dat vinden we niet erg
         if ($what == 'type') {
-            return ;
+            return;
         }
 
         throw new Exception('Changing columns not supported');
@@ -303,10 +303,11 @@ class db_update_sqlite extends db_update_abs
     {
         # sqlite kent niet echt een manier om deze informatie in z'n geheel terug te geven,
         # we vragen dus de index op en manglen hem vervolgens zodat het beeld klopt
-        $q = $this->db->execute_query("SELECT * FROM sqlite_master
-                                          WHERE type = 'index'
-                                            AND name = '" . $idxname . "'
-                                            AND tbl_name = '" . $tablename . "'");
+        $q = $this->db->execute_query(
+                "SELECT * FROM sqlite_master
+                 WHERE type = 'index'
+                 AND name = '" . $idxname . "'
+                 AND tbl_name = '" . $tablename . "'");
         if (empty($q)) {
             return array();
         }

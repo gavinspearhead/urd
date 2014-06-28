@@ -16,9 +16,9 @@
 #  along with this program. See the file "COPYING". If it does not
 #  exist, see <http://www.gnu.org/licenses/>.
 #
-# $LastChangedDate: 2011-11-04 23:58:13 +0100 (Fri, 04 Nov 2011) $
-# $Rev: 2398 $
-# $Author: gavinspearhead $
+# $LastChangedDate: 2014-06-19 00:03:31 +0200 (do, 19 jun 2014) $
+# $Rev: 3098 $
+# $Author: gavinspearhead@gmail.com $
 # $Id
 #
 
@@ -36,7 +36,7 @@ urdd_dir=`dirname $0`
 rv="17" # 17 is the return code that means please restart me
 while [ "$rv" -eq "17" ] ; do 
 
-    $PHP $urdd_dir/urdd/urdd.php $@ 3>&- 4>&- 5>&- 6>&- 7>&- 8>&- 9>&-
+    $PHP $urdd_dir/urdd/urdd.php $@ 3>&- 4>&- 5>&- 6>&- 7>&- 8>&- 9>&- 
     rv=$?
     sleep 1
 done

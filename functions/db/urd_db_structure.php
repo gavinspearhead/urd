@@ -78,10 +78,10 @@ class urd_table
     private $drop_indexes;
     private $engine;
 
-    public function __construct($name, $auto_inc, $collation)
+    public function __construct($name, $auto_inc_col, $collation)
     {
         $this->tablename = $name;
-        $this->auto_inc_column = $auto_inc;
+        $this->auto_inc_column = $auto_inc_col;
         $this->collation = $collation;
         $this->columns = array();
         $this->indexes = array();
@@ -185,7 +185,7 @@ class urd_column
     }
     public function dump()
     {
-        echo "\tCOLUMN:\t" . $this->column_name . " " . $this->type . ' DEFAULT ' . $this->default . ' ' . ($this->notnull?'NOT NULL ':'NULL') . ' ' . $this->collation . "\n";
+        echo "\tCOLUMN:\t" . $this->column_name . " " . $this->type . ' DEFAULT ' . $this->default . ' ' . ($this->notnull ? 'NOT NULL ':'NULL') . ' ' . $this->collation . "\n";
     }
 
     public function validate(db_update_abs $db_update, $table_name)
@@ -224,500 +224,521 @@ class urd_index
 
 }
 
-function create_db_structure(db_update_abs $db_update, $engine)
-{
-    $urd_db = new urd_database($engine);
 
-    $t = new urd_table('groups', 'ID', 'utf8');
-    $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('server_ID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', '' ));
-    $t->add_column(new urd_column('last_updated', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('active', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('adult', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('description', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('postcount', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('last_record', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('first_record', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('mid_record', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('extset_update', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('expire', 'UNSIGNED INTEGER', '7', TRUE, '', ''));
-    $t->add_column(new urd_column('refresh_time', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('refresh_period', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('setcount', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('minsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('maxsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('groups_prim', 'PRIMARY', array('ID')));
-    $t->add_index(new urd_index('groups_name', '', array('name')));
-    $t->add_index(new urd_index('idx_active', '', array('active')));
-    $urd_db->add($t);
+class urd_db_structure {
+    static function create_db_structure(db_update_abs $db_update, $engine)
+    {
+        $urd_db = new urd_database($engine);
 
-    $t = new urd_table('setdata', 'tmp', 'utf8');
-    $t->add_column(new urd_column('ID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('groupID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('articlesmax', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('binaries', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('date', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('idx_ID', 'PRIMARY', array('ID')));
-    $t->add_index(new urd_index('idx_groupID', '', array('groupID')));
-    $t->add_index(new urd_index('idx_date', '', array('date')));
-    $t->drop_column('tmp');
-    $urd_db->add($t);
-
-    $t = new urd_table('extsetdata', 'tmp', 'utf8');
-    $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('value', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('committed', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('type', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('idx_setid_extset', '', array('setID')));
-    $t->add_index(new urd_index('idx_name', '', array('name')));
-    $t->add_index(new urd_index('idx_ext_set_prim', 'PRIMARY', array('setID', 'name', 'type')));
-    $t->drop_column('tmp');
-    $urd_db->add($t);
-
-    $t = new urd_table('preferences', 'ID', 'utf8');
-    $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userID', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('option', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('value', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('pref_prim', 'PRIMARY', array('ID')));
-    $t->add_index(new urd_index('idx_option', '', array('option')));
-    $t->add_index(new urd_index('idx_userID', '', array('userID')));
-    $urd_db->add($t);
-
-    $t = new urd_table('usersetinfo', 'tmp', 'utf8');
-    $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('userID', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('type', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('statusread', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('statuskill', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('statusint', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('statusnzb', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('idx_setid', 'PRIMARY', array('setID', 'userID', 'type')));
-    $t->drop_column('tmp');
-    $urd_db->add($t);
-
-    $t = new urd_table('downloadinfo', 'ID', 'utf8');
-    $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('password', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('done_size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('unpar', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('unrar', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('subdl', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('delete_files', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('first_run', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('status', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
-    $t->add_column(new urd_column('destination', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('dl_dir', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('start_time', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('add_setname', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('position', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('preview', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
-    $t->add_column(new urd_column('hidden', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', '')); // why ??
-    $t->add_column(new urd_column('download_par', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('lock', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('comment', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('dlinfo_prim', 'PRIMARY', array('ID')));
-    $urd_db->add($t);
-
-    $t = new urd_table('users', 'ID', 'utf8');
-    $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('fullname', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('email', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('pass', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('salt', 'VARCHAR(16)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('isadmin', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('active', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('rights', 'CHAR(8)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('ipaddr', 'VARCHAR(80)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('last_login', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('last_active', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('token', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('regtime', 'BIGINTEGER', '0', TRUE, '', '')); // why ??
-    $t->add_column(new urd_column('failed_login_count', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('failed_login_time', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('idx_username', 'UNIQUE', array('name')));
-    $t->add_index(new urd_index('user_prim', 'PRIMARY', array('ID')));
-    $urd_db->add($t);
-
-    $t = new urd_table('downloadarticles', 'ID', 'utf8');
-    $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('downloadID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', '')); // why ??
-    $t->add_column(new urd_column('groupID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', '')); // why ??
-    $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('partnumber', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('messageID', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('status', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
-    $t->add_index(new urd_index('dlart_prim', 'PRIMARY', array('ID')));
-    $t->add_index(new urd_index('idx_downloadID', '', array('downloadID')));
-    $t->add_index(new urd_index('idx_status', '', array('status')));
-    $urd_db->add($t);
-
-    $t = new urd_table('queueinfo', 'ID', 'utf8');
-    $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('priority', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
-    $t->add_column(new urd_column('description', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('command_id', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('urdd_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('progress', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
-    $t->add_column(new urd_column('ETA', 'UNSIGNED INTEGER', '0', TRUE, '', '')); // check for size
-    $t->add_column(new urd_column('comment', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('paused', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('status', 'VARCHAR(25)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('starttime', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('lastupdate', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('restart', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('q_prim', 'PRIMARY', array('ID')));
-    $t->add_index(new urd_index('idx_queue_status', '', array('status')));
-    $t->drop_column('directory');
-    $t->drop_index('idx_desc_status');
-    $urd_db->add($t);
-
-    $t = new urd_table('schedule', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('command', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('at_time', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('interval', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('userid', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('sched_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('searchbuttons', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('search_url', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('search_prim', 'PRIMARY', array('id')));
-    $t->drop_column('image_url');
-    $urd_db->add($t);
-
-    $t = new urd_table('usergroupinfo', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('visible', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('minsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('maxsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('category', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('last_update_seen', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('ugrpinfo_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('idx_ugroupid', '', array('groupid')));
-    $t->add_index(new urd_index('idx_ugcategory', '', array('category')));
-    $urd_db->add($t);
-
-    $t = new urd_table('usenet_servers', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('password', 'VARCHAR(1024)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('threads', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('hostname', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('port', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('secure_port', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('authentication', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('posting', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('compressed_headers', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('priority', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('connection', 'VARCHAR(20)', 'off', TRUE, 'utf8', '')); // fix quotes
-    $t->add_index(new urd_index('srv_prim', 'PRIMARY', array('id')));
-    $t->drop_column('retention');
-    $t->drop_column('active');
-    $urd_db->add($t);
-
-    $t = new urd_table('stats', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('action', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('value', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('timestamp', 'timestamp', 'NOW', TRUE, '', '')); // default value
-    $t->add_index(new urd_index('stats_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('stats_act', '', array('action')));
-    $urd_db->add($t);
-
-    $t = new urd_table('rss_urls', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('url', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('adult', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('subscribed', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('expire', 'UNSIGNED INTEGER', '7', TRUE, '', ''));
-    $t->add_column(new urd_column('refresh_time', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('refresh_period', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('feedcount', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('last_updated', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('extset_update', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('password', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('rssurl_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('idx_subscribed', '', array('subscribed')));
-    $urd_db->add($t);
-
-    $t = new urd_table('rss_sets', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('setid', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('rss_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('setname', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('timestamp', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('description', 'VARCHAR(1024)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('summary', 'VARCHAR(1024)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('nzb_link', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('rssset_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('idx_rsssetid', '', array('setid')));
-    $t->add_index(new urd_index('idx_rsssid', '', array('rss_id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('userfeedinfo', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('feedid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('visible', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('minsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('maxsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('category', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('last_update_seen', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('ufi_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('idx_feedid', '', array('feedid')));
-    $urd_db->add($t);
-
-    $t = new urd_table('merged_sets', 'tmp', 'utf8');
-    $t->add_column(new urd_column('new_setid', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('old_setid', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('type', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('committed', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('merge_prim', 'PRIMARY', array('new_setid', 'old_setid', 'type')));
-    $t->drop_column('tmp');
-    $urd_db->add($t);
-
-    $t = new urd_table('postinfo', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('src_dir', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('tmp_dir', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('recovery_par', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('filesize_rar', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('delete_files', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('file_count', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('start_time', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('posti_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('post_files', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('postid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('filename', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('file_idx', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('articleid', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('rarfile', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('rar_idx', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('postf_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('idx_post_id', '', array('postid')));
-    $t->add_index(new urd_index('idx_post_status', '' , array('status')));
-    $urd_db->add($t);
-
-    $t = new urd_table('post_messages', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('headers', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('message', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('postm_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('categories', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('cat_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('cat_userid', '', array('userid')));
-    $urd_db->add($t);
-
-    $t = new urd_table('nfo_files', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('groupID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('nfo_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('spot_reports', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('reference', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('spotreport_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('spotreport_stamp', '', array('stamp')));
-    $t->add_index(new urd_index('spotreport_spotid', '', array('spotid')));
-    $urd_db->add($t);
-
-    $t = new urd_table('spot_whitelist', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('spotter_id', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('source', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('spotwl_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('spotwlid', '', array('spotter_id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('spot_blacklist', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('spotter_id', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('source', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('spotbl_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('spot_messages', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('spotm_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('spot_images', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('spotid', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('image', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('image_file', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('fetched', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('spoti_stamp', '', array('stamp')));
-    $t->add_index(new urd_index('spoti_prim', 'PRIMARY', array('id')));
-    $urd_db->add($t);
-
-    $t = new urd_table('spots', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('messageid', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('spotter_id', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('category', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('subcat', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('poster', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('title', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('tag', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('description', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('nzbs', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('subcata', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('subcatb', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('subcatc', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('subcatd', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('subcatz', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('url', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('reports', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('comments', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_index(new urd_index('spots_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('spot_stamp', '', array('stamp')));
-    $t->add_index(new urd_index('spot_spotid', '', array('spotid')));
-    $t->add_index(new urd_index('spot_cat', '', array('category')));
-    $t->add_index(new urd_index('spot_msgid', '', array('messageid')));
-    $t->drop_column('image');
-    $urd_db->add($t);
-
-    $t = new urd_table('spot_comments', 'id', 'utf8');
-    $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-    $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('comment', 'TEXT', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('from', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
-    $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
-    $t->add_column(new urd_column('userid', 'VARCHAR(32)', '0', TRUE, 'utf8', ''));
-    $t->add_index(new urd_index('spotc_prim', 'PRIMARY', array('id')));
-    $t->add_index(new urd_index('spotc_stamp', '', array('stamp')));
-    $t->add_index(new urd_index('spotc_spotid', '', array('spotid')));
-    $urd_db->add($t);
-    $part_tables = $db_update->get_tables('parts_%');
-    $bin_tables = $db_update->get_tables('binaries_%');
-    foreach ($part_tables as $tn) {
-        $t = new urd_table($tn, NULL, 'utf8');
+        $t = new urd_table('groups', 'ID', 'utf8');
         $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
-        $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('messageID', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('server_ID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', '' ));
+        $t->add_column(new urd_column('last_updated', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('active', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('adult', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('description', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('postcount', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('last_record', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('first_record', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('mid_record', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('extset_update', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('expire', 'UNSIGNED INTEGER', '7', TRUE, '', ''));
+        $t->add_column(new urd_column('refresh_time', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('refresh_period', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('setcount', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('minsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('maxsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('groups_prim', 'PRIMARY', array('ID')));
+        $t->add_index(new urd_index('groups_name', '', array('name')));
+        $t->add_index(new urd_index('idx_active', '', array('active')));
+        $urd_db->add($t);
+
+        $t = new urd_table('setdata', 'tmp', 'utf8');
+        $t->add_column(new urd_column('ID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('groupID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('fromname', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('date', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-        $t->add_column(new urd_column('partnumber', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('articlesmax', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('binaries', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('date', 'BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-        $t->add_index(new urd_index('idx_binaries_id_'. $tn, 'PRIMARY', array('ID')));
-        $t->add_index(new urd_index('idx_binaryID_'. $tn, '', array('binaryID')));
-        $t->add_index(new urd_index('idx_date_'. $tn, '', array('date')));
-        $t->drop_column('dirty');
-        $t->drop_index('dirty_idx');
-        $t->drop_index('binaryID_idx');
-        $t->drop_index('date_idx');
+        $t->add_index(new urd_index('idx_ID', 'PRIMARY', array('ID')));
+        $t->add_index(new urd_index('idx_groupID', '', array('groupID')));
+        $t->add_index(new urd_index('idx_date', '', array('date')));
+        $t->drop_column('tmp');
         $urd_db->add($t);
-    }
-    foreach ($bin_tables as $tn) {
-        $t = new urd_table($tn, NULL, 'utf8');
-        $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+
+        $t = new urd_table('extsetdata', 'tmp', 'utf8');
         $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('date', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-        $t->add_column(new urd_column('bytes', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-        $t->add_column(new urd_column('totalParts', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-        $t->add_column(new urd_column('dirty', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
-        $t->add_index(new urd_index($tn . '_pkey', 'PRIMARY', array('binaryID')));
-        $t->add_index(new urd_index('idx_dirty_'. $tn, '', array('dirty')));
-        $t->add_index(new urd_index('idx_setID_'. $tn, '', array('setID')));
-        $t->drop_column('fromname');
-        $t->drop_index('dirty_idx');
-        $t->drop_index('setID_idx');
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('value', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('committed', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('type', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('idx_ext_set_prim', 'PRIMARY', array('setID', 'name', 'type')));
+        $t->add_index(new urd_index('idx_setid_extset', '', array('setID')));
+        $t->add_index(new urd_index('idx_name', '', array('name')));
+        $t->add_index(new urd_index('idx_type', '', array('type')));
+        $t->drop_column('tmp');
         $urd_db->add($t);
+
+        $t = new urd_table('preferences', 'ID', 'utf8');
+        $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userID', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('option', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('value', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('pref_prim', 'PRIMARY', array('ID')));
+        $t->add_index(new urd_index('idx_option', '', array('option')));
+        $t->add_index(new urd_index('idx_userID', '', array('userID')));
+        $urd_db->add($t);
+
+        $t = new urd_table('usersetinfo', 'tmp', 'utf8');
+        $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('userID', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('type', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('statusread', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('statuskill', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('statusint', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('statusnzb', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('idx_setid', 'PRIMARY', array('setID', 'userID', 'type')));
+        $t->add_index(new urd_index('idx_usi_userID', '', array('userID')));
+        $t->drop_column('tmp');
+        $urd_db->add($t);
+
+        $t = new urd_table('downloadinfo', 'ID', 'utf8');
+        $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('password', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('done_size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('unpar', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('unrar', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subdl', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('delete_files', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('first_run', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
+        $t->add_column(new urd_column('destination', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('dl_dir', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('start_time', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('add_setname', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('position', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('preview', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
+        $t->add_column(new urd_column('hidden', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', '')); // why ??
+        $t->add_column(new urd_column('download_par', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('lock', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('comment', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('dlinfo_prim', 'PRIMARY', array('ID')));
+        $t->drop_column('username');
+        $urd_db->add($t);
+
+        $t = new urd_table('users', 'ID', 'utf8');
+        $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('fullname', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('email', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('pass', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('salt', 'VARCHAR(16)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('isadmin', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('active', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('rights', 'CHAR(8)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('ipaddr', 'VARCHAR(80)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('last_login', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('last_active', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('token', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('regtime', 'BIGINTEGER', '0', TRUE, '', '')); // why ??
+        $t->add_column(new urd_column('failed_login_count', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('failed_login_time', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('privatekey', 'TEXT', '', TRUE, 'ascii', ''));
+        $t->add_column(new urd_column('publickey', 'TEXT', '', TRUE, 'ascii', ''));
+        $t->add_index(new urd_index('user_prim', 'PRIMARY', array('ID')));
+        $t->add_index(new urd_index('idx_username', 'UNIQUE', array('name')));
+        $urd_db->add($t);
+
+        $t = new urd_table('downloadarticles', 'ID', 'utf8');
+        $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('downloadID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', '')); // why ??
+        $t->add_column(new urd_column('groupID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', '')); // why ??
+        $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('partnumber', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('messageID', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
+        $t->add_index(new urd_index('dlart_prim', 'PRIMARY', array('ID')));
+        $t->add_index(new urd_index('idx_downloadID', '', array('downloadID')));
+        $t->add_index(new urd_index('idx_status', '', array('status')));
+        $urd_db->add($t);
+
+        $t = new urd_table('queueinfo', 'ID', 'utf8');
+        $t->add_column(new urd_column('ID', 'BIGSERIAL', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('priority', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
+        $t->add_column(new urd_column('description', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('command_id', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('urdd_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('progress', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', '')); // check for size
+        $t->add_column(new urd_column('ETA', 'UNSIGNED INTEGER', '0', TRUE, '', '')); // check for size
+        $t->add_column(new urd_column('comment', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('paused', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'VARCHAR(25)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('starttime', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('lastupdate', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('restart', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('q_prim', 'PRIMARY', array('ID')));
+        $t->add_index(new urd_index('idx_queue_status', '', array('status')));
+        $t->drop_column('directory');
+        $t->drop_index('idx_desc_status');
+        $urd_db->add($t);
+
+        $t = new urd_table('schedule', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('command', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('at_time', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('interval', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('sched_prim', 'PRIMARY', array('id')));
+        $t->drop_column('username');
+        $urd_db->add($t);
+
+        $t = new urd_table('searchbuttons', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('search_url', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('search_prim', 'PRIMARY', array('id')));
+        $t->drop_column('image_url');
+        $urd_db->add($t);
+
+        $t = new urd_table('usergroupinfo', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('visible', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('minsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('maxsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('category', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('last_update_seen', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('ugrpinfo_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('idx_ugroupid', '', array('groupid')));
+        $t->add_index(new urd_index('idx_ugcategory', '', array('category')));
+        $urd_db->add($t);
+
+        $t = new urd_table('usenet_servers', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('password', 'VARCHAR(1024)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('threads', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('hostname', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('port', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('secure_port', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('authentication', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('posting', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('compressed_headers', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('priority', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('connection', 'VARCHAR(20)', 'off', TRUE, 'utf8', '')); // fix quotes
+        $t->add_index(new urd_index('srv_prim', 'PRIMARY', array('id')));
+        $t->drop_column('retention');
+        $t->drop_column('active');
+        $urd_db->add($t);
+
+        $t = new urd_table('stats', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('action', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('value', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('timestamp', 'timestamp', 'NOW', TRUE, '', '')); // default value
+        $t->add_index(new urd_index('stats_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('stats_act', '', array('action')));
+        $urd_db->add($t);
+
+        $t = new urd_table('rss_urls', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('url', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('adult', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subscribed', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('expire', 'UNSIGNED INTEGER', '7', TRUE, '', ''));
+        $t->add_column(new urd_column('refresh_time', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('refresh_period', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('feedcount', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('last_updated', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('extset_update', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('username', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('password', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('rssurl_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('idx_subscribed', '', array('subscribed')));
+        $urd_db->add($t);
+
+        $t = new urd_table('rss_sets', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('setid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('rss_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('setname', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('timestamp', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('description', 'VARCHAR(1024)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('summary', 'VARCHAR(1024)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('nzb_link', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('rssset_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('idx_rsssetid', '', array('setid')));
+        $t->add_index(new urd_index('idx_rsssid', '', array('rss_id')));
+        $t->add_index(new urd_index('idx_rsstimestamp', '', array('timestamp')));
+        $urd_db->add($t);
+
+        $t = new urd_table('userfeedinfo', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('feedid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('visible', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('minsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('maxsetsize', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('category', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('last_update_seen', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('ufi_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('idx_feedid', '', array('feedid')));
+        $urd_db->add($t);
+
+        $t = new urd_table('merged_sets', 'tmp', 'utf8');
+        $t->add_column(new urd_column('new_setid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('old_setid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('type', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('committed', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('merge_prim', 'PRIMARY', array('new_setid', 'old_setid', 'type')));
+        $t->drop_column('tmp');
+        $urd_db->add($t);
+
+        $t = new urd_table('postinfo', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('src_dir', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('tmp_dir', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('recovery_par', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('filesize_rar', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('delete_files', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('file_count', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('start_time', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('posti_prim', 'PRIMARY', array('id')));
+        $urd_db->add($t);
+
+        $t = new urd_table('post_files', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('postid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('filename', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('file_idx', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('articleid', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('rarfile', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('rar_idx', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('postf_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('idx_post_id', '', array('postid')));
+        $t->add_index(new urd_index('idx_post_status', '' , array('status')));
+        $urd_db->add($t);
+
+        $t = new urd_table('post_messages', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('headers', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('message', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('postm_prim', 'PRIMARY', array('id')));
+        $urd_db->add($t);
+
+        $t = new urd_table('categories', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('cat_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('cat_userid', '', array('userid')));
+        $urd_db->add($t);
+
+        $t = new urd_table('nfo_files', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('groupID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('nfo_prim', 'PRIMARY', array('id')));
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_reports', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('reference', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('spotreport_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('spotreport_stamp', '', array('stamp')));
+        $t->add_index(new urd_index('spotreport_spotid', '', array('spotid')));
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_whitelist', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('spotter_id', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('source', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '1', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('spotwl_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('spotwlid', '', array('spotter_id')));
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_blacklist', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('spotter_id', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('source', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '1', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('spotbl_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('spotblid', '', array('spotter_id')));
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_messages', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('spotm_prim', 'PRIMARY', array('id')));
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_tmp', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_images', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('image', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('image_file', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('fetched', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('spoti_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('spoti_spotid', '', array('spotid')));
+        $t->add_index(new urd_index('spoti_stamp', '', array('stamp')));
+        $urd_db->add($t);
+
+        $t = new urd_table('spots', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('messageid', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotter_id', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('category', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subcat', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('poster', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('title', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('tag', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('description', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('nzbs', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('subcata', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('subcatb', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('subcatc', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('subcatd', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('subcatz', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('url', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('reports', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('comments', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('rating', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('rating_count', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('spots_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('spot_stamp', '', array('stamp')));
+        $t->add_index(new urd_index('spot_size', '', array('size')));
+        $t->add_index(new urd_index('spot_spotid', '', array('spotid')));
+        $t->add_index(new urd_index('spot_cat', '', array('category')));
+        $t->add_index(new urd_index('spot_msgid', '', array('messageid')));
+        $t->drop_column('image');
+        $urd_db->add($t);
+
+        $t = new urd_table('spot_comments', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('comment', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('from', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'VARCHAR(32)', '0', TRUE, 'utf8', ''));
+        $t->add_index(new urd_index('spotc_prim', 'PRIMARY', array('id')));
+        $t->add_index(new urd_index('spotc_stamp', '', array('stamp')));
+        $t->add_index(new urd_index('spotc_spotid', '', array('spotid')));
+        $urd_db->add($t);
+        $part_tables = $db_update->get_tables('parts_%');
+        $bin_tables = $db_update->get_tables('binaries_%');
+        foreach ($part_tables as $tn) {
+            $t = new urd_table($tn, NULL, 'utf8');
+            $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
+            $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('messageID', 'VARCHAR(255)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('fromname', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('date', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+            $t->add_column(new urd_column('partnumber', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+            $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+            $t->add_index(new urd_index('idx_binaries_id_'. $tn, 'PRIMARY', array('ID')));
+            $t->add_index(new urd_index('idx_binaryID_'. $tn, '', array('binaryID')));
+            $t->add_index(new urd_index('idx_date_'. $tn, '', array('date')));
+            $t->drop_column('dirty');
+            $t->drop_index('dirty_idx');
+            $t->drop_index('binaryID_idx');
+            $t->drop_index('date_idx');
+            $urd_db->add($t);
+        }
+        foreach ($bin_tables as $tn) {
+            $t = new urd_table($tn, NULL, 'utf8');
+            $t->add_column(new urd_column('binaryID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('setID', 'CHAR(32)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+            $t->add_column(new urd_column('date', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+            $t->add_column(new urd_column('bytes', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+            $t->add_column(new urd_column('totalParts', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+            $t->add_column(new urd_column('dirty', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
+            $t->add_index(new urd_index($tn . '_pkey', 'PRIMARY', array('binaryID')));
+            $t->add_index(new urd_index('idx_dirty_'. $tn, '', array('dirty')));
+            $t->add_index(new urd_index('idx_setID_'. $tn, '', array('setID')));
+            $t->drop_column('fromname');
+            $t->drop_index('dirty_idx');
+            $t->drop_index('setID_idx');
+            $urd_db->add($t);
+        }
+
+        $urd_db->validate($db_update);
+        $db_update->confirm_version();
+        config_cache::clear_all();
+        return $urd_db;
     }
 
-    $urd_db->validate($db_update);
-    $db_update->confirm_version();
+    static function create_db_updater($dbtype, DatabaseConnection $db, $quiet=TRUE, $html=FALSE)
+    {
+        switch ($dbtype) {
+            case 'mysql':
+            case 'mysqlt':
+            case 'mysqli':
+            case 'pdo_mysql':
+                $sdb = new db_update_mysql($db, $quiet, $html);
+                break;
 
-    return $urd_db;
-}
+            case 'postgres9':
+            case 'postgres8':
+            case 'postgres7':
+            case 'pdo_pgsql':
+                $sdb = new db_update_pgsql($db, $quiet, $html);
+                break;
+            case 'pdo_sqlite':
+                $sdb = new db_update_sqlite($db, $quiet, $html);
+                break;
+            default:
+                throw new exception ('Database type not supported');
+        }
 
-function create_db_updater($dbtype, DatabaseConnection $db, $quiet=TRUE, $html=FALSE)
-{
-    switch ($dbtype) {
-    case 'mysql':
-    case 'mysqlt':
-    case 'mysqli':
-    case 'pdo_mysql':
-        $sdb = new db_update_mysql($db, $quiet, $html);
-        break;
-
-    case 'postgres9':
-    case 'postgres8':
-    case 'postgres7':
-    case 'pdo_pgsql':
-        $sdb = new db_update_pgsql($db, $quiet, $html);
-        break;
-    case 'pdo_sqlite':
-        $sdb = new db_update_sqlite($db, $quiet, $html);
-        break;
-    default:
-        throw new exception ('Database type not supported');
+        return $sdb;
     }
-
-    return $sdb;
 }

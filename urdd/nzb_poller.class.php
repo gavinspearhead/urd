@@ -26,13 +26,10 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathq = realpath(dirname(__FILE__));
-require_once "$pathq/../functions/autoincludes.php";
-
 class nzb_poller
 {
     const POLL_INTERVAL = 15; // seconds
-    public static $last_checked = 0;
+    private static $last_checked = 0;
 
     public static function poll_nzb_dir(DatabaseConnection $db, server_data &$servers)
     {
@@ -40,7 +37,6 @@ class nzb_poller
         if (self::$last_checked + self::POLL_INTERVAL > $now) {
             return;
         }
-//        echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         self::$last_checked = $now;
         try {
             $dl_path_basis = get_dlpath($db);

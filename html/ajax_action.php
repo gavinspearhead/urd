@@ -15,12 +15,26 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-06 00:48:29 +0200 (vr, 06 sep 2013) $
- * $Rev: 2922 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_action.php 2922 2013-09-05 22:48:29Z gavinspearhead@gmail.com $
+ * $Id: ajax_action.php 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
+
+class json_return_value {
+    public $error_code = 0;
+    public $message = '';
+    public $action = '';
+    public $data = '';
+    public function __construct($ec='', $m='', $a='', $d='') {
+        $this->error_code = $ec;
+        $this->message = $m;
+        $this->action = $a;
+        $this->data = $d;
+    }
+}
+
 
 $pathac = realpath(dirname(__FILE__));
 require_once "$pathac/../functions/ajax_includes.php";
@@ -28,14 +42,6 @@ require_once "$pathac/../functions/buttons.php";
 
 $prefs = load_config($db);
 $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-
-function check_connected(urdd_client $uc)
-{
-    global $LN;
-    if ($uc->is_connected() === FALSE) {
-        throw new exception($LN['error_urddconnect']);
-    }
-}
 
 if (isset($_GET['cmd']) && $_GET['cmd'] == 'export_all') {
     // we will accept export also from a GET request
@@ -51,6 +57,7 @@ if (isset($_GET['cmd']) && $_GET['cmd'] == 'export_all') {
 function update_spots_images(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->update_spotsimages();
@@ -61,6 +68,7 @@ function update_spots_images(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_spots_comments(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->update_spotscomments();
@@ -71,6 +79,7 @@ function update_spots_comments(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_spots(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->update('', USERSETTYPE_SPOT);
@@ -81,6 +90,7 @@ function update_spots(DatabaseConnection $db, urdd_client $uc, $userid)
 function expire_spots(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->expire('', USERSETTYPE_SPOT);
@@ -91,6 +101,7 @@ function expire_spots(DatabaseConnection $db, urdd_client $uc, $userid)
 function purge_spots(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $uc->purge('', USERSETTYPE_SPOT);
@@ -101,6 +112,7 @@ function purge_spots(DatabaseConnection $db, urdd_client $uc, $userid)
 function find_servers(DatabaseConnection $db, urdd_client $uc, $userid, $extended=FALSE)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $ext_str = '';
@@ -115,6 +127,7 @@ function find_servers(DatabaseConnection $db, urdd_client $uc, $userid, $extende
 function clean_db(DatabaseConnection $db, urdd_client $uc, $userid, $all=FALSE)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, FALSE, '', $userid, TRUE);
     check_connected($uc);
     $all_str = 'now';
@@ -129,6 +142,7 @@ function clean_db(DatabaseConnection $db, urdd_client $uc, $userid, $all=FALSE)
 function update_blacklist(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_SPOTS, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $uc->update_blacklist();
@@ -139,6 +153,7 @@ function update_blacklist(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_whitelist(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_SPOTS, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $uc->update_whitelist();
@@ -149,6 +164,7 @@ function update_whitelist(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->update('all', USERSETTYPE_GROUP);
@@ -160,6 +176,7 @@ function update_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M',  $userid, TRUE);
     check_connected($uc);
     $uc->update_newsgroups();
@@ -170,6 +187,7 @@ function update_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 function gensets_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->gensets('all');
@@ -180,6 +198,7 @@ function gensets_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 function purge_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $uc->purge('all', USERSETTYPE_GROUP);
@@ -192,6 +211,7 @@ function purge_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 function expire_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->expire('all', USERSETTYPE_GROUP);
@@ -203,6 +223,7 @@ function expire_articles(DatabaseConnection $db, urdd_client $uc, $userid)
 function gensets_group(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $id = get_request('group');
@@ -236,6 +257,7 @@ function gensets_group(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_newsgroup(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $id = get_request('group');
@@ -268,6 +290,7 @@ function update_newsgroup(DatabaseConnection $db, urdd_client $uc, $userid)
 function optimise(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $uc->optimise();
@@ -287,6 +310,7 @@ function check_version(urdd_client $uc)
 function update_rss(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $id = get_request('group');
@@ -318,21 +342,22 @@ function update_rss(DatabaseConnection $db, urdd_client $uc, $userid)
 function update_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->update('all', USERSETTYPE_RSS);
     $uc->disconnect();
     add_stat_data($db, stat_actions::UPDATE, 'all', $userid);
-    die_html('OK'. $LN['taskupdate']  . ' ' . $LN['all']);
+    die_html('OK' . $LN['taskupdate']  . ' ' . $LN['all']);
 }
 
 function expire_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $id = get_request('group');
-    $db->escape($id);
     $name = '';
     if (substr($id, 0, 9) == 'category_') {
         $id = substr($id, 9);
@@ -355,12 +380,13 @@ function expire_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 
     $uc->disconnect();
     add_stat_data($db, stat_actions::EXPIRE, $id, $userid);
-    die_html('OK'. $LN['taskexpire'] . ' ' . $name);
+    die_html('OK' . $LN['taskexpire'] . ' ' . $name);
 }
 
 function purge_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $uc->purge('all', USERSETTYPE_RSS);
@@ -372,6 +398,7 @@ function purge_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
 function expire_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, 'M', $userid, TRUE);
     check_connected($uc);
     $uc->expire('all', USERSETTYPE_RSS);
@@ -383,6 +410,7 @@ function expire_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
 function expire_rss(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, '', $userid);
     check_connected($uc);
     $name = '';
@@ -415,11 +443,11 @@ function expire_rss(DatabaseConnection $db, urdd_client $uc, $userid)
 
 function purge_rss(DatabaseConnection $db, urdd_client $uc, $userid)
 {
+    assert(is_numeric($userid));
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $id = get_request('group');
-    $db->escape($id);
     $name = '';
     if (substr($id, 0, 9) == 'category_') {
         $id = substr($id, 9);
@@ -450,21 +478,18 @@ function clean_all(urdd_client $uc)
 {
     // Clear completed downloads:
     global $LN;
-    if ($uc->is_connected()) {
-        $uc->cleandb('now');
-        die_html('OK' . $LN['taskcleandb']);
-    } else {
-        throw new exception($LN['error_urddconnect']);
-    }
+    check_connected($uc);
+    $uc->cleandb('now');
+    die_html('OK' . $LN['taskcleandb']);
 }
 
 function purge_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 {
+    assert(is_numeric($userid));
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, '', $userid, TRUE);
     check_connected($uc);
     $id = get_request('group');
-    $db->escape($id);
     $name = '';
     if (substr($id, 0, 9) == 'category_') {
         $id = substr($id, 9);
@@ -491,6 +516,7 @@ function purge_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 
 function get_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
 {
+    assert(is_numeric($userid));
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_SYNC, TRUE, '', $userid, TRUE);
     check_connected($uc);
@@ -501,6 +527,7 @@ function get_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
 
 function send_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
 {
+    assert(is_numeric($userid));
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_SYNC, TRUE, '', $userid, TRUE);
     check_connected($uc);
@@ -511,6 +538,7 @@ function send_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
 
 function clean_dir(DatabaseConnection $db, urdd_client $uc, $userid)
 {
+    assert(is_numeric($userid));
     global $LN;
     verify_access($db, NULL, TRUE, '', $userid, TRUE);
     check_connected($uc);
@@ -519,7 +547,7 @@ function clean_dir(DatabaseConnection $db, urdd_client $uc, $userid)
     die_html('OK' . $LN['taskcleandir']);
 }
 
-function unschedule_job(DatabaseConnection $db, urdd_client $uc, $userid)
+function unschedule_job(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $job = get_post('job');
@@ -528,19 +556,18 @@ function unschedule_job(DatabaseConnection $db, urdd_client $uc, $userid)
     die_html('OK');
 }
 
-function delete_task(DatabaseConnection $db, urdd_client $uc, $userid)
+function delete_task(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $task = get_post('task');
     if (!is_numeric($task)) {
         throw new exception($LN['error_notanumber']);
     }
-    $db->escape($task, TRUE);
-    $db->delete_query('queueinfo', "\"ID\" = $task");
+    $db->delete_query('queueinfo', '"ID" = ?', array($task));
     die_html('OK');
 }
 
-function cancel_all_tasks(DatabaseConnection $db, urdd_client $uc, $userid)
+function cancel_all_tasks(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     check_connected($uc);
@@ -548,7 +575,7 @@ function cancel_all_tasks(DatabaseConnection $db, urdd_client $uc, $userid)
     die_html('OK');
 }
 
-function cancel_task(DatabaseConnection $db, urdd_client $uc, $userid)
+function cancel_task(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $task = get_post('task');
@@ -557,26 +584,24 @@ function cancel_task(DatabaseConnection $db, urdd_client $uc, $userid)
     die_html('OK'. $LN['transfers_status_cancelled']);
 }
 
-function pause_task(DatabaseConnection $db, urdd_client $uc, $userid)
+function pause_task(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $task = get_post('task');
     $uc->pause($task);
     $uc->disconnect();
-    die_html('OK'. $LN['transfers_status_paused']);
+    die_html('OK' . $LN['transfers_status_paused']);
 }
 
-
-function pause_all_tasks(DatabaseConnection $db, urdd_client $uc, $userid)
+function pause_all_tasks(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $uc->pause('all');
     $uc->disconnect();
-    die_html('OK'. $LN['transfers_status_paused'] . ' ' . $LN['all']);
+    die_html('OK' . $LN['transfers_status_paused'] . ' ' . $LN['all']);
 }
 
-
-function continue_all_tasks(DatabaseConnection $db, urdd_client $uc, $userid)
+function continue_all_tasks(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $uc->continue_cmd('all');
@@ -584,8 +609,7 @@ function continue_all_tasks(DatabaseConnection $db, urdd_client $uc, $userid)
     die_html('OK'. $LN['success']);
 }
 
-
-function continue_task(DatabaseConnection $db, urdd_client $uc, $userid)
+function continue_task(DatabaseConnection $db, urdd_client $uc)
 {
     global $LN;
     $task = get_post('task');
@@ -596,6 +620,7 @@ function continue_task(DatabaseConnection $db, urdd_client $uc, $userid)
 
 function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
 {
+    assert(is_numeric($userid));
     verify_access($db, NULL, TRUE, '', $userid, TRUE);
     check_connected($uc);
     if (isset($_FILES['filename']['tmp_name'])) {
@@ -605,6 +630,8 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
         clear_all_groups($db, $userid);
         clear_all_usenet_servers($db);
         clear_all_buttons($db);
+        clear_all_spots_blacklist($db, $userid);
+        clear_all_spots_whitelist($db, $userid);
         stop_urdd($userid);
         clear_all_users($db);
         clean_config($db);
@@ -617,12 +644,12 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
         $userid = get_admin_userid($db);
         // we need to get the ID of the first admin we find since we reloaded users
         start_urdd();
-        $s_time = time();
         $uprefs = load_config($db);
+        $s_time = time();
         while (1) {
             try {
                 $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'], $userid);
-            } catch (execption$e) {
+            } catch (exception$e) {
             }
             if ($uc->is_connected()) {
                 break;
@@ -637,7 +664,7 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
         }
         set_all_groups($db, $settings['newsgroups'], $userid);
         set_all_feeds($db, $settings['rssfeeds'], $userid);
-        redirect('index.php');
+        die_html('OK');
     }
     die;
 }
@@ -645,6 +672,7 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
 function add_search(DatabaseConnection $db, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     $type = trim(get_post('type', ''));
     $value = trim(get_post('value', ''));
     if ($type == 'search') {
@@ -661,14 +689,170 @@ function add_search(DatabaseConnection $db, $userid)
     die_html('OK');
 }
 
-function add_blacklist(DatabaseConnection $db)
+function add_whitelist(DatabaseConnection $db, $userid)
+{
+    global $LN;
+    assert(is_numeric($userid));
+    challenge::verify_challenge_text($_POST['challenge']);
+    $spotterid = trim(get_post('spotterid', ''));
+    $global = get_post('global', FALSE);
+    if ($spotterid == '') {
+        $spotid = trim(get_post('spotid', ''));
+        $spotterid = get_spotterid_from_spot($db, $spotid);
+    }
+    if ($spotterid !== FALSE) {
+        add_to_whitelist($db, $spotterid, $userid, $global);
+        die_html('OK');
+    } else {
+        throw new exception ($LN['error_spotnotfound']);
+    }
+}
+function enable_from_whitelist(DatabaseConnection $db, $id)
+{
+    assert(is_numeric($id));
+    $sql = '"source" FROM spot_whitelist WHERE "id"=?';
+    $res = $db->select_query($sql, 1, array($id));
+    if (isset($res[0]['source']) && $res[0]['source'] == whitelist::WHITELIST_EXTERNAL) {
+        $db->update_query_2('spot_whitelist', array('status' => whitelist::ACTIVE), '"id"=?', array($id));
+    }
+}
+
+function enable_from_blacklist(DatabaseConnection $db, $id)
+{
+    assert(is_numeric($id));
+    $sql = '"source" FROM spot_blacklist WHERE "id"=?';
+    $res = $db->select_query($sql, 1, array($id));
+    if (isset($res[0]['source']) && $res[0]['source'] == blacklist::BLACKLIST_EXTERNAL) {
+        $db->update_query_2('spot_blacklist', array('status' => blacklist::ACTIVE), '"id"=?', array($id));
+    }
+}
+
+function delete_from_blacklist(DatabaseConnection $db, $id)
+{
+    assert(is_numeric($id));
+    $sql = '"source" FROM spot_blacklist WHERE "id"=?';
+    $res = $db->select_query($sql, 1, array($id));
+    if (isset($res[0]['source']) && $res[0]['source'] == blacklist::BLACKLIST_EXTERNAL) {
+        $db->update_query_2('spot_blacklist', array('status'=>blacklist::DISABLED), '"id"=?', array($id));
+        return 'update';
+    } else {
+        $db->delete_query('spot_blacklist', '"id"=?', array($id));
+        return 'delete';
+    }
+}
+
+function delete_from_whitelist(DatabaseConnection $db, $id)
+{
+    assert(is_numeric($id));
+    $sql = '"source" FROM spot_whitelist WHERE "id" = ?';
+    $res = $db->select_query($sql, 1, array($id));
+    if (isset ($res[0]['source']) && $res[0]['source'] == whitelist::WHITELIST_EXTERNAL) {
+        $db->update_query_2('spot_whitelist', array('status'=>whitelist::DISABLED), '"id"=?', array($id));
+        return 'update';
+    } else {
+        $db->delete_query('spot_whitelist','"id"=?', array($id));
+        return 'delete';
+    }
+}
+
+function delete_whitelist(DatabaseConnection $db, $userid)
+{
+    global $LN;
+    assert(is_numeric($userid));
+    try {
+        challenge::verify_challenge_text($_POST['challenge']);
+        $id = trim(get_post('id', ''));
+        $rv = delete_from_whitelist($db, $id);
+    } catch (exception $e){
+        $x = new json_return_value($e->getCode(), $e->getMessage());
+        die(json_encode($x));
+    }
+    die(json_encode(new json_return_value(0, 'OK', $rv, $LN['disabled'])));
+}
+
+function delete_blacklist(DatabaseConnection $db, $userid)
+{
+    global $LN;
+    assert(is_numeric($userid));
+    try {
+        challenge::verify_challenge_text($_POST['challenge']);
+        $id = trim(get_post('id', ''));
+        $rv = delete_from_blacklist($db, $id);
+    } catch (exception $e){
+        $x = new json_return_value($e->getCode(), $e->getMessage());
+        die(json_encode($x));
+    }
+    die(json_encode(new json_return_value(0, 'OK', $rv, $LN['disabled'])));
+}
+function enable_blacklist(DatabaseConnection $db, $userid)
+{
+    global $LN;
+    assert(is_numeric($userid));
+    try {
+        challenge::verify_challenge_text($_POST['challenge']);
+        $id = trim(get_post('id', ''));
+        enable_from_blacklist($db, $id);
+    } catch (exception $e){
+        $x = new json_return_value($e->getCode(), $e->getMessage());
+        die(json_encode($x));
+    }
+    die(json_encode(new json_return_value(0, 'OK', 'update', $LN['active'])));
+}
+function enable_whitelist(DatabaseConnection $db, $userid)
+{
+    global $LN;
+    assert(is_numeric($userid));
+    try {
+        challenge::verify_challenge_text($_POST['challenge']);
+        $id = trim(get_post('id', ''));
+        enable_from_whitelist($db, $id);
+    } catch (exception $e){
+        $x = new json_return_value($e->getCode(), $e->getMessage());
+        die(json_encode($x));
+    }
+    die(json_encode(new json_return_value(0, 'OK', 'update', $LN['active'])));
+
+}
+
+function add_posterblacklist(DatabaseConnection $db, $userid)
 {
     global $LN;
     challenge::verify_challenge_text($_POST['challenge']);
-    $spotid = trim(get_post('spotid', ''));
-    $spotterid = get_spotterid_from_spot($db, $spotid);
+    $setid = trim(get_post('setid', ''));
+    $poster_blacklist = get_config($db, 'poster_blacklist');
+    $poster_blacklist = unserialize($poster_blacklist);
+    $poster = get_poster_from_set($db, $setid);
+    $poster_data = explode('<', $poster);
+    
+    if (isset($poster_data[0])) { 
+        $tmp = trim($poster_data[0], ">\t\" \n\r");
+        if ($tmp != '') {
+            $poster_blacklist[] = $tmp;
+        }
+    }
+    if (isset($poster_data[1])) { 
+        $tmp = trim($poster_data[1], ">\t\" \n\r");
+        if ($tmp != '') {
+            $poster_blacklist[] = $tmp;
+        }
+    }
+    $poster_blacklist = serialize($poster_blacklist);
+    set_config($db, 'poster_blacklist', $poster_blacklist);
+    die_html('OK');
+}
+
+function add_blacklist(DatabaseConnection $db, $userid)
+{
+    global $LN;
+    challenge::verify_challenge_text($_POST['challenge']);
+    $spotterid = trim(get_post('spotterid', ''));
+    $global = get_post('global', FALSE) == 'global';
+    if ($spotterid == '') {
+        $spotid = trim(get_post('spotid', ''));
+        $spotterid = get_spotterid_from_spot($db, $spotid);
+    }
     if ($spotterid !== FALSE) {
-        add_to_blacklist($db, $spotterid);
+        add_to_blacklist($db, $spotterid, $userid, $global);
         die_html('OK');
     } else {
         throw new exception ($LN['error_spotnotfound']);
@@ -678,27 +862,25 @@ function add_blacklist(DatabaseConnection $db)
 function delete_preview(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
+    assert(is_numeric($userid));
     $dlid = get_post('dlid');
-    $qadmin = '';
     $is_admin = urd_user_rights::is_admin($db, $userid);
+    $qadmin = '';
+    $input_arr = array();
     if (!$is_admin) {
-        //$username = get_username($db, $userid);
-        $db->escape($userid, TRUE);
-        $qadmin = " AND \"userid\" = $userid ";
+        $qadmin = ' AND "userid"=?';
+        $input_arr[] = $userid;
     }
     if (is_numeric($dlid)) {
         $uc->cancel(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid);  // Cancel it, just in case; see pauso
         $uc->cancel(get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid);  // Cancel it, just in case
-        $db->escape($dlid, TRUE);
-        $sql = "UPDATE downloadinfo SET \"hidden\" = 1 WHERE \"ID\" = $dlid AND \"preview\"=2 " . $qadmin;
-        $db->execute_query($sql);
+        $db->update_query_2('downloadinfo', array('hidden'=>1), '"ID"=? AND "preview"=? ' . $qadmin, array_merge(array($dlid, 2), $input_arr));
     } elseif ($dlid == 'all') {
-        $sql = "UPDATE downloadinfo SET \"hidden\" = 1 WHERE \"preview\"=2 AND status >= " . DOWNLOAD_FINISHED . ' ' . $qadmin;
-        $db->execute_query($sql);
+        $db->update_query_2('downloadinfo', array('hidden'=>1), '"preview"=? AND "status">=? ' . $qadmin, array_merge(array(2, DOWNLOAD_FINISHED), $input_arr));
     } else {
         throw new exception('Need download ID');
     }
-    die_html('OK'. $LN['deleted'] );
+    die_html('OK' . $LN['deleted']);
 }
 
 switch ($command) {
@@ -706,25 +888,25 @@ switch ($command) {
         delete_preview($db, $uc, $userid);
         break;
     case 'unschedule':
-        unschedule_job($db, $uc, $userid);
+        unschedule_job($db, $uc);
         break;
     case 'delete_task':
-        delete_task($db, $uc, $userid);
+        delete_task($db, $uc);
         break;
     case 'cancel':
-        cancel_task($db, $uc, $userid);
+        cancel_task($db, $uc);
         break;
     case 'pause':
-        pause_task($db, $uc, $userid);
+        pause_task($db, $uc);
         break;
     case 'pause_all':
-        pause_all_tasks($db, $uc, $userid);
+        pause_all_tasks($db, $uc);
         break;
     case 'continue':
-        continue_task($db, $uc, $userid);
+        continue_task($db, $uc);
         break;
     case 'continue_all':
-        continue_all_tasks($db, $uc, $userid);
+        continue_all_tasks($db, $uc);
         break;
     case 'export_all':
         verify_access($db, NULL, TRUE, '', $userid, TRUE);
@@ -735,8 +917,26 @@ switch ($command) {
     case 'add_search':
         add_search($db, $userid);
         break;
+    case 'add_whitelist':
+        add_blacklist($db, $userid);
+        break;
     case 'add_blacklist':
-        add_blacklist($db);
+        add_blacklist($db, $userid);
+        break;
+    case 'add_poster_blacklist':
+        add_posterblacklist($db, $userid);
+        break;
+    case 'enable_blacklist':
+        enable_blacklist($db, $userid);
+        break;
+    case 'enable_whitelist':
+        enable_whitelist($db, $userid);
+        break;
+    case 'delete_blacklist':
+        delete_blacklist($db, $userid);
+        break;
+    case 'delete_whitelist':
+        delete_whitelist($db, $userid);
         break;
     case 'updatespots':
         update_spots($db, $uc, $userid);

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-03 17:23:08 +0200 (di, 03 jun 2014) $
+ * $Rev: 3080 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_register.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_register.php 3080 2014-06-03 15:23:08Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -43,16 +43,16 @@ require_once "$pathreg/../functions/urd_log.php";
 require_once "$pathreg/../functions/autoincludes.php";
 require_once "$pathreg/../functions/defaults.php";
 require_once "$pathreg/../functions/functions.php";
+require_once "$pathreg/../functions/file_functions.php";
 
 try {
-    $db = connect_db(TRUE, FALSE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     die_html("Connection to database failed. $msg");
 }
 require_once "$pathreg/../functions/config_functions.php";
 config_cache::clear(user_status::SUPER_USERID); // needed to read tthe right values
-require_once "$pathreg/../functions/file_functions.php";
 require_once "$pathreg/../functions/user_functions.php";
 
 $prefs = load_config($db);
@@ -111,8 +111,8 @@ if (isset($_POST['submit_button'])) {
 
         $active = user_status::USER_PENDING;
         $isadmin = user_status::USER_USER;
-        $query = "\"ID\" FROM users WHERE \"name\"='$username'";
-        $res = $db->select_query($query, 1);
+        $query = '"ID" FROM users WHERE "name"=?';
+        $res = $db->select_query($query, 1, array($username));
         if ($res === FALSE) {
             add_user($db, $username, $fullname, $email, $password1, $isadmin, $active, 'C');
         } else {
@@ -121,13 +121,12 @@ if (isset($_POST['submit_button'])) {
 
         $token = generate_password(200);
 
-        $sql = "UPDATE users SET \"token\"='$token', \"active\"='" . user_status::USER_PENDING . "' WHERE \"name\" = '$username'";
-        $db->execute_query($sql);
+        $db->update_query_2('users', array('token'=>$token, 'active'=>user_status::USER_PENDING), '"name"=?', array($username));
         urd_mail::mail_activation($db, $username, $fullname, $email, $token, $prefs['admin_email']);
         die_html('OK');
     } catch (exception $e) {
-        throw new exception($LN['error'] . ': ' . $e->getMessage());
+        die_html(':error:' . $LN['error'] . ': ' . $e->getMessage());
     }
 } else {
-    throw new exception($LN['error'] . ': ' . $LN['error_invalidaction']);
+    die_html(':error:' . $LN['error'] . ': ' . $LN['error_invalidaction']);
 }

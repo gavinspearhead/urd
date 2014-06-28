@@ -26,21 +26,37 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathf = realpath(dirname(__FILE__));
-
-class keystore {
+class keystore
+{
     const keystore_file = '.keystore.php';
-    static function decrypt_password(DatabaseConnection $db, $password)
+
+    private static function get_keystore_path(DatabaseConnection $db)
+    {
+            global $pathf;
+            $default_keystore_path = $pathf . DIRECTORY_SEPARATOR . '..';
+            add_dir_separator($default_keystore_path);
+            $keystore_path = get_config($db, 'keystore_path', $default_keystore_path);
+            add_dir_separator($keystore_path);
+
+            return $keystore_path;
+    }
+
+    private static function get_keystore_file(DatabaseConnection $db)
+    {
+        $keystore_path = self::get_keystore_path($db);
+
+        return $keystore_path . self::keystore_file;
+    }
+
+    public static function decrypt_password(DatabaseConnection $db, $password)
     {
         if (substr($password, 0, 5) == ':ENC:') {
-            global $pathf;
-            $default_keystore_path = "$pathf/../";
-            $keystore_path = get_config($db, 'keystore_path', $default_keystore_path) . self::keystore_file;
-            $rv = @include $keystore_path; 
+            $keystore_file = self::get_keystore_file($db);
+            $rv = @include $keystore_file;
             if ($rv === FALSE) {
-                throw new exception('Keystore not found: ' . $keystore_path);
+                throw new exception('Keystore not found: ' . $keystore_file);
             }
-            if (!isset($encryption_key) ) { 
+            if (!isset($encryption_key) ) {
                 throw new exception('No valid encryption key found');
             }
 
@@ -59,19 +75,17 @@ class keystore {
         }
     }
 
-    static function encrypt_password(DatabaseConnection $db, $password)
+    public static function encrypt_password(DatabaseConnection $db, $password)
     {
         if (substr($password, 0, 5) == ':ENC:') {
-            return $passord; // already encrypted; don't double encrypt!:w
+            return $passord; // already encrypted; don't double encrypt!
         }
-        global $pathf;
-        $default_keystore_path = "$pathf/../";
-        $keystore_path = get_config($db, 'keystore_path', $default_keystore_path) . self::keystore_file;
-        $rv = @include $keystore_path; 
+        $keystore_file = self::get_keystore_file($db);
+        $rv = @include $keystore_file;
         if ($rv === FALSE) {
-            throw new exception('Keystore not found: ' . $keystore_path);
+            throw new exception('Keystore file not found: ' . $keystore_file);
         }
-        if (!isset($encryption_key)) { 
+        if (!isset($encryption_key)) {
             throw new exception('No valid encryption key found');
         }
 
@@ -84,34 +98,36 @@ class keystore {
         return ':ENC:' . base64_encode($iv) . ':' . base64_encode($enc_pw);
     }
 
-
-    static function create_keystore(DatabaseConnection $db, $encryption_key = '')
+    public static function create_keystore(DatabaseConnection $db, $encryption_key = '', $reuse=TRUE)
     {
         global $pathf;
-        $default_keystore_path = "$pathf/../"; 
-        $keystore_path = get_config($db, 'keystore_path', $default_keystore_path);
-        $keystore_file = $keystore_path . self::keystore_file;
-        $rv = @include $keystore_file; 
+        $keystore_file = self::get_keystore_file($db);
+        $keystore_path = self::get_keystore_path($db);
+        $rv = @include $keystore_file;
+        if (!is_writable($keystore_path)) {
+            throw new exception('The directory for the keystore is not writeable', 1);
+        }
 
         if (file_exists($keystore_file)) {
-            throw new exception('A keystore file already exists', 1);
-        }
-        if (!is_writable($keystore_path)) {
-            throw new exception('The directory of for the keystore is not writeable', 1);
-        }
-        $rv = touch($keystore_file);
-        if ($rv === FALSE) {
-            throw new exception('Could not create keystore file', 0);
-        }
+            if (!$reuse) {
+                throw new exception('A keystore file already exists', 1);
+            }
+            self::verify_keystore($db, TRUE);
+        } else {
+            $rv = touch($keystore_file);
+            if ($rv === FALSE) {
+                throw new exception('Could not create keystore file', 0);
+            }
 
-        if ($encryption_key == '') {
-            $encryption_key = generate_password(32);
-        }
+            if ($encryption_key == '') {
+                $encryption_key = generate_password(32);
+            }
 
-        $rv = file_put_contents($keystore_file, "<?php\n\$encryption_key='$encryption_key';\n");
-        unset($encryption_key);
-        if ($rv === FALSE) {
-            throw new exception('Could not write data to keystore file', 0);
+            $rv = file_put_contents($keystore_file, "<?php\n\$encryption_key='$encryption_key';\n");
+            unset($encryption_key);
+            if ($rv === FALSE) {
+                throw new exception('Could not write data to keystore file', 0);
+            }
         }
         $rv = chmod($keystore_file, 0440);
         if ($rv === FALSE) {
@@ -121,28 +137,28 @@ class keystore {
         return TRUE;
     }
 
-    static function verify_keystore(DatabaseConnection $db)
+    public static function verify_keystore(DatabaseConnection $db, $FORCE_CHECK=FALSE)
     {
-        global $pathf;
-        if (get_config($db, 'use_encrypted_passwords') == 0) {
+        if (get_config($db, 'use_encrypted_passwords') == 0 && $FORCE_CHECK !== FALSE) {
             return TRUE;
         }
-        $default_keystore_path = "$pathf/../"; 
-        $keystore_path = get_config($db, 'keystore_path', $default_keystore_path) . self::keystore_file;
+        $keystore_file = self::get_keystore_file($db);
         clearstatcache();
-        if (! file_exists($keystore_path)) {
-            throw new exception('Keystore file not found: ' . $keystore_path . 'run .urdd.sh -k to create a key store');
+        if (!file_exists($keystore_file)) {
+            throw new exception('Keystore file not found: ' . $keystore_file . 'run .urdd.sh -k to create a key store');
         }
-        if (! is_readable($keystore_path)) {
-            throw new exception('Keystore file not readable: Run chmod 0440 ' . $keystore_path);
+        if (!is_readable($keystore_file)) {
+            $grp = posix_getgid();
+            $grp_info = posix_getgrgid($grp);
+            $grp_name = $grp_info['name'];
+            throw new exception('Keystore file not readable: Run "chmod 0440 ' . $keystore_file . '; chgrp ' . $grp_name . ' ' . $keystore_file . '"');
         }
-        $rv = @include $keystore_path;
-        if (!isset($encryption_key) || strlen ($encryption_key) < 16) { 
+        $rv = @include $keystore_file;
+        if (!isset($encryption_key) || strlen ($encryption_key) < 16) {
             throw new exception('No valid encryption key found');
         }
-        if (fileperms($keystore_path) & 0337 != 0) {
-            write_log('Permission of keystore may not be secure. Run chmod 0440 ' . $keystore_path , LOG_WARNING);
+        if (fileperms($keystore_file) & 0337 != 0) {
+            write_log('Permission of keystore file may not be secure. Run chmod 0440 ' . $keystore_file, LOG_WARNING);
         }
-
     }
 }

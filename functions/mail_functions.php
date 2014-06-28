@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-06 00:48:29 +0200 (vr, 06 sep 2013) $
- * $Rev: 2922 $
+ * $LastChangedDate: 2014-06-13 23:45:45 +0200 (vr, 13 jun 2014) $
+ * $Rev: 3092 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: mail_functions.php 2922 2013-09-05 22:48:29Z gavinspearhead@gmail.com $
+ * $Id: mail_functions.php 3092 2014-06-13 21:45:45Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -27,8 +27,6 @@ if (!defined('ORIGINAL_PAGE')) {
 }
 
 $pathmf = realpath(dirname(__FILE__));
-
-require_once "$pathmf/defines.php";
 require_once "$pathmf/autoincludes.php";
 
 class urd_mail
@@ -71,7 +69,8 @@ class urd_mail
 
     public static function parse_mail_template(DatabaseConnection $db, $template_orig, $fullname, $sender, $email_to)
     {
-        global $pathmf;
+        
+        $pathmf = realpath(dirname(__FILE__));
         $url = get_config($db, 'url');
         if (substr($url, -1) != '/') {
             $url .= '/';
@@ -99,10 +98,11 @@ class urd_mail
 
             return;
         }
-        $template_dir = realpath($pathmf . '/../mail_templates/');
-        $message = file($template_dir . '/' . $template);
+        $template_dir = my_realpath(dirname(__FILE__) . '/../mail_templates/');
+        add_dir_separator($template_dir);
+        $message = file($template_dir . $template);
         if ($message === FALSE) {
-            write_log("Template file for e-mail not found: $template_dir/$template", LOG_WARNING);
+            write_log("Template file for e-mail not found: $template_dir$template", LOG_WARNING);
 
             return;
         }
@@ -185,7 +185,7 @@ class urd_mail
             $template = 'mail_account_activated';
             urd_mail::parse_mail_template($db, $template, $fullname, $sender, $email);
         } elseif ($active == user_status::USER_INACTIVE) {
-            $template ='mail_account_disabled';
+            $template = 'mail_account_disabled';
             urd_mail::parse_mail_template($db, $template, $fullname, $sender, $email);
         } else {
             return; //  error
@@ -228,10 +228,9 @@ class urd_mail
         self::$data['fullname'] = $fullname;
         self::$data['token'] = $token;
 
-        $template =  'mail_activate_account';
+        $template = 'mail_activate_account';
 
         urd_mail::parse_mail_template($db, $template, $fullname, $sender, $email);
-
     }
 
     public static function mail_update_preferences(DatabaseConnection $db, $userid)
@@ -245,15 +244,14 @@ class urd_mail
         }
 
         $sender = get_config($db, 'admin_email');
-        $qry = "\"name\", \"email\", \"fullname\" FROM users WHERE \"ID\" = $userid";
-        $res = $db->select_query($qry, 1);
-        if (isset($res[0]['email'])) {
-            $email = $res[0]['email'];
-            $fullname = $res[0]['fullname'];
-            $username = $res[0]['name'];
-        } else {
+        $qry = '"name", "email", "fullname" FROM users WHERE "ID"=?';
+        $res = $db->select_query($qry, 1, array($userid));
+        if (!isset($res[0]['email'])) {
             throw new exception ($LN['error_nosuchuser'], ERR_INVALID_USERNAME);
         }
+        $email = $res[0]['email'];
+        $fullname = $res[0]['fullname'];
+        $username = $res[0]['name'];
 
         self::$data['fullname'] = $fullname;
         self::$data['username'] = $username;
@@ -268,22 +266,21 @@ class urd_mail
         global $LN;
 
         self::reset_data_fields();
-        assert(in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)) && is_numeric($userid) && is_numeric($groupid));
+        assert(in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)) && is_numeric($userid));
 
         $mail_user = get_pref($db, 'mail_user', $userid); // fixme other pref
         if ($mail_user == 0) {
             return;
         }
         $sender = get_config($db, 'admin_email');
-        $qry = "\"name\", \"email\", \"fullname\" FROM users WHERE \"ID\" = $userid";
-        $res = $db->select_query($qry,1);
-        if (isset($res[0]['email'])) {
-            $email = $res[0]['email'];
-            $fullname = $res[0]['fullname'];
-            $username = $res[0]['name'];
-        } else {
+        $qry = '"name", "email", "fullname" FROM users WHERE "ID"=?';
+        $res = $db->select_query($qry, 1, array($userid));
+        if (!isset($res[0]['email'])) {
             throw new exception ($LN['error_nosuchuser'], ERR_INVALID_USERNAME);
         }
+        $email = $res[0]['email'];
+        $fullname = $res[0]['fullname'];
+        $username = $res[0]['name'];
         $mailsubject = 'URD new interesting sets found';
         $url = get_config($db, 'url');
         if (substr($url, -1) != '/') {
@@ -319,17 +316,16 @@ class urd_mail
         self::$data['group'] = $in_group_str;
         self::$data['custom_url'] = $url;
 
-        $db->escape($sets, TRUE);
         foreach ($sets as $set) {
             if ($type == USERSETTYPE_GROUP) {
-                $sql = "\"subject\" FROM setdata WHERE \"ID\" = {$set['ID']}";
+                $sql = '"subject" FROM setdata WHERE "ID"=?';
             } elseif ($type == USERSETTYPE_RSS) {
-                $sql = "\"setname\" AS \"subject\" FROM rss_sets WHERE \"setid\" = {$set['ID']}";
+                $sql = '"setname" AS "subject" FROM rss_sets WHERE "setid"=?';
             } elseif ($type == USERSETTYPE_SPOT) {
-                $sql = "\"title\" AS \"subject\" FROM spots WHERE \"spotid\" = {$set['ID']}";
+                $sql = '"title" AS "subject" FROM spots WHERE "spotid"=?';
             }
 
-            $res = $db->select_query($sql, 1);
+            $res = $db->select_query($sql, 1, array($set['ID']));
             if (isset($res[0]['subject'])) {
                 $subject = sanitise_download_name($db, $res[0]['subject']);
                 $subject = preg_replace('/(\byEnc\b)|(\breq:)|(\bwww\.[\w\.]*\b)|(\bhttp:\/\/[\w\.]*\b)|([=><#])/i', '', $subject);
@@ -353,16 +349,14 @@ class urd_mail
         }
         $sender = get_config($db, 'admin_email');
         $dlname = get_download_name($db, $dlid);
-        $db->escape($username, TRUE);
-        $qry = "\"email\", \"fullname\", \"username\" FROM users WHERE \"ID\" = $userid";
-        $res = $db->select_query($qry,1);
-        if (isset($res[0]['email'])) {
-            $email = $res[0]['email'];
-            $fullname = $res[0]['fullname'];
-            $username = $res[0]['username'];
-        } else {
+        $qry = '"email", "fullname", "name" FROM users WHERE "ID"=?';
+        $res = $db->select_query($qry, 1, array($userid));
+        if (!isset($res[0]['email'])) {
             throw new exception ($LN['error_nosuchuser'], ERR_INVALID_USERNAME);
         }
+        $email = $res[0]['email'];
+        $fullname = $res[0]['fullname'];
+        $username = $res[0]['name'];
 
         self::$data['fullname'] = $fullname;
         self::$data['username'] = $username;
@@ -372,5 +366,4 @@ class urd_mail
         $template = 'mail_download_status';
         urd_mail::parse_mail_template($db, $template, $fullname, $sender, $email);
     }
-
 }

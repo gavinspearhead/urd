@@ -14,10 +14,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-26 00:54:03 +0200 (vr, 26 jul 2013) $
- * $Rev: 2882 $
+ * $LastChangedDate: 2014-06-14 01:20:27 +0200 (za, 14 jun 2014) $
+ * $Rev: 3094 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: forgot_password.tpl 2882 2013-07-25 22:54:03Z gavinspearhead@gmail.com $
+ * $Id: forgot_password.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  *}
 {include file="barehead.tpl" title=$title}
 
@@ -30,8 +30,8 @@
 </tbody>
 <tbody id="form">
 <tr><td colspan="2"><h3 class="title">{$title}</h3></td></tr>
-<tr><td>{$LN_username}</td><td><input type="text" name="username" id="username" size="40"/></td></tr>
-<tr><td>{$LN_email}</td><td><input type="text" name="email" id="email" size="40"/></td></tr>
+<tr><td>{$LN_username}</td><td><input type="text" name="username" id="username" size="40" placeholder="Username" required/></td></tr>
+<tr><td>{$LN_email}</td><td><input type="email" name="email" id="email" size="40" placeholder="Email address" required/></td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td colspan="2"><input type="button" value="{$LN_forgot_mail}" class="submitsmall floatright" onclick="submit_forgot_password();"/></td></tr>
 </tbody>

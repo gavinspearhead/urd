@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-20 00:48:03 +0200 (za, 20 jul 2013) $
- * $Rev: 2878 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showviewfiles.tpl 2878 2013-07-19 22:48:03Z gavinspearhead@gmail.com $
+ * $Id: ajax_showviewfiles.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
 {* Capture the skipper: *}
@@ -47,8 +47,6 @@
 {if $sort == "perms"}{if $sort_dir=='desc'}{$perms_sort=$up}{else}{$perms_sort=$down}{/if}{else}{$perms_sort=""}{/if}
 {if $sort == "owner"}{if $sort_dir=='desc'}{$owner_sort=$up}{else}{$owner_sort=$down}{/if}{else}{$owner_sort=""}{/if}
 {if $sort == "group"}{if $sort_dir=='desc'}{$group_sort=$up}{else}{$group_sort=$down}{/if}{else}{$group_sort=""}{/if}
-
-
 
 
 {capture assign=tableheader}
@@ -92,7 +90,7 @@
 	{$size_ext=""}
 {/if}
 
-<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');" onmouseup="javascript:start_quickmenu('viewfiles','', null, event);">
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');" onmouseup="javascript:start_quickmenu('viewfiles','', null, event);">
 <td><img class="noborder" src="{$IMGDIR}/file_icons/{$icon}.png" width="16" height="16" alt="{$icon|capitalize}" {urd_popup type="small" text=$icon_ln|capitalize} /></td>
 <td class="buttonlike" onmouseup="javascript:view_files_follow_link(event, '{$file->get_type()}', 'file{$counter}', '{$file->get_index()}');return false;" onmousedown="set_mouse_click();">
 <div class="donotoverflowdamnit">
@@ -100,16 +98,16 @@
 {$name|escape:htmlall} </div>
 </td>
 <td>{$icon_ln}</td>
-<td class="right">{$size} {$size_ext|escape}</td>
-<td class="right">{$file->get_mtime()}</td>
-<td class="center">{$perms}</td>
-<td>{$file->get_owner()}</td>
-<td>{$file->get_group()}</td>
+<td class="right">{$size|escape} {$size_ext|escape}</td>
+<td class="right">{$file->get_mtime()|escape}</td>
+<td class="center">{$perms|escape}</td>
+<td>{$file->get_owner()|escape}</td>
+<td>{$file->get_group()|escape}</td>
 <td>
 {if $name neq '..'}
 <div class="floatright">
 {if $file->get_nfo_link() != ''} 
-<div class="floatleft iconsizeplus followicon buttonlike" {urd_popup type="small" text=$LN_quickmenu_setpreviewnfo left=true} onclick="javascript:jump('getfile.php?file=' + encodeURIComponent('{$file->get_nfo_link()|escape:javascript}') , true);"></div>
+<div class="floatleft iconsizeplus followicon buttonlike" {urd_popup type="small" text=$LN_quickmenu_setpreviewnfo left=true} onclick="javascript:show_contents('{$file->get_nfo_link()|escape:javascript}', 0);"></div>
 {/if}
 
 {if $allow_edit && $file->get_show_edit()}
@@ -143,20 +141,18 @@
 {$counter=$counter+1}
 {/foreach}
 
-
 {if $only_rows == 0}
     </table>
     {$bottomskipper}
     <div><br/></div>
 <div>
-<input type="hidden" name="offset" id="offset" value="{$offset}"/>
+<input type="hidden" name="offset" id="offset" value="{$offset|escape}"/>
 <input type="hidden" name="dir" value="{$directory|escape:htmlall}" id="dir"/>
 <input type="hidden" name="dir2" value="{$directory|escape:htmlall|escape}" id="dir2"/>
-<input type="hidden" name="sort_dir" value="{$sort_dir}" id="searchdir"/>
-<input type="hidden" name="sort" value="{$sort}" id="searchorder"/>
+<input type="hidden" name="sort_dir" value="{$sort_dir|escape}" id="order_dir"/>
+<input type="hidden" name="sort" value="{$sort|escape}" id="order"/>
 <input type="hidden" name="filename" value="" id="filename"/>
-<input type="hidden" id="last_line" value="{$last_line}"/>
+<input type="hidden" id="last_line" value="{$last_line|escape}"/>
 </div>
 
 {/if}
-

@@ -49,6 +49,7 @@ $LN['continue']         = 'Doorgaan';
 $LN['details']          = 'Details';
 $LN['error']            = 'Fout';
 $LN['atonce']           = 'Meteen';
+$LN['browse']           = 'Bladeren';
 // Special:
 $LN['urdname']          = 'URD';
 $LN['decimalseparator'] = ',';
@@ -135,6 +136,7 @@ $LN['CAPTCHA1']     = 'Captcha';
 $LN['CAPTCHA2']     = '3 zwarte tekens';
 $LN['active']       = 'Actief';
 $LN['whitelisttag'] = 'W';
+$LN['blacklisttag']     = 'Z';
 $LN['spamreporttag']    = 'S';
 
 $LN['id']                   = 'ID';
@@ -230,6 +232,7 @@ $LN['menudebug']        = 'Debug';
 $LN['menulicence']      = 'Licentie';
 $LN['menustats']        = 'Statistieken';
 $LN['menuforum']        = 'Forum';
+$LN['menuuserlists']    = 'Spotter lists';
 
 // Stati:
 $LN['statusidling']         = 'Niksen';
@@ -287,6 +290,7 @@ $LN['taskexpirespots']  = 'Spots opschonen';
 $LN['taskpurgespots']   = 'Spots verwijderen';
 $LN['taskgetnfo']       = 'NFO data ophalen';
 $LN['taskdeleteset']    = 'Set verwijderen';
+$LN['taskset']          = 'Configuratie aanpassen';
 
 $LN['eta']              = 'ETA';
 $LN['inuse']            = 'is in gebruik';
@@ -375,6 +379,19 @@ $LN['viewfiles_type_urdd_sh']   = 'URD script';
 $LN['viewfiles_type_torrent']   = 'Torrent';
 $LN['viewfiles_type_ebook']     = 'Eboek';
 
+$LN['user_lists_title']     = 'Spotter lijsten';
+$LN['user_blacklist']       = 'Zwarte lijst spotters';
+$LN['user_whitelist']       = 'Witte lijst spotters';
+$LN['spotter_id']           = 'Spotter ID';
+$LN['source_external']      = 'Extern';
+$LN['source_user']          = 'Gebruiker';
+$LN['global']               = 'Globaal';
+$LN['personal']             = 'Persoonlijk';
+$LN['active']               = 'Actief';
+$LN['disabled']             = 'Uitgeschakeld';
+$LN['nonactive']            = 'Inactief';
+
+
 // About:
 $LN['about_title']  = 'Over URD';
 $LN['abouttext1']   = 'URD is een web-gebaseerde applicatie voor het downloaden van usenet binaries.  Het is helemaal in PHP geschreven, maar gebruikt enkele externe tools om het CPU intensive werk te doen. Het slaat alle informatie op in een generieke database (zoals MySQL of PostgreSQL. Berichten die bij elkaar horen worden gegroepeerd in sets. Downloaden ervan vereist maar enkele muisklikken en als de download klaar is kunnen de bestanden automatisch worden gecontroleerd en uitgepakt. Downloaden van usenet is nu net zo eenvoudig als p2p software.';
@@ -408,7 +425,7 @@ $LN['ng_gensets']           = 'Genereer sets';
 $LN['ng_minsetsize']        = 'Min/Max setgrootte';
 $LN['ng_admin_minsetsize']  = 'Spam ondergrens';
 $LN['ng_admin_maxsetsize']  = 'Set bovengrens';
-$LN['ng_tooltip_admin_maxsetsize']    = 'De maximale grootte een mag hebben om aan de database te worden toegevoegd; voeg k, M, G achteraan toe, bijv. 100k of 25G ';
+$LN['ng_tooltip_admin_maxsetsize']    = 'De maximale grootte een mag hebben om aan de database te worden toegevoegd; voeg k, M, G achteraan toe, bijv. 100k of 25G';
 $LN['ng_tooltip_admin_minsetsize']    = 'De minimale grootte een set moet hebben om aan de database te worden toegevoegd; voeg k, M, G achteraan toe, bijv. 100k of 25G (spam preventie)';
 $LN['ng_tooltip_visible']   = 'Is de nieuwsgroep zichtbaar';
 $LN['ng_tooltip_minsetsize']    = 'De minimale en maximale set-grootte om een set in deze nieuwsgroep te tonen';
@@ -491,7 +508,7 @@ $LN['setsize']          = 'Set-grootte in MB';
 $LN['maxage']           = 'Max. leeftijd in dagen';
 $LN['minage']           = 'Min. leeftijd in dagen';
 $LN['age']              = 'Leeftijd in dagen';
-$LN['rating']           = 'Score (0-10)';
+$LN['rating']           = 'Score';
 $LN['maxrating']        = 'Max. score (0-10)';
 $LN['minrating']        = 'Min. score (0-10)';
 $LN['complete']         = 'Compleet %';
@@ -555,6 +572,8 @@ $LN['config_maxheaders']	    = 'Maximaal aantal headers per batch';
 $LN['config_maxheaders_msg']	= 'Het maximaal aantal headers dat in een batch wordt opgehaald';
 $LN['config_max_dl_name']       = 'Maximale download naam';
 $LN['config_max_dl_name_msg']   = 'De maximum lengte van de naam die gebruikt wordt voor downloads';
+$LN['config_spots_max_categories']   = 'Max. aantal categori&euml;n per spot';
+$LN['config_spots_max_categories_msg']   = 'Spots met meer dan dit aantal categori&euml;n wordt verwijderd (0 voor geen limiet)';
 $LN['config_spots_whitelist']   = 'URL voor witte lijst voor spotters';
 $LN['config_spots_whitelist_msg']       = 'URL die een lijst bevat met IDs van spotters die bekent staan als valide gebruiker';
 $LN['config_spots_blacklist']   = 'URL voor zwarte lijst voor spotters';
@@ -572,7 +591,7 @@ $LN['config_allow_robots_msg']  = 'Sta robots toe om de URD webpagina&#039s te v
 $LN['config_parse_nfo']     = 'Parseer nfo bestand';
 $LN['config_parse_nfo_msg'] = 'Parseer nfo bestanden wanneer deze worden gepreviewd';
 $LN['pref_use_auto_download_msg']        = 'Download automatisch op basis van de zoek termen';
-$LN['pref_use_auto_download_nzb_msg']    = 'Download automatisch als NZB bestand op basis van de zoek termen ';
+$LN['pref_use_auto_download_nzb_msg']    = 'Download automatisch als NZB bestand op basis van de zoek termen';
 
 $LN['pref_subs_lang_msg']            = 'Talen waarvoor naar ondertitels zal worden gezocht (twee letter codes komma gescheiden, leeg om niet te gebruiken)';
 $LN['pref_subs_lang']                = 'Ondertitel talen';
@@ -679,14 +698,20 @@ $LN['import_users']		    = 'Importeer gebruikers';
 $LN['export_users']		    = 'Exporteer gebruikers';
 $LN['import_buttons']		= 'Importeer zoekopties';
 $LN['export_buttons']		= 'Exporteer zoekopties';
+$LN['import_spots_blacklist']		= 'Importeer zwarte lijst voor spots';
+$LN['export_spots_blacklist']		= 'Exporteer zwarte lijst voor spots';
+$LN['import_spots_whitelist']		= 'Importeer witte lijst voor spots';
+$LN['export_spots_whitelist']		= 'Exporteer witte lijst voor spots';
 
 // pref errors
 $LN['error_pwmatch']        = 'Wachtwoorden komen niet overeen';
 $LN['error_pwincorrect']    = 'Wachtwoord onjuist';
 $LN['error_pwusername']     = 'Wachtwoord lijkt teveel op de gebruikersnaam';
 $LN['error_pwlength']       = 'Wachtwoord te kort, moet minimaal uit '. MIN_PASSWORD_LENGTH . ' karakters bestaan';
-$LN['error_pwsimple']       = 'Wachtwoord te eenvoudig, gebruik een combinatie van HOOFDLETTERS, kleine letters, numm3rs en @ndere k@r@kter$';
+$LN['error_pwsimple']       = 'Wachtwoord te eenvoudig, gebruik een combinatie van HOOFDLETTERS, kleine letters, numm3r5 en @ndere k@r@kter$';
 $LN['error_captcha']        = 'CAPTCHA onjuist';
+$LN['error_nocontent']      = 'Bericht te kort';
+$LN['error_toolong']        = 'Bericht te lang';
 
 $LN['error_onlyforgrops'] 	= 'Werkt alleen voor groupen';
 $LN['error_onlyoneset'] 	= 'Hiervoor is meer dan 1 set in de basket nodig';
@@ -901,7 +926,9 @@ $LN['config_clickjack_msg'] = 'Activeer clickjack bescherming zodat URD altijd i
 $LN['config_need_challenge']     = 'Activeer XSS bescherming';
 $LN['config_need_challenge_msg'] = 'Activeer cross-site scripting bescherming zodat URD functies niet kunnen worden misbruikt vanaf andere sites';
 $LN['config_use_encrypted_passwords'] = 'Sla usenet account wachtwoorden vercijferd op';
-$LN['config_use_encrypted_passwords_msg'] = 'Sla de wachtwoorden van usenet accounts vercijferd op; de sleutel wordt opgeslagen in een apart sleutel bestand.';
+$LN['config_use_encrypted_passwords_msg'] = 'Sla de wachtwoorden van usenet accounts vercijferd op; de sleutel wordt opgeslagen in een apart sleutelbestand.';
+$LN['config_keystore_path']         = 'Locatie van het sleutelbestand';
+$LN['config_keystore_path_msg']     = 'De folder waar het sleutelbestand wordt geplaatst';
 $LN['config_dlpath']        = 'Sla downloads hier op';
 $LN['config_pidpath']       = 'Locatie van het PID bestand';
 $LN['config_pidpath_msg']   = 'De locatie van het PID bestand dat gebruikt wordt om te voorkomen dat URDD meermaals wordt opgestart (Laat leeg om geen PID file gebruiken)';
@@ -948,10 +975,12 @@ $LN['config_users_clean_age']       = 'Verwijder inactive gebruikers';
 $LN['config_users_clean_age_msg']   = 'Verwijder inactive non-admin gebruikers na een periode van afwezigheid (in days)';
 $LN['config_socket_timeout']        = 'Socket timeout';
 $LN['config_urdd_connection_timeout']       = 'URDD connection timeout';
-$LN['config_urdd_connection_timeout_msg']   = 'Het aantal seconden waarna een verbinding naar URDD wordt be&euml;indigd als deze niet meer reageert; standaardwaarde is 30';
+$LN['config_urdd_connection_timeout_msg']   = 'Het aantal seconden waarna een verbinding naar URDD wordt be&euml;indigd als deze niet meer reageert; standaardwaarde is 30.';
 $LN['config_auto_download']                 = 'Sta automatisch downloaden toe';
 $LN['config_check_nntp_connections']        = 'Controleer het aantal usenet verbindingen bij opstarten';
 $LN['config_check_nntp_connections_msg']    = 'Selecteer het aantal mogelijke parallele verbindingen naar een NNTP server bij het opstarten van URDD';
+$LN['config_nntp_all_servers']              = 'Run downloads op alle mogelijke servers tegelijk';
+$LN['config_nntp_all_servers_msg']          = 'Sta downloads toe met het totaal maximum aan NNTP threads op alle ingeschakelde servers, in plaats van &eacute;&eacute;n download op een server te runnen.';
 $LN['config_clean_dir_age']     = 'Opschoontijd tijdelijke bestanden';
 $LN['config_clean_dir_age_msg'] = 'De tijd waarna tijdelijke bestanden worden opgeruimd door het cleandir commando (in dagen)';
 $LN['config_clean_db_age']      = 'Opschoontijd database informatie';
@@ -1000,17 +1029,17 @@ $LN['config_sendmail_msg']      = 'Indien geaangevinkt is het mogelijk e-mails t
 $LN['config_follow_link']       = 'Volg links in NFO bestanden na updaten';
 $LN['config_follow_link_msg']   = 'Indien aangevinkt, links in NFO bestanden worden automatisch geparset na dat een groep is geupdate';
 $LN['config_maxfilesize_msg']   = 'De maximale bestandsgrootte toegestaan om te bekijken in bestanden in kB, 0 voor geen limiet';
-$LN['config_maxpreviewsize_msg']    = 'De maximale bestandsgrootte toegestaan om te previewen in kB, 0 voor geen limiet';
+$LN['config_maxpreviewsize_msg']           = 'De maximale bestandsgrootte toegestaan om te previewen in kB, 0 voor geen limiet';
 $LN['config_db_intensive_maxthreads']      = 'Maximum aantal database intensieve taken';
 $LN['config_db_intensive_maxthreads_msg']  = 'Het maximum aantal taken dat veel toegang tot de database nodig heeft';
 
-$LN['config_networking']            = 'Netwerk';
-$LN['config_extprogs']              = 'Programma&#39;s';
-$LN['config_maintenance']           = 'Onderhoudstaken';
-$LN['config_globalsettings']        = 'Globaal';
-$LN['config_notifysettings']        = 'Notificatie';
-$LN['config_defaulttemplate']       = 'Standaard sjabloon';
-$LN['config_webdownload_msg']       = 'Gebruikers kunnen bestanden als een tarbal downloaden op de bestanden pagina';
+$LN['config_networking']             = 'Netwerk';
+$LN['config_extprogs']               = 'Programma&#39;s';
+$LN['config_maintenance']            = 'Onderhoudstaken';
+$LN['config_globalsettings']         = 'Globaal';
+$LN['config_notifysettings']         = 'Notificatie';
+$LN['config_defaulttemplate']        = 'Standaard sjabloon';
+$LN['config_webdownload_msg']        = 'Gebruikers kunnen bestanden als een tarbal downloaden op de bestanden pagina';
 $LN['config_default_template']       = 'Standaard sjabloon';
 $LN['config_default_template_msg']   = 'Het sjabloon dat gebruikt wordt als er geen (geldige) geselecteerd is';
 $LN['config_default_language_msg']   = 'De taal die gebruikt wordt als er geen (geldige) geselecteerd is';
@@ -1046,15 +1075,15 @@ $LN['config_period_sendinfo']          = 'Verzend setinformatie';
 $LN['config_period_sendinfo_msg']      = 'Verzend informatie naar URDland.com';
 $LN['config_period_getinfo']           = 'Ophalen setinformatie';
 $LN['config_period_getinfo_msg']       = 'Haal informatie op van URDland.com';
-$LN['config_nice_value']        = 'Nice waarde';
-$LN['config_nice_value_msg']    = 'Nice waarde voor externe programma&#39;s zoals par2 en rar';
+$LN['config_nice_value']               = 'Nice waarde';
+$LN['config_nice_value_msg']           = 'Nice waarde voor externe programma&#39;s zoals par2 en rar';
 
 $LN['config_nntp_maxdlthreads']         = 'Maximale aantal verbindingen per download';
 $LN['config_nntp_maxdlthreads_msg']     = 'Het maximale aantal verbindingen per download (0 is geen limiet)';
-$LN['config_allow_global_scripts_msg'] = 'Sta het uitvoeren van scripts ingevoerd door de administrators toe nadat een download is afgerond';
-$LN['config_allow_global_scripts']     = 'Admin scripts toestaan';
-$LN['config_allow_user_scripts_msg']   = 'Sta het uitvoeren van scripts ingevoerd door de gebruiker toe nadat een download is afgerond';
-$LN['config_allow_user_scripts']       = 'Gebruiker scripts toestaan';
+$LN['config_allow_global_scripts_msg']  = 'Sta het uitvoeren van scripts ingevoerd door de administrators toe nadat een download is afgerond';
+$LN['config_allow_global_scripts']      = 'Admin scripts toestaan';
+$LN['config_allow_user_scripts_msg']    = 'Sta het uitvoeren van scripts ingevoerd door de gebruiker toe nadat een download is afgerond';
+$LN['config_allow_user_scripts']        = 'Gebruiker scripts toestaan';
 //$LN['config_']            = '';
 
 $LN['config_total_max_articles']		= 'Maximaal artikelen gedownload per update';
@@ -1075,14 +1104,14 @@ $LN['config_auto_login']        = 'Log automatisch in als';
 $LN['config_auto_login_msg']    = 'Automatisch inloggen met de aangegeven gebruikersnaam. Laat de waarde leeg om autologin niet te gebruiken';
 
 $LN['config_nntp_maxthreads_msg']      = 'Het maximale aantal parallelle verbindingen die de URD daemon kan gebruiken';
-$LN['config_default_expire_time_msg']        = 'Het standaard aantal dagen waarna sets als verouderd worden beschouwd';
+$LN['config_default_expire_time_msg']  = 'Het standaard aantal dagen waarna sets als verouderd worden beschouwd';
 $LN['config_expire_incomplete_msg']    = 'Het aantal dagen waarna incomplete sets als verouderd worden beschouwd';
 $LN['config_expire_percentage_msg']    = 'Het maximale percentage een set mag hebben om als verouderde set vroegtijdig te worden verwijderd';
-$LN['config_auto_expire_msg']       = 'Schoon verouderde berichten automatisch op na een update';
-$LN['pref_cancel_crypted_rars_msg']  = 'Analyseer bestanden terwijl ze worden gedownload en annuleer deze als de rar bestanden vercijferd zijn (en er geen wachtwoord voor de download bekend is)';
-$LN['config_urdd_maxthreads_msg']   = 'Het maximale aantal parallelle taken dat de URD daemon uit kan voeren';
-$LN['config_admin_email_msg']    = 'Het e-mail-adres van de beheerder';
-$LN['config_urdd_host_msg']  = 'De systeemnaam of IP-adres van de URD daemon (standaard localhost) (Noot: IPv6 adressen moeten tussen [] worden geschreven, bijv. [::1])';
+$LN['config_auto_expire_msg']          = 'Schoon verouderde berichten automatisch op na een update';
+$LN['pref_cancel_crypted_rars_msg']    = 'Analyseer bestanden terwijl ze worden gedownload en annuleer deze als de rar bestanden vercijferd zijn (en er geen wachtwoord voor de download bekend is)';
+$LN['config_urdd_maxthreads_msg']      = 'Het maximale aantal parallelle taken dat de URD daemon uit kan voeren';
+$LN['config_admin_email_msg']          = 'Het e-mail-adres van de beheerder';
+$LN['config_urdd_host_msg']            = 'De systeemnaam of IP-adres van de URD daemon (standaard localhost) (Noot: IPv6 adressen moeten tussen [] worden geschreven, bijv. [::1])';
 $LN['config_auto_reg_msg']    = 'Indien uitgevinkt moet de beheerder elke registratieaanvraag handmatig goedkeuren, anders wordt hij automatisch goedgekeurd';
 $LN['config_dlpath_msg']    = 'De map waarin URD de gedownloade bestanden zet';
 $LN['config_urdd_port_msg']  = 'Het poortnummer van de URD daemon (standaard 11666)';
@@ -1093,7 +1122,7 @@ $LN['config_maxdl_msg']     = 'De maximale bandbreedte die is toegestaan voor UR
 $LN['config_maxul_msg']     = 'De maximale bandbreedte die is toegestaan voor URD wanneer van de nieuwsserver wordt geupload';
 $LN['config_register_msg']  = 'Indien aangevinkt is registratie van nieuwe gebruikers mogelijk op de loginpagina.';
 $LN['config_urdd_path_msg']      = 'Het pad waar het URDD opstartscript (urdd.sh) kan worden gevonden';
-$LN['config_unpar_path_msg']      = 'Het pad waar het programma par2 kan worden gevonden (optioneel)';
+$LN['config_unpar_path_msg']     = 'Het pad waar het programma par2 kan worden gevonden (optioneel)';
 $LN['config_unrar_path_msg']     = 'Het pad waar het programma rar (of unrar) kan worden gevonden voor decomprimeren (optioneel)';
 $LN['config_rar_path_msg']       = 'Het pad waar het programma rar kan worden gevonden voor comprimeren (optioneel)';
 $LN['config_tar_path_msg']       = 'Het pad waar het programma tar kan worden gevonden (optioneel)';
@@ -1110,12 +1139,12 @@ $LN['config_yyencode_path_msg']      = 'Het pad waar het programma yyencode kan 
 $LN['config_cksfv_path_msg']         = 'Het pad waar het programma cksfv kan worden gevonden (optioneel)';
 $LN['config_trickle_path_msg']       = 'Het pad waar het programma trickle kan worden gevonden (optioneel)';
 $LN['config_period_update_msg']   = 'Hoe vaak moet worden gecontroleerd of er een nieuwe versie van URDD is';
-$LN['config_period_opt_msg']    = 'Hoe vaak moet de database worden geoptimaliseerd';
-$LN['config_period_ng_msg']  = 'Hoe vaak moet de nieuwsgroepenlijst worden gedownload';
-$LN['config_period_cd_msg']      = 'Hoe vaak moeten de /tmp en /preview directory worden opgeschoond (alle bestanden ouder dan 1 dag worden verwijderd)';
-$LN['config_period_cdb_msg']       = 'Hoe vaak moeten de vluchtige data uit de database verwijderd worden';
-$LN['config_log_level_msg']     = 'Welk niveau van logberichten moet worden bewaard';
-$LN['config_socket_timeout_msg']   = 'Het aantal seconden waarna een verbinding wordt be&euml;indigd als deze niet meer reageert; standaardwaarde is 30';
+$LN['config_period_opt_msg']      = 'Hoe vaak moet de database worden geoptimaliseerd';
+$LN['config_period_ng_msg']       = 'Hoe vaak moet de nieuwsgroepenlijst worden gedownload';
+$LN['config_period_cd_msg']       = 'Hoe vaak moeten de /tmp en /preview directory worden opgeschoond (alle bestanden ouder dan 1 dag worden verwijderd)';
+$LN['config_period_cdb_msg']      = 'Hoe vaak moeten de vluchtige data uit de database verwijderd worden';
+$LN['config_log_level_msg']       = 'Welk niveau van logberichten moet worden bewaard';
+$LN['config_socket_timeout_msg']  = 'Het aantal seconden waarna een verbinding wordt be&euml;indigd als deze niet meer reageert; standaardwaarde is 30';
 
 // admin log
 $LN['log_title']        = 'logbestand';
@@ -1149,6 +1178,8 @@ $LN['users_post_help']      = 'De gebruiker mag data posten op de news server';
 $LN['users_resetpw']        = 'Reset en mail wachtwoord';
 $LN['users_edit']           = 'Bewerk gebruiker';
 $LN['users_delete']         = 'Verwijder gebruiker';
+$LN['users_enable']         = 'Activeer gebruiker';
+$LN['users_disable']        = 'Uitschakelen gebruiker';
 $LN['users_rights']         = 'Setbewerker';
 $LN['users_rights_help']    = 'Hiermee kan de gebruiker sets bewerken in de Aanbod-pagina';
 $LN['users_last_active']    = 'Laatst actief';
@@ -1192,10 +1223,6 @@ $LN['error_notanumber']         = 'Geen nummer';
 $LN['error_filetoolarge']       = 'Bestand te groot om te downloaden';
 //$LN['error_']         = '';
 
-// NZB parse
-$LN['nzb_title']        = 'URD NZB Verwerker';
-//$LN['nzb_']           = '';
-
 /// Transfers
 $LN['transfers_title']          = 'Downloads';
 $LN['transfers_importnzb']      = 'Importeer NZB bestand';
@@ -1209,7 +1236,7 @@ $LN['transfers_nzbupload']      = 'Upload een lokaal NZB bestand';
 $LN['transfers_nzbuploadext']   = 'Wanneer het NZB bestand op uw computer staat, kunt u het hiermee versturen naar de URD server';
 $LN['transfers_uploadnzb']      = 'NZB uploaden';
 $LN['transfers_runparrar']      = 'Voer par2 en unrar uit';
-$LN['transfers_add_setname']          = 'Voeg de setnaam toe aan de download directory';
+$LN['transfers_add_setname']    = 'Voeg de setnaam toe aan de download directory';
 $LN['transfers_status_ready']   = 'Startend';
 $LN['transfers_status_queued']  = 'In wachtrij';
 $LN['transfers_status_active']  = 'Downloadend';
@@ -1330,18 +1357,13 @@ $LN['browse_userwhitelisted'] = 'Gebruiker staat op de witte lijst';
 $LN['browse_download_dir']  = 'Download directory';
 $LN['browse_add_setname']   = 'Setnaam toevoegen';
 
-// ParseNZB
-$LN['parsenzb_error']       = 'Als je dit kan lezen is er iets niet helemaal goed gegaan. Excuus!';
-
 // Preview
 $LN['preview_autodisp']     = 'Bestand(en) zouden automatisch moeten verschijnen.';
 $LN['preview_autofail']     = 'Als het te lang duurt kan je ook op deze link klikken';
 $LN['preview_view']         = 'Klik hier om het NZB bestand te bekijken';
 $LN['preview_header']       = 'Preview downloaden';
 $LN['preview_nzb']          = 'Klik hier om met dit NZB bestand direct te downloaden';
-$LN['preview_title']        = 'URD preview pagina';
 $LN['preview_failed']       = 'Preview mislukt';
-$LN['preview_close']        = 'Sluit venster';
 
 // FAQ
 $LN['faq_content'][1] = array ('Wat is URD', 'URD is een programma om bestanden van usenet (nieuwsgroepen) te downloaden, d.m.v. een webinterface.'
@@ -1504,7 +1526,12 @@ $LN['browse_tag_copyright']     = 'Auteursrechtelijk beschermd';
 
 $LN['quickmenu_setsearch']      = 'Zoek';
 $LN['quickmenu_addblacklist']   = 'Spotter op zwarte lijst plaatsen';
+$LN['quickmenu_addposterblacklist']   = 'Spotter op zwarte lijst plaatsen';
+$LN['quickmenu_addglobalblacklist']   = 'Spotter op zwarte lijst globale plaatsen';
+$LN['quickmenu_addglobalwhitelist']   = 'Spotter op witte lijst globale plaatsen';
+$LN['quickmenu_addwhitelist']   = 'Spotter op witte lijst plaatsen';
 $LN['quickmenu_report_spam']    = 'Meld spot als spam';
+$LN['quickmenu_comment_spot']   = 'Plaats een commentaar op de spot';
 $LN['quickmenu_editspot']       = 'Bewerk spot';
 $LN['quickmenu_setshowesi']     = 'Toon set info';
 $LN['quickmenu_seteditesi']     = 'Bewerk set info';
@@ -1518,22 +1545,25 @@ $LN['quickmenu_setpreviewvid']  = 'Preview video bestand';
 $LN['quickmenu_add_search']     = 'Automatisch markeren';
 $LN['quickmenu_add_block']      = 'Automatisch verbergen';
 
+$LN['blacklist_spotter']        = 'Spotter op de zwarte lijst zetten?';
+$LN['whitelist_spotter']        = 'Spotter op de witte lijst zetten?';
+
 $LN['stats_title']  = 'Statistieken';
 $LN['stats_dl']     = 'Downloads';
 $LN['stats_pv']     = 'Previews';
 $LN['stats_im']     = 'Ge&iuml;mporteerde NZB bestanden';
 $LN['stats_gt']     = 'Gedownloade NZB bestanden';
 $LN['stats_wv']     = 'Web views';
-$LN['stats_ps']     = 'Posts';
+$LN['stats_ps']     = 'Uploads';
 $LN['stats_total']  = 'Totale omvang';
 $LN['stats_number'] = 'Aantal';
 $LN['stats_user']   = 'Gebruiker';
 $LN['stats_overview']   = 'Overzicht';
 
 $LN['stats_spotsbymonth'] = 'Spots per maand';
-$LN['stats_spotsbyweek'] = 'Spots per week';
-$LN['stats_spotsbyhour'] = 'Spots per uur';
-$LN['stats_spotsbydow'] = 'Spots per dag van de week';
+$LN['stats_spotsbyweek']  = 'Spots per week';
+$LN['stats_spotsbyhour']  = 'Spots per uur';
+$LN['stats_spotsbydow']   = 'Spots per dag van de week';
 
 $LN['feeds_title']  = 'RSS bronnen';
 $LN['feeds_rss']    = 'RSS bronnen';
@@ -1582,17 +1612,17 @@ $LN['post_messagetextext']  = 'De inhoud van het bericht';
 $LN['post_newsgroupext2']   = 'De nieuwsgroep waar het bericht naar wordt gestuurd';
 $LN['post_subjectext2']     = 'Het onderwerp in het bericht';
 
-$LN['settype'][SETTYPE_UNKNOWN]     = $LN['config_formatstring'] . ' Onbekend';
-$LN['settype'][SETTYPE_MOVIE]       = $LN['config_formatstring'] . ' Film';
-$LN['settype'][SETTYPE_ALBUM]       = $LN['config_formatstring'] . ' Album';
-$LN['settype'][SETTYPE_IMAGE]       = $LN['config_formatstring'] . ' Plaatje';
-$LN['settype'][SETTYPE_SOFTWARE]    = $LN['config_formatstring'] . ' Software';
-$LN['settype'][SETTYPE_TVSERIES]    = $LN['config_formatstring'] . ' TV serie';
-$LN['settype'][SETTYPE_EBOOK]       = $LN['config_formatstring'] . ' E-book';
-$LN['settype'][SETTYPE_GAME]        = $LN['config_formatstring'] . ' Spel';
-$LN['settype'][SETTYPE_TVSHOW]      = $LN['config_formatstring'] . ' TV Show';
-$LN['settype'][SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Documentaire';
-$LN['settype'][SETTYPE_OTHER]       = $LN['config_formatstring'] . ' Anders';
+$LN['settype'][urd_extsetinfo::SETTYPE_UNKNOWN]     = $LN['config_formatstring'] . ' Onbekend';
+$LN['settype'][urd_extsetinfo::SETTYPE_MOVIE]       = $LN['config_formatstring'] . ' Film';
+$LN['settype'][urd_extsetinfo::SETTYPE_ALBUM]       = $LN['config_formatstring'] . ' Album';
+$LN['settype'][urd_extsetinfo::SETTYPE_IMAGE]       = $LN['config_formatstring'] . ' Plaatje';
+$LN['settype'][urd_extsetinfo::SETTYPE_SOFTWARE]    = $LN['config_formatstring'] . ' Software';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSERIES]    = $LN['config_formatstring'] . ' TV serie';
+$LN['settype'][urd_extsetinfo::SETTYPE_EBOOK]       = $LN['config_formatstring'] . ' E-book';
+$LN['settype'][urd_extsetinfo::SETTYPE_GAME]        = $LN['config_formatstring'] . ' Spel';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSHOW]      = $LN['config_formatstring'] . ' TV Show';
+$LN['settype'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Documentaire';
+$LN['settype'][urd_extsetinfo::SETTYPE_OTHER]       = $LN['config_formatstring'] . ' Anders';
 
 $LN['newcategory']          = 'Nieuwe categorie';
 $LN['nocategory']           = 'Geen categorie';
@@ -1604,17 +1634,17 @@ $LN['ng_tooltip_category']  = 'Categorie';
 
 $LN['settype_syntax'] = '%(n.mc); waar <i>()</i> een optionele omsluiting is, namelijk (), [] or {}; <i>n</i> een optionele padding waarde, <i>.m</i> een optionele maximale lengte, <i>c</i> een noodzakelijk karakter hieronder gespecificeerd (gebruik %% om een % weer te geven, zie ook de php documentatie voor sprintf):<br/><br/>';
 
-$LN['settype_msg'][SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Onbekend settype:<br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon <br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_MOVIE] = $LN['settype_syntax'] . 'Film settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%y: jaar<br/>%m: video formaat<br/>%a: audio formaat<br/>%l: taal<br/>%s: ondertitel taal<br/>%x: 18+<br/>%N: opmerkingen<br/>%q: kwaliteit<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd<br/>';
-$LN['settype_msg'][SETTYPE_ALBUM] = $LN['settype_syntax'] . 'Album settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%y: jaar <br/>%f: audio formaat<br/>%g: genre<br/>%N: opmerkingen<br/>%q: kwaliteit<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd<br/>';
-$LN['settype_msg'][SETTYPE_IMAGE] = $LN['settype_syntax'] . 'Plaatje settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon <br/>%f: beeldformaat<br/>%g: genre<br/>%N: opmerkingen<br/>%q: kwaliteit<br/>%x: 18+<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_SOFTWARE] = $LN['settype_syntax'] . 'Software settype: <br/>%n: naam<br/>%t: set type<br/>%T: afhankelijk icoon icon<br/>%o: besturingssysteem <br/>%q: kwaliteit<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_TVSERIES] = $LN['settype_syntax'] . 'TV serie settype: <br/>%n: naam<br/>%t: set type<br/>%T: afhankelijk icoon icon<br/>%e: episode<br/>%m: video formaat<br/>%a: audio formaat<br/>%x: 18+<br/>%q: kwaliteit<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_EBOOK] = $LN['settype_syntax'] . 'E-book settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%A: auteur<br/>%y: jaar<br/>%f: formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_GAME] = $LN['settype_syntax'] . 'Spel settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%A: auteur<br/>%y: jaar<br/>%f: formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_TVSHOW] = $LN['settype_syntax'] . 'TV Show settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%m: video formaat<br/>%y: jaar<br/>%e: episode<br/>%f: formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_DOCUMENTARY] = $LN['settype_syntax'] . 'Documentaire settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%A: auteur<br/>%y: jaar<br/>%f: film formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
-$LN['settype_msg'][SETTYPE_OTHER] = $LN['settype_syntax'] . 'Ander settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd<br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Onbekend settype:<br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon <br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_MOVIE] = $LN['settype_syntax'] . 'Film settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%y: jaar<br/>%m: video formaat<br/>%a: audio formaat<br/>%l: taal<br/>%s: ondertitel taal<br/>%x: 18+<br/>%N: opmerkingen<br/>%q: kwaliteit<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd<br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_ALBUM] = $LN['settype_syntax'] . 'Album settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%y: jaar <br/>%f: audio formaat<br/>%g: genre<br/>%N: opmerkingen<br/>%q: kwaliteit<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd<br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_IMAGE] = $LN['settype_syntax'] . 'Plaatje settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon <br/>%f: beeldformaat<br/>%g: genre<br/>%N: opmerkingen<br/>%q: kwaliteit<br/>%x: 18+<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_SOFTWARE] = $LN['settype_syntax'] . 'Software settype: <br/>%n: naam<br/>%t: set type<br/>%T: afhankelijk icoon icon<br/>%o: besturingssysteem <br/>%q: kwaliteit<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSERIES] = $LN['settype_syntax'] . 'TV serie settype: <br/>%n: naam<br/>%t: set type<br/>%T: afhankelijk icoon icon<br/>%e: episode<br/>%m: video formaat<br/>%a: audio formaat<br/>%x: 18+<br/>%q: kwaliteit<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_EBOOK] = $LN['settype_syntax'] . 'E-book settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%A: auteur<br/>%y: jaar<br/>%f: formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_GAME] = $LN['settype_syntax'] . 'Spel settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%A: auteur<br/>%y: jaar<br/>%f: formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSHOW] = $LN['settype_syntax'] . 'TV Show settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%m: video formaat<br/>%y: jaar<br/>%e: episode<br/>%f: formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['settype_syntax'] . 'Documentaire settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%A: auteur<br/>%y: jaar<br/>%f: film formaat<br/>%q: kwaliteit<br/>%g: genre<br/>%N: opmerkingen<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_OTHER] = $LN['settype_syntax'] . 'Ander settype: <br/>%n: naam<br/>%t: set type<br/>%T: type afhankelijk icoon<br/>%P: wachtwoord afgescherm<br/>%C: auteursrechtelijk beschermd<br/>';
 
 $LN['spots_allcategories']     = 'Alle categori&euml;n';
 $LN['spots_allsubcategories']  = 'Alle subcategorie&euml;n';
@@ -1622,6 +1652,11 @@ $LN['spots_subcategories']     = 'Subcategorie&euml;n';
 $LN['spots_tag']               = 'Tag';
 $LN['pref_spots_category_mapping']  = 'Spots categorie afbeelding voor';
 $LN['pref_spots_category_mapping_msg']  = 'De afbeelding van spotscategorie&euml;n op URD categorien';
+
+$LN['pref_custom_values']       = 'Gebruikerswaardes';
+$LN['pref_custom']              = 'Gebruikerswaarde';
+$LN['config_custom']            = 'Gebruikerswaarde';
+$LN['pref_custom_msg']          = 'Gebruikers waardes die gebruikt kunnen worden in  scripts';
 
 $LN['spots_other']       = 'Anders';
 $LN['spots_all']         = 'Alles';
@@ -1918,7 +1953,7 @@ $LN['password_incorrect']   = 'Wachtwoorden komen niet overeen';
 
 $LN['dashboard_max_nntp']      = 'Maximale aantal NNTP verbindingen';
 $LN['dashboard_max_threads']   = 'Maximale aantal taken';
-$LN['dashboard_max_db_intensive']	    = 'Maximum aantal database intensieve taken';
+$LN['dashboard_max_db_intensive']	= 'Maximum aantal database intensieve taken';
 
 if (isset($smarty)) { // don't do the smarty thing if we read it from urdd
     foreach ($LN as $key => $word) {

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-20 00:48:03 +0200 (za, 20 jul 2013) $
- * $Rev: 2878 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_rsssets.tpl 2878 2013-07-19 22:48:03Z gavinspearhead@gmail.com $
+ * $Id: ajax_rsssets.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
 {* These icon images are a copy of the code in formatsetname.tpl *}
@@ -37,34 +37,38 @@
 {$btpw="<img class=\"binicon\" src=\"$IMGDIR/icon_pw.png\" width=\"16\" height=\"16\"/>"}
 {$btcopyright="<img class=\"binicon\" src=\"$IMGDIR/icon_copy.png\" width=\"16\" height=\"16\"/>"}
 {capture assign=topskipper}{strip}
+{if $only_rows == 0}
 {if count($pages) > 1}
 {urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=set_offset extra_class="margin10"}
 {else}<br/>
+{/if}
 {/if}
 {/strip}
 {/capture}
 
 {* Making a 'top' and a 'bottom' skipper: *}
 {capture assign=bottomskipper}{strip}
+{if $only_rows == 0}
 {if count($pages) > 1}
 {urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=set_offset extra_class="margin10"}
 {else}<div><br/></div>
+{/if}
 {/if}
 {/strip}
 {/capture}
 
 {capture assign=unmark_int_all}
 <div class="floatright">
-<input type="hidden" name="feed_id" value="{$feed_id}"/>
+<input type="hidden" name="feed_id" value="{$feed_id|escape}"/>
 {if $killflag}
-<div class="floatleft iconsizeplus killicon buttonlike" onclick="javascript:Whichbutton('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
+<div class="floatleft iconsizeplus killicon buttonlike" onclick="javascript:whichbutton('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
 {else}
-<div class="floatleft iconsizeplus deleteicon buttonlike" onclick="javascript:Whichbutton('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
+<div class="floatleft iconsizeplus deleteicon buttonlike" onclick="javascript:whichbutton('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
 {/if}
 {if $isadmin}
-<div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:Whichbutton('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+<div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:whichbutton('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
 {/if}
-<div class="floatleft iconsizeplus sadicon buttonlike" onclick="javascript:Whichbutton('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
+<div class="floatleft iconsizeplus sadicon buttonlike" onclick="javascript:whichbutton('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
 {/strip}{/capture}
 
 {$up="<img src='$IMGDIR/small_up.png' alt=''>"}{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
@@ -80,9 +84,9 @@
 <th class="head fixwidth1 round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
 <th id="browsesubjecttd" class="head buttonlike" onclick="javascript:change_sort_order('better_subject');">{$LN_browse_subject} {$title_sort}</th>
-<th class="fixwidth2a nowrap buttonlike head right" onclick="javascript:change_sort_order('timestamp');">{$LN_browse_age} {$stamp_sort} </th>
-<th class="fixwidth3 nowrap buttonlike head right" onclick="javascript:change_sort_order('size');">{$LN_size} {$size_sort}</th>
-<th class="fixwidth1 buttonlike head right" onclick="javascript:change_sort_order('rating');"><div class="floatleft iconsizeplus followicon buttonlike"></div>
+<th class="fixwidth2a nowrap buttonlike head right" onclick="javascript:change_sort_order('timestamp', 'desc');">{$LN_browse_age} {$stamp_sort} </th>
+<th class="fixwidth3 nowrap buttonlike head right" onclick="javascript:change_sort_order('size', 'desc');">{$LN_size} {$size_sort}</th>
+<th class="fixwidth1 buttonlike head right" onclick="javascript:change_sort_order('rating', 'desc');"><div class="floatleft iconsizeplus followicon buttonlike"></div>
 </th>
 <th class="head nowrap fixwidth5 round_right">{$unmark_int_all}</th>
 </tr>
@@ -99,10 +103,10 @@
 
 {capture assign=smallbuttons}	
 {if !$set.added}
-<div id="divset_{$set.sid}" class="setimgplus floatleft iconsize buttonlike" onclick="javascript:SelectSet('{$set.sid}', 'rss', event);return false;"></div>
+<div id="divset_{$set.sid}" class="setimgplus floatleft iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'rss', event);return false;"></div>
 <input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>
 {else}
-<div id="divset_{$set.sid}" class="setimgminus floatleft iconsize buttonlike" onclick="javascript:SelectSet('{$set.sid}', 'rss', event);return false;"></div>
+<div id="divset_{$set.sid}" class="setimgminus floatleft iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'rss', event);return false;"></div>
 <input type="hidden" name="setdata[]" id="set_{$set.sid}" value="x"/>
 {/if}
 {/capture}
@@ -138,11 +142,11 @@
 
 {* Ok now it's time to put it all together: *}	
 <tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" 
-	onmouseover="javascript:ToggleClass(this, 'highlight2')" 
-	onmouseout="javascript:ToggleClass(this, 'highlight2')">
+	onmouseover="javascript:$(this).toggleClass('highlight2');" 
+	onmouseout="javascript:$(this).toggleClass('highlight2');">
 	<td class="fixwidth1">{$set.number}
     
-<input type="hidden" name="set_ids[]" value="{$set.sid}"/>
+<input type="hidden" name="set_ids[]" value="{$set.sid|escape}"/>
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 	<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_RSS}, event);" id="td_set_{$set.sid}">
@@ -162,9 +166,9 @@
     <div class="floatright">
     <input type="hidden" id="link_{$set.sid}" value="{$set.link|escape:quotes}"/>
     {if $isadmin}
-    <div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:markRead('{$set.sid}', 'wipe', {$USERSETTYPE_RSS})" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_RSS})" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-	 <div id="intimg_{$set.sid}" class="floatright iconsizeplus {$interestingimg} buttonlike" onclick="javascript:markRead('{$set.sid}', 'interesting', {$USERSETTYPE_RSS})" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+	 <div id="intimg_{$set.sid}" class="floatright iconsizeplus {$interestingimg} buttonlike" onclick="javascript:mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_RSS})" {urd_popup type="small" text=$LN_browse_toggleint }></div>
     </div>
 	</td>
 </tr>
@@ -180,10 +184,10 @@
 
 {$bottomskipper}
 <input type="hidden" id="rss_url" value="{$rssurl|escape:quotes}"/>
-<input type="hidden" id="killflag" value="{$killflag}"/>
+<input type="hidden" id="killflag" value="{$killflag|escape}"/>
 
 {* Store button urls for javascript: *}
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
-<input type="hidden" id="last_line" value="{$set.number}"/>
+<input type="hidden" id="last_line" value="{$set.number|escape}"/>
 {/if}

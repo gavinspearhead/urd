@@ -3,6 +3,7 @@
 <head>
 <title>{$title}</title>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+
 {if !$allow_robots}
 <meta name="robots" content="noindex, nofollow"/>
 {/if}
@@ -15,28 +16,35 @@
 <![endif]--> 
 <link id="icon" rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 {if isset($rssurl) && $rssurl neq ""}
-<link rel="alternate" type="application/rss+xml" href="{$rssurl}" title="URD" /> 
+<link rel="alternate" type="application/rss+xml" href="{$rssurl}" title="URD"/> 
 {/if}
-<script type="text/javascript" src="{$JSDIR}/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="{$JSDIR}/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
 </head>
 {urd_flush}
-<body onload="javascript:init();">
-<div class="Message hidden" id="message_bar" onclick="javascript:hide_message('message_bar', 0);"></div>
-<div id="scrollmenuright" class="buttonlike white" onclick="scroll_menu_right(event);">&gt;</div>
-<div id="scrollmenuleft" class="buttonlike white" onclick="scroll_menu_left(event);">&lt;</div>
+<body>
+<noscript><div id="nojs" class="centered_nojs down100">{$LN_login_jserror}</div></noscript>
+
+<div id="message_bar" class="Message hidden">
+<div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
+<div id="message_content" class="inline"></div>
+</div>
+
+{capture assign=urdmenu}
+<div id="scrollmenuright" class="buttonlike white">&gt;</div>
+<div id="scrollmenuleft" class="buttonlike white">&lt;</div>
 <div id="menu">
     <div id="pulldown_menu">
         <div id="pulldown" class="pulldown"> 
             <ul>
-            <li class="smalllogo"><div id="smalllogo" class="buttonlike" onclick="javascript:jump('index.php');">&nbsp;</div>
+            <li class="smalllogo"><div id="smalllogo" class="buttonlike">&nbsp;</div>
             <div class="downm8"> 
             <ul><li class="plain pulldown_last_item"><div class="down3 centered2">{$LN_version} {$VERSION}</div></li></ul>
             </div>
             </li>
             <li class="smallstatus"><div id="smallstatus">&nbsp;</div></li>
-            <li class="normal" onmouseover="javascript:load_activity_status();" id="status_item">
+            <li class="normal" id="status_item">
                 <div id="status_msg" class="nooverflow"></div>
                 <div class="downm8">
                 <ul id="activity_status">
@@ -84,6 +92,9 @@
         </div>
     </div>
 </div>
+{/capture}
+
+{$urdmenu}
 
 {*this is for the small tooltip thingie *}
 <div><div id="smallhelp" class="hidden"></div></div>
@@ -95,6 +106,10 @@
 </div>
 </div>
 
+<input type="hidden" id="challenge" value="{$challenge}"/>
+<input type="hidden" id="cssdir" value="{$CSSDIR}"/>
+<input type="hidden" name="urdd_status" id="urdd_status" value="{$urdd_online}"/>
+
 <div id="overlay_back">
 <div id="overlay_content"></div>
 </div>
@@ -102,14 +117,11 @@
 <div id="overlay_back2">
 <div id="overlay_content2"></div>
 </div>
-<div id="topcontent" onmouseup="javascript:set_selected();">
+
 <div id="quickmenu" class="quickmenuoff"></div>
 <div id="quickwindow" class="quickwindowoff"></div>
-<div id="contentout" onmouseover="javascript:CloseQuickMenu();">
+<div id="searchbar"></div>
+<div id="topcontent">
+<div id="contentout">
 <div id="content" class="down3">
-<noscript><div class="centered" id="nojs">{$LN_login_jserror}</div></noscript>
-<input type="hidden" id="search_str" value="&lt;{$LN_search}&gt;"/>
-<input type="hidden" id="challenge" value="{$challenge}"/>
-<input type="hidden" id="cssdir" value="{$CSSDIR}"/>
-<input type="hidden" name="urdd_status" id="urdd_status" value="{$urdd_online}"/>
 <input type="hidden" name="urdd_message" id="urdd_message" value="{$offline_message}"/>

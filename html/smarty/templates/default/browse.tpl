@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-18 00:17:37 +0200 (zo, 18 aug 2013) $
- * $Rev: 2900 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: browse.tpl 2900 2013-08-17 22:17:37Z gavinspearhead@gmail.com $
+ * $Id: browse.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title rssurl=$rssurl stylesheet=$stylesheet}
 
@@ -34,10 +34,10 @@
 <div id="advanced_search_button" class="floatleft iconsize dynimgplus buttonlike" onclick="javascript:fold_adv_search('advanced_search_button', 'advanced_search');" {urd_popup type="small" text=$LN_advanced_search }>
 </div>&nbsp;
 	&nbsp;
-	<input type="hidden" name="order" value="{$order}" id="searchorder"/>
+	<input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} onclick='javascript:select_next("select_groupid",-1);'/>&nbsp;
-	<select name="groupID" class="search" id="select_groupid" >
+	<select name="groupID" class="search" id="select_groupid">
     <option value="">{$LN_browse_allgroups} ({$total_articles})</option>
     {foreach $subscribedgroups as $item}
         {capture name=current assign=current}{$item.type}_{$item.id}{/capture}
@@ -50,14 +50,14 @@
     <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick='javascript:select_next("select_groupid",1);'/>&nbsp;
     &nbsp;
 
-<input type="text" id="search" name="search" size="30" class="search" value="{if $search == ''}&lt;{$LN_search}&gt;{else}{$search|escape:htmlall}{/if}" onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:clean_search('search');load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false;" />
+<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
+<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false;" />
 &nbsp;
 &nbsp;
 &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" class="submitsmall " value="&lt;" {urd_popup text=$LN_previous type="small"} onclick="javascript:select_next_search('saved_search',-1);"/> 
+<input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} onclick="javascript:select_next_search('saved_search',-1);"/> 
 <span id="save_search_span">
 <select id="saved_search" onchange="javascript:update_browse_searches(null);">
 <option value=""></option>
@@ -75,23 +75,23 @@
 <table>
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="minsetsize"  size="6" value="{$minsetsize}"/></td> 
+<td><input type="text" id="minsetsize"  size="6" value="{$minsetsize|escape:htmlall}"/></td> 
 <td><div id="setsize" style="width:100px;"></div></td>
-<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize}"/></td>
+<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize|escape:htmlall}"/></td>
 <td>{$LN_age}:</td>
-<td><input type="text" id="minage" name="minage" size="6" value="{$minage}"/></td> 
+<td><input type="text" id="minage" name="minage" size="6" value="{$minage|escape:htmlall}"/></td> 
 <td><div id="setage" style="width:100px;"></div></td>
-<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage}"/></td>
+<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage|escape:htmlall}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
-<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating}"/></td> 
+<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating|escape:htmlall}"/></td> 
 <td><div id="setrating" style="width:100px;"></div></td>
-<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating}"/></td>
+<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating|escape:htmlall}"/></td>
 <td>{$LN_complete}:</td>
-<td><input type="text" id="mincomplete" name="mincomplete" size="6" value="{$mincomplete}"/></td> 
+<td><input type="text" id="mincomplete" name="mincomplete" size="6" value="{$mincomplete|escape:htmlall}"/></td> 
 <td><div id="setcomplete" style="width:100px;"></div></td>
-<td><input type="text" id="maxcomplete" name="maxcomplete" size="6" value="{$maxcomplete}"/></td>
+<td><input type="text" id="maxcomplete" name="maxcomplete" size="6" value="{$maxcomplete|escape:htmlall}"/></td>
 </tr>
 
 <tr>
@@ -120,18 +120,16 @@
 <div id="rss"><table class="rss"><tr><td class="rssleft"><a href="rss.php" id="rss_id" class="rss">RSS</a></td><td class="rssright">2.0</td></tr></table> </div>
 {/capture}
 
-{$rss_link}
-{$searchform}
-
+{capture assign="basketform"}
 <form method="post" id="setform">
 <div id="basketdiv" class="down3"></div>
 
 {* We need this stuff to remember any the search options *}
 <div>
 <input type="hidden" id="save_name" value=""/> 
-<input type="hidden" name="offset" id="offset" value="{$offset}"/>
-<input type="hidden" name="setid" id="setid" value="{$setid}"/>
-<input type="hidden" name="group_id" id="group_id" value="{$groupID}"/>
+<input type="hidden" name="offset" id="offset" value="{$offset|escape:htmlall}"/>
+<input type="hidden" name="setid" id="setid" value="{$setid|escape:htmlall}"/>
+<input type="hidden" name="group_id" id="group_id" value="{$groupID|escape:htmlall}"/>
 <input type="hidden" name="dlname" id="dlname" value=""/>
 <input type="hidden" name="whichbutton" value="" id="whichbutton"/>
 <input type="hidden" name="previewBinID" value="" id="previewBinID"/>
@@ -139,9 +137,17 @@
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
 <input type="hidden" name="curScrollVal" id="curScrollVal" value=""/>
 <input type="hidden" name="type" id="type" value="groups"/>
-<input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE}"/>
+<input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE|escape:htmlall}"/>
 </div>
 </form>
+{/capture}
+
+{$rss_link}
+<div id="searchformdiv" class="hidden">
+{$searchform}
+{$basketform}
+
+</div>
 
 {* And display it here and at the bottom: *}
 <div class="innerwaitingdiv" id="waitingdiv">
@@ -169,11 +175,12 @@ $(document).ready(function() {
     set_scroll_handler('#contentout', load_sets);
     {* Load basket: *}
     update_basket_display();
-
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('');
 });
 </script>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
-<input type="hidden" id="perpage" value="{$perpage}"/>
+<input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 
 <div>
 &nbsp;<br/>

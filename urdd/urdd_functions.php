@@ -16,21 +16,15 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_functions.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: urdd_functions.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$pathuf = realpath(dirname(__FILE__));
-
-require_once "$pathuf/../functions/defines.php";
-require_once "$pathuf/../functions/functions.php";
-require_once "$pathuf/../functions/autoincludes.php";
 
 function get_base($fn, $ext)
 {
@@ -52,7 +46,7 @@ function get_base($fn, $ext)
             }
         }
 
-        return substr($fn, 0, strlen($fn) - (1 + strlen($ext))); // remove the $ext if no other match is found
+        return substr($fn, 0,  - (1 + strlen($ext))); // remove the $ext if no other match is found
     } else {
         return FALSE;
     }
@@ -154,23 +148,23 @@ function connect_nntp(DatabaseConnection $db, $id = FALSE)
     } elseif ($id == 0) { // should not happen
         write_log('No ServerID given (2) ... dying', LOG_ERR);
         throw new exception ('No Server ID given', ERR_NO_ACTIVE_SERVER);
-    } else {
-        assert(is_numeric($id));
-        $usenet_server = $id;
-    }
+    } 
+    assert(is_numeric($id));
+    $usenet_server = $id;
     echo_debug("Using server $usenet_server", DEBUG_WORKER);
     $usenet_config = get_usenet_server($db, $usenet_server, FALSE);
-    $timeout = get_config($db, 'socket_timeout');
+    $timeout = get_config($db, 'socket_timeout', -1);
     if ($timeout <= 0) {
         write_log('Invalid socket timeout set', LOG_WARNING);
         $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
     }
     try {
         $nzb = new URD_NNTP($db, $usenet_config['hostname'], $usenet_config['connection'], $usenet_config['port'], $timeout);
-        $nzb->connect($usenet_config['authentication'], $usenet_config['username'], $usenet_config['password']);
+        $nzb->connect($usenet_config['authentication']?TRUE:FALSE, $usenet_config['username'], $usenet_config['password']);
 
         return $nzb;
     } catch (exception $e) {
+        $nzb->disconnect();
         unset($nzb);
         throw $e;
     }
@@ -179,7 +173,7 @@ function connect_nntp(DatabaseConnection $db, $id = FALSE)
 function set_dirpermissions($dir, $np, $ndp)
 {
     assert($dir != '');
-    $files = glob ($dir . DIRECTORY_SEPARATOR .'*', GLOB_NOSORT);
+    $files = glob ($dir . DIRECTORY_SEPARATOR . '*', GLOB_NOSORT);
     foreach ($files as $f) {
         if (is_dir($f)) {
             $rv = @chmod ($f, $ndp);
@@ -230,12 +224,12 @@ function set_permissions(DatabaseConnection $db, $dir)
             set_dirpermissions($dir, $np, $ndp);
             $rv = @chmod($dir, $ndp);
             if ($rv === FALSE) {
-                write_log("Can't chmod directory: $user_dlpath", LOG_ERR);
+                write_log("Can't chmod directory: $dir", LOG_ERR);
             }
         } else {
             $rv = @chmod($dir, $np);
             if ($rv === FALSE) {
-                write_log("Can't chmod directory: $user_dlpath", LOG_ERR);
+                write_log("Can't chmod directory: $dir", LOG_ERR);
             }
         }
 
@@ -292,7 +286,7 @@ function move_download_to_done(DatabaseConnection $db, action $item, $dlid, $use
     $dlname = get_download_name($db, $dlid);
     $groupid = get_groupid_dlinfo($db, $dlid);
     $username = get_username($db, $userid);
-    list($user_dlpath, $dlpath, $add_setname) = get_user_dlpath($db, $preview, $groupid, USERSETTYPE_GROUP, $username, $dlname, $type = 'DOWNLOAD');
+    list($user_dlpath, $dlpath, $add_setname) = get_user_dlpath($db, $preview, $groupid, USERSETTYPE_GROUP, $userid, $dlname, $type = 'DOWNLOAD');
     if (!$preview) {
         list($dl_dir, $add_setname) = get_dl_dir($db, $dlid);
     } else {
@@ -371,7 +365,7 @@ function reschedule_locked_item(DatabaseConnection $db, server_data &$servers, a
         $args = $item->get_args();
         $item->pause(TRUE, user_status::SUPER_USERID);
         $servers->queue_push($db, $item, FALSE);
-        $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_username(), $item->get_userid(), TRUE);
+        $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_userid(), TRUE);
         $offset = $item->get_preview() ? DatabaseConnection::DB_LOCK_TIMEOUT_PREVIEW : DatabaseConnection::DB_LOCK_TIMEOUT_DEFAULT;
         $job = new job($item_unpause, time() + $offset, NULL); //try again in XX secs
         $servers->add_schedule($db, $job);
@@ -386,11 +380,10 @@ function schedule_locked_item(DatabaseConnection $db, server_data &$servers, act
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     echo_debug('Dl still locked, pausing', DEBUG_SERVER);
-    //$id = $item->get_id();
     $command = $item->get_command();
     $args = $item->get_args();
     $item->pause(TRUE, user_status::SUPER_USERID);
-    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_username(), $item->get_userid(), TRUE);
+    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_userid(), TRUE);
     $offset = $item->get_preview() ? DatabaseConnection::DB_LOCK_TIMEOUT_PREVIEW : DatabaseConnection::DB_LOCK_TIMEOUT_DEFAULT;
     $job = new job($item_unpause, time() + $offset, NULL); //try again in 30 secs
     $servers->add_schedule($db, $job);
@@ -410,29 +403,27 @@ function urdd_kill($pid, $signal)
     }
 }
 
-
 function update_thread_status(DatabaseConnection $db, action $item, $dl_status, $post_status)
 {
     $cmd = $item->get_command();
+    $dlid = $item->get_args();
     if (compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD) || compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {
-        $dlid = $item->get_args();
         update_dlinfo_status($db, $dl_status, $dlid);
     } elseif (compare_command($cmd, urdd_protocol::COMMAND_START_POST) || compare_command($cmd, urdd_protocol::COMMAND_POST_ACTION) || compare_command($cmd, urdd_protocol::COMMAND_POST)) {
-        $dlid = $item->get_args();
         update_postinfo_status($db, $post_status, $dlid);
     }
 }
 
-
 function load_whitelist(DatabaseConnection $db, $source = NULL)
 {
     $Qsource = '';
+    $input_arr = array();
     if ($source !== NULL) {
-        $db->escape($source, TRUE);
-        $Qsource = " AND \"source\" = $source ";
+        $Qsource = ' AND "source" = ?';
+        $input_arr[] = $source;
     }
-    $sql = "SELECT \"id\", \"spotter_id\", \"source\" FROM spot_whitelist WHERE 1=1 $Qsource";
-    $res = $db->execute_query($sql);
+    $sql = "\"spotter_id\" FROM spot_whitelist WHERE 1=1 $Qsource";
+    $res = $db->select_query($sql, $input_arr);
     if ($res === FALSE) {
         return array();
     }
@@ -443,28 +434,6 @@ function load_whitelist(DatabaseConnection $db, $source = NULL)
 
     return $whitelist;
 }
-
-
-function load_blacklist(DatabaseConnection $db, $source = NULL)
-{
-    $Qsource = '';
-    if ($source !== NULL) {
-        $db->escape($source, TRUE);
-        $Qsource = " AND \"source\" = $source ";
-    }
-    $sql = "SELECT \"id\", \"spotter_id\", \"source\" FROM spot_blacklist WHERE 1=1 $Qsource";
-    $res = $db->execute_query($sql);
-    if ($res === FALSE) {
-        return array();
-    }
-    $blacklist = array();
-    foreach ($res as $row) {
-        $blacklist[$row['spotter_id']] = 0;
-    }
-
-    return $blacklist;
-}
-
 
 function yenc_decode($string)
 {
@@ -501,7 +470,6 @@ function yenc_decode($string)
     return $decoded;
 }
 
-
 function cleanup_download_articles(DatabaseConnection $db, $dlid)
 {
     assert(is_numeric($dlid));
@@ -509,13 +477,10 @@ function cleanup_download_articles(DatabaseConnection $db, $dlid)
     delete_download_article($db, $dlid, DOWNLOAD_FAILED);
 }
 
-
-function delete_download_article (DatabaseConnection $db, $dlid, $status)
+function delete_download_article(DatabaseConnection $db, $dlid, $status)
 {
     assert(is_numeric($dlid));
-    $db->escape($dlid, TRUE);
-    $db->escape($status, TRUE);
-    $db->delete_query('downloadarticles', "\"downloadID\"=$dlid AND \"status\"=$status");
+    $db->delete_query('downloadarticles', '"downloadID"=? AND "status"=?', array($dlid, $status));
 }
 
 function shutdown_urdd(DatabaseConnection $db, server_data &$servers)

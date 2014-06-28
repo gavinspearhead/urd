@@ -15,24 +15,20 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_editposts.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_editposts.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 
 $pathaet = realpath(dirname(__FILE__));
 
-require_once "$pathaet/../functions/html_includes.php";
-require_once "$pathaet/../functions/functions.php";
+require_once "$pathaet/../functions/ajax_includes.php";
 
 $cmd = get_request('cmd');
 $postid = get_request('postid');
-
-$db->escape($cmd);
-$db->escape($postid);
 
 verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid, TRUE);
 
@@ -86,14 +82,14 @@ case 'delete' :
     }
     if ($isadmin) {
         // Admins can delete any download
-        $db->delete_query('postinfo', "\"id\" = '$postid'");
-        $db->delete_query('post_files', "\"postid\" = '$postid'");
+        $db->delete_query('postinfo', '"id" = ?', array($postid));
+        $db->delete_query('post_files', '"postid" = ?', array($postid));
     } else {
-        $sql = "SELECT * FROM postinfo WHERE \"userid\" = '$userid' AND \"id\" = '$postid'";
-        $res = $db->execute_query($sql);
+        $sql = '* FROM postinfo WHERE "userid" = ? AND "id" = ?';
+        $res = $db->select_query($sql, array($userid, $postid));
         if (isset($res[0]['id']) && $res[0]['id'] == $postid) {
-        $db->delete_query('postinfo', "\"id\" = '$postid'");
-        $db->delete_query('post_files', "\"postid\" = '$postid'");
+            $db->delete_query('postinfo', '"id" = ?', array($postid));
+            $db->delete_query('post_files', '"postid" = ?', array($postid));
         }
     }
     break;

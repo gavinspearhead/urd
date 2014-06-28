@@ -1,19 +1,23 @@
-{strip}
-{if $__show_time neq ''}
-<div class="xxsmall right">
-    {capture assign=time_b}{php}echo microtime(true);{/php}{/capture}
-    {math equation="x-y" x=$time_b y=$time_a format="%.4f"}s</div>
-    </div>
-{/if}
-</div>
+
 </div>
 
 <script type="text/javascript">
-update_quick_status();
-update_disk_status();
+$(document).ready( function() { 
+    init();
+    update_quick_status();
+    update_disk_status();
+    $('#message_bar').click(function() { hide_message('message_bar', 0); } );  
+    $('#scrollmenuright').click(function(e) { scroll_menu_right(e); } );
+    $('#scrollmenuleft').click(function(e) { scroll_menu_left(e); } );
+    $('#smalllogo').click(function(e) { jump('index.php'); } );
+    $('#status_item').mouseover(function() { load_activity_status(); } );
+    $('#topcontent').mouseup( function() { set_selected();} );
+    $('#contentout').mouseover( function() { close_quickmenu();} );
+});
 </script>
 </div>
-{/strip}
 </body>
+
 <!-- URD v{$VERSION} -->
+
 </html>

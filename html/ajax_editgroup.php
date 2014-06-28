@@ -16,24 +16,22 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-08 00:30:19 +0200 (zo, 08 jun 2014) $
+ * $Rev: 3087 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_editgroup.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_editgroup.php 3087 2014-06-07 22:30:19Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 
 $pathaet = realpath(dirname(__FILE__));
-require_once "$pathaet/../functions/html_includes.php";
+require_once "$pathaet/../functions/ajax_includes.php";
 require_once "$pathaet/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, '', $userid, TRUE);
 
 $cmd = get_request('cmd', '');
 $id = get_request('id', '');
-
-$db->escape($cmd);
 
 $prefs = load_config($db);
 
@@ -42,9 +40,8 @@ function showeditgroup(DatabaseConnection $db, $id)
     global $LN, $smarty, $periods;
     // Get download info:
     if (is_numeric($id)) {
-        $db->escape($id);
-        $sql = "SELECT * FROM groups WHERE \"id\" = '$id'";
-        $res = $db->execute_query($sql);
+        $sql = '* FROM groups WHERE "id"=?';
+        $res = $db->select_query($sql, array($id));
         if (!isset($res[0])) {
             throw new exception($LN['error_invalidgroupid']);
         }
@@ -73,7 +70,7 @@ function showeditgroup(DatabaseConnection $db, $id)
         $oldname = $oldurl = $oldpassword = $oldusername = '';
         $oldexpire = get_config($db, 'default_expire_time');
         $oldadult = 0;
-        $oldsubscribed = NG_SUBSCRIBED;
+        $oldsubscribed = newsgroup_status::NG_SUBSCRIBED;
         $oldmaxsetsize = $oldminsetsize = 0;
         $time1 = $time2 = NULL;
         $oldrefresh_time = '';
@@ -101,6 +98,7 @@ function showeditgroup(DatabaseConnection $db, $id)
 
 function update_group_info(DatabaseConnection $db, $id, $userid)
 {
+    assert(is_numeric($userid));
     global $LN, $smarty, $periods;
     // Actually rename the download
     challenge::verify_challenge_text($_POST['challenge']);
@@ -116,7 +114,7 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
         throw new exception($LN['error_notanumber']. ': ' . $LN['ng_expire_time'] . ' ' . htmlentities($newexpire));
     }
     $newadult = trim(get_post('group_adult', '0') == '1') ?  ADULT_ON : ADULT_OFF;
-    $newsubscribed = (get_post('group_subscribed', '0') == '1') ? NG_SUBSCRIBED : NG_UNSUBSCRIBED;
+    $newsubscribed = (get_post('group_subscribed', '0') == '1') ? newsgroup_status::NG_SUBSCRIBED : newsgroup_status::NG_UNSUBSCRIBED;
     $uprefs = load_config($db);
     $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'], $userid);
     $newminsetsize = trim(get_post('group_minsetsize'));
@@ -128,13 +126,11 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
         throw new exception($LN['error_invalidvalue'] . ' ' . $e->getMessage());
     }
     if ($newmaxsetsize < $newminsetsize) {
-        throw new exception($LN['error_invalidvalue'] );
+        throw new exception($LN['error_invalidvalue']);
     }
 
-    if ($newsubscribed == NG_UNSUBSCRIBED) {
-        $db->escape($id);
-        $sql = "UPDATE rss_urls SET \"refresh_time\"='0', \"refresh_period\"='0' WHERE \"id\"=$id";
-        $db->execute_query($sql);
+    if ($newsubscribed == newsgroup_status::NG_UNSUBSCRIBED) {
+        $db->update_query_2('rss_urls', array('refresh_time'=>0, 'refresh_period'=>0), '"id"=?', array($id));
 
         $uc->cancel(get_command(urdd_protocol::COMMAND_UPDATE) . " $id");
         $uc->cancel(get_command(urdd_protocol::COMMAND_EXPIRE) . " $id");
@@ -170,11 +166,11 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
             // if we have a proper schedule set it here
 
             set_period($uc, $db, $id, $nicetime, $period->get_interval(), $time, $period->get_id());
-                if (is_numeric($id)) {
-                    update_group_state($db, $id, $newsubscribed, $newexpire, $newminsetsize, $newmaxsetsize, $newadult);
-                } else {
-                    throw new exception($LN['error_invalidgroupid']);
-                }
+            if (is_numeric($id)) {
+                update_group_state($db, $id, $newsubscribed, $newexpire, $newminsetsize, $newmaxsetsize, $newadult);
+            } else {
+                throw new exception($LN['error_invalidgroupid']);
+            }
         }
     }
 }

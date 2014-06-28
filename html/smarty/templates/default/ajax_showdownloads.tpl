@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-27 23:31:25 +0200 (vr, 27 jun 2014) $
+ * $Rev: 3122 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showdownloads.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showdownloads.tpl 3122 2014-06-27 21:31:25Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
@@ -62,6 +62,9 @@
 
 {capture name=opts assign="options"}
 {strip}
+{if $a->nfo_link != ''} 
+<div class="floatleft iconsizeplus followicon buttonlike" {urd_popup type="small" text=$LN_quickmenu_setpreviewnfo left=true} onclick="javascript:show_contents('{$a->nfo_link|escape:javascript}', 0);"></div>
+{/if}
 {if $a->comment != ''}
 {$comment=$a->comment}
 <div class="inline iconsizeplus infoicon" {urd_popup type="small" text="$comment" } ></div>
@@ -79,36 +82,34 @@
 {/if}
 
 {if ($a->status == "par2failed" OR $a->status == "rarfailed" OR $a->status == "finished" OR $a->status =="cancelled") AND $urdd_online} 
-<div class="inline iconsizeplus previewicon buttonlike" onclick="transfer_edit('reparrar','{$a->dlid}')"{urd_popup type="small" text=$LN_transfers_runparrar }></div>
+<div class="inline iconsizeplus previewicon buttonlike" onclick="javascript:transfer_edit('reparrar','{$a->dlid}')"{urd_popup type="small" text=$LN_transfers_runparrar }></div>
 {/if}
 
 {if ($a->status == "paused" OR $a->status == "ready") AND $urdd_online}
-<div class="inline iconsizeplus playicon buttonlike" onclick="transfer_edit('start','{$a->dlid}')" {urd_popup type="small" text=$LN_transfers_linkstart }></div>
+<div class="inline iconsizeplus playicon buttonlike" onclick="javascript:transfer_edit('start','{$a->dlid}')" {urd_popup type="small" text=$LN_transfers_linkstart }></div>
 {/if}
 
 {if ($a->status == "active" OR $a->status == "queued" OR $a->status == "ready") AND $urdd_online}
-<div class="inline iconsizeplus pauseicon buttonlike" onclick="transfer_edit('pause','{$a->dlid}')" {urd_popup type="small" text=$LN_pause }></div>
+<div class="inline iconsizeplus pauseicon buttonlike" onclick="javascript:transfer_edit('pause','{$a->dlid}')" {urd_popup type="small" text=$LN_pause }></div>
 {/if}
 
 {if ($a->status == "queued" OR $a->status == "paused" OR $a->status == "active" OR $a->status == "ready") AND $urdd_online}
-<div class="inline iconsizeplus killicon buttonlike" onclick="transfer_edit('cancel','{$a->dlid}')" {urd_popup type="small" text=$LN_cancel }></div> 
+<div class="inline iconsizeplus killicon buttonlike" onclick="javascript:transfer_edit('cancel','{$a->dlid}')" {urd_popup type="small" text=$LN_cancel }></div> 
 {/if}
 {if $urdd_online}
-<div class="inline iconsizeplus deleteicon buttonlike" onclick="transfer_edit('delete','{$a->dlid}')" {urd_popup type="small" text=$LN_delete } ></div>
+<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:transfer_edit('delete','{$a->dlid}')" {urd_popup type="small" text=$LN_delete } ></div>
 {/if}
 </td>
 {/strip}
 {/capture}
 
-	<tr class="even" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+	<tr class="even" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 		<td>{$a->startdate}</td>
-		<td><b>{$a->name|truncate:$maxstrlen|escape:htmlall}</b></td>
+		<td><b>{$a->name|truncate:$maxstrlen:'...':TRUE:TRUE|escape:htmlall}</b></td>
 		<td>
-
-{urd_progressbar width=100 complete=$a->progress}
-{$a->progress}%</td>
+            {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}</td>
 		<td class="right">{$a->done_size} / {$a->size}</td>
-		<td>{$a->speed}</td>
+		<td class="right">{$a->speed}</td>
 		<td class="center">{$a->ETA}</td>
 {if $isadmin neq 0}
 		<td>{$a->username|escape:htmlall}</td>
@@ -138,6 +139,7 @@
 
 {/if}
 
+<tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td></tr>
 </table>
 {/if}
 

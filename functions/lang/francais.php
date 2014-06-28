@@ -50,6 +50,7 @@ $LN['continue']         = 'Continuer';
 $LN['details']          = 'D&eacute;tails';
 $LN['error']            = 'Erreur';
 $LN['atonce']           = 'Imm&eacute;diatement';
+$LN['browse']           = 'Parcourir';
 
 // Special:
 $LN['urdname']          = 'URD';
@@ -154,6 +155,7 @@ $LN['short_day_names'][7]	= 'Sam';
 
 $LN['select']       = 'S&eacute;lectionner un';
 $LN['whitelisttag'] = 'B';
+$LN['blacklisttag']     = 'N';
 $LN['spamreporttag']    = 'S';
 
 $LN['off']          = '&Eacute;teint';
@@ -232,6 +234,7 @@ $LN['menulogin']        = 'Connexion';
 $LN['menudebug']        = 'Debug';
 $LN['menustats']        = 'Statistiques';
 $LN['menuforum']        = 'Forum';
+$LN['menuuserlists']    = 'Liste de spotters';
 
 //button texts
 
@@ -293,6 +296,7 @@ $LN['taskexpirespots']= 'Expiration des spots';
 $LN['taskpurgespots'] = 'Purge des spots';
 $LN['taskpostmessage']= 'Poster un message';
 $LN['taskdeleteset']  = 'Suppression de l&#39;ensemble';
+$LN['taskset']          = 'Appliquer la configuration';
 
 $LN['eta']          = 'Temps estim&eacute;';
 $LN['inuse']        = 'du disque est rempli';
@@ -382,6 +386,19 @@ $LN['viewfiles_type_playlist']  = 'Playlist';
 $LN['viewfiles_type_torrent']   = 'Torrent';
 $LN['viewfiles_type_urdd_sh']   = 'Script URD';
 $LN['viewfiles_type_ebook']     = 'Ebook';
+
+$LN['user_lists_title'] = 'Listes des utilisateurs';
+$LN['user_blacklist']   = 'Liste noire des spots';
+$LN['user_whitelist']   = 'Liste blanche des spots';
+$LN['spotter_id']       = 'Spotter ID';
+$LN['source_external']  = 'Externe';
+$LN['source_user']      = 'Ajout&eacute; par l&#39;utilisateur';
+$LN['global']           = 'Global';
+$LN['personal']         = 'Personnel';
+$LN['active']           = 'Actif';
+$LN['disabled']         = 'D&eacute;sactiv&eacute;';
+$LN['nonactive']        = 'Inactif';
+
 
 // About:
 $LN['about_title']  = 'A propos d&#39;URD';
@@ -523,7 +540,7 @@ $LN['setsize']         = 'Taille d&#39;un ensemble en Mo';
 $LN['maxage']          = 'Age max en jours';
 $LN['minage']          = 'Age min en jours';
 $LN['age']             = 'Age en jours';
-$LN['rating']       = 'Note (0-10)';
+$LN['rating']          = 'Note';
 $LN['maxrating']       = 'Note max (0-10)';
 $LN['minrating']       = 'Note min (0-10)';
 $LN['complete']        = 'Pourcentage de compl&eacute;tion';
@@ -555,6 +572,8 @@ $LN['pref_search_terms']    = 'Chercher les termes';
 $LN['pref_blocked_terms']   = 'Termes bloqu&eacute;s';
 $LN['spam_reports']             = 'Spam reports';
 $LN['pref_setcompleteness_msg'] = 'Les ensembles dont le pourcentage d&#039;ach&egrave;vement est au moins de cette valeur seront affich&eacute;s sur la page parcourir';
+$LN['config_spots_max_categories']   = 'Nombre maximum de cat&eacute;gories par spot';
+$LN['config_spots_max_categories_msg']   = 'Les spots ayant plus que ce nombre de cat&eacute;gories sont reject&eacute;s (0 pour d&eacute;sactiver)';
 $LN['config_spots_whitelist']   = 'Adresse (URL) pour la liste blanche des spots';
 $LN['config_spots_whitelist_msg']           = 'Adresse (URL) contenant une liste d&#39;IDs de spots connus pour &ecirc;tre une source valide';
 $LN['config_spots_blacklist']               = 'Adresse (URL) pour la liste noire des spots';
@@ -689,8 +708,12 @@ $LN['import_feeds']		= 'Importer les flux';
 $LN['export_feeds']		= 'Exporter les flux';
 $LN['import_users']		= 'Importer les utilisateurs';
 $LN['export_users']		= 'Exporter les utilisateurs';
-$LN['import_buttons']	= 'Import buttons';
-$LN['export_buttons']	= 'Export buttons';
+$LN['import_buttons']	= 'Importer les options de recherche';
+$LN['export_buttons']	= 'Exporter les options de recherche';
+$LN['import_spots_blacklist']		= 'Import spots blacklist';
+$LN['export_spots_blacklist']		= 'Export spots blacklist';
+$LN['import_spots_whitelist']		= 'Import spots whitelist';
+$LN['export_spots_whitelist']		= 'Export spots whitelist';
 
 // pref errors
 $LN['error_pwmatch']        = 'Les mots de passe ne correspondent pas';
@@ -699,6 +722,8 @@ $LN['error_pwusername']     = 'Le mot de passe ressemble trop au nom d&#39;utili
 $LN['error_pwlength']       = 'Mot de passe trop court; au moins '. MIN_PASSWORD_LENGTH . ' caract&egrave;r&eacute;s sont n&eacute;cessaires';
 $LN['error_pwsimple']       = 'Mot de passe trop simple, utilisez un m&eacute;lange de majuscules, de minuscules, de nombres et de caract&egrave;res sp&eacute;ciaux';
 $LN['error_captcha']        = 'CAPTCHA incorrect';
+$LN['error_nocontent']      = 'Message too short';
+$LN['error_toolong']        = 'Message too long';
 
 $LN['error_onlyforgrops'] 	= 'Fonctionne seulement pour les groupes';
 $LN['error_onlyoneset'] 	= 'N&eacute;c&eacute;ssite d&#39;avoir plusieurs ensembles dans le panier';
@@ -971,6 +996,8 @@ $LN['config_urdd_connection_timeout_msg']= 'The number of seconds after which a 
 $LN['config_auto_download']     = 'Autoriser le t&eacute;l&eacute;chargement automatique';
 $LN['config_check_nntp_connections']    = 'V&eacute;rifier les connexions usenet au d&eacute;marrage';
 $LN['config_check_nntp_connections_msg']= 'Selectionne automatiquement le nombre possible de connexions concurrentes &agrave; un serveur NNTP au d&eacute;marrage';
+$LN['config_nntp_all_servers']              = 'Autoriser les t&eacute;l&eacute;chargements sur tous les serveurs en parall&egrave;le';
+$LN['config_nntp_all_servers_msg']          = 'Autoriser les t&eacute;l&eacute;chargements &agrave; fonctionner avec le nombre maximum de connexions NNTP sur tous les serveurs actifs, au lieu de se limiter &agrave; un seul serveur par t&eacute;l&eacute;chargement';
 $LN['config_db_intensive_maxthreads']      = 'Nombre maximum de threads &agrave; usage intensif de la base de donn&eacute;es';
 $LN['config_db_intensive_maxthreads_msg']  = 'Nombre maximum de threads qui requi&egrave;rent un usage intensif de la base de donn&eacute;es';
 
@@ -1025,7 +1052,7 @@ $LN['config_mail_password_reset']           = 'Message de mot de passe r&eacute;
 $LN['config_mail_password_reset_msg']       = 'Message envoy&eacute; &agrave; l&#39;utilisateur avec le nouveau mot de passe';
 
 $LN['config_default_language_msg']   = 'Langue utilis&eacute;e quand aucun n&#39;est s&eacute;lectionn&eacute; ou ne peut &ecirc;tre trouv&eacute;';
-$LN['config_default_language']   = 'Langue par d&eacute;faut';
+$LN['config_default_language']  = 'Langue par d&eacute;faut';
 $LN['config_scheduler_msg']     = 'Activer la planification des jobs automatiques en URDD';
 $LN['config_log_level']         = 'Niveau de journalisation';
 $LN['config_permissions_msg']   = 'Permissions par d&eacute;faut pour les fichiers t&eacute;l&eacute;charg&eacute;s';
@@ -1033,35 +1060,37 @@ $LN['config_permissions']   = 'Permissions pour les t&eacute;l&eacute;chargement
 $LN['config_group']         = 'Groupe';
 $LN['config_group_msg']     = 'Groupe par d&eacute;faut pour tous les fichiers t&eacute;l&eacute;charg&eacute;s';
 $LN['config_maxbuttons']    = 'Nombre maximum de boutons de recherche';
-$LN['config_maxbuttons_msg']    = 'Nombre maximum de boutons de recherche affich&eacute;s sur les pages de l&#39;explorateur de fichier';
-$LN['config_nntp_maxthreads_msg']  = 'Nombre de connexions parall&egrave;les que le d&eacute;mon URD peut utiliser';
+$LN['config_maxbuttons_msg']        = 'Nombre maximum de boutons de recherche affich&eacute;s sur les pages de l&#39;explorateur de fichier';
+$LN['config_nntp_maxthreads_msg']   = 'Nombre de connexions parall&egrave;les que le d&eacute;mon URD peut utiliser';
 $LN['config_urdd_maxthreads_msg']   = 'Nombre de t&acirc;ches simultan&eacute;es que le d&eacute;mon URD peut g&eacute;rer';
-$LN['config_default_expire_time_msg']    = 'Nombre de jours par d&eacute;faut apr&egrave;s lesquels les ensembles seront consid&eacute;r&eacute;s comme expir&eacute;s';
+$LN['config_default_expire_time_msg']  = 'Nombre de jours par d&eacute;faut apr&egrave;s lesquels les ensembles seront consid&eacute;r&eacute;s comme expir&eacute;s';
 $LN['config_expire_incomplete_msg']    = 'Nombre de jours par d&eacute;faut apr&egrave;s lesquels les ensembles incomplets seront consid&eacute;r&eacute;s comme expir&eacute;s';
 $LN['config_expire_percentage_msg']    = 'Valeur sup&eacute;rieure pour le pourcentage pour lequel un ensemble sera consid&eacute;r&eacute; comme incomplet lors d&#39;une expiration anticip&eacute;e';
-$LN['config_auto_expire_msg'] = 'Les anciens messages seront supprim&eacute;s lorsque la mise &agrave; jour sera compl&egrave;te';
-$LN['pref_cancel_crypted_rars_msg'] = 'Analyser les fichiers pendant qu&#039;ils sont t&eacute;l&eacute;charg&eacute;s et annuler le t&eacute;l&eacute;chargement si un fichier RAR encrypt&eacute; est detect&eacute; (si le mot de passe n&#039;est pas connu)';
+$LN['config_auto_expire_msg']          = 'Les anciens messages seront supprim&eacute;s lorsque la mise &agrave; jour sera compl&egrave;te';
+$LN['pref_cancel_crypted_rars_msg']    = 'Analyser les fichiers pendant qu&#039;ils sont t&eacute;l&eacute;charg&eacute;s et annuler le t&eacute;l&eacute;chargement si un fichier RAR encrypt&eacute; est detect&eacute; (si le mot de passe n&#039;est pas connu)';
 $LN['config_dlpath_msg']    = 'Chemin vers lequel URD t&eacute;l&eacute;chargera tous les fichiers';
 $LN['config_clickjack']     = 'Activation de la protection clickjack';
 $LN['config_clickjack_msg'] = 'Activez la protection clickjack prevention afin de garantir qu&#39;URD ne sera accessible qu&#39;en pleine page et non dans un frame';
 $LN['config_need_challenge']     = 'Activer la protection XSS';
 $LN['config_need_challenge_msg'] = 'Activer la protection de scripts inter-sites pour assurer que les fonctions d&#39;URD ne peuvent pas &ecirc;tre &eacute;xploit&eacute;es depuis d&#39;autres sites';
-$LN['config_use_encrypted_passwords'] = 'Stocker les mots de passe des comptes usenet sous forme encrypt&eacute;e';
+$LN['config_use_encrypted_passwords']     = 'Stocker les mots de passe des comptes usenet sous forme encrypt&eacute;e';
 $LN['config_use_encrypted_passwords_msg'] = 'Les mots de passe sont stock&eacute;s sous un format encrypt&eacute; en utilisant un fichier magasin de cl&eacute; s&eacute;par&eacute; pour stocker la cl&eacute;';
-$LN['config_pidpath']       = 'Emplacement du fichier PID';
-$LN['config_pidpath_msg']   = 'Emplacement du fichier PID utilis&eacute; pour pr&eacute;venir le d&eacute;marrage de multiples instances d&#39;URDD (laisser vide pour aucun)';
-$LN['config_urdd_host_msg']  = 'Nom d&#39;h&ocirc;te ou addresse IP du d&eacute;mon URD; par d&eacute;faut, localhost (note: les adresses IPv6 doivent &ecirc;tre &eacute;crites avec [], par exemple [::1])';
-$LN['config_urdd_port_msg']  = 'Num&eacute;ro de port du d&eacute;mon URD; par d&eacute;faut, 11666';
-$LN['config_urdd_restart_msg']   = 'Les t&acirc;ches qui &eacute;taient ex&eacute;cut&eacute;es alors que le d&eacute;mon URD a plant&eacute; seront relanc&eacute;es si ce bouton est coch&eacute;';
-$LN['config_admin_email_msg']    = 'Adresse email de l&#39;administrateur';
+$LN['config_keystore_path']         = 'Emplacement du magasin de cl&eacute;s';
+$LN['config_keystore_path_msg']     = 'R&eacute;pertoire o&ugrave; le magasin de cl&eacute;s sera plac&eacute;';
+$LN['config_pidpath']           = 'Emplacement du fichier PID';
+$LN['config_pidpath_msg']       = 'Emplacement du fichier PID utilis&eacute; pour pr&eacute;venir le d&eacute;marrage de multiples instances d&#39;URDD (laisser vide pour aucun)';
+$LN['config_urdd_host_msg']     = 'Nom d&#39;h&ocirc;te ou addresse IP du d&eacute;mon URD; par d&eacute;faut, localhost (note: les adresses IPv6 doivent &ecirc;tre &eacute;crites avec [], par exemple [::1])';
+$LN['config_urdd_port_msg']     = 'Num&eacute;ro de port du d&eacute;mon URD; par d&eacute;faut, 11666';
+$LN['config_urdd_restart_msg']  = 'Les t&acirc;ches qui &eacute;taient ex&eacute;cut&eacute;es alors que le d&eacute;mon URD a plant&eacute; seront relanc&eacute;es si ce bouton est coch&eacute;';
+$LN['config_admin_email_msg']   = 'Adresse email de l&#39;administrateur';
 $LN['config_baseurl_msg']   = 'Adresse de base (URL) de votre installation URD';
 $LN['config_shaping_msg']   = 'Utiliser la gestion de trafic afin de limiter la bande passante utilis&eacute;e par urdd';
 $LN['config_maxdl_msg']     = 'Bande passante maximum utilis&eacute;e par le d&eacute;mon URD pour t&eacute;l&eacute;charger depuis le serveur de news';
 $LN['config_maxul_msg']     = 'Bande passante maximum utilis&eacute;e par le d&eacute;mon URD pour envoyer vers le serveur de news';
 $LN['config_register_msg']  = 'Si la case est coch&eacute;e, les utilisateurs pourront s&#39;enregistrer depuis la page d&#39;identification';
-$LN['config_auto_reg_msg']    = 'Si la case n&#39;est pas coch&eacute;e, l&#39;administrateur doit autoriser le compte manuellement, autrement le compte est accept&eacute; automatiquement';
+$LN['config_auto_reg_msg']       = 'Si la case n&#39;est pas coch&eacute;e, l&#39;administrateur doit autoriser le compte manuellement, autrement le compte est accept&eacute; automatiquement';
 $LN['config_urdd_path_msg']      = 'Chemin dans lequel le script de d&eacute;marrage du d&eacute;mon URD peut &ecirc;tre trouv&eacute; (urdd.sh)';
-$LN['config_unpar_path_msg']      = 'Chemin dans lequel le programme par2 peut &ecirc;tre trouv&eacute; (optionnel)';
+$LN['config_unpar_path_msg']     = 'Chemin dans lequel le programme par2 peut &ecirc;tre trouv&eacute; (optionnel)';
 $LN['config_unrar_path_msg']     = 'Chemin dans lequel le programme rar ou unrar peut &ecirc;tre trouv&eacute; pour l&#39;extraction (optionnel)';
 $LN['config_rar_path_msg']       = 'Chemin dans lequel le programme rar ou unrar peut &ecirc;tre trouv&eacute; pour la compression (optionnel)';
 $LN['config_tar_path_msg']       = 'Chemin dans lequel le programme tar peut &ecirc;tre trouv&eacute; (optionnel)';
@@ -1075,33 +1104,33 @@ $LN['config_yydecode_path_msg']  = 'Chemin dans lequel le programme yydecode peu
 $LN['config_yyencode_path_msg']  = 'Chemin dans lequel le programme yyencode peut &ecirc;tre trouv&eacute;';
 $LN['config_cksfv_path_msg']     = 'Chemin dans lequel le programme cksfv peut &ecirc;tre trouv&eacute; (optionnel)';
 $LN['config_trickle_path_msg']   = 'Chemin dans lequel le programme trickle peut &ecirc;tre trouv&eacute; (optionnel)';
-$LN['config_period_update_msg']   = 'Fr&eacute;quence &agrave; laquelle la disponibilit&eacute; d&#39;une nouvelle version est v&eacute;rifi&eacute;e';
-$LN['config_period_opt_msg']    = 'Fr&eacute;quence &agrave; laquelle la base de donn&eacute;es est optimis&eacute;e';
-$LN['config_period_ng_msg']  = 'Fr&eacute;quence &agrave; laquelle la liste des newsgroups est mise &agrave; jour';
-$LN['config_period_cd_msg']  = 'Fr&eacute;quence &agrave; laquelle les r&eacute;pertoires /preview et /tmp sont nettoy&eacute;s';
-$LN['config_period_cdb_msg']   = 'Fr&eacute;quence &agrave; laquelle les informations volatiles sont enlev&eacute;es de la base de donn&eacute;es';
-$LN['config_log_level_msg'] = 'Niveau de journalisation du d&eacute;mon URD';
-$LN['config_usenet_msg']    = 'Serveur usenet auquel vous souhaitez vous connecter (pour configurer les serveurs, allez &agrave; la page admin/usenet_servers)';
+$LN['config_period_update_msg']    = 'Fr&eacute;quence &agrave; laquelle la disponibilit&eacute; d&#39;une nouvelle version est v&eacute;rifi&eacute;e';
+$LN['config_period_opt_msg']       = 'Fr&eacute;quence &agrave; laquelle la base de donn&eacute;es est optimis&eacute;e';
+$LN['config_period_ng_msg']        = 'Fr&eacute;quence &agrave; laquelle la liste des newsgroups est mise &agrave; jour';
+$LN['config_period_cd_msg']        = 'Fr&eacute;quence &agrave; laquelle les r&eacute;pertoires /preview et /tmp sont nettoy&eacute;s';
+$LN['config_period_cdb_msg']       = 'Fr&eacute;quence &agrave; laquelle les informations volatiles sont enlev&eacute;es de la base de donn&eacute;es';
+$LN['config_log_level_msg']        = 'Niveau de journalisation du d&eacute;mon URD';
+$LN['config_usenet_msg']           = 'Serveur usenet auquel vous souhaitez vous connecter (pour configurer les serveurs, allez &agrave; la page admin/usenet_servers)';
 $LN['config_period_sendinfo']      = 'Envoyer les infomations d&#39;ensembles';
 $LN['config_period_sendinfo_msg']  = 'Envoyer les informations &agrave; URDland.com';
 $LN['config_period_getinfo']       = 'R&eacute;cup&eacute;rer les informations d&#39;ensembles';
 $LN['config_period_getinfo_msg']   = 'R&eacute;cup&eacute;rer les information depuis URDland.com';
-$LN['config_keep_interesting']      = 'Conserver les articles int&eacute;ressants lors de l&#39;expiration';
-$LN['config_keep_interesting_msg']  = 'Conserver les articles marqu&eacute; comme int&eacute;ressants lorsque le for&ccedil;age de l&#39;expiration est activ&eacute;';
+$LN['config_keep_interesting']     = 'Conserver les articles int&eacute;ressants lors de l&#39;expiration';
+$LN['config_keep_interesting_msg'] = 'Conserver les articles marqu&eacute; comme int&eacute;ressants lorsque le for&ccedil;age de l&#39;expiration est activ&eacute;';
 
 $LN['config_auto_download_msg'] = 'Autoriser les utilisateurs &agrave; t&eacute;l&eacute;charger automatiquement bas&eacute; sur les termes de recherche';
 $LN['config_socket_timeout_msg']= 'Nombre de secondes au bout desquelles la connexion passera en timeout et sera ferm&eacute;e; par d&eacute;faut, 30';
 $LN['config_sendmail']          = 'Autoriser l&#39;envoi d&#39;e-mails';
 $LN['config_sendmail_msg']      = 'Si la case est coch&eacute;e, des e-mails pourront &ecirc;tre envoy&eacute;s pour des choses telles que mot de passe oubli&eacute;, r&eacute;initialisation de mot de passe ou encore t&eacute;l&eacute;chargements termin&eacute;s.';
-$LN['config_follow_link']      = 'Suivre les liens dans les fichiers NFO lors des mises &agrave; jour';
-$LN['config_follow_link_msg']  = 'Si l&#39;option est coch&eacute;e, les liens contenus dans les fichiers NFO sont automatiquement parcourus apr&egrave;s la mise &agrave; jour d&#39;un groupe';
+$LN['config_follow_link']       = 'Suivre les liens dans les fichiers NFO lors des mises &agrave; jour';
+$LN['config_follow_link_msg']   = 'Si l&#39;option est coch&eacute;e, les liens contenus dans les fichiers NFO sont automatiquement parcourus apr&egrave;s la mise &agrave; jour d&#39;un groupe';
 
 $LN['config_total_max_articles']        = 'Nombre d&#39;articles maximum t&eacute;l&eacute;charg&eacute; par mise &agrave; jour';
 $LN['config_total_max_articles_msg']    = 'Nombre d&#39;articles maximum t&eacute;l&eacute;charg&eacute; par mise &agrave; jour (0 correspond &agrave; pas de limite)';
 
 $LN['config_prog_params']       = 'Param&egrave;tres';
 $LN['config_urdd_pars_msg']     = 'Param&egrave;tres urdd';
-$LN['config_unpar_pars_msg']     = 'Param&egrave;tres par2';
+$LN['config_unpar_pars_msg']    = 'Param&egrave;tres par2';
 $LN['config_unrar_pars_msg']    = 'Param&egrave;tres unrar pour l&#39;extraction';
 $LN['config_rar_pars_msg']      = 'Param&egrave;tres rar pour la compression';
 $LN['config_unace_pars_msg']    = 'Param&egrave;tres unace';
@@ -1127,7 +1156,7 @@ $LN['config_perms']['0666'] = 'Lecture/&eacute;criture pour tout le monde (0666)
 // admin log
 $LN['log_title']        = 'Fichier journal';
 $LN['log_nofile']       = 'Aucun fichier journal trouv&eacute;';
-$LN['log_seekrror']     = 'Impossible de lire le fichier en entier';
+$LN['log_seekerror']    = 'Impossible de lire le fichier en entier';
 $LN['log_unknownerror'] = 'Une erreur inattendue s&#39;est produite';
 $LN['log_header']       = 'Info de journal';
 $LN['log_date']         = 'Date';
@@ -1162,6 +1191,8 @@ $LN['users_resetpw']        = 'R&eacute;initialiser et envoyer par email le mot 
 $LN['users_edit']           = 'Modifier l&#039;utilisateur';
 $LN['users_addnew']         = 'Ajouter un nouvel utilisateur';
 $LN['users_delete']         = 'Effacer l&#039;utilisateur';
+$LN['users_enable']         = 'Activer l&#039;utilisateur';
+$LN['users_disable']        = 'D&eacute;sactiver l&#039;utilisateur';
 $LN['users_rights']         = 'S&eacute;lectionner l&#39;&eacute;diteur';
 $LN['users_rights_help']    = 'Autoriser cet utilisateur &agrave; &eacute;diter les informations d&#39;ensembles dans les pages de l&#39;explorateur de fichiers';
 
@@ -1202,10 +1233,6 @@ $LN['error_notanumber']     = 'N&#39;est pas un nombre';
 $LN['error_cannotchmod']    = 'Modification des droits d&#39;acc&egrave;s interdite';
 $LN['error_cannotchgrp']    = 'Modification du groupe interdite';
 //$LN['error_']         = '';
-
-// NZB parse
-$LN['nzb_title']        = 'Interpr&eacute;teur URD pour NZB';
-//$LN['nzb_']           = '';
 
 // Transfers
 $LN['transfers_title']      = 'T&eacute;l&eacute;chargements';
@@ -1261,7 +1288,7 @@ $LN['transfers_head_options']   = 'Options';
 $LN['transfers_unrar']      = 'Unrar';
 $LN['transfers_unpar']      = 'Unpar';
 $LN['transfers_deletefiles']    = 'Effacer les fichiers';
-$LN['transfers_subdl']    = 'T&eacute;l&eacute;charger les sous-titres';
+$LN['transfers_subdl']      = 'T&eacute;l&eacute;charger les sous-titres';
 $LN['transfers_badrarinfo'] = 'Visualiser le journal rar';
 $LN['transfers_badparinfo'] = 'Visualiser le journal par2';
 //$LN['transfers_'] = '';
@@ -1345,8 +1372,6 @@ $LN['browse_userwhitelisted'] = 'L&#39;utilisateur est dans la liste blanche';
 
 $LN['NZB_created']          = 'Fichier NZB cr&eacute;&eacute;';
 
-// ParseNZB
-$LN['parsenzb_error']       = 'Si vous voyez ceci, quelque chose s&#39;est mal pass&eacute;. D&eacute;sol&eacute;!';
 
 // Preview
 $LN['preview_autodisp']     = 'Le(s) fichier(s) devrai(en)t &ecirc;tre affich&eacute;(s) automatiquement.';
@@ -1354,9 +1379,7 @@ $LN['preview_autofail']     = 'Sinon, vous pouvez cliquer sur ce lien';
 $LN['preview_view']         = 'Cliquez ici pour voir le fichier NZB';
 $LN['preview_header']       = 'T&eacute;l&eacute;charger une pr&eacute;visualisation';
 $LN['preview_nzb']          = 'Pour commencer &agrave; t&eacute;l&eacute;charger directement depuis ce fichier NZB, cliquez sur ce lien';
-$LN['preview_title']        = 'Page de pr&eacute;visualisation d&#39;URD';
 $LN['preview_failed']       = 'Echec de la pr&eacute;visualisation';
-$LN['preview_close']        = 'Fermer la fen&ecirc;tre';
 
 // FAQ
 $LN['faq_content'][1] = array ('URD, qu&#39;est-ce que c&#39;est?',  'URD est un programme pour t&eacute;l&eacute;charger depuis le usenet (newsgroups) &agrave; l&#39;aide d&#39;une interface web. Il'
@@ -1515,7 +1538,12 @@ $LN['browse_tag_copyright']     = 'Prot&eacute;g&eacute; par Copyright';
 
 $LN['quickmenu_setsearch']      = 'Rechercher';
 $LN['quickmenu_addblacklist']   = 'Ajouter le spotter &aacute; la liste noire';
+$LN['quickmenu_addposterblacklist']   = 'Ajouter le posteur &agrave; la liste noire';
+$LN['quickmenu_addglobalblacklist']   = 'Ajouter le spotter &agrave; la liste noire globale';
+$LN['quickmenu_addglobalwhitelist']   = 'Ajouter le spotter &agrave; la liste blanche globale';
+$LN['quickmenu_addwhitelist']   = 'Ajouter le spotter &agrave; la liste blanche';
 $LN['quickmenu_report_spam']    = 'Rapporter le spot en tant que spam';
+$LN['quickmenu_comment_spot']   = 'Poster un commentaire sur le spot';
 $LN['quickmenu_editspot']       = 'Editer le spot';
 $LN['quickmenu_setshowesi']     = 'Afficher les informations de l&#39;ensemble';
 $LN['quickmenu_seteditesi']     = 'Editer les informations de l&#39;ensemble';
@@ -1529,8 +1557,11 @@ $LN['quickmenu_setpreviewvid']  = 'Pr&eacute;visualiser le fichier vid&eacute;o'
 $LN['quickmenu_add_search']     = 'Automatiquement en surbrillance';
 $LN['quickmenu_add_block']      = 'Masquer automatiquement';
 
+$LN['blacklist_spotter']        = 'Blacklist spotter?';
+$LN['whitelist_spotter']        = 'Whitelist spotter?';
+
 $LN['stats_title'] = 'Statistiques';
-$LN['stats_dl'] = 'T&eacute;l&eacute;chargements';
+$LN['stats_dl']    = 'T&eacute;l&eacute;chargements';
 $LN['stats_pv'] = 'Pr&eacute;visualisations';
 $LN['stats_im'] = 'Fichiers NZB import&eacute;s';
 $LN['stats_gt'] = 'Fichiers NZB t&eacute;l&eacute;charg&eacute;s';
@@ -1543,9 +1574,9 @@ $LN['stats_year']   = 'Ann&eacute;e';
 $LN['stats_overview']   = 'Vue d&#39;ensemble';
 
 $LN['stats_spotsbymonth'] = 'Spots par mois';
-$LN['stats_spotsbyweek'] = 'Spots par semaine';
-$LN['stats_spotsbyhour'] = 'Spots par heure';
-$LN['stats_spotsbydow'] = 'Spots par jour de la semaine';
+$LN['stats_spotsbyweek']  = 'Spots par semaine';
+$LN['stats_spotsbyhour']  = 'Spots par heure';
+$LN['stats_spotsbydow']   = 'Spots par jour de la semaine';
 
 $LN['feeds_title']      = 'Flux RSS';
 $LN['feeds_rss']        = 'Flux RSS';
@@ -1600,31 +1631,31 @@ $LN['post_messagetextext']  = 'Contenu du message &agrave; poster';
 $LN['post_newsgroupext2']   = 'Newsgroup dans lequel le message sera post&eacute;';
 $LN['post_subjectext2']     = 'Ligne du sujet dans le message';
 
-$LN['settype'][SETTYPE_UNKNOWN] = $LN['config_formatstring'] . ' Inconnu';
-$LN['settype'][SETTYPE_MOVIE] = $LN['config_formatstring'] .  ' Film';
-$LN['settype'][SETTYPE_ALBUM] = $LN['config_formatstring'] .  ' Album';
-$LN['settype'][SETTYPE_IMAGE] = $LN['config_formatstring'] .  ' Image';
-$LN['settype'][SETTYPE_SOFTWARE] = $LN['config_formatstring'] .  ' Logiciel';
-$LN['settype'][SETTYPE_TVSERIES] = $LN['config_formatstring'] . ' Series TV';
-$LN['settype'][SETTYPE_EBOOK] = $LN['config_formatstring'] . ' Ebook';
-$LN['settype'][SETTYPE_GAME] = $LN['config_formatstring'] . ' Jeu';
-$LN['settype'][SETTYPE_TVSHOW] = $LN['config_formatstring'] . ' Magazine TV';
-$LN['settype'][SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Documentaire';
-$LN['settype'][SETTYPE_OTHER] = $LN['config_formatstring'] . ' Autre';
+$LN['settype'][urd_extsetinfo::SETTYPE_UNKNOWN] = $LN['config_formatstring'] . ' Inconnu';
+$LN['settype'][urd_extsetinfo::SETTYPE_MOVIE] = $LN['config_formatstring'] .  ' Film';
+$LN['settype'][urd_extsetinfo::SETTYPE_ALBUM] = $LN['config_formatstring'] .  ' Album';
+$LN['settype'][urd_extsetinfo::SETTYPE_IMAGE] = $LN['config_formatstring'] .  ' Image';
+$LN['settype'][urd_extsetinfo::SETTYPE_SOFTWARE] = $LN['config_formatstring'] .  ' Logiciel';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSERIES] = $LN['config_formatstring'] . ' Series TV';
+$LN['settype'][urd_extsetinfo::SETTYPE_EBOOK] = $LN['config_formatstring'] . ' Ebook';
+$LN['settype'][urd_extsetinfo::SETTYPE_GAME] = $LN['config_formatstring'] . ' Jeu';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSHOW] = $LN['config_formatstring'] . ' Magazine TV';
+$LN['settype'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Documentaire';
+$LN['settype'][urd_extsetinfo::SETTYPE_OTHER] = $LN['config_formatstring'] . ' Autre';
 
 $LN['settype_syntax'] = '%(n.mc); o&ugrave; <i>()</i> indique un imbriquement optionnel, peut &ecirc;tre (), [] ou {}; <i>n</i> une valeur de remplissage optionnelle, <i>.m</i> une valeur de longueur maximum optionnelle, <i>c</i> un carat&egrave;re obligatoire tel que d&eacute;crite ci-dessous (utilisez %% pour afficher un %, consultez &eacute;galement la documentation PHP pour sprintf):<br/><br/>';
 
-$LN['settype_msg'][SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Type d&#39;ensemble Inconnu:<br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type <br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_MOVIE] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Film: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%y: ann&eacute;e<br/>%m: format du film<br/>%a: format audiot<br/>%l: langue<br/>%s: langue des sous-titres<br/>%x: class&eacute; X<br/>%N: notes<br/>%q: qualit&eacute;<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright <br/>';
-$LN['settype_msg'][SETTYPE_ALBUM] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Album: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%y: ann&eacute;e <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: qualit&eacute;<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright <br/>';
-$LN['settype_msg'][SETTYPE_IMAGE] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Image: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: qualit&eacute;<br/>%x: class&eacute; X<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_SOFTWARE] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Logiciel: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%o: syst&egrave;me d&#39;exploitation <br/>%q: qualit&eacute;<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_TVSERIES] = $LN['settype_syntax'] .  'Type d&#39;ensemble S&eacute;rie TV: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%e: &eacute;pisode<br/>%m: format du film<br/>%a: format audiot<br/>%x: class&eacute; X<br/>%q: qualit&eacute;<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_EBOOK] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Ebook: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%A: auteur<br/>%y: ann&eacute;e<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_GAME] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Jeu: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%A: auteur<br/>%y: ann&eacute;e<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_TVSHOW] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Magazine TV: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%m: format du film<br/>%y: ann&eacute;e<br/>%e: &eacute;pisode<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_DOCUMENTARY] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Documentaire: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%A: auteur<br/>%y: ann&eacute;e<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
-$LN['settype_msg'][SETTYPE_OTHER] =  $LN['settype_syntax'] . 'Autre type d&#39;ensemble: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/><br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Type d&#39;ensemble Inconnu:<br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type <br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_MOVIE] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Film: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%y: ann&eacute;e<br/>%m: format du film<br/>%a: format audiot<br/>%l: langue<br/>%s: langue des sous-titres<br/>%x: class&eacute; X<br/>%N: notes<br/>%q: qualit&eacute;<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_ALBUM] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Album: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%y: ann&eacute;e <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: qualit&eacute;<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_IMAGE] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Image: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: qualit&eacute;<br/>%x: class&eacute; X<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_SOFTWARE] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Logiciel: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%o: syst&egrave;me d&#39;exploitation <br/>%q: qualit&eacute;<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSERIES] = $LN['settype_syntax'] .  'Type d&#39;ensemble S&eacute;rie TV: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%e: &eacute;pisode<br/>%m: format du film<br/>%a: format audiot<br/>%x: class&eacute; X<br/>%q: qualit&eacute;<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_EBOOK] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Ebook: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%A: auteur<br/>%y: ann&eacute;e<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_GAME] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Jeu: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%A: auteur<br/>%y: ann&eacute;e<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSHOW] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Magazine TV: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%m: format du film<br/>%y: ann&eacute;e<br/>%e: &eacute;pisode<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_DOCUMENTARY] =  $LN['settype_syntax'] . 'Type d&#39;ensemble Documentaire: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/>%A: auteur<br/>%y: ann&eacute;e<br/>%f: format<br/>%q: qualit&eacute;<br/>%g: genre<br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_OTHER] =  $LN['settype_syntax'] . 'Autre type d&#39;ensemble: <br/>%n: nom<br/>%t: type s&eacute;lectionn&eacute;<br/>%T: ic&ocirc;ne d&eacute;pendante du type<br/><br/>%N: notes<br/>%P: prot&eacute;g&eacute; par mot de passe<br/>%C: produit sous copyright';
 
 $LN['loading_files']  = 'Chargement des fichiers en cours... veuillez patienter';
 $LN['loading']        = 'Chargement en cours... veuillez patienter';
@@ -1636,6 +1667,10 @@ $LN['spots_tag']              = 'Tag';
 $LN['pref_spots_category_mapping']  = 'Affecter la cat&eacute;gorie spot &agrave;';
 $LN['pref_spots_category_mapping_msg']  = 'Affectation d&#39;une cat&eacute;gorie spot aux cat&eacute;gories URD';
 
+$LN['pref_custom_values']       = 'Valeurs personnalis&eacute;es';
+$LN['pref_custom']              = 'Valeur personnalis&eacute;e';
+$LN['config_custom']            = 'Valeur personnalis&eacute;e';
+$LN['pref_custom_msg']          = 'Valeurs personnalis&eacute;es pouvant &ecirc;tre utilis&eacute;es dans des scripts';
 $LN['spots_other']        = 'Autre';
 $LN['spots_all']          = 'Tous';
 $LN['spots_image']        = 'Image';
@@ -1833,7 +1868,7 @@ $LN['spots_country']         = 'Country';
 $LN['spots_dubstep']        = 'Dubstep';
 $LN['spots_nederhop']       = 'Nederhop';
 $LN['spots_dnb']        = 'DnB';
-$LN['spots_electro']        = 'Electro';
+$LN['spots_electro']    = 'Electro';
 $LN['spots_folk']       = 'Folk';
 $LN['spots_soul']       = 'Soul';
 $LN['spots_trance']     = 'Trance';
@@ -1918,16 +1953,15 @@ $LN['spots_internet']      = 'Internet';
 $LN['spots_communication'] = 'Communication';
 $LN['spots_development']   = 'D&eacute;veloppement';
 $LN['spots_spotnet']       = 'Spotnet';
-$LN['spots_']           = '';
+//$LN['spots_']           = '';
 
 $LN['update_database']      = 'Mettre &agrave; jour la base de donn&eacute;es';
 
 $LN['password_weak']        = 'S&eacute;curit&eacute; du mot de passe: faible';
-$LN['password_medium']        = 'S&eacute;curit&eacute; du mot de passe: medium';
-$LN['password_strong']        = 'S&eacute;curit&eacute; du mot de passe: forte';
-$LN['password_correct']        = 'Les mots de passe correspondent';
-$LN['password_incorrect']        = 'Les mots de passe ne correspondent pas';
-
+$LN['password_medium']      = 'S&eacute;curit&eacute; du mot de passe: medium';
+$LN['password_strong']      = 'S&eacute;curit&eacute; du mot de passe: forte';
+$LN['password_correct']     = 'Les mots de passe correspondent';
+$LN['password_incorrect']   = 'Les mots de passe ne correspondent pas';
 
 $LN['dashboard_max_nntp']      = 'Nombre maximum de connexion NNTP';
 $LN['dashboard_max_threads']   = 'Nombre maximum de threads';

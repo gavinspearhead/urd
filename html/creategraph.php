@@ -21,6 +21,7 @@
  * $Author: gavinspearhead $
  * $Id: ajax_stats.php 1748 2010-09-21 17:28:38Z gavinspearhead $
  */
+
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
 error_reporting(0);
@@ -108,8 +109,8 @@ class colour_map
 
         return $colourmap;
     }
-
 }
+
 $isadmin = urd_user_rights::is_admin($db, $userid);
 
 $possibletypes = array('activity', 'spots_details', 'supply', 'blank', 'spots_subcat');
@@ -195,13 +196,13 @@ switch ($type) {
                 $month = get_request('month', 1);
                 $graphtitle =  $graphtitle . ' - ' . $LN['month_names'][$month];
                 $daystats = new OverallDayStats($types);
-                $dl = get_stats_by_day($db, $n_type, $isadmin, $year, $month, $daystats, $types);
+                $dl = get_stats_by_day($db, $userid, $n_type, $isadmin, $year, $month, $daystats, $types);
                 convert_stat_definitions($daystats);
                 create_graph_days($db, $userid, $graphtitle, $daystats, $subtype, $sizeorcount);
                 } elseif ($period == 'months') {
             $monthstats = new OverallMonthStats($types);
             foreach ($types as $atype) {
-                $dl = get_stats_by_month($db, $atype, $isadmin, $year, $monthstats, $types);
+                $dl = get_stats_by_month($db, $userid, $atype, $isadmin, $year, $monthstats, $types);
             }
 
             // Convert definitions to keywords (stat_actions::DOWNLOAD = 1 => 'downloads') to make it better parseable:
@@ -211,7 +212,7 @@ switch ($type) {
         } else {
             $yearstats = new OverallYearStats($types);
             foreach ($types as $atype) {
-                $dl = get_stats_by_year($db, $atype, $isadmin, 0, $yearstats, $types);
+                $dl = get_stats_by_year($db, $userid, $atype, $isadmin, 0, $yearstats, $types);
             }
             // Convert definitions to keywords (stat_actions::DOWNLOAD = 1 => 'downloads') to make it better parseable:
             convert_stat_definitions($yearstats);
@@ -237,7 +238,6 @@ switch ($type) {
         }
         break;
     case 'supply':
-    //    var_dump($period); die;
         if ($period == 'day') {
             $month = get_request('month', 1);
             $graphtitle = $LN['menubrowsesets'] . ' ' . $LN['month_names'][$month] . " $year";
@@ -363,12 +363,11 @@ function create_graph_days(DatabaseConnection $db, $userid, $graphtitle, Overall
     global $LN;
     // $type is the type of data that is to be shown:
 
-    //  echo "<pre>"; var_dump($daystats); echo "</pre>"; die();
 
     // Keep track of maximum in order to convert to TB / GB / MB / KB etc
     $maxval = 0;
     $ylabel = '';
-    $datainput = $legend = array();
+    $datainput = array();
     // For all months:
     foreach ($daystats->Days as $dayval =>$daystat) {
         $thisday = $dayval;
@@ -383,7 +382,7 @@ function create_graph_days(DatabaseConnection $db, $userid, $graphtitle, Overall
         // For all users:
         $userdata = array();
         foreach ($daystat->Users as $name => $userdetails) {
-            $username[$x] = $name;
+            $username[] = $name;
             $tempval = $userdetails->StatType[$type]->SizeRaw;
             $tempcnt = $userdetails->StatType[$type]->Count;
 
@@ -405,13 +404,13 @@ function create_graph_days(DatabaseConnection $db, $userid, $graphtitle, Overall
         $datainput[] = $datainput2;
 
         // (Re) initalise because we only need the usernames once, not for each month again:
-        $legend = array();
-        foreach ($username as $name) {
-            if ($name == '__anonymous') {
-                $legend[] = html_entity_decode($LN['unknown']);
-            } else {
-                $legend[] = $name;
-           }
+    }
+    $legend = array();
+    foreach ($username as $name) {
+        if ($name == '__anonymous') {
+            $legend[] = html_entity_decode($LN['unknown']);
+        } else {
+            $legend[] = $name;
         }
     }
 
@@ -431,11 +430,10 @@ function create_graph_months(DatabaseConnection $db, $userid, $graphtitle, Overa
     global $LN;
     // $type is the type of data that is to be shown:
 
-    //  echo "<pre>"; var_dump($monthstats); echo "</pre>"; die();
 
     // Keep track of maximum in order to convert to TB / GB / MB / KB etc
     $maxval = 0;
-    $datainput = $legend = array();
+    $datainput = array();
 
     // For all months:
     foreach ($monthstats->Months as $monthstat) {
@@ -451,13 +449,13 @@ function create_graph_months(DatabaseConnection $db, $userid, $graphtitle, Overa
 
         // For all users:
         foreach ($monthstat->Users as $name => $userdetails) {
-            $username[$x] = $name;
+            $username[] = $name;
             $tempval = $userdetails->StatType[$type]->SizeRaw;
             $tempcnt = $userdetails->StatType[$type]->Count;
 
             if ($sizeorcount == 'size') {
                 $userdata[$x] = $tempval;
-                $maxval = max($tempval,$maxval);
+                $maxval = max($tempval, $maxval);
             } else {
                 $userdata[$x] = $tempcnt;
             }
@@ -473,15 +471,16 @@ function create_graph_months(DatabaseConnection $db, $userid, $graphtitle, Overa
         $datainput[] = $datainput2;
 
         // (Re) initalise because we only need the usernames once, not for each month again:
-        $legend = array();
-        foreach ($username as $name) {
-            if ($name == '__anonymous') {
-                $legend[] = html_entity_decode($LN['unknown']);
-            } else {
-                $legend[] = $name;
-           }
+    }
+    $legend = array();
+    foreach ($username as $name) {
+        if ($name == '__anonymous') {
+            $legend[] = html_entity_decode($LN['unknown']);
+        } else {
+            $legend[] = $name;
         }
     }
+
 
     if (empty($datainput)) {
         $datainput = array(array(0,0));
@@ -491,6 +490,7 @@ function create_graph_months(DatabaseConnection $db, $userid, $graphtitle, Overa
     }
     $ylabel = '';
     // Display:
+  //  var_dump($datainput); die;
     create_graph($db, $userid, $sizeorcount, $datainput, $legend, $graphtitle, $maxval, 'stackedbars', $ylabel);
 }
 
@@ -500,11 +500,10 @@ function create_graph_years(DatabaseConnection $db, $userid, $graphtitle, Overal
     global $LN;
     // $type is the type of data that is to be shown:
 
-    // echo "<pre>"; var_dump($yearstats); echo "</pre>"; die();
 
     // Keep track of maximum in order to convert to TB / GB / MB / KB etc
     $maxval = 0;
-    $datainput = $legend = array();
+    $datainput = array();
 
     // For all months:
     foreach ($yearstats->Years as $yearnr => $yearstat) {
@@ -519,7 +518,7 @@ function create_graph_years(DatabaseConnection $db, $userid, $graphtitle, Overal
 
         // For all users:
         foreach ($yearstat->Users as $name => $userdetails) {
-            $username[$x] = $name;
+            $username[] = $name;
             $tempval = $userdetails->StatType[$type]->SizeRaw;
             $tempcnt = $userdetails->StatType[$type]->Count;
 
@@ -540,15 +539,16 @@ function create_graph_years(DatabaseConnection $db, $userid, $graphtitle, Overal
         $datainput[] = $datainput2;
 
         // (Re) initalise because we only need the usernames once, not for each month again:
-        $legend = array();
-        foreach ($username as $name) {
-            if ($name == '__anonymous') {
-                $legend[] = html_entity_decode($LN['unknown']);
-            } else {
-                $legend[] = $name;
-            }
+    }
+    $legend = array();
+    foreach ($username as $name) {
+        if ($name == '__anonymous') {
+            $legend[] = html_entity_decode($LN['unknown']);
+        } else {
+            $legend[] = $name;
         }
     }
+
 
     if (empty($datainput)) {
         $datainput = array(array(0,0));
@@ -564,15 +564,12 @@ function create_graph_years(DatabaseConnection $db, $userid, $graphtitle, Overal
 function get_sets_stats_date_day(DatabaseConnection $db, $type, $year, $month)
 {
     assert(is_numeric($year) && is_numeric($month));
-    $db->escape($year, TRUE);
     $ystr = $db->get_extract('year', '"timestamp"');
     $monthstr = $db->get_extract('month', '"timestamp"');
     $daystr = $db->get_extract('day', '"timestamp"');
-    $db->escape($type, TRUE);
-    $qry = "sum(\"value\") AS \"spot_sum\", $daystr AS \"day\" FROM stats WHERE 1=1 AND \"action\" = $type AND $ystr = $year AND $monthstr=$month GROUP BY $daystr ORDER BY \"day\" DESC";
-    $res = $db->select_query($qry);
+    $qry = "sum(\"value\") AS \"spot_sum\", $daystr AS \"day\" FROM stats WHERE \"action\" = ? AND $ystr = ? AND $monthstr=? GROUP BY $daystr ORDER BY \"day\" DESC";
+    $res = $db->select_query($qry, array($type, $year, $month));
     $years = array();
-
     if (is_array($res)) {
         foreach ($res as $row) {
             $years[ $row['day'] ] = $row ['spot_sum'];
@@ -582,23 +579,20 @@ function get_sets_stats_date_day(DatabaseConnection $db, $type, $year, $month)
     }
 
     return $years;
-
 }
 
 function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
 {
     assert(is_numeric($year));
-    $db->escape($year, TRUE);
     $ystr = $db->get_extract('year', '"timestamp"');
     $monthstr = $db->get_extract('month', '"timestamp"');
-    $db->escape($type, TRUE);
-    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE 1=1 AND \"action\" = $type AND $ystr = $year GROUP BY $monthstr ORDER BY \"month\" DESC";
-    $res = $db->select_query($qry);
+    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\" = ? AND $ystr = ? GROUP BY $monthstr ORDER BY \"month\" DESC";
+    $res = $db->select_query($qry, array($type, $year));
     $years = array();
 
     if (is_array($res)) {
         foreach ($res as $row) {
-            $years[ $row['month'] ] = $row ['spot_sum'];
+            $years[ $row['month'] ] = $row['spot_sum'];
         }
     } else {
         $years = array(0 => 0);
@@ -610,14 +604,13 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
 function get_sets_stats_date(DatabaseConnection $db, $type)
 {
     $ystr = $db->get_extract('year', '"timestamp"');
-    $db->escape($type, TRUE);
-    $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE 1=1 AND \"action\" = $type GROUP BY $ystr ORDER BY \"year\" DESC";
-    $res = $db->select_query($qry);
+    $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE \"action\" = ? GROUP BY $ystr ORDER BY \"year\" DESC";
+    $res = $db->select_query($qry, array($type));
     $years = array();
 
     if (is_array($res)) {
         foreach ($res as $row) {
-            $years[ $row['year'] ] = $row ['spot_sum'];
+            $years[ $row['year'] ] = $row['spot_sum'];
         }
     } else {
         $years = array(0 => 0);
@@ -664,7 +657,7 @@ function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $y
         $data1 = get_sets_stats_date($db, stat_actions::SPOT_COUNT);
         $data2 = get_sets_stats_date($db, stat_actions::SET_COUNT);
         $data3 = get_sets_stats_date($db, stat_actions::RSS_COUNT);
-        $inputdata = array_join( $data1,  $data2,  $data3);
+        $inputdata = array_join($data1, $data2, $data3);
     } elseif ($month === NULL || !is_numeric($month)) {
         $data1 = get_sets_stats_date_month($db, stat_actions::SPOT_COUNT, $year);
         $data2 = get_sets_stats_date_month($db, stat_actions::SET_COUNT, $year);
@@ -708,7 +701,7 @@ function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $y
 
     // Make a legend for the 3 data sets plotted:
     $legend = array($LN['menuspots'], $LN['menugroupsets'], $LN['menursssets']);
-     create_graph($db, $userid, '', array_values($inputdata), $legend, $graphtitle, 0, 'stackedbars', $ylabel);
+    create_graph($db, $userid, '', array_values($inputdata), $legend, $graphtitle, 0, 'stackedbars', $ylabel);
 }
 
 function create_spot_graph(DatabaseConnection $db, $userid, $graphtitle)
@@ -871,10 +864,10 @@ function create_graph(DatabaseConnection $db, $userid, $sizeorcount, $datainput,
     exit(0);
 }
 
-
-function get_stats_by_year(DatabaseConnection $db, $type, $admin, $fromyear, OverallYearStats &$overallyearstats, $types)
+function get_stats_by_year(DatabaseConnection $db, $userid, $type, $admin, $fromyear, OverallYearStats &$overallyearstats, $types)
 {
-    global $LN, $userid;
+    assert(is_numeric($userid));
+    global $LN;
 
     $ystr = $db->get_extract('year', '"timestamp"');
 
@@ -973,7 +966,6 @@ QRY1;
     return $res;
 }
 
-
 // Translate definitions for stats to keywords that can be safely used in smarty without having to worry if the definition values change:
 function convert_stat_definitions(&$stats)
 {
@@ -992,7 +984,6 @@ function convert_stat_definitions(&$stats)
     }
 }
 
-
 function transform_key($key)
 {
     global $nametypes;
@@ -1002,7 +993,6 @@ function transform_key($key)
 
     return $key;
 }
-
 
 function move_total_to_users(&$stats)
 {
@@ -1019,9 +1009,10 @@ function move_total_to_users(&$stats)
 }
 
 
-function get_stats_by_month(DatabaseConnection $db, $type, $admin, $year=NULL, OverallMonthStats &$overallmonthstats, $types)
+function get_stats_by_month(DatabaseConnection $db, $userid, $type, $admin, $year=NULL, OverallMonthStats &$overallmonthstats, $types)
 {
-    global $LN, $userid;
+    assert(is_numeric($userid));
+    global $LN;
 
     $ystr = $db->get_extract('year', '"timestamp"');
     $mstr = $db->get_extract('month', '"timestamp"');
@@ -1126,10 +1117,10 @@ QRY1;
     ksort($overallmonthstats->Months);
 }
 
-
-function get_stats_by_day(DatabaseConnection $db, $type, $admin, $year, $month, OverallDayStats &$overalldaystats, $types)
+function get_stats_by_day(DatabaseConnection $db, $userid, $type, $admin, $year, $month, OverallDayStats &$overalldaystats, $types)
 {
-    global $LN, $userid;
+    assert(is_numeric($userid));
+    global $LN;
     $o_month = $month;
     $o_year = $year;
 
@@ -1257,7 +1248,6 @@ QRY1;
     $overalldaystats = $daystats;
 }
 
-
 function enter_month_names(OverallMonthStats &$overallmonthstats)
 {
     global $LN;
@@ -1265,7 +1255,6 @@ function enter_month_names(OverallMonthStats &$overallmonthstats)
         $monthobj->MonthName = html_entity_decode($LN['short_month_names'][$monthnumber]);
     }
 }
-
 
 function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
 {
@@ -1275,15 +1264,12 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
         create_blank_graph($db, $userid);
         die;
     }
-    $o_subcat = $subcat;
-    $o_cat = $cat;
-    $db->escape($cat, TRUE);
-    $sql = "\"subcat$subcat\" AS \"subcat\" FROM spots WHERE \"category\" = $cat";
+    $sql = "\"subcat$subcat\" AS \"subcat\" FROM spots WHERE \"category\" = ?";
     $limit = 0;
-    $stats = SpotCategories::get_subcats_ids($o_cat, $o_subcat);
+    $stats = SpotCategories::get_subcats_ids($cat, $subcat);
     $row_count = 20000;
     while (TRUE) {
-        $res = $db->select_query($sql, $row_count, $limit);
+        $res = $db->select_query($sql, $row_count, $limit, array($cat));
         if (!is_array($res)) {
             break;
         }
@@ -1306,10 +1292,10 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     }
     $s = array();
     foreach ($stats as $k => $v) {
-        $subcat_ln = trim(to_ln(SpotCategories::Cat2Desc($o_cat, $k)));
+        $subcat_ln = trim(to_ln(SpotCategories::Cat2Desc($cat, $k)));
         if ($subcat_ln == '??') {
             if ($v > 0) {
-                $subcat_ln = (to_ln('unknown') . " - $o_cat$k");
+                $subcat_ln = (to_ln('unknown') . " - $cat$k");
             } else {
                 continue;
             }
@@ -1319,7 +1305,7 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     }
     krsort($s);
     $count = count($s);
-    $plot = new PHPlot_truecolor($width,($count * 16) + 48) ;
+    $plot = new PHPlot_truecolor($width,($count * 16) + 48);
     $colourmap = colour_map::get_colour_map($db, $userid);
     $gridincolor = $gridoutcolor = $colourmap['dimgray'];
     $bgcolor = $colourmap['color10'];
@@ -1330,7 +1316,7 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     $plot->SetTitleColor($titlecolor);
     $plot->SetLightGridColor($gridincolor);
     $plot->SetGridColor($gridoutcolor);
-    $plot->SetTitle(html_entity_decode(to_ln(SpotCategories::HeadCat2Desc($o_cat))) . ' - ' . html_entity_decode(to_ln(SpotCategories::SubcatDescription($o_cat, $o_subcat))));
+    $plot->SetTitle(html_entity_decode(to_ln(SpotCategories::HeadCat2Desc($cat))) . ' - ' . html_entity_decode(to_ln(SpotCategories::SubcatDescription($cat, $subcat))));
 
     $plot->SetBackgroundColor($bgcolor);
     $plot->SetDataColors(array('color1','color2','color3','color4','color5','color6','color7','color8','color9'));

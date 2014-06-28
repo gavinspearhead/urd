@@ -16,61 +16,61 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-07 00:34:21 +0200 (za, 07 sep 2013) $
- * $Rev: 2924 $
+ * $LastChangedDate: 2014-06-08 00:30:19 +0200 (zo, 08 jun 2014) $
+ * $Rev: 3087 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: defines.php 2924 2013-09-06 22:34:21Z gavinspearhead@gmail.com $
+ * $Id: defines.php 3087 2014-06-07 22:30:19Z gavinspearhead@gmail.com $
  */
 
 // username for the superuser
 
-define ('DB_VERSION',       43);
+define ('DB_VERSION',               60);
 
-define ('URDD_DOWNLOAD_LOCKFILE', '.urdd_lock');
-define ('URDD_PORT', 11666);
+define ('URDD_DOWNLOAD_LOCKFILE',   '.urdd_lock');
+define ('URDD_PORT',                11666);
 
-define ('MIN_PHP_VERSION', '5.3.0');
-define ('RECOMMENDED_PHP_VERSION', '5.4.19');
+define ('MIN_PHP_VERSION',          '5.3.0');
+define ('RECOMMENDED_PHP_VERSION',  '5.4.29');
 
 // Error codes
-define('NO_ERROR', 0);
-define('GROUP_NOT_FOUND', 1);
-define('DB_FAILURE', 2);
-define('UNKNOWN_ACTION', 3);
-define('FEED_NOT_FOUND', 4);
-define('INTERNAL_FAILURE', 5);
-define('CONFIG_ERROR', 6);
-define('SOCKET_FAILURE', 7);
-define('COMMANDLINE_ERROR',8);
-define('QUEUE_ERROR', 9);
-define('NNTP_NOT_CONNECTED_ERROR', 10);
-define('COULD_NOT_CHECK_VERSION', 11);
-define('URDLAND_CONNECT_ERROR', 12);
-define('FILE_NOT_FOUND', 13);
-define('DB_LOCKED', 14);
-define('NOT_ALLOWED', 15);
-define('UNKNOWN_ERROR', 16);
-define('RESTART_URDD', 17);
-define('POST_FAILURE', 18);
-define('FILE_NOT_CREATED', 19);
-define('ENCRYPTED_RAR', 20);
-define('NNTP_AUTH_ERROR', 21);
-define('RESTART_DOWNLOAD', 22); //used when there are still par2 files available and we should try to download those
-define('HTTP_CONNECT_ERROR', 23); //
-define('GETARTICLE_ERROR', 24); //
-define('SERVER_INACTIVE', 25);
-define('PIPE_ERROR', 26);
+define('NO_ERROR',                  0);
+define('GROUP_NOT_FOUND',           1);
+define('DB_FAILURE',                2);
+define('UNKNOWN_ACTION',            3);
+define('FEED_NOT_FOUND',            4);
+define('INTERNAL_FAILURE',          5);
+define('CONFIG_ERROR',              6);
+define('SOCKET_FAILURE',            7);
+define('COMMANDLINE_ERROR',         8);
+define('QUEUE_ERROR',               9);
+define('NNTP_NOT_CONNECTED_ERROR',  10);
+define('COULD_NOT_CHECK_VERSION',   11);
+define('URDLAND_CONNECT_ERROR',     12);
+define('FILE_NOT_FOUND',            13);
+define('DB_LOCKED',                 14);
+define('NOT_ALLOWED',               15);
+define('UNKNOWN_ERROR',             16);
+define('RESTART_URDD',              17);
+define('POST_FAILURE',              18);
+define('FILE_NOT_CREATED',          19);
+define('ENCRYPTED_RAR',             20);
+define('NNTP_AUTH_ERROR',           21);
+define('RESTART_DOWNLOAD',          22); //used when there are still par2 files available and we should try to download those
+define('HTTP_CONNECT_ERROR',        23); //
+define('GETARTICLE_ERROR',          24); //
+define('SERVER_INACTIVE',           25);
+define('PIPE_ERROR',                26);
 
 // debug values
-define('DEBUG_ALL', 255); /// all debug messages
-define('DEBUG_MAIN', 1);  /// everything in the main loop or before it
-define('DEBUG_WORKER', 2); /// all messages that are in forked processes
-define('DEBUG_SERVER', 4); /// all messages that are in the main process... stuff called from the main loop
-define('DEBUG_SIGNAL', 8); /// all messages that are in the signal handlers
-define('DEBUG_DATABASE', 16); /// all messages that are in the database classes
-define('DEBUG_NNTP', 32); /// all messages that are in the nntp classes
-define('DEBUG_CLIENT', 64); /// all messages that are in the (web) client
-define('DEBUG_HTTP', 128);
+define('DEBUG_ALL',         255); // all debug messages
+define('DEBUG_MAIN',        1);  // everything in the main loop or before it
+define('DEBUG_WORKER',      2); // all messages that are in forked processes
+define('DEBUG_SERVER',      4); // all messages that are in the main process... stuff called from the main loop
+define('DEBUG_SIGNAL',      8); // all messages that are in the signal handlers
+define('DEBUG_DATABASE',    16); // all messages that are in the database classes
+define('DEBUG_NNTP',        32); // all messages that are in the nntp classes
+define('DEBUG_CLIENT',      64); // all messages that are in the (web) client
+define('DEBUG_HTTP',        128);
 
 // thread error codes
 // values determine order in transfer page:
@@ -143,15 +143,19 @@ class file_extensions
 
 define ('DEFAULT_PER_PAGE', 50);
 
-define ('MAX_SEARCH_BUTTONS', 10); // the maximum number of search buttons placed on the browse page
 define ('MIN_PASSWORD_LENGTH', 8);
 define ('MAX_DL_NAME', 42);
 define ('SKIPPER_SIZE', 19);
-define ('MAX_NAME_SIZE', 40);
-define ('DL_BATCH_SIZE', 10);
-define ('POST_BATCH_SIZE', 5);
-define ('PV_BATCH_SIZE', 5);
-define ('MAX_PREVIEW_SIZE', 2 * 1024 * 1024) ; // in MB
+
+class batch_size
+{
+    const DL_BATCH_SIZE   = 8;
+    const POST_BATCH_SIZE = 5;
+    const PV_BATCH_SIZE   = 4;
+}
+
+
+define ('MAX_PREVIEW_SIZE', 2 * 1024 * 1024); // in MB
 define ('MAX_NNTP_THREADS', 8);
 define ('MAX_THREADS', 10);
 define ('MAX_DB_INTENSIVE_THREADS', 1);
@@ -174,11 +178,17 @@ class user_status
     const SUPER_USERID  = 0;
 }
 
-define ('NG_SUBSCRIBED', 1);
-define ('NG_UNSUBSCRIBED', 0);
 
-define ('RSS_SUBSCRIBED', 1);
-define ('RSS_UNSUBSCRIBED', 0);
+class newsgroup_status {
+    const NG_SUBSCRIBED   = 1;
+    const NG_UNSUBSCRIBED = 0;
+}
+
+
+class rssfeed_status {
+    const RSS_SUBSCRIBED   = 1; 
+    const RSS_UNSUBSCRIBED = 0;
+}
 
 
 define ('VERSION_CHECK_URL',    'http://www.urdland.com/checkversion.php');
@@ -206,7 +216,6 @@ define ('DEFAULT_STYLESHEET',   'light');
 define ('DEFAULT_LANGUAGE',     'english.php');
 define ('DEFAULT_INDEX_PAGE',   'manual');
 
-
 define ('GROUPS_FILE', '/etc/group');
 
 define ('PREVIEW_PATH',      'preview/');
@@ -226,41 +235,26 @@ $yes = array ('1', 'TRUE', 'ON', 'YES');
 $no  = array ('0', 'FALSE', 'OFF', 'NO');
 
 $log_str = array (
-    LOG_DEBUG=>'DEBUG',
-    LOG_INFO=>'INFO',
-    LOG_NOTICE=>'NOTICE',
-    LOG_WARNING=>'WARNING',
-    LOG_ERR=>'ERROR',
-    LOG_CRIT=>'CRITICAL',
-    LOG_ALERT=>'ALERT',
-    LOG_EMERG=>'EMERGENCY'
+    LOG_DEBUG =>    'DEBUG',
+    LOG_INFO =>     'INFO',
+    LOG_NOTICE =>   'NOTICE',
+    LOG_WARNING =>  'WARNING',
+    LOG_ERR =>      'ERROR',
+    LOG_CRIT =>     'CRITICAL',
+    LOG_ALERT =>    'ALERT',
+    LOG_EMERG =>    'EMERGENCY'
 );
 
 
 define ('DEFAULT_USENET_SERVER_PRIORITY', 10);
 define ('DISABLED_USENET_SERVER_PRIORITY', 0);
 
-define ('URDD_NOERROR', 0);
-define ('URDD_SHUTDOWN', 3);
-define ('URDD_RESTART', 5);
-define ('URDD_CLOSE_CONN', 1);
-define ('URDD_NOCOMMAND', 2);
-define ('URDD_ERROR', 4);
-
-
-define ('SETTYPE_UNKNOWN',      '0');
-define ('SETTYPE_MOVIE',        '1');
-define ('SETTYPE_ALBUM',        '2');
-define ('SETTYPE_IMAGE',        '3');
-define ('SETTYPE_SOFTWARE',     '4');
-define ('SETTYPE_TVSERIES',     '5');
-define ('SETTYPE_EBOOK',        '6');
-define ('SETTYPE_DOCUMENTARY',  '7');
-define ('SETTYPE_GAME',         '8');
-define ('SETTYPE_TVSHOW',       '9');
-define ('SETTYPE_OTHER',        '100');
-
-$SETTYPES = array (SETTYPE_UNKNOWN, SETTYPE_MOVIE, SETTYPE_ALBUM,SETTYPE_IMAGE,SETTYPE_SOFTWARE, SETTYPE_TVSERIES, SETTYPE_EBOOK, SETTYPE_GAME, SETTYPE_DOCUMENTARY, SETTYPE_TVSHOW, SETTYPE_OTHER);
+define ('URDD_NOERROR',     0);
+define ('URDD_CLOSE_CONN',  1);
+define ('URDD_NOCOMMAND',   2);
+define ('URDD_SHUTDOWN',    3);
+define ('URDD_ERROR',       4);
+define ('URDD_RESTART',     5);
 
 class stat_actions
 {
@@ -281,7 +275,6 @@ class stat_actions
     const RSS_COUNT     = 13;
 }
 
-
 define('USERSETTYPE_GROUP', 0);
 define('USERSETTYPE_RSS',   1);
 define('USERSETTYPE_SPOT',  2);
@@ -292,12 +285,11 @@ define('ESI_COMMITTED',     1);
 define('URDD_SCRIPT_EXT', 'urdd_sh');
 
 
-define ('MAX_EXPIRE_TIME', 365);
-define ('DEFAULT_EXPIRE_TIME', 5);
-define ('DEFAULT_SPOTS_EXPIRE_TIME', 365);
-define ('MAX_HEADERS', 10000);
-define ('QUEUE_SIZE', 20000);
-define ('GROUP_FILTER', 'alt.bin*');
+define ('MAX_EXPIRE_TIME',              365);
+define ('DEFAULT_EXPIRE_TIME',          5);
+define ('DEFAULT_SPOTS_EXPIRE_TIME',    365);
+define ('MAX_HEADERS',                  1000);
+define ('QUEUE_SIZE',                   20000);
 
 define ('MAX_RECONNECTION_ATTEMPTS_PER_THREAD', 15);
 
@@ -311,14 +303,20 @@ class blacklist
 {
     const BLACKLIST_EXTERNAL = 1;
     const BLACKLIST_INTERNAL = 2;
+
+    const NONACTIVE = 0;
+    const ACTIVE = 1;
+    const DISABLED = 255;
 }
+
 class whitelist
 {
     const WHITELIST_EXTERNAL = 1;
     const WHITELIST_INTERNAL = 2;
+    const NONACTIVE = 0;
+    const ACTIVE = 1;
+    const DISABLED = 255;
 }
-
-
 
 class encrar
 {
@@ -332,5 +330,4 @@ class basket_type
     const LARGE = 1;
     const SMALL = 2;
 }
-
 

@@ -29,12 +29,13 @@ if (!defined('ORIGINAL_PAGE')) {
 class saved_searches
 {
     // format saved seach
-    // 'subcats => array( subcat, value); ; value = 0, 1, 2 (dontcare, must be on, must be off)
+    // 'subcats => array( subcat, value); value = 0, 1, 2 (dontcare, must be on, must be off)
     // 'options'=> array ("maxsetsize"=> maxsetsize, "minsetsize"=>minsetsize) etc
     // 'category'=> string
 
     private $saved_searches = array();
     private $userid = null;
+
     public function __construct($userid)
     {
         assert(is_numeric($userid));
@@ -46,7 +47,7 @@ class saved_searches
         if (isset($saved_searches[ $name ]) && ($saved_searches[ $name ]['type'] != $type) ) {
             throw new exception("Cannot add $name - already exists");
         }
-        $this->saved_searches[ $name ] = array('subcats'=>$subcats, 'type' => $type, 'options'=>$options, 'category'=>$category);
+        $this->saved_searches[ $name ] = array('subcats' => $subcats, 'type' => $type, 'options' => $options, 'category' => $category);
     }
     public function load(DatabaseConnection $db)
     {

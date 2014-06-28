@@ -51,6 +51,7 @@ $LN['continue']         = 'Forts&auml;tt';
 $LN['details']          = 'Detaljer';
 $LN['error']            = 'Fel';
 $LN['atonce']           = 'At once';
+$LN['browse']           = 'Browse';
 // Special:
 $LN['urdname']          = 'URD';
 $LN['decimalseparator'] = '.';
@@ -143,6 +144,7 @@ $LN['short_day_names'][7]	= 'L&ouml;r';
 $LN['time']        = 'Tid';
 $LN['select']       = 'V&auml;lj';
 $LN['whitelisttag'] = 'V';
+$LN['blacklisttag']     = 'S';
 $LN['spamreporttag']    = 'S';
 
 $LN['off']          = 'Av';
@@ -233,6 +235,7 @@ $LN['menulogin']        = 'Logga&nbsp;in';
 $LN['menudebug']        = 'Fels&ouml;k';
 $LN['menustats']        = 'Statistik';
 $LN['menuforum']        = 'Forum';
+$LN['menuuserlists']            = 'User lists';
 
 $LN['advanced_search']  = 'Avancerad s&ouml;k';
 
@@ -292,6 +295,7 @@ $LN['taskexpirespots']  = 'Raderar utg&aring;ngna spots';
 $LN['taskpurgespots']   = 'T&ouml;mmer spots';
 $LN['taskpostmessage']  = 'Postar ett meddelande';
 $LN['taskdeleteset']    = 'Raderar set';
+$LN['taskset']          = 'Setting configuration';
 
 $LN['eta']          = 'ETA';
 $LN['inuse']        = 'anv&auml;nds';
@@ -379,6 +383,18 @@ $LN['viewfiles_type_playlist']  = 'spel-lista';
 $LN['viewfiles_type_torrent']   = 'Torrent';
 $LN['viewfiles_type_ebook']     = 'Ebook';
 $LN['viewfiles_type_urdd_sh']   = 'URD skript';
+$LN['user_lists_title'] = 'Spotter lists';
+$LN['user_blacklist']   = 'Spots blacklists';
+$LN['user_whitelist']   = 'Spots whitelist';
+$LN['spotter_id']       = 'Spotter ID';
+$LN['source_external']  = 'External';
+$LN['source_user']      = 'User added';
+$LN['global']           = 'Global';
+$LN['personal']         = 'Personal';
+$LN['active']           = 'Active';
+$LN['disabled']         = 'Disabled';
+$LN['nonactive']        = 'Nonactive';
+
 
 // About:
 $LN['about_title']  = 'Om URD';
@@ -519,7 +535,7 @@ $LN['setsize']          = 'Set-storlek i MB';
 $LN['maxage']           = 'Max. &aring;lder i dagar';
 $LN['minage']           = 'Min. &aring;lder i dagar';
 $LN['age']              = '&Aring;lder i dagar';
-$LN['rating']           = 'Betyg (0-10)';
+$LN['rating']           = 'Betyg';
 $LN['maxrating']        = 'Max. betyg (0-10)';
 $LN['minrating']        = 'Min. betyg (0-10)';
 $LN['complete']         = 'Fulltalighet, procent';
@@ -554,6 +570,8 @@ $LN['pref_spot_spam_limit']      = 'Spam report limit';
 $LN['pref_spot_spam_limit_msg']  = 'The number of spam reports with which spots are not displayed';
 $LN['pref_setcompleteness_msg']     = 'Set som &auml;r kompletta till minst denna procentsats kommer visas p&aring; bl&auml;ddrings-sidan';
 $LN['config_spots_whitelist']       = 'URL for spotter whitelist';
+$LN['config_spots_max_categories']   = 'Max. number of categories per spot';
+$LN['config_spots_max_categories_msg']   = 'Spots with more than this number of categories are rejected (0 to disable)';
 $LN['config_spots_whitelist_msg']   = 'URL that contains a list of IDs of spotters known to be valid users';
 $LN['config_spots_blacklist']       = 'URL for spotter blacklist';
 $LN['config_spots_blacklist_msg']   = 'URL that contains a list of IDs of spotters known to be abusers';
@@ -687,6 +705,10 @@ $LN['import_users']		= 'Importera anv&auml;ndare';
 $LN['export_users']		= 'Exportera anv&auml;ndare';
 $LN['import_buttons']	= 'Importera knappar';
 $LN['export_buttons']	= 'Exportera knappar';
+$LN['import_spots_blacklist']		= 'Import spots blacklist';
+$LN['export_spots_blacklist']		= 'Export spots blacklist';
+$LN['import_spots_whitelist']		= 'Import spots whitelist';
+$LN['export_spots_whitelist']		= 'Export spots whitelist';
 
 // pref errors
 $LN['error_pwmatch']        = 'L&ouml;senorden st&auml;mmer inte &ouml;verens';
@@ -810,7 +832,7 @@ $LN['adminpurgeallrss']     = 'T&ouml;m alla RSS-kanaler';
 $LN['adminupdateallrss']    = 'Uppdatera alla RSS-kanaler';
 $LN['adminoptimisedb']      = 'Optimera databasen';
 $LN['admincheckversion']    = 'Kontrollera  version av URD';
-$LN['admingetsetinfo']      = 'H&auml;mta set-information ';
+$LN['admingetsetinfo']      = 'H&auml;mta set-information';
 $LN['adminsendsetinfo']     = 'Skicka set-information';
 $LN['admincleandir']        = 'Rensa katalogen';
 $LN['adminfindservers']     = 'Autokonfigurera Usenet-servrar';
@@ -819,7 +841,7 @@ $LN['adminexport_all']      = 'Exportera alla inst&auml;llningar';
 $LN['adminimport_all']      = 'Importera alla inst&auml;llningar';
 $LN['adminupdate_spots']    = 'Update spots';
 $LN['adminupdate_spotscomments']    = 'Update spots comments';
-$LN['adminupdate_spotsimages']    = 'Update spots images';
+$LN['adminupdate_spotsimages']      = 'Update spots images';
 $LN['adminexpire_spots']    = 'Expire spots';
 $LN['adminpurge_spots']     = 'Purge spots';
 
@@ -939,7 +961,7 @@ $LN['config_period_opt']         = 'Optimera databas';
 $LN['config_period_ng']          = 'Uppdatera listan &ouml;ver Usenet-grupper';
 $LN['config_period_cd']          = 'Rensa tempor&auml;ra filer och f&ouml;rhandsgransknings-katalogen';
 $LN['config_period_cu']          = 'Period of inactive users';
-$LN['config_period_cu_msg']      = 'Period of inactivity of non-admin users after which they will be removed in days ';
+$LN['config_period_cu_msg']      = 'Period of inactivity of non-admin users after which they will be removed in days';
 $LN['config_users_clean_age']    = 'Clean inactive users';
 $LN['config_users_clean_age_msg']  = 'Clean inactive, non-admin users after a period of inactivity (in days)';
 $LN['config_clean_dir_age']     = '&Aring;lder p&aring; filer att radera';
@@ -962,6 +984,8 @@ $LN['config_urdd_connection_timeout_msg']= 'The number of seconds after which a 
 $LN['config_auto_download']             = 'Till&aring;t automatisk nedladdning';
 $LN['config_check_nntp_connections']    = 'Kontrollera Usenet-anslutningar vid uppstart';
 $LN['config_check_nntp_connections_msg']= 'Testa det konfigurerade antalet m&ouml;jliga samtidiga anslutningar till en NNTP-server automatiskt vid uppstart';
+$LN['config_nntp_all_servers']              = 'Allow downloads to run on all servers concurrently';
+$LN['config_nntp_all_servers_msg']          = 'Allow downloads to run with the maximum number of NNTP threads on all enabled servers, instead of sticking to one server per download';
 $LN['config_db_intensive_maxthreads']      = 'Max antal databas-intensiva tr&aring;dar';
 $LN['config_db_intensive_maxthreads_msg']  = 'Det maximala antalet samtidiga tr&aring;dar som orsakar tung belastning p&aring; databasen';
 
@@ -1039,6 +1063,8 @@ $LN['config_need_challenge']     = 'Enable XSS prevention';
 $LN['config_need_challenge_msg'] = 'Enable cross-site scripting prevention to ensure that URD functions cannot be exploited from other sites';
 $LN['config_use_encrypted_passwords']     = 'Store usenet account passwords encrypted';
 $LN['config_use_encrypted_passwords_msg'] = 'Passwords are stored in an encrypted format; using a keystore separate file to store the key';
+$LN['config_keystore_path']         = 'Location of the key store';
+$LN['config_keystore_path_msg']     = 'The directory where the key store will be placed';
 $LN['config_pidpath']       = 'Location of the PID file';
 $LN['config_pidpath_msg']   = 'The location of the PID file used to prevent starting multiple instances of URDD (leave blank for none)';
 $LN['config_urdd_host_msg']  = 'V&auml;rdnamnet eller IP-adressen till URD-daemonen; f&ouml;rvalt &auml;r localhost (OBS: IPv6 adressers m&aring;ste omges av [] t ex [::1])';
@@ -1066,25 +1092,25 @@ $LN['config_yydecode_path_msg']  = 'Fullst&auml;ndig s&ouml;kv&auml;g till yydec
 $LN['config_yyencode_path_msg']  = 'Fullst&auml;ndig s&ouml;kv&auml;g till yyencode-programmet (frivilligt)';
 $LN['config_cksfv_path_msg']     = 'Fullst&auml;ndig s&ouml;kv&auml;g till cksfv-programmet (frivilligt)';
 $LN['config_trickle_path_msg']   = 'Fullst&auml;ndig s&ouml;kv&auml;g till trickle-programmet (frivilligt)';
-$LN['config_period_update_msg']   = 'Hur ofta tillg&auml;ngligheten av en ny version av URD kontrolleras';
-$LN['config_period_opt_msg']    = 'Hur ofta databasen optimeras';
-$LN['config_period_ng_msg']  = 'Hur ofta listan &ouml;ver Usenet-grupper uppdateras';
-$LN['config_period_cd_msg']  = 'Hur ofta /preview- och /tmp-katalogerna rensas';
-$LN['config_period_cdb_msg']   = 'Hur ofta flyktig information rensas ut fr&aring;n databasen';
-$LN['config_log_level_msg'] = 'Hur mycket log-information URD-daemonen ger ifr&aring;n sig';
+$LN['config_period_update_msg']  = 'Hur ofta tillg&auml;ngligheten av en ny version av URD kontrolleras';
+$LN['config_period_opt_msg']        = 'Hur ofta databasen optimeras';
+$LN['config_period_ng_msg']     = 'Hur ofta listan &ouml;ver Usenet-grupper uppdateras';
+$LN['config_period_cd_msg']     = 'Hur ofta /preview- och /tmp-katalogerna rensas';
+$LN['config_period_cdb_msg']    = 'Hur ofta flyktig information rensas ut fr&aring;n databasen';
+$LN['config_log_level_msg']     = 'Hur mycket log-information URD-daemonen ger ifr&aring;n sig';
 $LN['config_period_sendinfo']      = 'Skicka set-infomation';
 $LN['config_period_sendinfo_msg']  = 'Skicka information till URDland.com';
 $LN['config_period_getinfo']       = 'H&auml;mta set-information';
 $LN['config_period_getinfo_msg']   = 'H&auml;mta information fr&aring;n URDland.com';
-$LN['config_keep_interesting']      = 'Spara intressanta artiklar n&auml;r de g&aring;tt ut';
-$LN['config_keep_interesting_msg']  = 'Spara artiklar markerade som intressanta &auml;ven efter att de &auml;r f&ouml;r&aring;ldrade n&auml;r f&ouml;r&aring;ldrade set rensas ut';
+$LN['config_keep_interesting']     = 'Spara intressanta artiklar n&auml;r de g&aring;tt ut';
+$LN['config_keep_interesting_msg'] = 'Spara artiklar markerade som intressanta &auml;ven efter att de &auml;r f&ouml;r&aring;ldrade n&auml;r f&ouml;r&aring;ldrade set rensas ut';
 
 $LN['config_auto_download_msg'] = 'Till&aring;t anv&auml;ndare att ladda ned filer automatiskt baserat p&aring; s&ouml;ktermer';
 $LN['config_socket_timeout_msg']= 'Antal sekunder innan en anslutning l&ouml;per ut och st&auml;ngs; f&ouml;rvalt &auml;r 30';
-$LN['config_sendmail']      = 'Till&aring;t att email skickas';
-$LN['config_sendmail_msg']  = 'Om detta &auml;r valt s&aring; kan email skickas f&ouml;r saker som t ex gl&ouml;mda l&ouml;senord, &aring;terst&auml;llning av l&ouml;senord samt slutf&ouml;rda nedladdningar.';
-$LN['config_follow_link']      = 'Follow links in NFO files when updating';
-$LN['config_follow_link_msg']  = 'If checked, links in NFO files are automatically parsed after group updating';
+$LN['config_sendmail']          = 'Till&aring;t att email skickas';
+$LN['config_sendmail_msg']      = 'Om detta &auml;r valt s&aring; kan email skickas f&ouml;r saker som t ex gl&ouml;mda l&ouml;senord, &aring;terst&auml;llning av l&ouml;senord samt slutf&ouml;rda nedladdningar.';
+$LN['config_follow_link']       = 'Follow links in NFO files when updating';
+$LN['config_follow_link_msg']   = 'If checked, links in NFO files are automatically parsed after group updating';
 
 $LN['config_total_max_articles']        = 'Max artiklar per uppdatering';
 $LN['config_total_max_articles_msg']    = 'Max antal artiklar som kan laddas ned per uppdatering (0 betyder obegr&auml;nsat)';
@@ -1118,7 +1144,7 @@ $LN['config_perms']['0666'] = 'L&auml;s- och skriv-r&auml;ttighet f&ouml;r alla 
 // admin log
 $LN['log_title']        = 'Logg-fil';
 $LN['log_nofile']       = 'Ingen logg-fil funnen';
-$LN['log_seekrror']     = 'Kunde inte l&auml;sa hela filen';
+$LN['log_seekerror']    = 'Kunde inte l&auml;sa hela filen';
 $LN['log_unknownerror'] = 'Ett ov&auml;ntat fel uppstod';
 $LN['log_header']       = 'Logg-information';
 $LN['log_date']         = 'Datum';
@@ -1144,12 +1170,16 @@ $LN['users_resetpw']        = '&Aring;terst&auml;ll och skicka l&ouml;senord';
 $LN['users_edit']           = 'Redigera anv&auml;ndare';
 $LN['users_addnew']         = 'L&auml;gg till en ny anv&auml;ndare';
 $LN['users_delete']         = 'Radera anv&auml;ndare';
+$LN['users_enable']         = 'Enable user';
+$LN['users_disable']        = 'Disable user';
 $LN['users_rights']         = 'Set-redakt&ouml;r';
 $LN['users_rights_help']    = 'Till&aring;ter att den h&auml;r anv&auml;ndaren redigerar set-information i bl&auml;ddrings-sektionen';
 $LN['users_last_active']    = 'Aktiv';
 $LN['users_allow_erotica']  = 'Allow Adult content';
 $LN['users_allow_update']   = 'Allow updating databases';
 
+$LN['error_nocontent']      = 'Message too short';
+$LN['error_toolong']        = 'Message too long';
 $LN['error_noadmin']        = 'Inga administrat&ouml;rs-r&auml;attigheter';
 $LN['error_accessdenied']   = '&Aring;tkomst nekad';
 $LN['error_invalidfullname']    = 'Ogiltigt fullst&auml;ndigt namn';
@@ -1185,13 +1215,10 @@ $LN['error_notanumber']     = 'Inte ett heltal';
 $LN['error_cannotchmod']    = 'F&ouml;r&auml;ndring av &aring;tkomst-r&auml;ttigheter till&aring;ts inte';
 $LN['error_cannotchgrp']    = 'F&ouml;r&auml;ndring av grupp till&aring;ts inte';
 
-// NZB parse
-$LN['nzb_title']        = 'URD NZB-tolk';
-
 // Transfers
-$LN['transfers_title']      = 'Nedladdningar';
-$LN['transfers_importnzb']  = 'Importera NZB-fil';
-$LN['transfers_import']     = 'Importera';
+$LN['transfers_title']          = 'Nedladdningar';
+$LN['transfers_importnzb']      = 'Importera NZB-fil';
+$LN['transfers_import']         = 'Importera';
 $LN['transfers_clearcompleted'] = 'Rensa nedladdningar';
 $LN['transfers_pauseall']       = 'Pausa nedladdningar';
 $LN['transfers_continueall']    = 'Forts&auml;tt nedladdningar';
@@ -1199,9 +1226,9 @@ $LN['transfers_nzblocation']    = 'S&ouml;kv&auml;g till fj&auml;rr-NZB';
 $LN['transfers_nzblocationext'] = 'Detta kan vara en URL (b&ouml;rja med http://) eller en lokal fil-s&ouml;kv&auml;g (t ex. /tmp/file.nzb';
 $LN['transfers_nzbupload']      = 'Ladda upp en lokal NZB-fil';
 $LN['transfers_nzbuploadext']   = 'Om du har en NZB-fil p&aring; din lokala dator s&aring; kan du ladda upp den till URD-servern';
-$LN['transfers_uploadnzb']  = 'Ladda upp en NZB-fil';  // FIXME differs how exactly from transfers_nzbupload?
-$LN['transfers_runparrar']  = 'K&ouml;r par2 och unrar';
-$LN['transfers_add_setname']         = 'L&auml;gg till setnamn till nedladdningskatalog';
+$LN['transfers_uploadnzb']      = 'Ladda upp en NZB-fil';  // FIXME differs how exactly from transfers_nzbupload?
+$LN['transfers_runparrar']      = 'K&ouml;r par2 och unrar';
+$LN['transfers_add_setname']    = 'L&auml;gg till setnamn till nedladdningskatalog';
 
 $LN['transfers_status_removed'] = 'Borttaget';
 $LN['transfers_status_ready']   = 'Klar att starta';
@@ -1244,10 +1271,10 @@ $LN['transfers_subdl']      = 'Ladda ned undertexter';
 $LN['transfers_badrarinfo'] = 'Visa rar-loggen';
 $LN['transfers_badparinfo'] = 'Visa par2-loggen';
 
-$LN['transfers_status_rarred'] = 'Rar-arkiv skapat';
-$LN['transfers_status_par2ed'] = 'Par2 skapad';
-$LN['transfers_status_yyencoded'] = 'Yenc-kodad';
-$LN['transfers_head_subject']  = '&Auml;mne';
+$LN['transfers_status_rarred']      = 'Rar-arkiv skapat';
+$LN['transfers_status_par2ed']      = 'Par2 skapad';
+$LN['transfers_status_yyencoded']   = 'Yenc-kodad';
+$LN['transfers_head_subject']       = '&Auml;mne';
 $LN['transfers_posts']      = 'Uppladdningar';
 $LN['transfers_post']       = 'Ladda upp';
 $LN['transfers_downloads']  = 'Nedladdningar';
@@ -1318,18 +1345,13 @@ $LN['browse_userwhitelisted'] = 'User is on the whitelist';
 
 $LN['NZB_created']          = 'NZB-fil skapad';
 
-// ParseNZB
-$LN['parsenzb_error']       = 'Om du kan l&auml;sa detta, s&aring; betyder det att n&aring;gonting har g&aring;tt fel. Ledsen!';
-
 // Preview
 $LN['preview_autodisp']     = 'Filen/filerna ska visas automatiskt.';
 $LN['preview_autofail']     = 'Annars kan du klicka p&aring; den h&auml;r l&auml;nken';
 $LN['preview_view']         = 'Klicka h&auml;r f&ouml;r att visa NZB-filen';
 $LN['preview_header']       = 'Laddar ned f&ouml;rhandsgranskning';
 $LN['preview_nzb']          = 'F&ouml;r att starta nedladdning direkt med hj&auml;lp av denna NZB-fil, klicka p&auml; denna l&auml;nken';
-$LN['preview_title']        = 'URD f&ouml;rhandsgransknings-sida';
 $LN['preview_failed']       = 'F&ouml;rhandsgranskning misslyckades';
-$LN['preview_close']        = 'St&auml;ng f&ouml;nster';
 
 // FAQ
 $LN['faq_content'][1] = array ('Vad &auml;r URD f&ouml;r n&aring;got?',  'URD &auml;r ett program f&ouml;r att ladda ned bin&auml;rer fr&aring;n Usenet (newsgroups) med ett web-interface.'
@@ -1482,10 +1504,10 @@ $LN['usenet_delete']        = 'Radera server';
 $LN['usenet_edit']          = 'Editera server';
 $LN['usenet_preferred_msg'] = 'Det h&auml;r &auml;r den prim&auml;ra servern, anv&auml;nds f&ouml;r att indexera grupper';
 $LN['usenet_set_preferred_msg'] = 'Anv&auml;nd den h&auml;r servern f&ouml;r att indexera grupper';
-$LN['usenet_indexing']        = 'Indexering';
-$LN['usenet_addserver']     = 'L&auml;gg till en ny Usenet-server';
-$LN['usenet_editserver']    = 'Redigera en Usenet-server';
-$LN['usenet_compressed_headers']    = 'Anv&auml;nd komprimerade artikel-huvuden';
+$LN['usenet_indexing']          = 'Indexering';
+$LN['usenet_addserver']         = 'L&auml;gg till en ny Usenet-server';
+$LN['usenet_editserver']        = 'Redigera en Usenet-server';
+$LN['usenet_compressed_headers']        = 'Anv&auml;nd komprimerade artikel-huvuden';
 $LN['usenet_compressed_headers_msg']    = 'Anv&auml;nd komprimerade artikel-huvuden (&#34;headers&#34;) f&ouml;r att uppdatera grupper. St&ouml;ds inte av alla servrar. Titta efter XZVER-kommandot.';
 $LN['usenet_posting']       = 'Postning';
 $LN['usenet_posting_msg']   = 'Till&aring;t postning';
@@ -1535,7 +1557,12 @@ $LN['browse_tag_copyright']     = 'Upphovsr&auml;ttskyddad';
 
 $LN['quickmenu_setsearch']      = 'S&ouml;k';
 $LN['quickmenu_addblacklist']   = 'Add spotter to blacklist';
+$LN['quickmenu_addposterblacklist']   = 'Add poster to blacklist';
+$LN['quickmenu_addglobalblacklist']   = 'Add spotter to global blacklist';
+$LN['quickmenu_addglobalwhitelist']   = 'Add spotter to global whitelist';
+$LN['quickmenu_addwhitelist']   = 'Add spotter to whitelist';
 $LN['quickmenu_report_spam']    = 'Report spot as spam';
+$LN['quickmenu_comment_spot']   = 'Post comment on spot';
 $LN['quickmenu_editspot']       = 'Redigera spot';
 $LN['quickmenu_setshowesi']     = 'Visa set-info';
 $LN['quickmenu_seteditesi']     = 'Redigera set-info';
@@ -1549,6 +1576,9 @@ $LN['quickmenu_setpreviewvid']  = 'F&ouml;rhandsgranska video-fil';
 $LN['quickmenu_add_search']     = 'Automatiskt markera';
 $LN['quickmenu_add_block']      = 'Automatiskt d&ouml;lja';
 
+$LN['blacklist_spotter']        = 'Blacklist spotter?';
+$LN['whitelist_spotter']        = 'Whitelist spotter?';
+
 $LN['stats_title']  = 'Statistik';
 $LN['stats_dl']     = 'Nedladdningar';
 $LN['stats_pv']     = 'F&ouml;rhandsgranskningar';
@@ -1561,10 +1591,10 @@ $LN['stats_number'] = 'R&auml;knare';
 $LN['stats_user']   = 'Anv&auml;ndare';
 $LN['stats_overview']   = '&Ouml;verblick';
 
-$LN['stats_spotsbymonth'] = 'Spots per month';
-$LN['stats_spotsbyweek'] = 'Spots per week';
-$LN['stats_spotsbyhour'] = 'Spots per hour';
-$LN['stats_spotsbydow'] = 'Spots per day of the week';
+$LN['stats_spotsbymonth']   = 'Spots per month';
+$LN['stats_spotsbyweek']    = 'Spots per week';
+$LN['stats_spotsbyhour']    = 'Spots per hour';
+$LN['stats_spotsbydow']     = 'Spots per day of the week';
 
 $LN['feeds_title']  = 'RSS-kanaler';
 $LN['feeds_rss']    = 'RSS-kanaler';
@@ -1618,31 +1648,31 @@ $LN['post_messagetextext']  = 'Inneh&aring;llet i meddelandet som ska postas';
 $LN['post_newsgroupext2']   = 'Usenet-gruppen som meddelandet ska postas i';
 $LN['post_subjectext2']     = '&Auml;mnesraden i meddelandet';
 
-$LN['settype'][SETTYPE_UNKNOWN]     = $LN['config_formatstring'] . ' Ok&auml;nd';
-$LN['settype'][SETTYPE_MOVIE]       = $LN['config_formatstring'] . ' Film';
-$LN['settype'][SETTYPE_ALBUM]       = $LN['config_formatstring'] . ' Album';
-$LN['settype'][SETTYPE_IMAGE]       = $LN['config_formatstring'] . ' Bild';
-$LN['settype'][SETTYPE_SOFTWARE]    = $LN['config_formatstring'] . ' Mjukvara';
-$LN['settype'][SETTYPE_TVSERIES]    = $LN['config_formatstring'] . ' TV-serie';
-$LN['settype'][SETTYPE_EBOOK]       = $LN['config_formatstring'] . ' Ebook';
-$LN['settype'][SETTYPE_GAME]        = $LN['config_formatstring'] . ' Spel';
-$LN['settype'][SETTYPE_TVSHOW]      = $LN['config_formatstring'] . ' TV-Show';
-$LN['settype'][SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Dokument&auml;r';
-$LN['settype'][SETTYPE_OTHER]       = $LN['config_formatstring'] . ' &Ouml;vrigt';
+$LN['settype'][urd_extsetinfo::SETTYPE_UNKNOWN]     = $LN['config_formatstring'] . ' Ok&auml;nd';
+$LN['settype'][urd_extsetinfo::SETTYPE_MOVIE]       = $LN['config_formatstring'] . ' Film';
+$LN['settype'][urd_extsetinfo::SETTYPE_ALBUM]       = $LN['config_formatstring'] . ' Album';
+$LN['settype'][urd_extsetinfo::SETTYPE_IMAGE]       = $LN['config_formatstring'] . ' Bild';
+$LN['settype'][urd_extsetinfo::SETTYPE_SOFTWARE]    = $LN['config_formatstring'] . ' Mjukvara';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSERIES]    = $LN['config_formatstring'] . ' TV-serie';
+$LN['settype'][urd_extsetinfo::SETTYPE_EBOOK]       = $LN['config_formatstring'] . ' Ebook';
+$LN['settype'][urd_extsetinfo::SETTYPE_GAME]        = $LN['config_formatstring'] . ' Spel';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSHOW]      = $LN['config_formatstring'] . ' TV-Show';
+$LN['settype'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Dokument&auml;r';
+$LN['settype'][urd_extsetinfo::SETTYPE_OTHER]       = $LN['config_formatstring'] . ' &Ouml;vrigt';
 
 $LN['settype_syntax'] = '%(n.mc); d&auml;r <i>()</i> &auml;r en frivillig inkapsling, kan vara (), [] eller {}; <i>n</i> ett frivilligt utfyllnadsv&auml;rde, <i>.m</i> ett frivilligt v&auml;rde som anger maximal l&auml;ngd, <i>c</i> ett n&ouml;dv&auml;ndigt tecken ur listan nedan (anv&auml;nd %% f&ouml;r att visa ett %, se &auml;ven PHP-dokumentationen om sprintf):<br/><br/>';
 
-$LN['settype_msg'][SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Set av typen Ok&auml;nd: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_MOVIE] = $LN['settype_syntax'] . 'Set av typen Film: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%y: &aring;r<br/>%m: film-format<br/>%a: ljud-format<br/>%l: spr&aring;k<br/>%s: spr&aring;k undertext<br/>%x: bfbj.<br/>%N: noteringar<br/>%q: kvalitet<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material <br/>';
-$LN['settype_msg'][SETTYPE_ALBUM] = $LN['settype_syntax'] . 'Set av typen Album: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%y: &aring;r <br/>%f: format<br/>%g: genre<br/>%N: noteringar<br/>%q: kvalitet<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material <br/>';
-$LN['settype_msg'][SETTYPE_IMAGE] = $LN['settype_syntax'] . 'Set av typen Bild: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon <br/>%f: format<br/>%g: genre<br/>%N: noteringar<br/>%q: kvalitet<br/>%x: bfbj.<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_SOFTWARE] = $LN['settype_syntax'] . 'Set av typen Mjukvara: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%o: operativ-system <br/>%q: kvalitet<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_TVSERIES] = $LN['settype_syntax'] .  'Set av typen TV-serie: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%e: avsnitt<br/>%m: film-format<br/>%a: ljud-format<br/>%x: bfbj.<br/>%q: kvalitet<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_EBOOK] = $LN['settype_syntax'] . 'Set av typen Ebook: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%A: utgivare<br/>%y: &aring;r<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_GAME] = $LN['settype_syntax'] . 'Set av typen Spel: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%A: utgivare<br/>%y: &aring;r<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_TVSHOW] =$LN['settype_syntax'] . 'Set av typen TV-Show: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%m: film-format<br/>%y: &aring;r<br/>%e: avsnitt<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_DOCUMENTARY] = $LN['settype_syntax'] . 'Set av typen Dokument&auml;r: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%A: utgivare<br/>%y: &aring;r<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
-$LN['settype_msg'][SETTYPE_OTHER] = $LN['settype_syntax'] . 'Set av typen &Ouml;vrigt: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/><br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Set av typen Ok&auml;nd: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_MOVIE] = $LN['settype_syntax'] . 'Set av typen Film: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%y: &aring;r<br/>%m: film-format<br/>%a: ljud-format<br/>%l: spr&aring;k<br/>%s: spr&aring;k undertext<br/>%x: bfbj.<br/>%N: noteringar<br/>%q: kvalitet<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_ALBUM] = $LN['settype_syntax'] . 'Set av typen Album: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%y: &aring;r <br/>%f: format<br/>%g: genre<br/>%N: noteringar<br/>%q: kvalitet<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_IMAGE] = $LN['settype_syntax'] . 'Set av typen Bild: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon <br/>%f: format<br/>%g: genre<br/>%N: noteringar<br/>%q: kvalitet<br/>%x: bfbj.<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_SOFTWARE] = $LN['settype_syntax'] . 'Set av typen Mjukvara: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%o: operativ-system <br/>%q: kvalitet<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSERIES] = $LN['settype_syntax'] .  'Set av typen TV-serie: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%e: avsnitt<br/>%m: film-format<br/>%a: ljud-format<br/>%x: bfbj.<br/>%q: kvalitet<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_EBOOK] = $LN['settype_syntax'] . 'Set av typen Ebook: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%A: utgivare<br/>%y: &aring;r<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_GAME] = $LN['settype_syntax'] . 'Set av typen Spel: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%A: utgivare<br/>%y: &aring;r<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSHOW] =$LN['settype_syntax'] . 'Set av typen TV-Show: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%m: film-format<br/>%y: &aring;r<br/>%e: avsnitt<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['settype_syntax'] . 'Set av typen Dokument&auml;r: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/>%A: utgivare<br/>%y: &aring;r<br/>%f: format<br/>%q: kvalitet<br/>%g: genre<br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_OTHER] = $LN['settype_syntax'] . 'Set av typen &Ouml;vrigt: <br/>%n: namn<br/>%t: set-typ<br/>%T: typ-specifik ikon<br/><br/>%N: noteringar<br/>%P: l&ouml;senords-skyddad<br/>%C: upphovsr&auml;tts-skyddat material';
 
 $LN['loading_files']        = 'Laddar filer... v&auml;nligen v&auml;nta';
 $LN['loading']              = 'Laddar... v&auml;nligen v&auml;nta';
@@ -1651,9 +1681,13 @@ $LN['spots_allcategories']      = 'Alla kategorier';
 $LN['spots_allsubcategories']   = 'Alla subkategorier';
 $LN['spots_subcategories']      = 'Subkategorier';
 $LN['spots_tag']                = 'Tag';
-$LN['pref_spots_category_mapping']   = 'Spots category mapping for';
+$LN['pref_spots_category_mapping']      = 'Spots category mapping for';
 $LN['pref_spots_category_mapping_msg']  = 'Spots category mapping to URD categories';
 
+$LN['pref_custom_values']       = 'Custom values';
+$LN['pref_custom']              = 'Custom value';
+$LN['config_custom']            = 'Custom value';
+$LN['pref_custom_msg']          = 'Custom values that can be used in scripts';
 $LN['spots_other']       = 'Annat';
 $LN['spots_all']         = 'Allt';
 

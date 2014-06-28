@@ -17,35 +17,21 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-13 23:38:58 +0200 (vr, 13 jun 2014) $
+ * $Rev: 3091 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: download_functions.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: download_functions.php 3091 2014-06-13 21:38:58Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathdlf = realpath(dirname(__FILE__));
-
-require_once "$pathdlf/../functions/autoincludes.php";
-require_once "$pathdlf/../functions/defines.php";
-require_once "$pathdlf/../config.php";
-require_once "$pathdlf/../functions/functions.php";
-require_once "$pathdlf/../functions/pref_functions.php";
-require_once "$pathdlf/urdd_command.php";
-require_once "$pathdlf/urdd_protocol.php";
-require_once "$pathdlf/urdd_error.php";
-require_once "$pathdlf/../functions/urd_log.php";
-
-
 function store_article($article, $dir, $msg_id)
 {
     $msg_id = trim($msg_id, '<>');
-    file_put_contents($dir . $msg_id . '.txt', $article. "\n\n");
+    file_put_contents($dir . $msg_id . '.txt', $article . "\n\n");
 }
-
 
 function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$nzb, &$groupid, $userid, &$connected, $check_for_rar_encryption, $download_par_files)
 {
@@ -78,7 +64,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
     $download_text_file = get_pref($db, 'download_text_file', $userid);
 
     $p = $pipes[0];
-
+    add_dir_separator($dir);
     // $batch is the result of the select query on ready-articles:
     // First reset them all to DOWNLOAD_READY, because if we throw an error we don't want to have orphaned ACTIVE's
 
@@ -94,7 +80,6 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
                 $nzb->select_group($groupid, $code);
             }
 
-            //$msg_id = '<' . $article['messageID'] . '>';
             $msg_id = $article['messageID'];
             $art = $nzb->get_article($msg_id);
             // If we get here, download was succesful (otherwise try/catch kicked in)
@@ -114,7 +99,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
                 if ($check_for_rar_encryption != encrar::ENCRAR_CONTINUE) {
                     $is_enc = download_type::check_for_encrypted_rar($art, $dir);
                     if ($is_enc) {
-                        touch($dir . DIRECTORY_SEPARATOR . 'password_encrypted_file.log');
+                        touch($dir . 'password_encrypted_file.log');
                         error_reporting($err_level);
                         throw new exception ('Password encrypted file', ENCRYPTED_RAR);
                     }
@@ -185,7 +170,6 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
             $e_cnt++;
             $batch[$key]['dlstatus'] = DOWNLOAD_FAILED;
             write_log('Could not download article: ' . $e->getMessage() ."({$e->getCode()})", LOG_INFO);
-
             if ($e->getCode() == NNTP_NOT_CONNECTED_ERROR) {
                 // Articles didn't really fail so set them to be downloaded again:
                 $batch[$key]['dlstatus'] = DOWNLOAD_READY;
@@ -195,6 +179,8 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
                 $connected = FALSE;
                 // And return because we don't want to continue trying to download stuff from this batch:
                 return array($size, $a_cnt, $e_cnt, $p_cnt);
+            } elseif ($e->getCode() == ERR_NNTP_AUTH_FAILED) {
+                throw $e;
             } elseif ($e->getCode() == ENCRYPTED_RAR) {
                 throw $e;
             }
@@ -220,19 +206,21 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
 
 function get_batchsize($preview, $total_ready)
 {
-    assert(is_numeric($total_ready));
+    assert(is_numeric($total_ready) && is_bool($preview));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    mt_srand(getmypid());
     if ($preview === TRUE) {
-        $batch_size = PV_BATCH_SIZE;
-    } elseif ($total_ready < (10 * DL_BATCH_SIZE)) {
-        $batch_size = DL_BATCH_SIZE + mt_rand(1, 4);
-    } elseif ($total_ready < (20 * DL_BATCH_SIZE)) {
-        $batch_size = (2 * DL_BATCH_SIZE) + mt_rand(1, DL_BATCH_SIZE);
+        return batch_size::PV_BATCH_SIZE;
+    }
+    if ($total_ready < (10 * batch_size::DL_BATCH_SIZE)) {
+        $factor = 1;
+    } elseif ($total_ready < (20 * batch_size::DL_BATCH_SIZE)) {
+        $factor = 2;
     } else {
-        $batch_size = (4 * DL_BATCH_SIZE) + mt_rand(1, DL_BATCH_SIZE);
+        $factor = 3;
     }
 
+    mt_srand(getmypid() + time() + $total_ready);
+    $batch_size = ($factor * batch_size::DL_BATCH_SIZE) + mt_rand(0, batch_size::DL_BATCH_SIZE);
     return $batch_size;
 }
 
@@ -261,10 +249,10 @@ function start_download(DatabaseConnection $db, action $item)
         $check_for_rar_encryption = FALSE;
     }
     $done_start = $total - $total_ready;
-    // determine a reasonable batchsize... increase it if we have more articles
+    // determine a reas/onable batchsize... increase it if we have more articles
     $batch_size = get_batchsize($item->get_preview(), $total_ready);
     $done = $cnt = 0;
-    $first_batch_size = max(4, round(DL_BATCH_SIZE / 4)); // the first batch is always small,  so we get a quick progress update
+    $first_batch_size = max(4, round(batch_size::DL_BATCH_SIZE / 4)); // the first batch is always small, so we get a quick progress update
     $dir = get_download_destination($db, $dlid);
     $start_time = get_start_time($db, $dlid);
     $now = time();
@@ -312,22 +300,22 @@ function start_download(DatabaseConnection $db, action $item)
             }
 
             $s_time = microtime(TRUE);
-            $db->lock($lock_array);
             try {
-                $query = "* FROM downloadarticles WHERE \"downloadID\"=$dlid AND \"status\"=$req_status ORDER BY name, partnumber";
+                $query = '* FROM downloadarticles WHERE "downloadID" = ? AND "status" = ? ORDER BY "name", "partnumber"';
+                $db->lock($lock_array);
                 // First time use small batch size:
                 if ($first_batch_size > 0) {
-                    $res = $db->select_query($query, $first_batch_size);
+                    $res = $db->select_query($query, $first_batch_size, array($dlid, $req_status));
                     $first_batch_size = 0;
                 } else {
-                    $res = $db->select_query($query, $batch_size);
+                    $res = $db->select_query($query, $batch_size, array($dlid, $req_status));
                 }
 
                 if ($res === FALSE) {
                     // Good exit:
                     $db->unlock();
-                    echo_debug('No more articles found', DEBUG_NNTP);
                     $nzb->disconnect();
+                    echo_debug('No more articles found', DEBUG_NNTP);
                     $comment = "Processed $cnt batches";
                     write_log($comment, LOG_DEBUG);
                     $status = QUEUE_FINISHED;
@@ -384,7 +372,6 @@ function start_download(DatabaseConnection $db, action $item)
             $time_diff = $f_time - $b_time;
             $cnt++;
             $done = get_download_articles_count_status($db, $dlid, $done_status);
-            //$failed = get_download_articles_count_status($db, $dlid, $failed_status);
             $percentage = ($total > 0) ? floor(100 * ($done / $total)) : 0;
             $remain = $total - $done;
             $done_ready = $done - $done_start;
@@ -417,9 +404,8 @@ function update_dlinfo(DatabaseConnection $db, $dlid, $bytes)
     assert(is_numeric($dlid));
     assert(is_numeric($bytes));
     $db->escape($bytes, TRUE);
-    $db->escape($dlid, TRUE);
-    $sql = "UPDATE downloadinfo SET \"done_size\" = \"done_size\" + $bytes WHERE \"ID\" = $dlid";
-    $db->execute_query($sql);
+    $sql = "UPDATE downloadinfo SET \"done_size\" = \"done_size\" + $bytes WHERE \"ID\" = ?";
+    $db->execute_query($sql, array($dlid));
 }
 
 function complete_download(DatabaseConnection $db, server_data &$servers, action $item, $status)
@@ -430,7 +416,7 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
         $dlid = $item->get_args();
         if ($status == DOWNLOAD_FINISHED || $status == DOWNLOAD_QUEUED || $status == DOWNLOAD_COMPLETE || $status == DOWNLOAD_ACTIVE || $status == DOWNLOAD_READY) {
             list ($done, $queued, $failed, $par_files) = check_all_dl_done($db, $item);
-            $failed = 1;
+            //$failed = 1;
             if ($queued > 0) {
                 // there are still things to download left
                 // possibly a pause interrupted things
@@ -468,7 +454,7 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
             echo_debug("Download complete $dlid", DEBUG_SERVER);
             cleanup_download_articles($db, $dlid);
             if ($done > 0) {
-                $new_item = new action(NULL, NULL, NULL, NULL);
+                $new_item = new action(NULL, NULL, NULL);
                 $new_item->copy($item);
                 $item->set_command(urdd_protocol::COMMAND_DOWNLOAD);
                 queue_unpar_unrar($db, $destination, $dlid, $servers, $userid, $preview);
@@ -501,37 +487,36 @@ function check_all_dl_done(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     $dlid = $item->get_args();
-    $db->escape($dlid, TRUE);
-    $sql = "count(\"ID\") AS \"counter\" FROM downloadarticles WHERE \"downloadID\" = $dlid AND \"status\" < " . DOWNLOAD_FINISHED;
-    $queued = $db->select_query($sql);
-    if ($queued === FALSE) {
-        throw new exception_db('Database error');
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" < ?';
+    $queued = $db->select_query($sql, array($dlid, DOWNLOAD_FINISHED));
+    if (!isset($queued[0]['counter'])) {
+        throw new exception_db('Database error @ queued');
     }
-    $sql = "count(\"ID\") AS \"counter\" FROM downloadarticles WHERE \"downloadID\" = $dlid AND \"status\" = " . DOWNLOAD_FAILED;
-    $failed = $db->select_query($sql);
-    if ($failed === FALSE) {
-        throw new exception_db('Database error');
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" = ?';
+    $failed = $db->select_query($sql, array($dlid, DOWNLOAD_FAILED));
+    if (!isset($failed[0]['counter'])) {
+        throw new exception_db('Database error @ failed');
     }
-    $sql = "count(\"ID\") AS \"counter\" FROM downloadarticles WHERE \"downloadID\" = $dlid AND \"status\" = " . DOWNLOAD_FINISHED;
-    $done = $db->select_query($sql);
-    if ($done === FALSE) {
-        throw new exception_db('Database error');
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" = ?';
+    $done = $db->select_query($sql, array($dlid, DOWNLOAD_FINISHED));
+    if (!isset($done[0]['counter'])) {
+        throw new exception_db('Database error @ done');
     }
-    $sql = "count(\"ID\") AS \"counter\" FROM downloadarticles WHERE \"downloadID\" = $dlid AND \"status\" = " . DOWNLOAD_IS_PAR_FILE;
-    $par_files = $db->select_query($sql);
-    if ($par_files === FALSE) {
-        throw new exception_db('Database error');
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" = ?';
+    $par_files = $db->select_query($sql, array($dlid,DOWNLOAD_IS_PAR_FILE ));
+    if (!isset($par_files[0]['counter'])) {
+        throw new exception_db('Database error @ par_files');
     }
 
-    return array ($done[0]['counter'], $queued[0]['counter'], $failed[0]['counter'], $par_files[0]['counter']);
+    return array($done[0]['counter'], $queued[0]['counter'], $failed[0]['counter'], $par_files[0]['counter']);
 }
 
-function add_download(DatabaseConnection $db, $username, $userid, $unpar, $unrar, $subdl, $delete_files, $status, $destination, $dl_type, $first_run, $download_par)
+function add_download(DatabaseConnection $db, $userid, $unpar, $unrar, $subdl, $delete_files, $status, $destination, $dl_type, $first_run, $download_par)
 {
     assert(is_numeric($userid));
     $id = $db->insert_query('downloadinfo',
-        array('name', 'unpar', 'unrar', 'subdl', 'delete_files', 'status', 'destination', 'username', 'userid', 'preview', 'size', 'first_run', 'stat_id', 'download_par', 'hidden'),
-        array('', $unpar, $unrar, $subdl, $delete_files, $status, $destination, $username, $userid, $dl_type, 0, $first_run?1:0,0, $download_par?1:0, 0),
+        array('name', 'unpar', 'unrar', 'subdl', 'delete_files', 'status', 'destination', 'userid', 'preview', 'size', 'first_run', 'stat_id', 'download_par', 'hidden'),
+        array('', $unpar, $unrar, $subdl, $delete_files, $status, $destination, $userid, $dl_type, 0, $first_run? 1 : 0, 0, $download_par ? 1 : 0, 0),
         TRUE);
 
     return $id;
@@ -540,10 +525,7 @@ function add_download(DatabaseConnection $db, $username, $userid, $unpar, $unrar
 function set_download_dir(DatabaseConnection $db, $id, $destination)
 {
     assert(is_numeric($id));
-    $db->escape($id, TRUE);
-    $db->escape($destination, TRUE);
-    $sql = "UPDATE downloadinfo SET \"destination\" = $destination WHERE \"ID\" = $id";
-    $db->execute_query($sql);
+    $db->update_query_2('downloadinfo', array('destination'=>$destination), '"ID"=?', array($id));
 }
 
 function create_download(DatabaseConnection $db, server_data &$servers, $userid, $preview = FALSE, $priority=NULL)
@@ -554,7 +536,7 @@ function create_download(DatabaseConnection $db, server_data &$servers, $userid,
     if ($code == 210) {
         $id_str = "[$item_id] ";
 
-        return sprintf (urdd_protocol::get_response(210), $dlid, $id_str);
+        return sprintf(urdd_protocol::get_response(210), $dlid, $id_str);
     } else {
         return urdd_protocol::get_response($code);
     }
@@ -565,7 +547,6 @@ function do_create_download(DatabaseConnection $db, server_data &$servers, $user
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     assert(is_numeric($userid));
     $status = DOWNLOAD_READY;
-    $username = get_username($db, $userid);
     $r = get_pref($db, 'unrar', $userid);
     $unrar = ($r !== FALSE) ? $r : 0; // default off?
     $r = get_pref($db, 'unpar', $userid);
@@ -575,9 +556,10 @@ function do_create_download(DatabaseConnection $db, server_data &$servers, $user
     $r = get_pref($db, 'delete_files', $userid);
     $delete_files = ($r !== FALSE) ? $r : 0; // default off?
     $download_par_files = get_pref($db, 'download_par', $userid);
-    $id = add_download($db, $username, $userid, $unpar, $unrar, $subdl, $delete_files, $status, '', $preview ? download_types::PREVIEW : download_types::NORMAL, TRUE, $download_par_files);
+    $id = add_download($db, $userid, $unpar, $unrar, $subdl, $delete_files, $status, '', $preview ? download_types::PREVIEW : download_types::NORMAL, TRUE, $download_par_files);
 
     $dl_path_basis = get_dlpath($db);
+    $username = get_username($db, $userid);
     $dl_path = find_unique_name($dl_path_basis, TMP_PATH . $username . DIRECTORY_SEPARATOR, $id);
     $rv = @create_dir($dl_path, 0775);
     if ($rv === FALSE) {
@@ -592,7 +574,7 @@ function do_create_download(DatabaseConnection $db, server_data &$servers, $user
         return array(405, NULL, NULL);
     }
     //$id_str = '';
-    $item = new action(urdd_protocol::COMMAND_DOWNLOAD, $id, $username, $userid, TRUE);
+    $item = new action(urdd_protocol::COMMAND_DOWNLOAD, $id, $userid, TRUE);
     $item->set_dlpath($dl_path);
     set_download_dir($db, $id, $dl_path);
     if ($preview) {
@@ -622,7 +604,7 @@ function restart_download(DatabaseConnection $db, server_data &$servers, $userid
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     try {
         $username = get_username($db, $userid);
-        $item = new action(urdd_protocol::COMMAND_DOWNLOAD, $id, $username, $userid, FALSE);
+        $item = new action(urdd_protocol::COMMAND_DOWNLOAD, $id, $userid, FALSE);
         if ($servers->has_equal($item)) {
             return urdd_protocol::get_response(406);
         }
@@ -642,7 +624,7 @@ function restart_download(DatabaseConnection $db, server_data &$servers, $userid
             return urdd_protocol::get_response(405);
         }
         $id_str = '';
-        echo_debug("re-starting download $id", DEBUG_SERVER);
+        echo_debug("Re-starting download $id", DEBUG_SERVER);
 
         $res = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
         if ($res === FALSE) {
@@ -698,11 +680,8 @@ function verify_cksfv(DatabaseConnection $db, $dir, $dlid, pr_list $files, actio
         update_queue_status($db, $item->get_dbid(), NULL, $t_time, 50, $comment);
     } else {
         write_log("Incomplete download $dlid");
-        //$dl_status = DOWNLOAD_CKSFV_FAILED;
         update_dlinfo_status($db, DOWNLOAD_CKSFV_FAILED, $dlid);
 
-        //$error = TRUE;
-        //$status = QUEUE_FAILED;
         $comment = 'Cksfv failed ';
     }
 
@@ -755,10 +734,7 @@ function verify_par(DatabaseConnection $db, $dir, $dlid, pr_list $files, action 
     } else {
         write_log("Incomplete download $dlid");
         update_dlinfo_status($db, DOWNLOAD_PAR_FAILED, $dlid);
-        //$dl_status = DOWNLOAD_PAR_FAILED;
-        //$status = QUEUE_FAILED;
         $comment = 'PAR2 failed ';
-        //$unrar = 0; // we don't need to unrar if it failed
         $error = TRUE;
     }
 
@@ -774,7 +750,6 @@ function decompress(DatabaseConnection $db, $type, $dir, pr_list $files, $passwo
     $zip_cmd = get_config($db, 'unzip_path', '');
     $ace_cmd = get_config($db, 'unace_path', '');
     $zr7_cmd = get_config($db, 'un7zr_path', '');
-
     $rar_arg = get_config($db, 'unrar_pars', '');
     $arj_arg = get_config($db, 'unarj_pars', '');
     $zip_arg = get_config($db, 'unzip_pars', '');
@@ -818,7 +793,7 @@ function decompress(DatabaseConnection $db, $type, $dir, pr_list $files, $passwo
                 if ($rv == 0 || $rv == 1) {
                     $succ++;
                     break;
-                } elseif ($type !=  file_extensions::ZR7_EXT) { // only 7z is picky about the order?? RAR is not at least; ARJ, ACE, ZIP are not tested
+                } elseif ($type != file_extensions::ZR7_EXT) { // only 7z is picky about the order?? RAR is not at least; ARJ, ACE, ZIP are not tested
                     break;
                 } else {
                     write_log("Decompress failed for '$filename': Error code $rv", LOG_NOTICE);
@@ -827,7 +802,7 @@ function decompress(DatabaseConnection $db, $type, $dir, pr_list $files, $passwo
         }
     }
     if ($count == 0) {
-        echo_debug("no $type files found", DEBUG_SERVER);
+        echo_debug("No $type files found", DEBUG_SERVER);
     } elseif ($count == $succ) {
         unlink($log_file);
         write_log("Successfully decompressed download $dlid ($count archives)");
@@ -897,7 +872,6 @@ function uudecode(DatabaseConnection $db, pr_list $files, $dlid, $dir, &$error, 
 {
     assert(is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $comment = '';
     $counter++;
     $descriptorspec = array(
         0 => array('pipe', 'r'), // where we will write to
@@ -925,7 +899,6 @@ function uudecode(DatabaseConnection $db, pr_list $files, $dlid, $dir, &$error, 
                     $contents = file_get_contents($dir . $f);
                     $r = fwrite($pipes[0], $contents);
                     if ($r === FALSE) {
-//                        error_reporting($err_level); //left over from what??
                         throw new exception('Write failed', ERR_PIPE_ERROR);
                     }
                 }
@@ -940,7 +913,7 @@ function uudecode(DatabaseConnection $db, pr_list $files, $dlid, $dir, &$error, 
         }
     }
 
-    return $comment;
+    return '';
 }
 
 function select_thread_count($dlsize, $nr_threads)
@@ -979,7 +952,12 @@ function create_download_threads(DatabaseConnection $db, server_data &$servers, 
                 throw new exception('Server ID not specified');
             }
             $max_dl_nntp = get_config($db, 'nntp_maxdlthreads');
-            $nr_threads = $servers->get_max_threads($srv_id);
+            $all_servers = get_config($db, 'nntp_all_servers', 0);
+            if ($all_servers) {
+                $nr_threads = $servers->get_max_total_nntp_threads();
+            } else {
+                $nr_threads = $servers->get_max_threads($srv_id);
+            }
             if ($max_dl_nntp > 0) {
                 $nr_threads = min($max_dl_nntp, $nr_threads);
             }
@@ -991,7 +969,7 @@ function create_download_threads(DatabaseConnection $db, server_data &$servers, 
         $nr_threads = select_thread_count($dlsize, $nr_threads);
 
         for ($i = 0; $i < $nr_threads; $i++) {
-            $new_item = new action(NULL, NULL, NULL, NULL); // create a dummy...
+            $new_item = new action(NULL, NULL, NULL); // create a dummy...
             $new_item->copy($item); // fill it with data here
             $new_item->set_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION);
             $new_item->set_need_nntp(TRUE);
@@ -1037,8 +1015,8 @@ function create_post_threads(DatabaseConnection $db, server_data &$servers, acti
             }
             $priority = 2; // a ready download gets the highest priority so it is scheduled in asap; only previews will overrule this
         }
-        for ($i = 0 ; $i < $nr_threads; $i++) {
-            $new_item = new action(NULL, NULL, NULL, NULL); // create a dummy...
+        for ($i = 0; $i < $nr_threads; $i++) {
+            $new_item = new action(NULL, NULL, NULL); // create a dummy...
             $new_item->copy($item); // fill it with data here
             $new_item->set_command(urdd_protocol::COMMAND_POST_ACTION);
             $new_item->set_need_nntp(TRUE);
@@ -1069,15 +1047,18 @@ function run_scripts(DatabaseConnection $db, action $item, $dlid, $dl_status, $g
     $dl_status = my_escapeshellcmd($dl_status);
     $rv = $rv_tmp = 0;
 
-    $username = $item->get_username();
     $userid = $item->get_userid();
     $scripts_path = get_dlpath($db);
     $scripts_path .= SCRIPTS_PATH;
+    $urd_path = my_escapeshellcmd(realpath(dirname(__FILE__) . '/..'));
     if ($global === TRUE) {
         $scripts = get_pref($db, 'global_scripts', $userid);
+        $add_parameters = "$userid $urd_path";
     } else {
+        $username = get_username($db, $userid);
         $scripts_path .= $username . '/';
         $scripts = get_pref($db, 'user_scripts', $userid);
+        $add_parameters = '';
     }
     $scripts = explode("\n", $scripts);
     sort($scripts);
@@ -1087,8 +1068,9 @@ function run_scripts(DatabaseConnection $db, action $item, $dlid, $dl_status, $g
         }
         if (($script_error = verify_script($db, $scripts_path, $script)) == '') {
             unset($output);
-            $cmd = $scripts_path . $script . " $dlpath $dlid $dl_status";
+            $cmd = $scripts_path . $script . " $dlpath $dlid $dl_status $add_parameters";
             write_log("Running script $script for download $dlid", LOG_NOTICE);
+            echo_debug("Running command $cmd", DEBUG_SERVER);
             exec($cmd, $output, $rv_tmp);
             if ($rv_tmp != 0) {
                 write_log("The script $script exited with error code $rv_tmp", LOG_ERR);
@@ -1097,7 +1079,7 @@ function run_scripts(DatabaseConnection $db, action $item, $dlid, $dl_status, $g
                 $rv = $rv_tmp;
             }
         } else {
-            echo_debug("Script $script error: $script_error", DEBUG_SERVER);
+            echo_debug("Script $script error: {$script_error['msg']}", DEBUG_SERVER);
         }
     }
 
@@ -1108,8 +1090,8 @@ function run_all_scripts(DatabaseConnection $db, action $item, $dlid, $dl_status
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     assert(is_numeric($dlid));
-    $global_scripts = get_config($db, 'allow_global_scripts');
-    $user_scripts = get_config($db, 'allow_user_scripts');
+    $global_scripts = get_config($db, 'allow_global_scripts', 0);
+    $user_scripts = get_config($db, 'allow_user_scripts', 0);
     if ($global_scripts == 0) { // not allowed to run any scripts
 
         return;
@@ -1140,11 +1122,12 @@ function move_sub_files($from, $to)
 function rename_sub_files($folder, $language, $destination)
 {
     // Rename all subtitle files:
+    add_dir_separator($destination);
     $sub_ext = array('.srt', '.SRT', '.sub', '.SUB', '.idx', '.IDX');
     foreach ($sub_ext as $ext) {
         // Change 'Movie.srt' to 'Movie.en.srt':
         foreach (glob("$folder*$ext", GLOB_NOSORT) as $file) {
-            $tofile = $destination . DIRECTORY_SEPARATOR . basename($file, $ext) . '.' . $language . $ext;
+            $tofile = $destination . basename($file, $ext) . '.' . $language . $ext;
             rename($file, $tofile);
             write_log('Subtitle found: ' . basename($tofile), LOG_NOTICE);
         }
@@ -1188,7 +1171,7 @@ function download_subs(DatabaseConnection $db, $dir, $userid)
     $log_file = my_escapeshellarg($dir . $sublog);
     foreach ($langs as $l) {
         $l = trim($l);
-        write_log("Getting subs for $l", LOG_NOTICE);
+        write_log("Getting subs for $l", LOG_INFO);
         $cmd = "/bin/sh -c '$subdownloader_cmd $subdownloader_pars --lang=$l 2>> $log_file >>$log_file'";
         exec($cmd, $foo, $rc);
         // todo do sth with the rc value :D

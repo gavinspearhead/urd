@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_processbasket.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_processbasket.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -28,20 +28,19 @@ $__auth = 'silent';
 
 $pathpb = realpath(dirname(__FILE__));
 
-require_once "$pathpb/../functions/html_includes.php";
+require_once "$pathpb/../functions/ajax_includes.php";
 
 verify_access($db, urd_modules::URD_CLASS_MAKENZB|urd_modules::URD_CLASS_DOWNLOAD, FALSE, '', $userid, TRUE);
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
 
-// TODO Challenge
-
 function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /* or feedid*/)
 {
     assert(is_numeric($userid));
     global $LN;
     $message = 'OK ';
+   // var_dump($_POST['set_ids']); die;
     $whichbutton = get_request('whichbutton');
     $all = get_request('all', 0);
     // remove interesting marking from all sets on page
@@ -165,7 +164,7 @@ switch ($command) {
         $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE;
         break;
     case 'view':
-        display_basket($db, $username);
+        display_basket($db, $userid);
         break;
     default:
         die($LN['error_invalidaction']);
@@ -179,7 +178,7 @@ function add_to_basket($setID, $type)
 {
     $download_delay = get_request('timestamp', '');
     if ($download_delay != '') {
-        $_SESSION['download_delay'] = $download_delay ;
+        $_SESSION['download_delay'] = $download_delay;
     }
     $dl_dir = get_request('dl_dir', '');
     if ($dl_dir != '' && $dl_dir !== 'null') {
@@ -192,12 +191,14 @@ function add_to_basket($setID, $type)
     if (!isset($_SESSION['setdata'])) {
         $_SESSION['setdata'] = array();
     }
+    if (count($_SESSION['setdata']) == 0) {
+        clear_basket();
+    }
     if (!in_setdata($setID, $type, $_SESSION['setdata'])) {
-        $set = array('setid'=> $setID, 'type'=>$type);
+        $set = array('setid' => $setID, 'type' => $type);
         $_SESSION['setdata'][] = $set;
     }
 }
-
 
 function del_from_basket($setID)
 {
@@ -213,13 +214,11 @@ function del_from_basket($setID)
     }
 }
 
-
 function clear_basket()
 {
     $_SESSION['setdata'] = array();
-    unset($_SESSION['download_delay'], $_SESSION['dl_dir'], $_SESSION['add_setname'], $_SESSION['dlsetname']) ;
+    unset($_SESSION['download_delay'], $_SESSION['dl_dir'], $_SESSION['add_setname'], $_SESSION['dlsetname']);
 }
-
 
 function get_setid()
 {
@@ -231,8 +230,7 @@ function get_setid()
     return $_REQUEST['setID'];
 }
 
-
-function display_basket(DatabaseConnection $db, $username)
+function display_basket(DatabaseConnection $db, $userid)
 {
     global $smarty, $LN;
     $addedsets = array();
@@ -248,9 +246,10 @@ function display_basket(DatabaseConnection $db, $username)
             $dlsetname = get_session('dlsetname', '');
         }
         $category = get_request('save_category', '');
+        //var_dump($category);
         $add_setname = get_request('add_setname', '');
         if ($add_setname == '') {
-            $add_setname = get_session('add_setname', get_pref($db, 'add_setname', $username) ? 1 : 0);
+            $add_setname = get_session('add_setname', get_pref($db, 'add_setname', $userid) ? 1 : 0);
         }
         $dl_dir = get_request('dl_dir', '');
         if ($dl_dir == '') {
@@ -261,7 +260,7 @@ function display_basket(DatabaseConnection $db, $username)
             $download_delay = get_session('download_delay', '');
         }
         if ($download_delay == '') {
-            $download_delay_val = get_pref($db, 'download_delay', $username, 0);
+            $download_delay_val = get_pref($db, 'download_delay', $userid, 0);
             if ($download_delay_val > 0) {
                 $download_delay = "+$download_delay_val minutes";
             }
@@ -273,7 +272,7 @@ function display_basket(DatabaseConnection $db, $username)
             $type = $set['type'];
             if ($type == 'group') {
                 $res = $db->select_query("setdata.\"subject\", setdata.\"size\", extsetdata.\"value\", \"groupID\" FROM (setdata LEFT JOIN extsetdata ON "
-                    . " setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_GROUP . "') where \"ID\" = '$setID'", 1);
+                    . " setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_GROUP . "') where \"ID\" = ?", 1, array($setID));
                 if ($res === FALSE) {
                     continue;
                 }
@@ -286,7 +285,7 @@ function display_basket(DatabaseConnection $db, $username)
                 }
             } elseif ($type == 'rss') {
                 $res = $db->select_query("\"setname\", \"size\", extsetdata.\"value\", \"rss_id\"  FROM (rss_sets LEFT JOIN extsetdata ON " .
-                    "rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_RSS . "') WHERE rss_sets.\"setid\" = '$setID'", 1);
+                    "rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_RSS . "') WHERE rss_sets.\"setid\" = ?", 1, array($setID));
                 if ($res === FALSE) {
                     continue;
                 }
@@ -300,7 +299,7 @@ function display_basket(DatabaseConnection $db, $username)
                 $show_merge = FALSE;
             } elseif ($type == 'spot') {
                 $res = $db->select_query("\"title\", \"size\", extsetdata.\"value\", \"spotid\", \"category\" FROM spots LEFT JOIN extsetdata ON " .
-                    "spots.\"spotid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_SPOT . "' WHERE spots.\"spotid\" = '$setID'", 1);
+                    "spots.\"spotid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_SPOT . "' WHERE spots.\"spotid\" = ?", 1, array($setID));
                 if ($res === FALSE) {
                     continue;
                 }
@@ -326,12 +325,13 @@ function display_basket(DatabaseConnection $db, $username)
             }
             if ($dl_dir == '' && ($groupid != 0 || $feedid != 0 || $spot_cat >= 0 || $category != '') && $dltype !== NULL) {
                 if ($dltype == USERSETTYPE_GROUP) {
-                    list($dl_dir) = get_user_dlpath($db, FALSE, $groupid, $dltype, $username, $bettersetname, 'DOWNLOAD', $setID, $category);
+                    list($dl_dir) = get_user_dlpath($db, FALSE, $groupid, $dltype, $userid, $bettersetname, 'DOWNLOAD', $setID, $category);
                 } elseif ($dltype == USERSETTYPE_RSS) {
-                    list($dl_dir) = get_user_dlpath($db, FALSE, $feedid, $dltype, $username, $bettersetname, 'DOWNLOAD', $setID, $category);
+                    list($dl_dir) = get_user_dlpath($db, FALSE, $feedid, $dltype, $userid, $bettersetname, 'DOWNLOAD', $setID, $category);
                 } else {
-                    list($dl_dir) = get_user_dlpath($db, FALSE, $spot_cat, $dltype, $username, $bettersetname, 'DOWNLOAD', $setID, $category);
+                    list($dl_dir) = get_user_dlpath($db, FALSE, $spot_cat, $dltype, $userid, $bettersetname, 'DOWNLOAD', $setID, $category);
                 }
+                $username = get_username($db, $userid);
                 $base_dlpath = get_dlpath($db);
                 $base_dlpath = $base_dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
                 $dl_dir = substr($dl_dir, strlen($base_dlpath));
@@ -355,10 +355,10 @@ function display_basket(DatabaseConnection $db, $username)
     }
     list($size, $suffix) = format_size($totalsize, 'h', $LN['byte_short'], 1024, 1);
     $totalsize = $size . $suffix;
-    $directories = get_directories($db, $username);
+    $directories = get_directories($db, $userid);
     // only show the merge button if it is useful. IE when there are 2 or more sets and all of them are from groups (not RSS/Spots)
     $show_merge = ($show_merge && count($addedsets) >= 2);
-    $default_basket_type = get_pref($db, 'basket_type', $username, basket_type::LARGE);
+    $default_basket_type = get_pref($db, 'basket_type', $userid, basket_type::LARGE);
     $basket_type = get_request('basket_type', $default_basket_type);
     $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL ? basket_type::SMALL : basket_type::LARGE);
     init_smarty('', 0);
@@ -371,7 +371,7 @@ function display_basket(DatabaseConnection $db, $username)
     $smarty->assign('addedsets',        $addedsets);
     $smarty->assign('directories',      $directories);
     $smarty->assign('totalsize',        $totalsize);
-    $smarty->assign('maxstrlen',        get_pref($db, 'maxsetname', $username));
+    $smarty->assign('maxstrlen',        get_pref($db, 'maxsetname', $userid));
     if ($basket_type == basket_type::SMALL) {
         $smarty->display('ajax_showminibasket.tpl');
     } else {

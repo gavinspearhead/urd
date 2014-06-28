@@ -15,15 +15,15 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_admin_users.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_admin_users.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
 <div>
-<input type="hidden" name="order" id="order" value="{$sort}"/>
-<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir}"/>
+<input type="hidden" name="order" id="order" value="{$sort|escape:htmlall}"/>
+<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
 </div>
 
 
@@ -39,7 +39,6 @@
 {if $sort == "active"}{if $sort_dir=='desc'}{$active_sort=$up}{else}{$active_sort=$down}{/if}{else}{$active_sort=""}{/if}
 {if $sort == "name"}{if $sort_dir=='desc'}{$name_sort=$up}{else}{$name_sort=$down}{/if}{else}{$name_sort=""}{/if}
 
-
 <table class="articles">
 <tr>
 <th onclick="javascript:submit_search_users('id', 'asc');" class="buttonlike head round_left"># {$id_sort}</th>
@@ -54,7 +53,7 @@
 <th class="head round_right right">{$LN_actions}</th>
 </tr>
 {foreach $users as $user}
-<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 	<td>{$user->id|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->username|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->fullname|escape:htmlall|truncate:$maxstrlen}</td>
@@ -85,6 +84,8 @@
 	</td>
 </tr>
 {foreachelse}
+{if $only_rows == 0}
 <tr><td colspan="9" class="centered highlight textback">{$LN_error_nousersfound}</td></tr>
+{/if}
 {/foreach}
 </table>

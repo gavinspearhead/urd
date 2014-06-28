@@ -28,59 +28,56 @@ if (!defined('ORIGINAL_PAGE')) {
 $pathidx = realpath(dirname(__FILE__));
 
 require_once "$pathidx/../functions/html_includes.php";
-require_once "$pathidx/../functions/menu.php";
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
 
 verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE, '', $userid, FALSE);
-
 $add_menu = NULL;
 
 if ($isadmin) {
     $add_menu = array (
         'actions'=>
         array(
-            new menu_item2 ('updatespots','adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotscomments','adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotsimages','adminupdate_spotsimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-
-            new menu_item2 ('expirespots','expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('purgespots','purge', urd_modules::URD_CLASS_SPOTS, $LN['adminpurge_spots'], 'command')
+            new menu_item2 ('updatespots', 'adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('updatespotscomments', 'adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('updatespotsimages', 'adminupdate_spotsimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('expirespots', 'expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('purgespots', 'purge', urd_modules::URD_CLASS_SPOTS, $LN['adminpurge_spots'], 'command')
         )
     );
 } elseif (urd_user_rights::is_updater($db, $userid)) {
     $add_menu = array (
         'actions'=>
         array(
-            new menu_item2 ('updatespots','adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotscomments','adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotsimages','adminupdate_spotimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('expirespots','expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('updatespots', 'adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('updatespotscomments', 'adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('updatespotsimages', 'adminupdate_spotimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2 ('expirespots', 'expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
         )
     );
 }
 
-$add_menu ['actions'][] = new menu_item2 ('add_search','add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
-$add_menu ['actions'][] = new menu_item2 ('delete_search','delete_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
+$add_menu['actions'][] = new menu_item2 ('add_search', 'add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
+$add_menu['actions'][] = new menu_item2 ('delete_search', 'delete_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
 
 $saved_searches = new saved_searches($userid);
 $saved_searches->load($db);
 $type = USERSETTYPE_SPOT;
 
+$search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
+
 $saved_search = get_request('saved_search', '');
-if ($saved_search == '') {
+if ($saved_search == '' && $_POST == array() && $_GET == array()) {
     $saved_search = get_pref($db, 'default_spot', $userid, '');
 }
-
-$ori_categoryID = $categoryID = get_request('categoryID', '');
+$ori_categoryID = $categoryID = get_request('categoryID', '', 'is_numeric');
 try {
     $ori_categoryID = $categoryID = $saved_searches->get_search_by_name($saved_search, $type);
 } catch (exception $e) { // ignore
     $saved_search = '';
 }
-
 $categories = SpotCategories::get_categories();
 
 if (!in_array($categoryID, SpotCategories::get_category_ids())) {
@@ -114,7 +111,6 @@ $title = $LN['browse_download'] . ' ' . $LN['from'] . ' ' . $totbin . ' ' . $LN[
 
 // Get the required values:
 // ori = passed back to the front-end, these are used in the database (backend):
-$search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
 
 list($minsetsizelimit, $maxsetsizelimit) = get_size_limits_spots($db);
 list($minagelimit, $maxagelimit) = get_age_limits_spots($db);
@@ -123,29 +119,29 @@ $maxsetsizelimit = nearest($maxsetsizelimit / (1024 * 1024), TRUE);
 $minagelimit = nearest($minagelimit / (3600 * 24), FALSE);
 $maxagelimit = nearest($maxagelimit / (3600 * 24), TRUE);
 
-$offset  = get_request('offset', 0);
+$offset  = get_request('offset', 0, 'is_numeric');
 $order   = get_request('order', '');
 $flag    = get_request('flag', '');
-$maxage  = get_request('maxage', $maxagelimit);
-$minage  = get_request('minage', $minagelimit);
+$maxage  = get_request('maxage', $maxagelimit, 'is_numeric');
+$minage  = get_request('minage', $minagelimit, 'is_numeric');
 $minsetsize = get_pref($db, 'minsetsize', $userid, 0) / (1024 * 1024);
 $maxsetsize = get_pref($db, 'maxsetsize', $userid, 0) / (1024 * 1024);
-if ($maxsetsize <= 0) {
+if (!is_numeric($maxsetsize) || $maxsetsize <= 0) {
     $maxsetsize = $maxsetsizelimit;
 }
-if ($minsetsize <= 0) {
+if (!is_numeric($minsetsize) || $minsetsize <= 0) {
     $minsetsize = $minsetsizelimit;
 }
-$minsetsize = get_request('minsetsize', $minsetsize);
-$maxsetsize = get_request('maxsetsize', $maxsetsize);
+$minsetsize = get_request('minsetsize', $minsetsize, 'is_numeric');
+$maxsetsize = get_request('maxsetsize', $maxsetsize, 'is_numeric');
 $poster     = get_request('poster', '');
-$maxrating  = get_request('maxrating', 10);
-$minrating  = get_request('minrating', 0);
-$maxcomplete = get_request('maxcomplete', '');
-$mincomplete = get_request('mincomplete', '');
+$maxrating  = get_request('maxrating', 10, 'is_numeric');
+$minrating  = get_request('minrating', 0, 'is_numeric');
+$maxcomplete = get_request('maxcomplete', '', 'is_numeric');
+$mincomplete = get_request('mincomplete', '', 'is_numeric');
 
 if ($order == '') {
-    $order = map_default_sort($prefs, array('subject'=> 'title', 'date'=>'stamp', 'better_subject'=>'title'));
+    $order = map_default_sort($prefs, array('subject' => 'title', 'date' => 'stamp', 'better_subject' => 'title'));
 }
 $spotid = get_request('spotid', '');
 

@@ -23,7 +23,7 @@
  *}
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
 <div class="set_title centered">{$title|escape}</div>
-<div class="sets_inner" onmouseup="javascript:start_quickmenu('setdetails', '', 0, event);" id="td_sets">
+<div class="sets_inner" onmouseup="javascript:start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, event);" id="td_sets">
 {if $show_image && $image != '' && $image_from_db == 0}
 <div class="spot_thumbnail noborder buttonlike"><img src="{$image}" class="max100x100" alt="" onclick="javascript:jump('{$image|escape:javascript}', true);"/> </div>
 {/if}
@@ -33,11 +33,14 @@
 {if  $show_image && $image_file != ''}
 <div class="spot_thumbnail noborder buttonlike"><img src="getfile.php?raw=1&amp;file={$image_file}" class="max100x100" alt="" onclick="javascript:show_spot_image('getfile.php?file={$image_file}&amp;raw=1', true);"/></div>
 {/if}
+<input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
+
 <table class="set_details">
 <tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
-<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td class="buttonlike" onclick="javascript: load_sets({ 'poster':'{$poster|escape:javascript}' });">{$poster|escape} ({$spotter_id}){if $whitelisted}&nbsp;<div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">W</div>{/if}</td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td class="buttonlike" onclick="javascript:load_sets({ 'poster':'{$poster|escape:javascript}' });">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;<div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">W</div>{/if}</td></tr>
+
 {foreach $subcata as $k=>$cat}<tr class="comment"><td class="nowrap bold">{$k}:</td>
 <td>
 {foreach $cat as $val}
@@ -72,18 +75,18 @@
 {/capture}
 
 {if $tag != ''}
-<tr class="comment"><td class="nowrap bold">{$LN_spots_tag}:</td><td class="buttonlike" onclick="javascript: load_sets({ 'search':'{$tag|escape:javascript}' });">{$tag|escape}</td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_spots_tag}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'search':'{$tag|escape:javascript}' });">{$tag|escape}</span></td></tr>
 {/if}
 {if $url != ''}
-<tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td><span class="buttonlike" onclick="javascript:jump('{$url|escape:javascript}',1);">{$url}</span></td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td><span class="buttonlike" onclick="javascript:jump('{$url|escape:javascript}',1);">{$url|escape}</span></td></tr>
 {/if}
 {if $image != ''}
-<tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image}</span></td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image|escape}</span></td></tr>
 {/if}
 <tr class="comment"><td class="nowrap bold">{$LN_category}:</td><td class="buttonlike" onclick="javascript: load_sets({ 'spot_cat':'{$category_id|escape:javascript}' });">{$category|escape}</td></tr>
-{if $subcat != 0} <tr class="comment"><td class="nowrap bold">{$LN_spot_subcategory}:</td><td>{$subcat|escape}</td></tr> {/if}
+{if $subcat != 0} <tr class="comment"><td class="nowrap bold">{$LN_spot_subcategory}:</td><td>{$subcat|escape}</td></tr>{/if}
 <tr class="comment"><td class="nowrap bold">{$LN_spam_reports}:</td><td>
-{if $spam_reports gt 0}<div class="highlight_spam inline center width15">{$spam_reports}</div>
+{if $spam_reports gt 0}<div class="highlight_spam inline center width15">{$spam_reports|escape}</div>
 {else}0{/if}
 </td></tr>
 {if $looped > 0}
@@ -96,8 +99,12 @@
 <tr class="comment"><td colspan="2"><br/></td></tr>
 
 {foreach $comments as $comment}
-<tr class="comment_poster"><td colspan="2">{$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape}) <div class="floatright"> @ {$comment.stamp}</div></td></tr>
-<tr class="comment"><td colspan="2">{$comment.comment|escape}</td></tr>
+<tr class="comment_poster"><td colspan="2">
+<div class="floatleft">{$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape})&nbsp; </div>
+<div class="floatright"> @ {$comment.stamp|escape}</div>
+<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:add_blacklist('{$comment.userid|escape:javascript}', 'spotterid');" {urd_popup type="small" text=$LN_quickmenu_addblacklist }></div>
+</td></tr>
+<tr class="comment"><td colspan="2">{$comment.comment}</td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
 {/foreach}
 

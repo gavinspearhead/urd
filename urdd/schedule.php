@@ -16,20 +16,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: schedule.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: schedule.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$pathschd = realpath(dirname(__FILE__));
-require_once "$pathschd/../functions/autoincludes.php";
-require_once "$pathschd/../functions/functions.php";
 
 class job
 {
@@ -77,9 +73,18 @@ class schedule
     {
         $this->jobs = array();
     }
-    public function size ()
+    public function size()
     {
         return count($this->jobs);
+    }
+    public function has_equal(action $action)
+    {
+        foreach ($this->jobs as $k=>$j) {
+            if ($j->get_action()->is_equal($action->get_command_code(), $action->get_args())) {
+                return TRUE;
+            }
+        }
+        return FALSE;
     }
     public function add(DatabaseConnection $db, job $job)
     {
@@ -88,7 +93,7 @@ class schedule
         $action = $job->get_action();
         $userid = $action->get_userid();
         $cmd = $action->get_command() . ' ' . $action->get_args();
-        if ( !($repeat > 0)) {
+        if (!($repeat > 0)) {
             $repeat = NULL;
         }
 
@@ -120,7 +125,6 @@ class schedule
         foreach ($this->jobs as $j) {
             $action = $j->get_action();
             $job['id'] = $action->get_id();
-            $job['username'] = $action->get_username();
             $job['userid'] = $action->get_userid();
             $job['command'] = $action->get_command();
             $job['args'] = $action->get_args();
@@ -200,7 +204,7 @@ class schedule
         $kk = array();
         foreach ($this->jobs as $k => $j) {
             $a = $j->get_action();
-            if (strcasecmp($a->get_command(),$cmd) == 0  && (strcasecmp($a->get_args(), $arg) == 0 || strcasecmp($arg, '__all') == 0)
+            if (strcasecmp($a->get_command(),$cmd) == 0 && (strcasecmp($a->get_args(), $arg) == 0 || strcasecmp($arg, '__all') == 0)
                 && $a->match_userid($userid)) {
                 $kk[] = $k;
             }

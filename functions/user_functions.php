@@ -26,9 +26,15 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
+$pathusf = realpath(dirname(__FILE__));
+require_once "$pathusf/libs/rsa.php";
+require_once "$pathusf/libs/signing/signing_base.php";
+require_once "$pathusf/libs/signing/signing_openssl.php";
+require_once "$pathusf/libs/signing/signing_php.php";
+
 class urd_user_rights
 {
-    const RIGHTS_STR ='cCrRuUdDPpAaFfEeMm';
+    const RIGHTS_STR = 'cCrRuUdDPpAaFfEeMm';
     // C: seteditor
     // R: unused
     // U: unused
@@ -41,17 +47,12 @@ class urd_user_rights
 
     public static function check_rights(DatabaseConnection $db, $userid, $rights)
     {
+        assert(is_numeric($userid));
         $seteditorrights = "%$rights%";
-        $db->escape($seteditorrights, TRUE);
         $search_type = $db->get_pattern_search_command('LIKE'); // postgres doesn't like regexp, but uses similar .... I just love standards
-        $db->escape($userid, TRUE);
 
-        if (!is_numeric($userid)) {
-            $qry = "\"rights\" FROM users WHERE \"ID\" = $userid AND \"rights\" $search_type $seteditorrights";
-        } else {
-            $qry = "\"rights\" FROM users WHERE \"name\" = $userid AND \"rights\" $search_type $seteditorrights";
-        }
-        $rv = $db->select_query($qry);
+        $qry = "\"rights\" FROM users WHERE \"id\"=? AND \"rights\" $search_type ?";
+        $rv = $db->select_query($qry, array($userid, $seteditorrights));
 
         return ($rv === FALSE) ? FALSE : TRUE;
     }
@@ -61,50 +62,42 @@ class urd_user_rights
         return (strspn($rights, self::RIGHTS_STR) != strlen($rights)) ? FALSE : TRUE;
     }
 
-
     public static function is_autodownloader(DatabaseConnection $db, $userid)
     {
         return self::check_rights($db, $userid, 'A');
     }
-
 
     public static function is_adult(DatabaseConnection $db, $userid)
     {
         return self::check_rights($db, $userid, 'E');
     }
 
-
     public static function is_updater(DatabaseConnection $db, $userid)
     {
         return self::check_rights($db, $userid, 'M');
     }
-
 
     public static function is_seteditor(DatabaseConnection $db, $userid)
     {
         return self::check_rights($db, $userid, 'C');
     }
 
-
     public static function is_poster(DatabaseConnection $db, $userid)
     {
         return self::check_rights($db, $userid, 'P');
     }
-
 
     public static function is_file_editor(DatabaseConnection $db, $userid)
     {
         return self::check_rights($db, $userid, 'F');
     }
 
-
     public static function set_user_rights(DatabaseConnection $db, $userid, $right, $value)
     {
         global $LN;
         assert(is_numeric($userid));
-        $db->escape($userid, TRUE);
-        $qry = "\"rights\" FROM users WHERE \"ID\" = $userid";
-        $rv = $db->select_query($qry);
+        $qry = '"rights" FROM users WHERE "ID"=?';
+        $rv = $db->select_query($qry, array($userid));
         if (!isset($rv[0]['rights'])) {
             throw new exception($LN['error_nosuchuser']);
         }
@@ -115,22 +108,15 @@ class urd_user_rights
             $rights .= $right;
         }
         $rights = trim($rights);
-        $db->escape($rights, TRUE);
-        $qry = "UPDATE users SET \"rights\" = $rights WHERE \"ID\" = $userid";
-        $rv = $db->execute_query($qry);
+        $rv = $db->update_query_2('users', array('rights'=>$rights), '"ID"=?', array($userid));
     }
 
-
-    public static function is_admin(DatabaseConnection $db, $username)
+    public static function is_admin(DatabaseConnection $db, $userid)
     {
-        if (is_numeric($username)) {
-            $qry = "\"isadmin\" FROM users WHERE \"ID\" = $username";
-        } else {
-            $db->escape($username, TRUE);
-            $qry = "\"isadmin\" FROM users WHERE \"name\" = $username";
-        }
-        $rv = $db->select_query($qry);
-        if ($rv === FALSE) {
+        assert(is_numeric($userid));
+        $qry = '"isadmin" FROM users WHERE "ID" = ?';
+        $rv = $db->select_query($qry, array($userid));
+        if (!is_array($rv)) {
             return FALSE;
         }
         if ($rv[0]['isadmin'] >= 1) {
@@ -139,28 +125,26 @@ class urd_user_rights
 
         return FALSE;
     }
-    public static function has_rights(DatabaseConnection $db, $username, $rights)
+
+    public static function has_rights(DatabaseConnection $db, $userid, $rights)
     {
         if ($rights == '') {
             return FALSE;
         }
         $perm = TRUE;
-        for ($i = 0;  $i < strlen($rights); $i++) {
-            $perm = $perm && urd_user_rights::check_rights($db, $username, $rights[$i]);
+        for ($i = 0; $i < strlen($rights); $i++) {
+            $perm = $perm && urd_user_rights::check_rights($db, $userid, $rights[$i]);
         }
 
         return $perm;
     }
 }
 
-
 function valid_username($username, $may_exist=0)
 { // may_exist: 0 -- don't care, 1 must exist, 2 must not exist
     if ($may_exist != 0) {
         global $db, $LN;
-        $db_username = $username;
-        $db->escape($db_username, TRUE);
-        $res = $db->select_query("\"ID\" FROM users WHERE \"name\" = $db_username");
+        $res = $db->select_query('"ID" FROM users WHERE "name"=?', array($username));
         if ($res !== FALSE && $may_exist == 2) {
             throw new exception($LN['error_userexists'], ERR_INVALID_USERNAME);
         } elseif ($res === FALSE && $may_exist == 1) {
@@ -171,25 +155,23 @@ function valid_username($username, $may_exist=0)
         return FALSE;
     }
 
-    return ((preg_match('/^([A-Za-z_0-9]){3,}$/', $username) === 1) && (strtolower($username) != 'root'));
+    return ((preg_match('/^([A-Za-z_0-9]){3,}$/', $username) == 1) && (strtolower($username) != 'root'));
 }
 
 function create_root(DatabaseConnection $db)
 {
     $db->insert_query('users', array('name', 'fullname', 'email', 'pass', 'ipaddr', 'isadmin', 'active','regtime', 'rights', 'salt'),
             array('root', '', '', 'nologin', '', user_status::USER_ADMIN, user_status::USER_INACTIVE,0, '', ''));
-    $query = 'UPDATE users SET "ID"=' . user_status::SUPER_USERID . ' WHERE "name"=\''. user_status::SUPER_USER . '\''; // force the user ID to 0 doesn't always do that by default due to auto inc
-    $db->execute_query($query);
+    $db->update_query('users', array('ID'), array(user_status::SUPER_USERID), 'name=?', array(user_status::SUPER_USER) ); // force the user ID to 0 doesn't always do that by default due to auto inc
     $pref_array = get_default_config();
     foreach ($pref_array as $var => $val) {
-        $db->insert_query('preferences', array ('userID', 'option', 'value'), array (user_status::SUPER_USERID, $var, $val));
+        $db->insert_query('preferences', array ('userID', 'option', 'value'), array(user_status::SUPER_USERID, $var, $val));
     }
 }
 
-
 function verify_email($email)
 { // nasty function but hey it works ;-)
-    $expr = '[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+)*@((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|gov|mil|biz|int|mobi|name|aero|biz|info|jobs|museum|asia|arpa|cat|coop|edu|pro|tel|travel)|localhost)\b';
+    $expr = '[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+)*@((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|gov|mil|biz|int|mobi|name|aero|biz|info|jobs|museum|asia|arpa|cat|coop|edu|pro|tel|travel|academy|agency|bargains|bid|bike|blue|email|eus|guru|xyz|zone|works|wiki|wed|webcam|watch|voyage|villas|viajes|ventures|vacation|uno|travel|training|trade|today|tips|tienda|tel|technology|tattoo|systems|support)|localhost)\b';
 
     return preg_match("/^$expr$/i", $email) == 1;
 }
@@ -222,17 +204,14 @@ function update_user(DatabaseConnection $db, $userid, $username, $fullname, $ema
         set_password($db, $userid, $password, FALSE);
     }
 
-    $db->escape($userid, TRUE);
 
-    $res = $db->select_query("\"ID\" FROM users WHERE \"ID\"=$userid", 1);
+    $res = $db->select_query('"ID" FROM users WHERE "ID"=?', 1, array($userid));
     if ($res === FALSE) {
         throw new exception ($LN['error_nosuchuser'] . ": $userid");
-
-        return FALSE;
     }
     $cols = array('name', 'fullname', 'email', 'isadmin', 'active', 'rights');
     $vals = array($username, $fullname, $email, $isadmin, $active, $rights);
-    $db->update_query('users', $cols, $vals, "\"ID\"=$userid");
+    $db->update_query('users', $cols, $vals, '"ID"=?', array($userid));
     if ($db->get_error_code() != 0) {
         throw new exception($LN['error_userexists'], ERR_ACCESS_DENIED);
     }
@@ -242,9 +221,8 @@ function update_user(DatabaseConnection $db, $userid, $username, $fullname, $ema
 
 function check_user(DatabaseConnection $db, $username)
 {
-    $db->escape($username, TRUE);
-    $query = "\"ID\" FROM users WHERE \"name\"=$username";
-    $res = $db->select_query($query, 1);
+    $query = '"ID" FROM users WHERE "name"=?';
+    $res = $db->select_query($query, 1, array($username));
 
     return (isset($res[0]['ID'])) ? TRUE : FALSE;
 }
@@ -254,7 +232,7 @@ function add_user(DatabaseConnection $db, $username, $fullname, $email, $passwor
     global $LN;
     if ($plain_password === TRUE) {
         $salt = generate_password(8);
-        $password = hash('sha256', $salt. $password . $salt);
+        $password = hash('sha256', $salt . $password . $salt);
     }
     $fullname = clean_fullname($fullname);
     $o_username = $username = trim($username);
@@ -268,17 +246,20 @@ function add_user(DatabaseConnection $db, $username, $fullname, $email, $passwor
         throw new exception('Rights are Wrong!', ERR_ACCESS_DENIED); // XXX make lang thingie
     }
 
-    $db->escape($username, TRUE);
-    $res = $db->select_query("\"ID\" FROM users WHERE \"name\" = $username", 1);
+    $res = $db->select_query('"ID" FROM users WHERE "name"=?', 1, array($username));
     if ($res !== FALSE) {
         throw new exception($LN['error_userexists'], ERR_INVALID_USERNAME);
     }
 
     $time = time();
-    $cols = array('name', 'fullname', 'email', 'pass', 'isadmin', 'active', 'regtime', 'rights', 'salt');
-    $vals = array($o_username, $fullname, $email, $password, $isadmin, $active, $time, $rights, $salt);
+
+    $user_key = generate_keypair();
+    $publickey = $user_key['public'];
+    $privatekey = $user_key['private'];
+    $cols = array('name', 'fullname', 'email', 'pass', 'isadmin', 'active', 'regtime', 'rights', 'salt', 'publickey', 'privatekey');
+    $vals = array($o_username, $fullname, $email, $password, $isadmin, $active, $time, $rights, $salt, $publickey, $privatekey);
     $db->insert_query('users', $cols, $vals);
-    $res = $db->select_query("\"ID\" FROM users WHERE \"name\" = $username");
+    $res = $db->select_query('"ID" FROM users WHERE "name"=?', array($username));
     if ($res === FALSE) {
         return FALSE;
     }
@@ -310,29 +291,20 @@ function delete_user(DatabaseConnection $db, $userid)
         throw new exception($LN['error_nodeleteroot']);
     }
 
-    $db->escape($userid, TRUE);
-    $db->delete_query('users', "\"ID\"=$userid");
-    $db->delete_query('preferences', "\"userID\"=$userid");
-    $db->delete_query('usergroupinfo', "\"userID\"=$userid");
-    $db->delete_query('userfeedinfo', "\"userID\"=$userid");
-    $db->delete_query('usersetinfo', "\"userID\"=$userid");
-    $db->delete_query('categories', "\"userID\"=$userid");
+    $db->delete_query('users', '"ID"=?', array($userid));
+    $db->delete_query('preferences', '"userid"=?', array($userid));
+    $db->delete_query('usergroupinfo', '"userid"=?', array($userid));
+    $db->delete_query('userfeedinfo', '"userid"=?', array($userid));
+    $db->delete_query('usersetinfo', '"userID"=?', array($userid));
+    $db->delete_query('categories', '"userid"=?', array($userid));
 }
 
 function get_active_users(DatabaseConnection $db)
 {
-    $sql = "SELECT \"ID\" FROM users WHERE \"active\" = '" . user_status::USER_ACTIVE . "'";
+    $sql = '"ID" FROM users WHERE "active" = ?';
 
-    return $db->execute_query($sql);
+    return $db->select_query($sql, array(user_status::USER_ACTIVE));
 }
-
-function get_effective_username(DatabaseConnection $db, $username)
-{
-    $isadmin = urd_user_rights::is_admin($db, $username);
-
-    return $isadmin ? user_status::SUPER_USER : $username;
-}
-
 
 function get_effective_userid(DatabaseConnection $db, $userid)
 {
@@ -345,40 +317,31 @@ function get_effective_userid(DatabaseConnection $db, $userid)
 function set_login_ip(DatabaseConnection $db, $ipaddr, $userid)
 {
     assert(is_numeric($userid));
-    $db->escape($ipaddr, TRUE);
-    $db->escape($userid, TRUE);
-    $sql = "UPDATE users SET \"ipaddr\" = $ipaddr WHERE \"ID\" = $userid";
-    $db->execute_query($sql);
+    $db->update_query_2('users', array('ipaddr'=>$ipaddr), '"ID"=?', array($userid));
 }
 
 function set_last_login(DatabaseConnection $db, $last_login, $userid)
 {
     assert(is_numeric($userid) && is_numeric($last_login));
-    $db->escape($last_login, TRUE);
-    $db->escape($userid, TRUE);
-    $db->execute_query("UPDATE users SET \"last_login\" = $last_login WHERE \"ID\" = $userid");
+    $db->update_query_2('users', array('last_login'=>$last_login), '"ID"=?', array($userid));
 }
 
 function set_last_active(DatabaseConnection $db, $last_active, $userid)
 {
     assert(is_numeric($userid) && is_numeric($last_active));
-    $db->escape($last_active, TRUE);
-    $db->escape($userid, TRUE);
-    $db->execute_query("UPDATE users SET \"last_active\" = $last_active WHERE \"ID\" = $userid");
+    $db->update_query_2('users', array('last_active'=>$last_active), '"ID"=?', array($userid));
 }
 
 function get_username(DatabaseConnection $db, $userid)
 {
-    $db->escape($userid, TRUE);
-    $res = $db->select_query("\"name\" FROM users WHERE \"ID\"=$userid", 1);
+    $res = $db->select_query('"name" FROM users WHERE "ID"=?', 1, array($userid));
 
-    return ($res === FALSE) ? FALSE : $res[0]['name'];
+    return (!isset($res[0]['name'])) ? FALSE : $res[0]['name'];
 }
 
 function get_userid(DatabaseConnection $db, $username)
 {
-    $db->escape($username, TRUE);
-    $res = $db->select_query("\"ID\" FROM users WHERE \"name\"=$username", 1);
+    $res = $db->select_query('"ID" FROM users WHERE "name"=?', 1, array($username));
 
     return isset($res[0]['ID']) ? $res[0]['ID'] : FALSE;
 }
@@ -386,9 +349,9 @@ function get_userid(DatabaseConnection $db, $username)
 function get_all_userids(DatabaseConnection $db)
 {
     global $LN;
-    $sql = ' "ID" FROM users WHERE "ID" > 0';
+    $sql = '"ID" FROM users WHERE "ID" > 0';
     $res = $db->select_query($sql);
-    if ($res === FALSE) {
+    if (!is_array($res)) {
         throw new exception($LN['error_nousersfound'] );
     }
     $ids = array();
@@ -404,7 +367,7 @@ function get_all_users_full(DatabaseConnection $db)
     global $LN;
     $sql = '* FROM users WHERE "ID" > 0';
     $res = $db->select_query($sql);
-    if ($res === FALSE) {
+    if (!is_array($res)) {
         throw new exception($LN['error_nousersfound']);
     }
 
@@ -416,7 +379,7 @@ function get_all_users(DatabaseConnection $db)
     global $LN;
     $sql = '"name" FROM users WHERE "ID" > 0';
     $res = $db->select_query($sql);
-    if ($res === FALSE) {
+    if (!is_array($res)) {
         throw new exception($LN['error_nousersfound']);
     }
     $names = array();
@@ -430,13 +393,11 @@ function get_all_users(DatabaseConnection $db)
 function get_salt(DatabaseConnection $db, $username)
 {
     assert ($username != '');
-    $db->escape($username, TRUE);
-    $sql = "\"salt\" FROM users WHERE \"name\" = $username AND \"active\" = '". user_status::USER_ACTIVE ."'";
-    $res = $db->select_query($sql, 1);
-
-    if ($res === FALSE) { // no valid user found
+    $sql = '"salt" FROM users WHERE "name"=? AND "active"=?';
+    $res = $db->select_query($sql, 1, array($username, user_status::USER_ACTIVE));
+    if (!isset($res[0]['salt'])) { // no valid user found
         global $LN;
-        throw new exception($LN['error_nosuchuser'], ERR_NO_SUCH_SERVER);
+        throw new exception($LN['error_nosuchuser'], ERR_NO_SUCH_USER);
     }
 
     return $res[0]['salt'];
@@ -477,3 +438,84 @@ function get_admin_userid(DatabaseConnection $db)
 
     return $res[0]['ID'];
 }
+
+function set_user_keys(DatabaseConnection $db, $userid, $user_key)
+{
+    $publickey = $user_key['public'];
+    $privatekey = $user_key['private'];
+    $rv = $db->update_query_2('users', array('publickey'=>$publickey, 'privatekey'=>$privatekey), '"ID"=?', array($userid));
+
+}
+
+function generate_keypair()
+{
+    global $pathusf;
+    $signing = Services_Signing_Base::factory();
+    $keypair = $signing->createPrivateKey($pathusf . '/libs/signing/openssl.cnf');
+
+    return $keypair;
+}
+
+function generate_server_keys(DatabaseConnection $db)
+{
+    echo_debug_function(DEBUG_MAIN, __FUNCTION__);
+    if (get_config($db, 'privatekey', '') == '' || get_config($db, 'publickey', '') == '') {
+        $server_key = generate_keypair();
+        set_config($db, 'privatekey', $server_key['private']);
+        set_config($db, 'publickey', $server_key['public']);
+    }
+}
+
+function generate_user_keys(DatabaseConnection $db)
+{
+    echo_debug_function(DEBUG_MAIN, __FUNCTION__);
+    $sql = '"ID" FROM users WHERE "ID" > 0 AND ( "privatekey" = \'\' OR "publickey" = \'\' )';
+    $res = $db->select_query($sql);
+    if (!is_array($res)) {
+        return;
+    }
+    foreach ($res as $user) {
+        $userid = $user['ID'];
+        $user_key = generate_keypair();
+        set_user_keys($db, $userid, $user_key);
+    }
+}
+
+function get_user_public_key(DatabaseConnection $db, $userid)
+{
+    $sql = '"publickey" FROM users WHERE "ID"=?';
+    $res = $db->select_query($sql, 1, array($userid));
+    if (isset($res[0]['publickey'])) {
+        return $res[0]['publickey'];
+    }
+
+    return FALSE;
+}
+
+function get_user_private_key(DatabaseConnection $db, $userid)
+{
+    $sql = '"privatekey" FROM users WHERE "ID" = ?';
+    $res = $db->select_query($sql, 1, array($userid));
+    if (isset($res[0]['privatekey'])) {
+        return $res[0]['privatekey'];
+    }
+
+    return FALSE;
+}
+
+function pubkey_to_xml(array $pubkey)
+{
+    return '<RSAKeyValue><Modulus>' . $pubkey['modulo'] . '</Modulus><Exponent>' . $pubkey['exponent'] . '</Exponent></RSAKeyValue>';
+}
+
+function verify_password($password)
+{
+    global $LN;
+    $len = strlen($password);
+    if ($len < MIN_PASSWORD_LENGTH) {
+        return $LN['error_pwlength'];
+    }
+
+    return TRUE;
+}
+

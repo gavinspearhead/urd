@@ -34,7 +34,7 @@
 <ul class="tabs">
 <li onclick="javascript:toggle_table('feedstable', 'user', 'admin')" id="button_global" class="tab{if $page_tab == 'admin'} tab_selected{/if}">{$LN_global_settings}</li>
 <li onclick="javascript:toggle_table('feedstable', 'admin', 'user')" id="button_user" class="tab{if $page_tab != 'admin'} tab_selected{/if}">{$LN_user_settings}
-<input type="hidden" id="page_tab" value="{$page_tab}"/>
+<input type="hidden" id="page_tab" value="{$page_tab|escape}"/>
 </li>
 </ul>
 </div>
@@ -60,15 +60,6 @@
 {/strip}
 {/capture}
 
-{strip}
-<h3 class="title">
-
-{if $unsubscribed eq 0}
-{$LN_ng_subscribed|escape}: {$LN_feeds_rss|escape}
-{else}
-{$LN_feeds_rss|escape}{/if}
-</h3>
-{/strip}
 
 <div id="bar">
 <div id="aform">
@@ -94,11 +85,10 @@
 {if $sort == "feedcount"}{if $sort_dir=='desc'}{$feedcount_sort=$up}{else}{$feedcount_sort=$down}{/if}{else}{$feedcount_sort=""}{/if}
 {if $sort == ""}{if $sort_dir=='desc'}{$_sort=$up}{else}{$_sort=$down}{/if}{else}{$_sort=""}{/if}
 
-
 <form method="post" id="rssfeedsform">
 <div class="hidden">
 <input type="hidden" name="order" id="order" value="{$sort|escape}"/>
-<input type="hidden" name="page" id="page1" value="{$page_tab}"/>
+<input type="hidden" name="page" id="page1" value="{$page_tab|escape}"/>
 <input type="hidden" name="order_dir" id="order_dir"  value="{$sort_dir|escape}"/>
 </div>
 
@@ -114,7 +104,8 @@
 <th {urd_popup type="small" text=$LN_feeds_tooltip_posts } class="general center buttonlike head" onclick="javascript:submit_rss_search('feedcount', 'desc');">{$LN_size} {$feedcount_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_adult } class="{$admin_hidden} admin buttonlike center head" onclick="javascript:submit_rss_search('adult', 'desc');">{$LN_ng_adult} {$adult_sort}</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_lastupdated } class="general center buttonlike head" onclick="javascript:submit_rss_search('last_updated', 'desc');">{$LN_feeds_lastupdated} {$last_updated_sort}</th>
-<th {urd_popup type="small" text=$LN_feeds_tooltip_expire } class="{$admin_hidden} admin center buttonlike head" onclick="javascript:submit_rss_search('expire', 'desc');">{$LN_feeds_expire_time} {$expire_sort}</th>
+<th {urd_popup type="small" text=$LN_feeds_tooltip_expire } class="{$admin_hidden} admin center buttonlike {if $isadmin == 0 or $urdd_online == 0 }round_right{/if}
+ head" onclick="javascript:submit_rss_search('expire', 'desc');">{$LN_feeds_expire_time} {$expire_sort}</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_visible } class="{$user_hidden} user center buttonlike head" onclick="javascript:submit_rss_search('visible', 'desc');">{$LN_feeds_visible} {$visible_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_minsetsize } class="{$user_hidden} user center buttonlike head round_right" onclick="javascript:submit_rss_search('minsetsize', 'desc');">{$LN_ng_minsetsize} {$minsetsize_sort}</th>
 {if $isadmin neq 0 and $urdd_online neq 0 }
@@ -126,12 +117,12 @@
 
 {foreach $allfeeds as $feed}
 <tr class="even content"
-	onmouseover="javascript:ToggleClass(this,'highlight2')" 
-	onmouseout="javascript:ToggleClass(this,'highlight2')">
+	onmouseover="javascript:$(this).toggleClass('highlight2')" 
+	onmouseout="javascript:$(this).toggleClass('highlight2')">
 <td class="general">{$feed.number}</td>
 <td class="general">
-{urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}"} 
-<input type="hidden" id="ng_id_{$feed.id}" value="{$feed.name}"/>
+{urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_rss('{$feed.id}');"} 
+<input type="hidden" id="ng_id_{$feed.id}" value="{$feed.name|escape}"/>
 </td>
 <td class="general"> 
 <span {if $feed.active_val eq $RSS_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('rsssets.php?feed_id=feed_{$feed.id}');"{/if}>
@@ -139,7 +130,7 @@
 
 </td>
 <td class="{$user_hidden} user center">
-	<select name="category[{$feed.id}]" id="category_{$feed.id}" >
+	<select name="category[{$feed.id}]" id="category_{$feed.id}" onchange="javascript:update_category('rss', {$feed.id});">
     <option value="0">{$LN_nocategory}</option>
     {foreach $categories as $item}		
     <option {if $item.id == $feed.category }selected="selected"{/if} value="{$item.id}">{$item.name|escape:htmlall}</option>
@@ -148,37 +139,37 @@
     </td>
 
 <td class="{$admin_hidden} admin"> 
-<span class="buttonlike" onclick="javascript:jump('{$feed.url}', 1);"> {$feed.url|escape|truncate:$maxstrlen}</span>
+<span class="buttonlike" onclick="javascript:jump('{$feed.url}', 1);">{$feed.url|escape|truncate:$maxstrlen}</span>
 </td>
 
 <td class="{$admin_hidden} admin center" {if $feed.authentication == 1 }{urd_popup type="small" text=$LN_usenet_needsauthentication }{/if}>
 {urd_checkbox value="{$feed.authentication}" name="feed_auth" id="auth_{$feed.id|escape}" readonly=1} 
 </td>
 
-<td class="general right">{$feed.feedcount}</td>
+<td class="general right">{$feed.feedcount|escape}</td>
 <td class="{$admin_hidden} admin center">
 
 {urd_checkbox value="{$feed.adult}" name="adult[{$feed.id}]" id="adult_{$feed.id}" readonly="{$isadmin eq 0}" post_js="update_adult('rss', '{$feed.id}')"} 
 </td>
 
-<td class="general right">{$feed.lastupdated}</td>
+<td class="general right">{$feed.lastupdated|escape}</td>
 <td class="{$admin_hidden} admin center">
-<input type="text" size="2" value="{$feed.expire}" name="expire[{$feed.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if}/>
+<input type="text" size="2" value="{$feed.expire}" name="expire[{$feed.id}]" id="expire_{$feed.id}"  {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('rss', 'expire', {$feed.id});"/>
 </td>
 <td class="{$user_hidden} user center">
-{urd_checkbox value="{$feed.visible}" name="visible[{$feed.id}]" id="visible_{$feed.id}"} 
+{urd_checkbox value="{$feed.visible}" name="visible[{$feed.id}]" id="visible_{$feed.id}" post_js="toggle_visibility('rss','{$feed.id}');"} 
 <td class="{$user_hidden} user center">
-<input type="text" size="3" value="{$feed.minsetsize}" name="minsetsize[{$feed.id}]"/>
-<input type="text" size="3" value="{$feed.maxsetsize}" name="maxsetsize[{$feed.id}]"/>
+<input type="text" size="3" value="{$feed.minsetsize|escape}" name="minsetsize[{$feed.id}]" id="user_minsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_minsetsize', {$feed.id});"/>
+<input type="text" size="3" value="{$feed.maxsetsize|escape}" name="maxsetsize[{$feed.id}]" id="user_maxsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_maxsetsize', {$feed.id});"/>
 </td>
 
 {if $isadmin neq 0 and $urdd_online neq 0}
 <td class="{$admin_hidden} admin center"> 
-<select name="period[{$feed.id}]" size="1" class="update">
+<select name="period[{$feed.id}]" id="period_{$feed.id}"  size="1" class="update" onchange="javascript:update_ng_time('rss', {$feed.id});">
 {html_options values=$periods_keys output=$periods_texts selected={$feed.select}}
 </select>
 </td>
-<td class="nowrap {$admin_hidden} admin center">@ <input type="text" id="time1_{$feed.id}" name="time1[{$feed.id}]" value="{$feed.time1}" class="time"/>:<input type="text" id="time2_{$feed.id}" class="time" name="time2[{$feed.id}]" value="{if isset($feed.time2)}{$feed.time2|string_format:"%02d"}{/if}"/>
+<td class="nowrap {$admin_hidden} admin center">@ <input type="text" id="time1_{$feed.id}" name="time1[{$feed.id}]" value="{$feed.time1}" class="time" onchange="javascript:update_ng_time('rss', {$feed.id});"/>:<input type="text" id="time2_{$feed.id}" class="time" name="time2[{$feed.id}]" value="{if isset($feed.time2)}{$feed.time2|string_format:"%02d"}{/if}" onchange="javascript:update_ng_time('rss', {$feed.id});"/>
 </td>
 
 <td class="nowrap {$admin_hidden} admin right">

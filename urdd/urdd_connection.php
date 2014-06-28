@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:50:58 +0200 (di, 03 sep 2013) $
- * $Rev: 2911 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_connection.php 2911 2013-09-03 21:50:58Z gavinspearhead@gmail.com $
+ * $Id: urdd_connection.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -29,7 +29,6 @@ if (!defined('ORIGINAL_PAGE')) {
 }
 
 // connection states
-
 class connection
 {
     private $socket;
@@ -46,6 +45,7 @@ class connection
     const STATE_NOT_AUTHENTICATED   = 0;
     const STATE_GOT_USERNAME        = 1;
     const STATE_AUTHENTICATED       = 2;
+    const ANONYMOUS_USERNAME        = 'anonymous';
 
     private static $conn_states = array(
         self::STATE_NOT_AUTHENTICATED,
@@ -82,7 +82,7 @@ class connection
         if ($this->state != self::STATE_NOT_AUTHENTICATED) {
             return $this->username;
         } else {
-            return 'anonymous';
+            return self::ANONYMOUS_USERNAME;
         }
     }
 
@@ -306,7 +306,6 @@ class conn_list
                 return TRUE;
             }
         }
-
         return FALSE;
     }
     public function verify_password_db(DatabaseConnection $db, $sock, $password)
@@ -324,15 +323,14 @@ class conn_list
 
                     return FALSE;
                 }
-                $db->escape($username, TRUE);
 
                 if (strlen($password) > 4 && substr_compare($password, 'hash:', 0, 4) == 0) {
                     $hash_pw = substr($password, 5);
                 } else {
                     $hash_pw = hash('sha256', $salt . $password . $salt);
                 }
-                $db->escape($hash_pw, TRUE);
-                $res = $db->select_query("\"ID\" FROM users WHERE \"name\"=$username AND \"pass\"=$hash_pw AND \"active\" = '" . user_status::USER_ACTIVE . "'", 1);
+                $sql = '"ID" FROM users WHERE "name"=? AND "pass"=? AND "active"=?';
+                $res = $db->select_query($sql, 1, array($username, $hash_pw, user_status::USER_ACTIVE));
                 if ($conn->check_state(connection::STATE_GOT_USERNAME) && $res !== FALSE) {
                     $conn->set_userid($res[0]['ID']);
                     $conn->set_state(connection::STATE_AUTHENTICATED);

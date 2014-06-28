@@ -27,7 +27,7 @@
 
 $pathgf = realpath(dirname(__FILE__));
 
-require_once "$pathgf/../functions/html_includes.php";
+require_once "$pathgf/../functions/ajax_includes.php";
 
 $idx = get_request('idx', '');
 $preview = get_request('preview', 0) ? TRUE : FALSE;
@@ -102,6 +102,7 @@ $smarty->assign('nextidx', $next);
 $smarty->assign('lastidx', $last);
 $smarty->assign('previousidx', $previous);
 $smarty->assign('firstidx', $first);
+$smarty->assign('current', $idx);
 $smarty->assign('preview', $preview);
 $smarty->assign('next', stored_files::get_file($next));
 $smarty->assign('last', stored_files::get_file($last));

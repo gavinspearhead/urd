@@ -15,17 +15,17 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showpreview.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showpreview.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 
 $pathajsp = realpath(dirname(__FILE__));
 
-require_once "$pathajsp/../functions/html_includes.php";
+require_once "$pathajsp/../functions/ajax_includes.php";
 
 // Display progress bar, if 100% complete then redirect to the dl link:
 
@@ -51,7 +51,7 @@ class preview_data
 function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, $userid)
 {
     global $LN;
-    $progress = get_download_progress($db, $dlid) ;
+    $progress = get_download_progress($db, $dlid);
     if ($progress === FALSE) {
         throw new exception($LN['error_noqueue']);
     }

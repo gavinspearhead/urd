@@ -15,13 +15,11 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2010-08-22 14:08:17 +0200 (Sun, 22 Aug 2010) $
- * $Rev: 1713 $
- * $Author: gavinspearhead $
- * $Id: blank.tpl 1713 2010-08-22 12:08:17Z gavinspearhead $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
+ * $Author: gavinspearhead@gmail.com $
+ * $Id: blank.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
-
 <br/>
-
 {include file="foot.tpl"}

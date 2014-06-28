@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-03 17:23:08 +0200 (di, 03 jun 2014) $
+ * $Rev: 3080 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edit_users.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_edit_users.php 3080 2014-06-03 15:23:08Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -110,9 +110,8 @@ case 'import_settings':
     break;
 case 'edit':
     if (is_numeric($id)) {
-        $db->escape($id);
-        $sql = " * FROM users WHERE \"ID\" = '$id'";
-        $res = $db->select_query($sql, 1);
+        $sql = '* FROM users WHERE "ID" = ?';
+        $res = $db->select_query($sql, 1, array($id));
         if ($res === FALSE) {
             throw new exception('User not found');
         }
@@ -137,7 +136,7 @@ case 'edit':
         $autodownload = '';
         $email = '';
         $name = '';
-        $fullname ='' ;
+        $fullname ='';
         $rights = 0;
         $allow_update = 0;
         $allow_erotica = 0;
@@ -178,11 +177,10 @@ case 'edit':
 case 'resetpw':
     challenge::verify_challenge_text($_POST['challenge']);
     $newpw = generate_password(MIN_PASSWORD_LENGTH);
-    $user_id = $id ;
+    $user_id = $id;
 
-    $db->escape($id, TRUE);
-    $sql = "SELECT * FROM users WHERE \"ID\"=$id";
-    $res = $db->execute_query($sql);
+    $sql = '* FROM users WHERE "ID"=?';
+    $res = $db->select_query($sql, array($user_id));
     if ($res === FALSE) {
         throw new exception($LN['error_nosuchuser']);
     }
@@ -204,7 +202,7 @@ case 'delete':
     die_html('OK');
     break;
 case 'update_setting':
-    $id = get_post('id', NULL);
+    $id = get_post('id', '');
     if (!is_numeric($id)) {
         throw new exception('No valid UID');
     }
@@ -216,9 +214,8 @@ case 'update_setting':
 
     switch ($action) {
     case 'admin':
-        $query = "UPDATE users SET \"isadmin\"=$value WHERE \"ID\"=$id";
         try {
-            $db->execute_query($query);
+            $db->update_query_3('users', array('isadmin'=>$value), '"ID"=?', array($id));
         } catch (exception $e) {
             throw new exception($e->getMessage());
         }
@@ -239,11 +236,10 @@ case 'update_setting':
         }
         break;
     case 'active':
-        $query = "UPDATE users SET \"active\"=$value WHERE \"ID\"=$id";
         try {
-            $res = $db->execute_query($query);
-            $sql = " \"fullname\", \"name\", \"email\", \"active\" FROM users WHERE \"ID\" = '$id'";
-            $res = $db->select_query($sql, 1);
+            $db->update_query_2('users', array('active'=>$value), '"ID"=?', array($id));
+            $sql = '"fullname", "name", "email", "active" FROM users WHERE "ID" = ?';
+            $res = $db->select_query($sql, 1, array($id));
             if ($res === FALSE) {
                 throw new exception('User not found');
             }
@@ -270,6 +266,7 @@ case 'update_setting':
     break;
 
 case 'update_user':
+    //var_dump($_REQUEST);
     challenge::verify_challenge_text($_POST['challenge']);
     $rights = '';
     $fullname = get_post('fullname', '');
@@ -299,9 +296,8 @@ case 'update_user':
     }
     $email_allowed = get_config($db, 'sendmail');
     if (is_numeric($id)) {
-        $db->escape($id);
-        $sql = " \"ID\", \"active\" FROM users WHERE \"ID\" = '$id'";
-        $res = $db->select_query($sql, 1);
+        $sql = '"ID", "active" FROM users WHERE "ID"=?';
+        $res = $db->select_query($sql, 1, array($id));
         if ($res === FALSE) {
             throw new exception($LN['error_nosuchuser']);
         }
@@ -323,10 +319,8 @@ case 'update_user':
             }
         }
     } elseif ($id == 'new') {
-        $username_db = $username;
-        $db->escape($username_db, FALSE);
-        $query = "\"ID\" FROM users WHERE \"name\"='$username_db'";
-        $res = $db->select_query($query, 1);
+        $query = '"ID" FROM users WHERE "name"=?';
+        $res = $db->select_query($query, 1, array($username));
         if ($res === FALSE) {
             try {
                 add_user($db, $username, $fullname, $email, $password, $isadmin, $active, $rights);
@@ -346,6 +340,7 @@ case 'reload_users':
     $search = $o_search = (trim(get_request('search', '')));
     $sort = get_request('sort', 'name');
     $sort_dir = get_request('sort_dir', 'asc');
+    $only_rows  = get_request('only_rows', 0);
 
     if (!in_array($sort, array('name', 'fullname', 'email', 'rights', 'last_active', 'isadmin', 'active'))) {
         $sort = 'name';
@@ -362,8 +357,8 @@ case 'reload_users':
     }
 
     // Display:
-    $sql = "SELECT * FROM users WHERE \"ID\" > 0 $Qsearch ORDER BY \"$sort\" $sort_dir";
-    $res = $db->execute_query($sql);
+    $sql = "* FROM users WHERE \"ID\" > 0 $Qsearch ORDER BY \"$sort\" $sort_dir";
+    $res = $db->select_query($sql);
     if (!is_array($res)) {
         $res = array();
     }
@@ -386,6 +381,7 @@ case 'reload_users':
     $smarty->assign('sort_dir',     $sort_dir);
     $smarty->assign('search',       $o_search);
     $smarty->assign('users',        $users);
+    $smarty->assign('only_rows',        $only_rows);
     $smarty->assign('emailallowed', $email_allowed?1:0);
     $smarty->assign('maxstrlen',    $prefs['maxsetname']/3);
     $smarty->display('ajax_admin_users.tpl');

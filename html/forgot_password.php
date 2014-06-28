@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-07 00:34:21 +0200 (za, 07 sep 2013) $
- * $Rev: 2924 $
+ * $LastChangedDate: 2014-06-14 01:20:27 +0200 (za, 14 jun 2014) $
+ * $Rev: 3094 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: forgot_password.php 2924 2013-09-06 22:34:21Z gavinspearhead@gmail.com $
+ * $Id: forgot_password.php 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -27,7 +27,7 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $pathfp = realpath(dirname(__FILE__));
 $pathca = realpath($pathfp . '/../functions/');
 session_name('URD_WEB_FORGOTPW' . md5($pathca)); // add the hashed path so we can have more than 1 session to different urds in one browser
-@session_start() ;
+@session_start();
 
 require_once $pathfp . '/../config.php';
 require_once $pathfp . '/../functions/db.class.php';
@@ -40,17 +40,20 @@ if (isset($config['urdweb_logfile'])) {
     $config['log_file'] = '/dev/null';
 }
 
-
 require_once "$pathfp/../functions/web_functions.php";
+require_once "$pathfp/../functions/file_functions.php";
+require_once "$pathfp/../functions/config_functions.php";
+require_once "$pathfp/../functions/urd_log.php";
+$lang = detect_language() . '.php';
+
 try {
-    $db = connect_db(TRUE, FALSE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     throw new exception("Connection to database failed. $msg\n");
 }
 $prefs = load_config($db, TRUE);
 
-require_once "$pathfp/../functions/urd_log.php";
 require_once "$pathfp/../functions/autoincludes.php";
 require_once "$pathfp/../functions/functions.php";
 

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-15 00:41:23 +0200 (zo, 15 jun 2014) $
+ * $Rev: 3095 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_editcategories.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_editcategories.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
@@ -39,7 +39,7 @@
 	{/foreach}
     </select>
 </td></tr>
-<tr><td>{$LN_name}:</td><td><input type="text" name="cat_name" id="cat_name" value="" size="{$text_box_size}"/></td></tr>
+<tr><td>{$LN_name}:</td><td><input type="text" name="cat_name" id="cat_name" value="" size="{$text_box_size}" placeholder="{$LN_name}" required/></td></tr>
 <tr><td colspan="2" class="centered"><br/>
 <input type="button" name="add" value="{$LN_apply}" onclick="javascript:update_category();" class="submit"/>
 <input type="button" name="delete" value="{$LN_delete}" class="submit" onclick="javascript:delete_category();" />

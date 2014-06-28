@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_admintasks.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_admintasks.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
 {capture assign=topskipper}{strip}
@@ -49,9 +49,9 @@
 {if $sort == "comment"}{if $sort_dir=='desc'}{$comment_sort=$up}{else}{$comment_sort=$down}{/if}{else}{$comment_sort=""}{/if}
 
 
-<input type="hidden" name="offset" id="offset" value="{$offset}"/>
-<input type="hidden" name="order" id="order" value="{$sort}"/>
-<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir}"/>
+<input type="hidden" name="offset" id="offset" value="{$offset|escape:htmlall}"/>
+<input type="hidden" name="order" id="order" value="{$sort|escape:htmlall}"/>
+<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
 {$topskipper}
 <table class="tasks">
 <tr>
@@ -66,7 +66,7 @@
 </tr>
 
 {foreach $alltasks as $task}
-<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 <td><div class="donotoverflowdamnit" {urd_popup text="`$task.description` `$task.arguments`" type=small}>{$task.description} <b>{$task.arguments}</b></div></td>
 <td class="right">{$task.progress}%</td>
 <td class="right">{$task.eta}</td>

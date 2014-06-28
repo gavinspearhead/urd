@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edit_searchoptions.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_edit_searchoptions.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -79,9 +79,8 @@ function edit_button(DatabaseConnection $db, $id)
 {
     global $LN, $smarty;
     if (is_numeric($id)) {
-        $db->escape($id);
-        $sql = " * FROM searchbuttons WHERE \"id\" = '$id' ORDER BY \"name\" ASC";
-        $res = $db->select_query($sql, 1);
+        $sql = '* FROM searchbuttons WHERE "id"=? ORDER BY "name" ASC';
+        $res = $db->select_query($sql, 1, array($id));
         if (!isset($res[0])) {
             throw new exception($LN['buttons_buttonnotfound']);
         }
@@ -112,6 +111,7 @@ function show_buttons(DatabaseConnection $db, $userid)
     $search = $o_search = trim(get_request('search', ''));
     $order = strtolower(get_request('sort'));
     $order_dir = strtolower(get_request('sort_dir'));
+    $inputarr = array(0);
     if (!in_array($order, $order_options)) {
         $order = 'name';
     }
@@ -121,13 +121,13 @@ function show_buttons(DatabaseConnection $db, $userid)
     $Qsearch = '';
     if ($search != '') {
         $search = "%$search%";
-        $db->escape($search, TRUE);
         $like = $db->get_pattern_search_command('LIKE');
-        $Qsearch = " AND \"name\" $like $search ";
+        $Qsearch = " AND \"name\" $like ? ";
+        $inputarr[] = $search;
     }
 
-    $sql = "SELECT * FROM searchbuttons WHERE \"id\" > 0 $Qsearch ORDER BY $order $order_dir";
-    $res = $db->execute_query($sql);
+    $sql = " * FROM searchbuttons WHERE \"id\" > ? $Qsearch ORDER BY $order $order_dir ";
+    $res = $db->select_query($sql, $inputarr);
     if (!is_array($res)) {
         $res = array();
     }
@@ -170,9 +170,8 @@ function update_button_info(DatabaseConnection $db, $id)
         } else {
             throw new exception($LN['buttons_invalidurl']);
         }
-        $db->escape($id);
-        $query = " \"id\" FROM searchbuttons WHERE \"id\"='$id'";
-        $res = $db->select_query($query, 1);
+        $query = " \"id\" FROM searchbuttons WHERE \"id\"= ?";
+        $res = $db->select_query($query, 1, array($id));
         if ($res !== FALSE) {
             update_button($db, $name, $search_url, $id);
         } else {
@@ -189,9 +188,8 @@ function update_button_info(DatabaseConnection $db, $id)
         } else {
             throw new exception($LN['buttons_invalidurl']);
         }
-        $db->escape($name);
-        $query = "SELECT \"id\" FROM searchbuttons WHERE \"name\"='$name'";
-        $res = $db->execute_query($query);
+        $query = " \"id\" FROM searchbuttons WHERE \"name\"=?";
+        $res = $db->select_query($query, array($name));
         if ($res === FALSE) {
             add_button($db, new button($name, $search_url));
         } else {

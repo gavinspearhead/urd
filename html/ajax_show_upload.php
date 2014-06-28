@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_show_upload.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_show_upload.php 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -31,11 +31,13 @@ require_once "$pathadt/../functions/ajax_includes.php";
 $localfile = '';
 $dir = get_request('dir', '');
 $filename = get_request('filename', '');
+$setname = '';
 if ($dir != '' && $filename != '') {
     $localfile = $dir . $filename;
+    $setname = substr($filename, 0, strpos($filename, '.'));
 }
 
-$download_delay = get_pref($db, 'download_delay', $username, 0);
+$download_delay = get_pref($db, 'download_delay', $userid, 0);
 if (is_numeric($download_delay) && ($download_delay > 0)) {
     $download_delay = "+$download_delay minutes";
 } else {
@@ -55,6 +57,7 @@ if (!$smarty->getTemplateVars('urdd_online')) {
     throw new exception($LN['urdddisabled']);
 } else {
     $smarty->assign('localfile', $localfile);
+    $smarty->assign('setname', $setname);
     $smarty->assign('download_delay', $download_delay);
     $smarty->assign('add_setname',  $add_setname);
     $smarty->assign('dl_dir', $dl_dir);

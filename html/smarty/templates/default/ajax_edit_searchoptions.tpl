@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-15 00:41:23 +0200 (zo, 15 jun 2014) $
+ * $Rev: 3095 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edit_searchoptions.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_edit_searchoptions.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
@@ -26,16 +26,16 @@
 <div class="light">
 <br/>
 <br/>
-<input type="hidden" name="id" id="id" value="{$id}"/>
+<input type="hidden" name="id" id="id" value="{$id|escape:htmlall}"/>
 
 <table class="hmid">
 <tr>
 <td>{$LN_name}:</td>
-<td><input type="text" name="name" id="name" value="{$button->get_name()|escape}" size="{$text_box_size}"/></td>
+<td><input type="text" name="name" id="name" placeholder="{$LN_name}" required value="{$button->get_name()|escape}" size="{$text_box_size}"/></td>
 </tr>
 <tr>
 <td>{$LN_buttons_url}:</td>
-<td><input type="text" name="search_url" id="search_url" value="{$button->get_url()|escape}" size="{$text_box_size}"/></td>
+<td><input type="text" name="search_url" id="search_url" placeholder="{$LN_buttons_url}" required  value="{$button->get_url()|escape}" size="{$text_box_size}"/></td>
 </tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered">
@@ -43,7 +43,7 @@
 	<input type="button" name="add" value="{$LN_add}" class="submit" onclick="javascript:update_buttons();"/>
 {else}
 	<input type="button" value="{$LN_apply}" name="apply" class="submit" onclick="javascript:update_buttons();"/>
-	<input type="hidden" name="id" value="{$button->get_id()}"/>
+	<input type="hidden" name="id" value="{$button->get_id()|escape:htmlall}"/>
 {/if}
 </td>
 </tr>

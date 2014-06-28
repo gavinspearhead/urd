@@ -16,32 +16,23 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-27 23:31:25 +0200 (vr, 27 jun 2014) $
+ * $Rev: 3122 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_extsetdata.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: urdd_extsetdata.php 3122 2014-06-27 21:31:25Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathued = realpath(dirname(__FILE__));
-
-require_once "$pathued/../functions/autoincludes.php";
-require_once "$pathued/../functions/defines.php";
-require_once "$pathued/../config.php";
-require_once "$pathued/../functions/functions.php";
-require_once "$pathued/urdd_command.php";
-require_once "$pathued/urdd_protocol.php";
-require_once "$pathued/urdd_error.php";
-require_once "$pathued/../functions/urd_log.php";
-require_once "$pathued/../functions/mail_functions.php";
-
 function store_extset_data(DatabaseConnection $db, array $result, array &$setidarray)
 {
     $counter = 0;
     foreach ($result as $row) {
+        if(!isset($row[3])) {
+            continue;
+        }
         $setid = $row[0];
         $name = $row[1];
         $value = substr($row[2], 0, 255);
@@ -61,21 +52,15 @@ function store_extset_data(DatabaseConnection $db, array $result, array &$setida
         } else {
             $setidarray[$setid] = '1';
 
-            $db->escape($setid, TRUE);
-            $db->escape($name, TRUE);
-            $db->escape($value, TRUE);
-            $db->escape($type, TRUE);
-
             // Insert or update?
-            $sql = "\"setID\" FROM extsetdata WHERE \"setID\" = $setid AND \"name\" = $name AND \"type\" = $type";
-            $res = $db->select_query($sql, 1);
+            $sql = '"setID" FROM extsetdata WHERE "setID" = ? AND "name" = ? AND "type" = ?';
+            $res = $db->select_query($sql, 1, array($setid, $name, $type));
 
             if (is_array($res)) {// Exists, so update:
-                $sql = "UPDATE extsetdata SET \"value\" = $value WHERE \"setID\" = $setid AND \"name\" = $name AND \"type\" = $type";
+                $db->update_query_2('extsetdata',array('value'=>$value, 'committed'=>0), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, $name, $type));
             } else {
-                $sql = "INSERT INTO extsetdata (\"setID\", \"name\", \"value\", \"committed\", \"type\") VALUES ($setid, $name, $value, 1, $type)";
+                $db->insert_query_2('extsetdata', array('setID'=>$setid, 'name'=>$name, 'value'=>$value, 'committed'=>ESI_COMMITTED, 'type'=>$type));
             }
-            $db->execute_query($sql);
         }
         $counter++;
     }
@@ -136,9 +121,11 @@ function write_setinfo(DatabaseConnection $db, array $setinfo)
 
     foreach ($setinfo as $set) {
         $xml->startElement('set');
-        $xml->startElement('groupname');
-        $xml->text($set['groupname']);
-        $xml->endElement(); // groupname
+        if (isset($set['groupname'])) {
+            $xml->startElement('groupname');
+            $xml->text($set['groupname']);
+            $xml->endElement(); // groupname
+        }
         $xml->startElement('setid');
         $xml->text($set['setID']);
         $xml->endElement(); // setId
@@ -181,7 +168,7 @@ function write_setinfo(DatabaseConnection $db, array $setinfo)
         $uc->post_message($post_id);
         $uc->disconnect();
     } catch (exception $e) {
-        write_log('Error connecting back to URDD: ' .  $e->GetMessage(), LOG_ERR);
+        write_log('Error connecting back to URDD: ' . $e->GetMessage(), LOG_ERR);
     }
 }
 
@@ -193,76 +180,83 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
     $use_newsgroup = FALSE;
 
     // Prepare querys for stuff to be sent:
-    $sql1  = "groups.\"name\" AS groupname, extsetdata.\"setID\", extsetdata.\"name\", extsetdata.\"value\", extsetdata.\"type\" FROM extsetdata ";
-    $sql1 .= "LEFT JOIN setdata ON extsetdata.\"setID\" = setdata.\"ID\" LEFT JOIN groups ON setdata.\"groupID\" = groups.\"ID\" ";
-    $sql1 .= "WHERE extsetdata.\"committed\" = 0 AND extsetdata.\"name\" != 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_GROUP . "'";
+    $sql[1]  = 'groups."name" AS groupname, extsetdata."setID", extsetdata."name", extsetdata."value", extsetdata."type" FROM extsetdata ';
+    $sql[1] .= 'LEFT JOIN setdata ON extsetdata."setID" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql[1] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
+    $input_arr[1] = array(ESI_NOT_COMMITTED, 'setname', USERSETTYPE_GROUP);
 
-    $sql2  = "rss_urls.\"url\" AS groupname, extsetdata.\"setID\", extsetdata.\"name\", extsetdata.\"value\", extsetdata.\"type\" FROM extsetdata ";
-    $sql2 .= "LEFT JOIN rss_sets ON extsetdata.\"setID\" = rss_sets.\"setid\" LEFT JOIN rss_urls ON rss_sets.\"rss_id\" = rss_urls.\"id\" ";
-    $sql2 .= "WHERE extsetdata.\"committed\" = 0 AND extsetdata.\"name\" != 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_RSS . "'";
+    $sql[2]  = 'rss_urls."url" AS groupname, extsetdata."setID", extsetdata."name", extsetdata."value", extsetdata."type" FROM extsetdata ';
+    $sql[2] .= 'LEFT JOIN rss_sets ON extsetdata."setID" = rss_sets."setid" LEFT JOIN rss_urls ON rss_sets."rss_id" = rss_urls."id" ';
+    $sql[2] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
+    $input_arr[2] = array(ESI_NOT_COMMITTED, 'setname', USERSETTYPE_RSS);
+ 
+    $sql[3]  = 'extsetdata."setID", extsetdata."name", extsetdata."value", extsetdata."type" FROM extsetdata ';
+    $sql[3] .= 'LEFT JOIN spots ON extsetdata."setID" = spots."spotid" ';
+    $sql[3] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
+    $input_arr[3] = array(ESI_NOT_COMMITTED, 'setname', USERSETTYPE_SPOT);
 
-    $sql3  = "groups.\"name\" AS groupname, merged_sets.\"old_setid\" AS \"setID\", 'MERGE_SET' AS \"name\", merged_sets.\"new_setid\" AS value, merged_sets.\"type\" FROM merged_sets ";
-    $sql3 .= "LEFT JOIN setdata ON merged_sets.\"new_setid\" = setdata.\"ID\" LEFT JOIN groups ON setdata.\"groupID\" = groups.\"ID\" ";
-    $sql3 .= "WHERE merged_sets.\"committed\" = 0 AND merged_sets.\"type\" = '" . USERSETTYPE_GROUP . "'";
+    $sql[4]  = 'groups."name" AS groupname, merged_sets."old_setid" AS "setID", \'MERGE_SET\' AS "name", merged_sets."new_setid" AS value, merged_sets."type" FROM merged_sets ';
+    $sql[4] .= 'LEFT JOIN setdata ON merged_sets."new_setid" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql[4] .= 'WHERE merged_sets."committed" = ? AND merged_sets."type" = ?';
+    $input_arr[4] = array(ESI_NOT_COMMITTED, USERSETTYPE_GROUP);
 
-    $sql_cnt1  = "COUNT(*) AS \"counter\" FROM extsetdata ";
-    $sql_cnt1 .= "LEFT JOIN setdata ON extsetdata.\"setID\" = setdata.\"ID\" LEFT JOIN groups ON setdata.\"groupID\" = groups.\"ID\" ";
-    $sql_cnt1 .= "WHERE extsetdata.\"committed\" = 0 AND extsetdata.\"name\" != 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_GROUP . "'";
+    $sql_cnt[1]  = 'COUNT(*) AS "counter" FROM extsetdata ';
+    $sql_cnt[1] .= 'LEFT JOIN setdata ON extsetdata."setID" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql_cnt[1] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
 
-    $sql_cnt2  = "COUNT(*) AS \"counter\" FROM extsetdata ";
-    $sql_cnt2 .= "LEFT JOIN rss_sets ON extsetdata.\"setID\" = rss_sets.\"setid\" LEFT JOIN rss_urls ON rss_sets.\"rss_id\" = rss_urls.\"id\" ";
-    $sql_cnt2 .= "WHERE extsetdata.\"committed\" = 0 AND extsetdata.\"name\" != 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_RSS . "'";
+    $sql_cnt[2]  = 'COUNT(*) AS "counter" FROM extsetdata ';
+    $sql_cnt[2] .= 'LEFT JOIN rss_sets ON extsetdata."setID" = rss_sets."setid" LEFT JOIN rss_urls ON rss_sets."rss_id" = rss_urls."id" ';
+    $sql_cnt[2] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
 
-    $sql_cnt3  = "COUNT(*) AS \"counter\" FROM merged_sets ";
-    $sql_cnt3 .= "LEFT JOIN setdata ON merged_sets.\"new_setid\" = setdata.\"ID\" LEFT JOIN groups ON setdata.\"groupID\" = groups.\"ID\" ";
-    $sql_cnt3 .= "WHERE merged_sets.\"committed\" = 0  AND merged_sets.\"type\" = '" . USERSETTYPE_GROUP . "'";
+    $sql_cnt[3]  = 'COUNT(*) AS "counter" FROM extsetdata ';
+    $sql_cnt[3] .= 'LEFT JOIN spots ON spots."spotid" = extsetdata."setID" ';
+    $sql_cnt[3] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
 
-    $res1 = $db->select_query($sql_cnt1);
-    $sql_arr[0] = array($sql1, $res1[0]['counter']);
-    $res2 = $db->select_query($sql_cnt2);
-    $sql_arr[1] = array($sql2, $res2[0]['counter']);
-    $res3 = $db->select_query($sql_cnt3);
-    $sql_arr[2] = array($sql3, $res3[0]['counter']);
-    if ($res1 === FALSE && $res3 === FALSE && $res2 === FALSE) {
+    $sql_cnt[4]  = 'COUNT(*) AS "counter" FROM merged_sets ';
+    $sql_cnt[4] .= 'LEFT JOIN setdata ON merged_sets."new_setid" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql_cnt[4] .= 'WHERE merged_sets."committed" = ? AND merged_sets."type" = ?';
+
+    $res1 = $db->select_query($sql_cnt[1], $input_arr[1]);
+    $sql_arr[0] = array($sql[1], $res1[0]['counter'], $input_arr[1]);
+    $res2 = $db->select_query($sql_cnt[2], $input_arr[2]);
+    $sql_arr[1] = array($sql[2], $res2[0]['counter'], $input_arr[2]);
+    $res3 = $db->select_query($sql_cnt[3], $input_arr[3]);
+    $sql_arr[2] = array($sql[3], $res3[0]['counter'], $input_arr[3]);
+    $res4 = $db->select_query($sql_cnt[3], $input_arr[3]);
+    $sql_arr[3] = array($sql[4], $res3[0]['counter'], $input_arr[4]);
+    if ($res1 === FALSE && $res2 === FALSE && $res3 === FALSE && $res4 === FALSE) {
         return NO_ERROR;
     }
-//    $prefs = load_config($db);
-
     if (get_config($db, 'extset_group') != '') {
         $use_newsgroup = TRUE;
     }
     $counter = 0;
-    $total = $sql_arr[0][1] + $sql_arr[1][1] + $sql_arr[2][1];
+    $total = $sql_arr[0][1] + $sql_arr[1][1] + $sql_arr[2][1]+ $sql_arr[3][1];;
     $status = QUEUE_RUNNING;
     $step = 100;
     foreach ($sql_arr as $sql) {
-        $start = 0;
         $cnt = $sql[1];
         if ($cnt == 0) {
             write_log('No extsetdata to send.', LOG_INFO);
             continue;
         }
-        while ($start <= $cnt) {
-            $setinfo = $db->select_query($sql[0], $step, $start);
+        for($start = 0; $start <= $cnt; $start += $step) {
+            $setinfo = $db->select_query($sql[0], $step, $start, $sql[2]);
             if (!is_array($setinfo)) {
                 break;
             }
             if ($use_newsgroup) {
                 write_setinfo($db, $setinfo);
             }
-            $start += $step;
-            update_queue_status($db, $item->get_dbid(), $status, 0, floor(100 * (($counter+$start)/$total)) , "Done, sent $counter tags.");
+            update_queue_status($db, $item->get_dbid(), $status, 0, floor(100 * (($counter + $step + $start) / $total)), "Done, sent $counter tags.");
         }
         $counter += $sql[1];
     }
 
     // Finish up:
     write_log('Extsetdata sending succeeded.', LOG_INFO);
-    $sql = 'UPDATE extsetdata SET "committed" = 1 WHERE "committed" = 0';
-    $res = $db->execute_query($sql);
-    $sql = 'UPDATE merged_sets SET "committed" = 1 WHERE "committed" = 0';
-    $res = $db->execute_query($sql);
-
+    $res = $db->update_query_2('extsetdata', array('committed'=>ESI_COMMITTED), '"committed"=?', array(ESI_NOT_COMMITTED));
+    $res = $db->update_query_2('merged_sets', array('committed'=>ESI_COMMITTED), '"committed"=?', array(ESI_NOT_COMMITTED));
     $status = QUEUE_FINISHED;
     update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Done, sent $counter tags.");
 
@@ -276,13 +270,13 @@ function load_extset_data(DatabaseConnection $db, URD_NNTP &$nzb, array $extset_
     $counter = 0;
     foreach ($extset_headers as $msg) {
         try {
-            $msg_id = $msg ;
+            $msg_id = $msg;
             $art = $nzb->get_article($msg_id);
             $art = extset_uudecode($art);
             if ($art === FALSE) {
                 continue;
             }
-            $art = gzinflate($art);
+            $art = @gzinflate($art);
             if ($art == '') {
                 continue;
             }

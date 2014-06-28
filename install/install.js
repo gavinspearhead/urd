@@ -323,12 +323,12 @@ function check_password_strength(npw_id1, npw_id2)
             } else if (npw1 != '' && npw2 != '' && npw1 == npw2) {
                 pwd.removeClass('passwordincorrect');
                 pwd.addClass('passwordcorrect');
-                $('#password_incorrect').html('Passwords match');
+                $('#password_incorrect').html('<i>Passwords match</i>');
             } else {
                 if (npw2 != '' && npw1 != npw2) {
                     pwd.removeClass('passwordcorrect');
                     pwd.addClass('passwordincorrect');
-                    $('#password_incorrect').html('Passwords don\'t match');
+                    $('#password_incorrect').html('<i>Passwords don\'t match</i>');
                 }
             }
             if (npw1 != '') {

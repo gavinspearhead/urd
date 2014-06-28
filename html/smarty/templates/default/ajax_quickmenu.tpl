@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-03 23:55:57 +0200 (wo, 03 jul 2013) $
- * $Rev: 2860 $
+ * $LastChangedDate: 2014-04-13 00:28:40 +0200 (zo, 13 apr 2014) $
+ * $Rev: 3029 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_quickmenu.tpl 2860 2013-07-03 21:55:57Z gavinspearhead@gmail.com $
+ * $Id: ajax_quickmenu.tpl 3029 2014-04-12 22:28:40Z gavinspearhead@gmail.com $
  *}
 
 {* Ajax page, doesn't need a head/foot tpl *}
@@ -29,11 +29,11 @@
 
 {* Action? *}
 {if $item->type == 'quickmenu'}
-<button class="quickmenubutton" onclick="javascript:ShowQuickMenu('{$item->id}','{$subject}', {$srctype},event); return false;">
+<button class="quickmenubutton" onclick="javascript:show_quickmenu('{$item->id}','{$subject}', {$srctype},event); return false;">
 {/if}
 
 {if $item->type == 'quickdisplay'}
-<button class="quickmenubutton" onclick="javascript:ShowQuickDisplay('{$item->id}','{$subject}',event, {$srctype});CloseQuickMenu(); return false;">
+<button class="quickmenubutton" onclick="javascript:show_quick_display('{$item->id}','{$subject}',event, {$srctype});close_quickmenu(); return false;">
 {/if}
 
 {if $item->type == 'newpage'}
@@ -41,55 +41,71 @@
 {/if}
 
 {if $item->type == 'searchbutton'}
-<button class="quickmenubutton" onclick="javascript:search_button('{$item->extra.search_url}','{$item->extra.name|escape:javascript}');CloseQuickMenu(); return false;"> 
+<button class="quickmenubutton" onclick="javascript:search_button('{$item->extra.search_url}','{$item->extra.name|escape:javascript}');close_quickmenu(); return false;"> 
 {/if}
 
 {if $item->type == 'nfopreview' || $item->type == 'imgpreview'|| ($item->type == 'nzbpreview' && $show_usenzb neq 0 && $show_download neq 0) || $item->type == 'vidpreview' }
-<button class="quickmenubutton" onclick="javascript:select_preview('{$item->extra.binaryID}','{$item->extra.groupID}');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:select_preview('{$item->extra.binaryID}','{$item->extra.groupID}');close_quickmenu();">
 {/if}
 
 {if $item->type == 'guessextsetinfosafe'}
-<button class="quickmenubutton" onclick="javascript:GuessExtSetInfoSafe('{$subject}', {$srctype});">
+<button class="quickmenubutton" onclick="javascript:guess_extSet_info_safe('{$subject}', {$srctype});">
 {/if}
 
 {if $item->type == 'guessbasketextsetinfo'}
-<button class="quickmenubutton" onclick="javascript:GuessBasketExtSetInfo('{$subject}', {$srctype});">
+<button class="quickmenubutton" onclick="javascript:guess_basket_extset_info('{$subject}', {$srctype});">
 {/if}
 
 {if $item->type == 'guessextsetinfo'}
-<button class="quickmenubutton" onclick="javascript:GuessExtSetInfo('{$subject}', {$srctype})">
+<button class="quickmenubutton" onclick="javascript:guess_extset_info('{$subject}', {$srctype})">
 {/if}
 
 {if $item->type == 'report_spam'}
-<button class="quickmenubutton" onclick="javascript:report_spam('{$subject}');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:report_spam('{$subject}');close_quickmenu();">
 {/if}
 
+{if $item->type == 'post_spot_comment'}
+<button class="quickmenubutton" onclick="javascript:post_spot_comment('{$subject}');close_quickmenu();">
+{/if}
 {if $item->type == 'add_blacklist'}
-<button class="quickmenubutton" onclick="javascript:add_blacklist('{$subject}');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:add_blacklist('{$subject}');close_quickmenu();" >
+{/if}
+{if $item->type == 'add_posterblacklist'}
+<button class="quickmenubutton" onclick="javascript:add_poster_blacklist('{$subject}');close_quickmenu();" >
+{/if}
+{if $item->type == 'add_blacklist_global'}
+<button class="quickmenubutton" onclick="javascript:add_blacklist('{$subject}', '', 'global');close_quickmenu();">
+{/if}
+
+{if $item->type == 'add_whitelist'}
+<button class="quickmenubutton" onclick="javascript:add_whitelist('{$subject}');close_quickmenu();">
+{/if}
+{if $item->type == 'add_whitelist_global'}
+<button class="quickmenubutton" onclick="javascript:add_whitelist('{$subject}', '', 'global');close_quickmenu();">
 {/if}
 
 {if $item->type == 'add_search'}
-<button class="quickmenubutton" onclick="javascript:add_search('search');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:add_search('search');close_quickmenu();">
 {/if}
 
 {if $item->type == 'add_block'}
-<button class="quickmenubutton" onclick="javascript:add_search('block');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:add_search('block');close_quickmenu();">
 {/if}
 
 {if $item->type == 'urd_search'}
-<button class="quickmenubutton" onclick="javascript:urd_search();CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:urd_search();close_quickmenu();">
 {/if}
 
 {if $item->type == 'hide_set'}
-<button class="quickmenubutton" onclick="javascript:markRead('{$item->id}', 'hide', '{$srctype}');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:mark_read('{$item->id}', 'hide', '{$srctype}');close_quickmenu();">
 {/if}
 
 {if $item->type == 'unhide_set'}
-<button class="quickmenubutton" onclick="javascript:markRead('{$item->id}', 'unhide', '{$srctype}');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:mark_read('{$item->id}', 'unhide', '{$srctype}');close_quickmenu();">
 {/if}
 
 {if $item->type == 'follow_link'}
-<button class="quickmenubutton" onclick="javascript:follow_link('{$item->id}', 'unhide', '{$srctype}');CloseQuickMenu();">
+<button class="quickmenubutton" onclick="javascript:follow_link('{$item->id}', 'unhide', '{$srctype}');close_quickmenu();">
 {/if}
 
 {$item->name}
@@ -99,6 +115,8 @@
 </div>
 {/foreach}
 </div>
+<input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
+<input type="hidden" id="whitelist_confirm_msg" value="{$LN_whitelist_spotter}"/>
 <input type="hidden" id="nrofquickmenuitems" value="{$smarty.foreach.qm.total}"/>
 {if isset($message) && $message !== ''}
 <h2>{$message}</h2>

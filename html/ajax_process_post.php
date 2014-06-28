@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_process_post.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_process_post.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 if (!defined ('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -28,7 +28,7 @@ if (!defined ('ORIGINAL_PAGE')) {
 $__auth = 'silent';
 $pathpn = realpath(dirname(__FILE__));
 
-require_once "$pathpn/../functions/html_includes.php";
+require_once "$pathpn/../functions/ajax_includes.php";
 
 if (!urd_user_rights::is_poster($db, $userid)) {
     throw new exception($LN['error_accessdenied'] . "$userid");
@@ -149,9 +149,7 @@ function update_post_db(DatabaseConnection $db, $userid, $postid, &$timestamp)
 {
     $cols = array('userid', 'groupid', 'src_dir', 'tmp_dir', 'subject', 'poster_id', 'poster_name', 'recovery_par', 'filesize_rar', 'delete_files', 'status', 'start_time', 'size', 'stat_id');
     $vals = get_post_vals($db, $userid, $timestamp);
-    $db->escape($postid, TRUE);
-    $db->update_query('postinfo', $cols, $vals, "\"id\" = $postid");
-    die('aoeuaou');
+    $db->update_query('postinfo', $cols, $vals, '"id" =?', array($postid));
 }
 
 $rprefs = load_config($db);

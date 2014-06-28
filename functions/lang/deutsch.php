@@ -48,6 +48,7 @@ $LN['continue']         = 'Fortsetzen';
 $LN['details']          = 'Details';
 $LN['error']            = 'Fehler';
 $LN['atonce']           = 'Sofort';
+$LN['browse']           = 'Browse';
 
 // Special:
 $LN['urdname']			= 'URD';
@@ -112,6 +113,7 @@ $LN['select']       = 'Selektier eine';
 $LN['time']         = 'Zeit';
 
 $LN['whitelisttag'] = 'W';
+$LN['blacklisttag']     = 'S';
 $LN['spamreporttag']    = 'S';
 
 $LN['autoconfig']   = 'Autokonfigurieren';
@@ -231,6 +233,7 @@ $LN['menudebug']		= 'Debug';
 $LN['menulicence']		= 'Lizenz';
 $LN['menustats']		= 'Statistiken';
 $LN['menuforum']		= 'Forum';
+$LN['menuuserlists']            = 'Spotter lists';
 
 //button texts
 $LN['button_submit']	= 'Abschicken';
@@ -295,6 +298,7 @@ $LN['taskpurgespots']   = 'Spots l&ouml;schen';
 $LN['taskmergesets']	= 'Sets verbinden';
 $LN['taskfindservers']  = 'Server Autokonfig';
 $LN['taskdeleteset']    = 'Set l&ouml;schen';
+$LN['taskset']          = 'Setting configuration';
 
 $LN['eta']			    = 'ETA';
 $LN['inuse']			= 'ist in Benutzung';
@@ -384,6 +388,19 @@ $LN['viewfiles_type_playlist']	= 'Playlist';
 $LN['viewfiles_type_torrent']	= 'Torrent';
 $LN['viewfiles_type_urdd_sh']	= 'URD script';
 $LN['viewfiles_type_ebook']     = 'E-Buch';
+
+$LN['user_lists_title'] = 'Spotter lists';
+$LN['user_blacklist'] = 'Spots blacklists';
+$LN['user_whitelist'] = 'Spots whitelist';
+$LN['spotter_id'] = 'Spotter ID';
+$LN['source_external']  = 'External';
+$LN['source_user']      = 'User added';
+$LN['global']           = 'Global';
+$LN['personal']         = 'Personal';
+$LN['active']           = 'Active';
+$LN['disabled']         = 'Disabled';
+$LN['nonactive']         = 'Nonactive';
+
 
 // About:
 $LN['about_title']	= '&Uuml;ber URD';
@@ -499,7 +516,7 @@ $LN['setsize']		    = 'Setgr&ouml;&szlig;e in MB';
 $LN['maxage']			= 'Max. Alter in Tagen';
 $LN['minage']			= 'Min. Alter in Tagen';
 $LN['age']			    = 'Alter in Tagen';
-$LN['rating']		    = 'Rating (0-10)';
+$LN['rating']		    = 'Rating';
 $LN['maxrating']		= 'Max. rating (0-10)';
 $LN['minrating']		= 'Min. rating (0-10)';
 $LN['complete']		    = 'Vollst&auml;ndigkeit %';
@@ -531,6 +548,8 @@ $LN['pref_use_auto_download_nzb_msg']    = 'Automatisch downloaden basiert on Su
 $LN['pref_download_text_file']       = 'Download Artikel ohne Anh&auml;ngsel';
 
 $LN['pref_download_text_file_msg']   = 'Download message text when no attachments is found in the message';
+$LN['config_spots_max_categories']   = 'Max. number of categories per spot';
+$LN['config_spots_max_categories_msg']   = 'Spots with more than this number of categories are rejected (0 to disable)';
 $LN['config_spots_blacklist']   = 'URL for spotter blacklist';
 $LN['config_spots_blacklist_msg']   = 'URL that contains a list of IDs of spotters known to be abusers';
 $LN['config_spots_whitelist']   = 'URL for spotter whitelist';
@@ -634,7 +653,7 @@ $LN['pref_format_dl_dir_msg']    = 'Download directory format appended to the ba
     '%x: X-rated<br/>' .
     '%y: year (2 digits)<br/>' .
     '%Y: year (4 digits)<br/>' .
-    '%z: Day of the year<br/>' ;
+    '%z: Day of the year<br/>';
 
 $LN['pref_add_setname']         = 'Append setname to download directory';
 $LN['pref_add_setname_msg']     = 'Append the setname to download directory in addition to the download directory format string';
@@ -686,6 +705,10 @@ $LN['import_users']		= 'Importier Benutzers';
 $LN['export_users']		= 'Exportier Benutzers';
 $LN['import_buttons']	= 'Importier Suchm&ouml;gligkeiten';
 $LN['export_buttons']	= 'Exportier Suchm&ouml;gligkeiten';
+$LN['import_spots_blacklist']		= 'Import spots blacklist';
+$LN['export_spots_blacklist']		= 'Export spots blacklist';
+$LN['import_spots_whitelist']		= 'Import spots whitelist';
+$LN['export_spots_whitelist']		= 'Export spots whitelist';
 
 $LN['pref_use_auto_download_msg']	= 'Automatisch downloaden basiert auf Suchbegriffe';
 // pref errors
@@ -695,6 +718,8 @@ $LN['error_pwusername']		= 'Passwort &auml;hnelt den Benutzername zu viel';
 $LN['error_pwlength']		= 'Passwort zu kurz; gib mindestens '. MIN_PASSWORD_LENGTH . ' Zeichen';
 $LN['error_pwsimple']		= 'Passwort zu einfag, use a mix of upper and lower case characters, numbers and other characters';
 $LN['error_captcha']        = 'CAPTCHA falsch';
+$LN['error_nocontent']      = 'Message too short';
+$LN['error_toolong']        = 'Message too long';
 
 $LN['error_onlyforgrops'] 	= 'Only works for groups';
 $LN['error_onlyoneset'] 	= 'Requires more than one set to be in the basket';
@@ -849,7 +874,6 @@ $LN['control_threads']		= 'Threads';
 $LN['control_queue']		= 'Queue';
 $LN['control_servers']		= 'Servers';
 $LN['control_uptime']		= 'Betriebszeit';
-$LN['preview_close']		= 'Fenster schliessen';
 $LN['control_load']         = 'Systembelastung';
 $LN['control_diskspace']    = 'Disk space';
 
@@ -915,6 +939,8 @@ $LN['config_need_challenge']     = 'Enable XSS prevention';
 $LN['config_need_challenge_msg'] = 'Enable cross-site scripting prevention to ensure that URD functions cannot be exploited from other sites';
 $LN['config_use_encrypted_passwords'] = 'Store usenet account passwords encrypted';
 $LN['config_use_encrypted_passwords_msg'] = 'Passwords are stored in an encrypted format; using a keystore separate file to store the key';
+$LN['config_keystore_path']         = 'Location of the key store';
+$LN['config_keystore_path_msg']     = 'The directory where the key store will be placed';
 $LN['config_dlpath'] 		= 'Datei hier speichern';
 $LN['config_pidpath']       = 'Location of the PID file';
 $LN['config_pidpath_msg']   = 'The location of the PID file used to prevent starting multiple instances of URDD (leave blank for none)';
@@ -969,6 +995,8 @@ $LN['config_db_intensive_maxthreads']	    = 'Maximum database intesive threads';
 $LN['config_db_intensive_maxthreads_msg']	= 'The maximum number of threads that require heavy access to the database';
 $LN['config_check_nntp_connections']	= 'Check usenet connections at startup';
 $LN['config_check_nntp_connections_msg']= 'Select the number of possible concurrent connections to an NNTP server automatically at startup';
+$LN['config_nntp_all_servers']              = 'Allow downloads to run on all servers concurrently';
+$LN['config_nntp_all_servers_msg']          = 'Allow downloads to run with the maximum number of NNTP threads on all enabled servers, instead of sticking to one server per download';
 $LN['config_clean_dir_age'] 	    = 'Age of removed files';
 $LN['config_clean_dir_age_msg']	    = 'The age a file must have before it is removed by the clean dir command (in days)';
 $LN['config_clean_db_age'] 	        = 'Age of volatile database info ';
@@ -1154,6 +1182,8 @@ $LN['users_add']		= 'Zuf&uuml;gen';
 $LN['users_resetpw']	= 'Passwort zur&uuml;setzen und zuschicken';
 $LN['users_edit']		= 'Nutzer &auml;ndern';
 $LN['users_delete']		= 'Nutzer l&ouml;schen';
+$LN['users_enable']         = 'Enable user';
+$LN['users_disable']         = 'Disable user';
 $LN['users_rights'] 	= 'Set Bearbeiter';
 $LN['users_rights_help'] 	= 'Erlaubt dem Nuzer Set-Unformationen in der Browse-Seite zu editieren';
 $LN['users_last_active'] 	= 'Zuletzt activ';
@@ -1176,7 +1206,7 @@ $LN['error_dlpathnotwritable']	= 'Download path not writable';
 $LN['error_setithere']		= 'Set it here';
 $LN['error_nousers']		= 'No users found, please re-run the install script';
 $LN['error_filenotallowed']	= 'Not allowed to access file';
-$LN['error_filenotfound']	= 'Datei nicht gefunden' ;
+$LN['error_filenotfound']	= 'Datei nicht gefunden';
 $LN['error_filereaderror']	= 'File could not be read';
 $LN['error_dirnotfound']	= 'Cannot open directory';
 $LN['error_unknown_sort']	= 'Unknown sort order';
@@ -1192,9 +1222,6 @@ $LN['error_invalidgroup']	= 'Invalid group; group name must exist in /etc/group'
 $LN['error_cannotchmod']	= 'Changing access rights not permitted';
 $LN['error_cannotchgrp']	= 'Changing group is not permitted';
 $LN['error_notanumber']	    = 'Kein Zahl';
-
-// NZB parse
-$LN['nzb_title']		= 'URD NZB Parser';
 
 // Transfers
 $LN['transfers_title']		    = 'Downloads';
@@ -1324,16 +1351,12 @@ $LN['browse_userwhitelisted'] = 'User is on the whitelist';
 $LN['browse_download_dir']  = 'Download directory';
 $LN['browse_add_setname']   = 'Setname zuf&uuml;gen';
 
-// ParseNZB
-$LN['parsenzb_error']		= 'If you see this, something has gone wrong. Sorry!';
-
 // Preview
 $LN['preview_autodisp']		= 'Dateien sollten autmatisch angezeigt werden.';
 $LN['preview_autofail']		= 'Wenn nicht, diesen Link w&auml;len';
 $LN['preview_view']		    = 'Click here to view the NZB file';
 $LN['preview_header']		= 'Vorschau wird runtergeladen';
 $LN['preview_nzb']		    = 'To start downloading directly from this NZB file, click this link';
-$LN['preview_title']		= 'URD Vorschau Seite';
 $LN['preview_failed']		= 'Vorschau hat gefehlt';
 
 // FAQ
@@ -1489,7 +1512,12 @@ $LN['browse_tag_copyright']     = 'Urheberrecht';
 
 $LN['quickmenu_setsearch']      = 'S&uuml;ch';
 $LN['quickmenu_addblacklist']   = 'Add spotter to blacklist';
+$LN['quickmenu_addposterblacklist']   = 'Add poster to blacklist';
+$LN['quickmenu_addglobalblacklist']   = 'Add spotter to global blacklist';
+$LN['quickmenu_addglobalwhitelist']   = 'Add spotter to global whitelist';
+$LN['quickmenu_addwhitelist']   = 'Add spotter to whitelist';
 $LN['quickmenu_report_spam']    = 'Report spot as spam';
+$LN['quickmenu_comment_spot']   = 'Post comment on spot';
 $LN['quickmenu_editspot']       = 'Bearbeit Spot';
 $LN['quickmenu_setshowesi']     = 'Zeig Set Info';
 $LN['quickmenu_seteditesi']     = 'Bearbeit Set Info';
@@ -1503,13 +1531,16 @@ $LN['quickmenu_setpreviewvid']  = 'Vorschau Video Datie';
 $LN['quickmenu_add_search']     = 'Automatisch markieren';
 $LN['quickmenu_add_block']      = 'Automatisch ausblenden';
 
+$LN['blacklist_spotter']        = 'Blacklist spotter?';
+$LN['whitelist_spotter']        = 'Whitelist spotter?';
+
 $LN['stats_title'] = 'Statistiken';
 $LN['stats_dl']	= 'Downloads';
 $LN['stats_pv']	= 'Vorschauen';
 $LN['stats_im']	= 'Importierte NZB Dateien';
 $LN['stats_gt']	= 'Heruntergeladn NZB Dateien';
 $LN['stats_wv']	= 'Web Ansichtsen';
-$LN['stats_ps'] = 'Posts';
+$LN['stats_ps'] = 'Uploads';
 $LN['stats_total']	= 'Totales Gro&szlig;e';
 $LN['stats_number']	= 'Anzahl';
 $LN['stats_user']	= 'Benutzer';
@@ -1571,31 +1602,31 @@ $LN['post_messagetextext']  = 'The content of the message to post';
 $LN['post_newsgroupext2']   = 'The newsgroup the message will be posted to';
 $LN['post_subjectext2']     = 'The subject line in the message';
 
-$LN['settype'][SETTYPE_UNKNOWN] = $LN['config_formatstring'] . ' Unbekannt';
-$LN['settype'][SETTYPE_MOVIE]   = $LN['config_formatstring'] .  ' Film';
-$LN['settype'][SETTYPE_ALBUM]   = $LN['config_formatstring'] .  ' Album';
-$LN['settype'][SETTYPE_IMAGE]   = $LN['config_formatstring'] .  ' Abbildung';
-$LN['settype'][SETTYPE_SOFTWARE] = $LN['config_formatstring'] .  ' Software';
-$LN['settype'][SETTYPE_TVSERIES] = $LN['config_formatstring'] . ' Fernsehserie';
-$LN['settype'][SETTYPE_EBOOK]   = $LN['config_formatstring'] . ' Ebuch';
-$LN['settype'][SETTYPE_GAME]    = $LN['config_formatstring'] . ' Spiel';
-$LN['settype'][SETTYPE_TVSHOW]  = $LN['config_formatstring'] . ' Fernsehsendung';
-$LN['settype'][SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Dokumentarfilm';
-$LN['settype'][SETTYPE_OTHER]   = $LN['config_formatstring'] . ' Anders';
+$LN['settype'][urd_extsetinfo::SETTYPE_UNKNOWN] = $LN['config_formatstring'] . ' Unbekannt';
+$LN['settype'][urd_extsetinfo::SETTYPE_MOVIE]   = $LN['config_formatstring'] .  ' Film';
+$LN['settype'][urd_extsetinfo::SETTYPE_ALBUM]   = $LN['config_formatstring'] .  ' Album';
+$LN['settype'][urd_extsetinfo::SETTYPE_IMAGE]   = $LN['config_formatstring'] .  ' Abbildung';
+$LN['settype'][urd_extsetinfo::SETTYPE_SOFTWARE] = $LN['config_formatstring'] .  ' Software';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSERIES] = $LN['config_formatstring'] . ' Fernsehserie';
+$LN['settype'][urd_extsetinfo::SETTYPE_EBOOK]   = $LN['config_formatstring'] . ' Ebuch';
+$LN['settype'][urd_extsetinfo::SETTYPE_GAME]    = $LN['config_formatstring'] . ' Spiel';
+$LN['settype'][urd_extsetinfo::SETTYPE_TVSHOW]  = $LN['config_formatstring'] . ' Fernsehsendung';
+$LN['settype'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['config_formatstring'] . ' Dokumentarfilm';
+$LN['settype'][urd_extsetinfo::SETTYPE_OTHER]   = $LN['config_formatstring'] . ' Anders';
 
 $LN['settype_syntax'] = '%(n.mc); where <i>()</i> indicates an optional enclosure, can be (), [] or {}; <i>n</i> an optional padding value, <i>.m</i> an optional maximum length value, <i>c</i> a required character designated below (use %% to display a %, also see the php documentation an sprintf):<br/><br/>';
 
-$LN['settype_msg'][SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Unknown settype:<br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_MOVIE] = $LN['settype_syntax'] . 'Movie settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%y: year<br/>%m: movie format<br/>%a: audio format<br/>%l: language<br/>%s: subtitle language<br/>%x: x-rated<br/>%N: notes<br/>%q: quality<br/>%P: password protected<br/>%C: copyrighted material <br/>';
-$LN['settype_msg'][SETTYPE_ALBUM] = $LN['settype_syntax'] . 'Album settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%y: year <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: quality<br/>%P: password protected<br/>%C: copyrighted material <br/>';
-$LN['settype_msg'][SETTYPE_IMAGE] = $LN['settype_syntax'] . 'Image settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: quality<br/>%x: x-rated<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_SOFTWARE] = $LN['settype_syntax'] . 'Software settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%o: Operating system <br/>%q: quality<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_TVSERIES] = $LN['settype_syntax'] .  'TV series settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%e: Episode<br/>%m: movie format<br/>%a: audio format<br/>%x: x-rated<br/>%q: quality<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_EBOOK] = $LN['settype_syntax'] . 'Ebook settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%A: Author<br/>%y: Year<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_GAME] = $LN['settype_syntax'] . 'Game settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%A: Author<br/>%y: Year<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_TVSHOW] = $LN['settype_syntax'] . 'TV Show settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%m: movie format<br/>%y: Year<br/>%e: episode<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_DOCUMENTARY] = $LN['settype_syntax'] . 'Documentary settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>>%A: Author<br/>%y: Year<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
-$LN['settype_msg'][SETTYPE_OTHER] = $LN['settype_syntax'] . 'Other settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%P: password protected<br/>%C: copyrighted material <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_UNKNOWN] = $LN['settype_syntax'] . 'Unknown settype:<br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_MOVIE] = $LN['settype_syntax'] . 'Movie settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%y: year<br/>%m: movie format<br/>%a: audio format<br/>%l: language<br/>%s: subtitle language<br/>%x: x-rated<br/>%N: notes<br/>%q: quality<br/>%P: password protected<br/>%C: copyrighted material <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_ALBUM] = $LN['settype_syntax'] . 'Album settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%y: year <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: quality<br/>%P: password protected<br/>%C: copyrighted material <br/>';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_IMAGE] = $LN['settype_syntax'] . 'Image settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon <br/>%f: format<br/>%g: genre<br/>%N: notes<br/>%q: quality<br/>%x: x-rated<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_SOFTWARE] = $LN['settype_syntax'] . 'Software settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%o: Operating system <br/>%q: quality<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSERIES] = $LN['settype_syntax'] .  'TV series settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%e: Episode<br/>%m: movie format<br/>%a: audio format<br/>%x: x-rated<br/>%q: quality<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_EBOOK] = $LN['settype_syntax'] . 'Ebook settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%A: Author<br/>%y: Year<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_GAME] = $LN['settype_syntax'] . 'Game settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%A: Author<br/>%y: Year<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_TVSHOW] = $LN['settype_syntax'] . 'TV Show settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%m: movie format<br/>%y: Year<br/>%e: episode<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_DOCUMENTARY] = $LN['settype_syntax'] . 'Documentary settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>>%A: Author<br/>%y: Year<br/>%f: format<br/>%q: quality<br/>%g: genre<br/>%N: notes<br/>%P: password protected<br/>%C: copyrighted material ';
+$LN['settype_msg'][urd_extsetinfo::SETTYPE_OTHER] = $LN['settype_syntax'] . 'Other settype: <br/>%n: name<br/>%t: set type<br/>%T: type dependent icon<br/>%P: password protected<br/>%C: copyrighted material <br/>';
 
 $LN['loading_files']  = 'Datein wirden geladen... bitte warten';
 $LN['loading']        = 'Wird geladen... bitte warten';
@@ -1607,6 +1638,10 @@ $LN['spots_tag']                = 'Tag';
 $LN['pref_spots_category_mapping']   = 'Spots category mapping for';
 $LN['pref_spots_category_mapping_msg']   = 'Spots category mapping to URD categories';
 
+$LN['pref_custom_values']       = 'Custom values';
+$LN['pref_custom']              = 'Custom value';
+$LN['config_custom']            = 'Custom value';
+$LN['pref_custom_msg']          = 'Custom values that can be used in scripts';
 $LN['spots_other']         = 'Anders';
 $LN['spots_all']           = 'Alles';
 $LN['spots_image']         = 'Bild';

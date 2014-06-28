@@ -14,10 +14,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-02-23 01:01:42 +0100 (za, 23 feb 2013) $
- * $Rev: 2790 $
+ * $LastChangedDate: 2014-06-14 01:20:27 +0200 (za, 14 jun 2014) $
+ * $Rev: 3094 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: login.tpl 2790 2013-02-23 00:01:42Z gavinspearhead@gmail.com $ *}
+ * $Id: login.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $ *}
 {include file="barehead.tpl" title=$title}
 <div id="logindiv" class="light">
 <div class="urdlogo2 floatleft noborder buttonlike down3" onclick="javascript:jump('http://www.urdland.com');"></div>
@@ -26,16 +26,16 @@
 <form method="post" id="urd_login_form">
 <div>
 <input type="hidden" id="language_change" value=""/>
-<input type="hidden" name="token" id="token" value="{$token}"/>
-<input type="hidden" name="curr_language" id="curr_language" value="{$curr_language}"/>
+<input type="hidden" name="token" id="token" value="{$token|escape}"/>
+<input type="hidden" name="curr_language" id="curr_language" value="{$curr_language|escape}"/>
 </div>
 <table class="logintable">
 <tr><td colspan="2"><h3 class="title">{$LN_login_title2} <a href="http://www.urdland.com">URD</a></h3></td></tr>
 {if $message != ''}
 <tr><td colspan="2"><span class="warning_highlight">{$message}</span></td></tr>
 {/if}
-<tr><td>{$LN_username}</td><td><input type="text" name="username" value="{$username}" autofocus="autofocus"/></td></tr>
-<tr><td >{$LN_password}</td><td><input type="password" id="pass" name="pass"/>&nbsp;&nbsp; 
+<tr><td>{$LN_username}</td><td><input type="text" name="username" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
+<tr><td >{$LN_password}</td><td><input type="password" id="pass" name="pass" placeholder="{$LN_password}" required/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('pass');"></div></td></tr>
 <tr><td colspan="2"></td></tr>
 <tr><td>{$LN_login_remember}</td><td>

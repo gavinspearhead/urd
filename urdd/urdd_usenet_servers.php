@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-06-07 17:12:45 +0200 (za, 07 jun 2014) $
+ * $Rev: 3082 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_usenet_servers.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: urdd_usenet_servers.php 3082 2014-06-07 15:12:45Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -39,20 +39,10 @@ class usenet_server
     private $password; //string
     private $priority; // number (0 == disabled)
     private $posting;
+    private $enabled;
 
     const NNTP_ABS_MAX = 32; // the maximum number of connection that urdd will open at the same time
 
-    public function restore_server_settings()
-    {
-        $this->used_threads = (int) 0;
-        $this->blocked_threads = (int) 0;
-    }
-
-    public function print_size()
-    {
-        echo_debug("{$this->id} ({$this->priority}): {$this->max_threads} {$this->free_threads} {$this->blocked_threads}", LOG_SERVER);
-
-    }
     public function __construct ($id, $maxt, $port, $hostname, $encr, $username, $pw, $prio, $posting)
     {
         assert (is_numeric($maxt) && is_numeric($port) && is_numeric($prio) && is_numeric($id));
@@ -67,7 +57,24 @@ class usenet_server
         $this->priority = (int) $prio;
         $this->encryption = $encr;
         $this->posting = $posting;
+        $this->enabled = TRUE;
     }
+    public function __destruct()
+    {
+        // stub
+    }
+
+    public function restore_server_settings()
+    {
+        $this->used_threads = (int) 0;
+        $this->blocked_threads = (int) 0;
+    }
+
+    public function print_size()
+    {
+        echo_debug("{$this->id} ({$this->priority}): {$this->max_threads} {$this->free_threads} {$this->blocked_threads}", LOG_SERVER);
+    }
+
     public function update_server($maxt=NULL, $port=NULL, $hostname=NULL, $encr=NULL, $username=NULL, $pw=NULL, $prio=NULL, $posting= NULL)
         // a null value means don't update it
     {
@@ -93,6 +100,9 @@ class usenet_server
         }
         if ($prio !== NULL) {
             assert ( is_numeric($prio));
+            if ($prio > 0) { 
+                $this->enabled = TRUE;
+            }
             $this->priority = (int) $prio;
         }
         if ($encr !== NULL) {
@@ -101,10 +111,6 @@ class usenet_server
         if ($posting !== NULL) {
             $this->posting = $posting;
         }
-    }
-    public function __destruct()
-    {
-        // stub
     }
     public function add_thread()
     {
@@ -122,7 +128,7 @@ class usenet_server
     }
     public function has_free_slot($update_server = FALSE)
     {
-        return ((($this->used_threads + $this->blocked_threads) < $this->max_threads)) && (($this->priority > 0) || ($this->id == $update_server));
+        return ((($this->used_threads + $this->blocked_threads) < $this->max_threads)) && (($this->priority > 0) || ($this->id == $update_server) && $this->is_enabled());
     }
     public function get_free_slots()
     {
@@ -140,13 +146,19 @@ class usenet_server
     {
         $this->posting = TRUE;
     }
+    public function set_priority($prio)
+    {
+        assert(is_numeric($prio) && $prio >= 0);
+        $this->priority = $prio;
+    }
+
     public function disable()
     {
-        $this->priority = 0;
+        $this->enabled = FALSE;
     }
-    public function enable($prio)
+    public function enable()
     {
-        $this->priority = $prio;
+        $this->enabled = TRUE;
     }
     public function get_id()
     {
@@ -182,7 +194,7 @@ class usenet_server
     }
     public function is_enabled()
     {
-        return $this->priority > 0;
+        return $this->enabled === TRUE;
     }
     public function reset_max_slots()
     {
@@ -203,7 +215,7 @@ class usenet_server
     public function find_max_connections(DatabaseConnection $db, $update_server, test_result_list &$test_results, $check_nntp_connections)
     {
         assert(is_numeric($update_server));
-        if (!$this->is_enabled() && $this->id != $update_server) {
+        if ($this->id != $update_server && $this->get_priority() <= 0) { // we only test actually used servers
             return;
         }
         if (0 != $this->used_threads) {
@@ -217,7 +229,7 @@ class usenet_server
         $max_conn = max(1, min($top, self::NNTP_ABS_MAX));
         $conns = array();
         if ($check_nntp_connections) {
-            $timeout = get_config($db, 'socket_timeout');
+            $timeout = get_config($db, 'socket_timeout', '-1');
             if ($timeout <= 0) {
                 $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
             }
@@ -233,6 +245,8 @@ class usenet_server
             $this->max_threads = $i;
             if ($i == 0) {
                 $this->disable();
+                $this->set_priority(0);
+                    
                 $test_results->add(new test_result("Server: {$this->hostname}:{$this->port}", FALSE, "Server: {$this->hostname}:{$this->port} disabled"));
             } else {
                 $test_results->add(new test_result("Server: {$this->hostname}:{$this->port}", TRUE, "Server: {$this->hostname}:{$this->port} enabled with $i connections"));
@@ -247,7 +261,7 @@ class usenet_server
         if (0 != $this->used_threads) {
             throw new exception ('Has threads running, cancel all threads first', ERR_SERVER_IN_USE);
         }
-        $timeout = get_config($db, 'socket_timeout');
+        $timeout = get_config($db, 'socket_timeout', '-1');
         if ($timeout <= 0) {
             $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
         }
@@ -336,7 +350,7 @@ class usenet_server
                         if ($indexing === TRUE) {
                             if ($set_update_server) {
                                 set_config($db, 'preferred_server', $this->id);
-                                write_log ("Setting as indexing server: $hostname:$p ({$this->id})", LOG_NOTICE);
+                                write_log("Setting as indexing server: $hostname:$p ({$this->id})", LOG_NOTICE);
                                 $set_update_server = FALSE;
                             }
                         }
@@ -354,7 +368,7 @@ class usenet_server
         }
         if ($found_one === FALSE) {
             if ($update_config === TRUE) {
-                smart_update_usenet_server($db, $this->id, array('priority'=> DISABLED_USENET_SERVER_PRIORITY));
+                smart_update_usenet_server($db, $this->id, array('priority' => DISABLED_USENET_SERVER_PRIORITY));
                 if (get_config($db, 'preferred_server') == $this->id) {
                     set_config($db, 'preferred_server', 0);
                 }
@@ -391,8 +405,7 @@ class usenet_servers
     }
     public function __construct()
     {
-        $this->update_server = 0;
-        $this->servers = array();
+        $this->reset_servers();
     }
     public function __destruct()
     {
@@ -419,23 +432,23 @@ class usenet_servers
     public function get_max_threads($server_id)
     {
         assert(is_numeric($server_id));
-        if ( isset ($this->servers[$server_id])) {
+        if (isset ($this->servers[$server_id])) {
             return $this->servers[$server_id]->get_max_slots();
         } else {
             throw new exception ("Server ($server_id) does not exist", ERR_NO_SUCH_SERVER);
         }
     }
-    public function unused_servers_available(array $already_used_servers=array(), $must_to_have_free_slot = TRUE)
+    public function unused_servers_available(array $already_used_servers = array(), $must_to_have_free_slot = TRUE)
     {
         if ($must_to_have_free_slot) {
             foreach ($this->servers as $srv) {
-                if ($srv->is_enabled() && !in_array($srv->get_id(), $already_used_servers) && $srv->has_free_slot()) {
+                if ($srv->is_enabled() && $srv->get_priority() > 0 && !in_array($srv->get_id(), $already_used_servers) && $srv->has_free_slot()) {
                     return $srv->get_id();
                 }
             }
         } else {
             foreach ($this->servers as $srv) {
-                if ($srv->is_enabled() && !in_array($srv->get_id(), $already_used_servers)) {
+                if ($srv->is_enabled() && $srv->get_priority() > 0 && !in_array($srv->get_id(), $already_used_servers)) {
                     return $srv->get_id();
                 }
             }
@@ -450,7 +463,7 @@ class usenet_servers
         foreach ($this->servers as $srv) {
             $srv_prio = $srv->get_priority();
             $id = $srv->get_id();
-            if ($srv->has_free_slot($this->update_server) && $srv->is_enabled() &&
+            if ($srv->has_free_slot($this->update_server) && $srv->is_enabled() && $srv->get_priority() > 0 &&
                 ($srv_prio < $prio || $server_id === FALSE) && !in_array($id, $already_used_servers)
                 && ($need_posting === FALSE || $srv->get_posting())) {
                 $server_id = $srv->get_id();
@@ -543,11 +556,23 @@ class usenet_servers
         assert(is_numeric($server_id) && is_numeric($prio));
         $id = (int) $server_id;
         if (isset($this->servers[$id])) {
-            $this->servers[$id]->enable($prio);
+            $this->servers[$id]->enable();
+            $this->servers[$id]->set_priority($prio);
         } else {
             throw new exception ("Cannot find server $id", ERR_NO_SUCH_SERVER);
         }
     }
+    public function set_priority($server_id, $prio)
+    {
+        assert(is_numeric($server_id) && is_numeric($prio));
+        $id = (int) $server_id;
+        if (isset($this->servers[$id])) {
+            $this->servers[$id]->set_priority($prio);
+        } else {
+            throw new exception ("Cannot find server $id", ERR_NO_SUCH_SERVER);
+        }
+    }
+
     public function disable_server($server_id)
     {
         assert(is_numeric($server_id));
@@ -582,6 +607,7 @@ class usenet_servers
             $srv['password'] = $s->get_password() == '' ? '': '******';
             $srv['priority'] = $s->get_priority();
             $srv['posting'] = $s->get_posting();
+            $srv['enabled'] = $s->is_enabled() ? TRUE : FALSE;
             $srvs[$srv['id']] = $srv;
         }
         ksort($srvs);
@@ -612,10 +638,12 @@ class usenet_servers
             throw new exception ("Cannot find server $id", ERR_NO_SUCH_SERVER);
         }
     }
-    public function reset_connection_limits()
+    public function reset_connection_limits($server_id=FALSE)
     {
-        foreach ($this->servers as &$srv) {
-            $srv->reset_max_slots();
+        foreach ($this->servers as $id => &$srv) {
+            if ($server_id === FALSE || $id == $server_id) {
+                $srv->reset_max_slots();
+            }
         }
     }
     public function test_servers(DatabaseConnection $db, test_result_list &$test_results)
@@ -629,7 +657,6 @@ class usenet_servers
                     write_log('We can probably use this server for indexing: ' . $srv->get_hostname() . ':' . $srv->get_port() . " ($p_str)", LOG_NOTICE);
                 } else {
                     $test_results->add(new test_result("{$srv->get_hostname()}:{$srv->get_port()}", FALSE, 'We probably cannot use this server for indexing'));
-                    //$server_data[] = array('hostname' => $srv->get_hostname(), 'port' =>$srv->get_port(), 'result'=> FALSE, 'message'=>'We probably cannot use this server for indexing');
                     write_log('We probably cannot use this server for indexing: ' . $srv->get_hostname() . ':' . $srv->get_port(), LOG_NOTICE);
                 }
             } catch (exception $e) {
@@ -658,7 +685,7 @@ class usenet_servers
     {
         $id = $server_id;
         if (isset($this->servers[$id])) {
-            $this->servers[$id]->get_priority();
+            return $this->servers[$id]->get_priority();
         } else {
             throw new exception ("Cannot find server $id", ERR_NO_SUCH_SERVER);
         }

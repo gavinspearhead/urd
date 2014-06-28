@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:50:58 +0200 (di, 03 sep 2013) $
- * $Rev: 2911 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_client.php 2911 2013-09-03 21:50:58Z gavinspearhead@gmail.com $
+ * $Id: urdd_client.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -30,23 +30,8 @@ if (!defined('ORIGINAL_PAGE')) {
 $pathuc = realpath(dirname(__FILE__));
 
 require_once $pathuc . '/urdd_command.php';
-require_once $pathuc . '/urdd_protocol.php';
-require_once $pathuc . '/../config.php';
-require_once $pathuc . '/../functions/defines.php';
 require_once $pathuc . '/../functions/libs/socket.php';
-require_once $pathuc . '/../functions/autoincludes.php';
 
-function get_username_password(DatabaseConnection $db, $userid)
-{
-    assert(is_numeric($userid));
-    $db->escape($userid, TRUE);
-    $res = $db->select_query("\"name\", \"pass\" FROM users WHERE \"ID\" = $userid", 1);
-    if ($res === FALSE || empty($res)) {
-        throw new exception("Invalid userID $userid given in urdd_client constructor", ERR_INVALID_USERNAME);
-    }
-
-    return array ($res[0]['name'], $res[0]['pass']);
-}
 
 class urdd_client
 {
@@ -58,13 +43,23 @@ class urdd_client
     private $password;
     private $timeout;
     private $can_connect;
+    private function get_username_password(DatabaseConnection $db, $userid)
+    {
+        assert(is_numeric($userid));
+        $res = $db->select_query('"name", "pass" FROM users WHERE "ID"=?', 1, array($userid));
+        if (!isset($res[0]['name'])) {
+            throw new exception("Invalid userID $userid given in urdd_client constructor", ERR_INVALID_USERNAME);
+        }
 
-    public function __construct(DatabaseConnection $db, $hostname, $port, $userid = 0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
+        return array($res[0]['name'], $res[0]['pass']);
+    }
+
+    public function __construct(DatabaseConnection $db, $hostname, $port, $userid=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
     {
         echo_debug ("$hostname $port $userid", DEBUG_HTTP);
         assert(is_numeric($port) && is_numeric($userid) && is_numeric($timeout));
         if ($userid > 0) {
-            list($username, $md5pass) = get_username_password($db, $userid);
+            list($username, $md5pass) = $this->get_username_password($db, $userid);
             $password = 'hash:' . $md5pass;
 
             $this->timeout = (int) $timeout;
@@ -82,11 +77,12 @@ class urdd_client
     }
     private function quick_connect($hostname, $port, $timeout)
     {
+        assert(is_numeric($port) && is_numeric($timeout));
         $rv = FALSE;
         try {
             $this->sock = new socket();
             $this->sock->connect($hostname, $port, FALSE, $timeout);
-            $rv = $this->sock->readLine();
+            $rv = $this->sock->read_line();
         } catch (exception $e) {
             $this->cleanup();
         }
@@ -123,7 +119,7 @@ class urdd_client
         $this->timeout = (int) $timeout;
         $this->sock = new socket();
         $this->sock->connect($hostname, $port, FALSE, $timeout);
-        $rv = $this->sock->readLine();
+        $rv = $this->sock->read_line();
         if ($rv === FALSE) {
             $this->cleanup();
             throw new exception ('Cannot read from socket', ERR_SOCKET_FAILURE);
@@ -186,7 +182,7 @@ class urdd_client
             $this->connect($this->hostname, $this->port, $this->username, $this->password, $this->timeout);
         }
         // Send command:
-        $rv = $this->sock->writeLine($cmd);
+        $rv = $this->sock->write_line($cmd);
         if ($rv === FALSE) { // can't write it somehow, cleanup and quit
             $this->sock->disconnect();
             $this->cleanup();
@@ -196,7 +192,7 @@ class urdd_client
         // Read reply:
         while (1) {
             // Read the result
-            $line = $this->sock->readLine();
+            $line = $this->sock->read_line();
             if ($line === FALSE || time() > ($timeout)) { // if we have a timeout or readline timesout
                 $this->disconnect();
                 $this->cleanup();
@@ -246,7 +242,7 @@ class urdd_client
 
         return ($code == 200) ? TRUE : FALSE;
     }
-    public function update($msg_id ='', $type=USERSETTYPE_GROUP)
+    public function update($msg_id='', $type=USERSETTYPE_GROUP)
     {
         switch ($type) {
         case USERSETTYPE_GROUP: $cmd = urdd_protocol::COMMAND_UPDATE; break;
@@ -306,7 +302,6 @@ class urdd_client
     public function cancel($msg_id)
     {
         list ($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_CANCEL) . ' ' . $msg_id);
-
         return ($code == 200) ? TRUE : FALSE;
     }
     public function continue_cmd($msg_id)
@@ -477,12 +472,6 @@ class urdd_client
         return ($code == 253) ? $data : FALSE;
     }
 
-    /*function status()
-    {
-        list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_SHOW) . ' status');
-
-        return ($code == 251) ? $data : FALSE;
-    }*/
     public function unpause($id)
     {
         list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_CONTINUE) . " $id");
@@ -596,18 +585,18 @@ class urdd_client
         case USERSETTYPE_SPOT:  $cmd = urdd_protocol::COMMAND_DELETE_SPOT; break;
         default: return FALSE;
         }
-
+        $cmd_id = get_command($cmd);
         foreach ($setid as $s) {
             $setid_list .= " $s";
             $cnt++;
             if ($cnt > 10) {
-                list($code, $resp, $data) = $this->send_multi_command(get_command($cmd) . " $setid_list");
+                list($code, $resp, $data) = $this->send_multi_command($cmd_id . " $setid_list");
                 $cnt = 0;
                 $setid_list = '';
             }
         }
         if ($cnt > 0) {
-            list($code, $resp, $data) = $this->send_multi_command(get_command($cmd) . " $setid_list");
+            list($code, $resp, $data) = $this->send_multi_command($cmd_id . " $setid_list");
         }
 
         return ($code == 200) ? TRUE : FALSE;

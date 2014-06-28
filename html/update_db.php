@@ -46,9 +46,10 @@ require_once "$pathud/../functions/db.class.php";
 require_once "$pathud/../functions/urd_log.php";
 require_once $pathud. '/../functions/libs/smarty/libs/Smarty.class.php';
 try {
-    $db = connect_db(TRUE, FALSE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
-    echo "Connection to database failed.\n";
+    $msg = $e->getMessage();
+    echo "Connection to database failed. $msg\n";
     die;
 }
 require_once "$pathud/../functions/checkauth.php";

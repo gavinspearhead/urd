@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-29 01:03:02 +0200 (do, 29 mei 2014) $
+ * $Rev: 3058 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: admin_control.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: admin_control.php 3058 2014-05-28 23:03:02Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $pathadctl = realpath(dirname(__FILE__));
@@ -28,7 +28,7 @@ require_once "$pathadctl/../functions/html_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-$add_menu = array (
+$add_menu = array(
     'actions'=>
     array(
         new menu_item2('sendsetinfo','adminsendsetinfo',urd_modules::URD_CLASS_SYNC, '', 'command'),
@@ -42,6 +42,7 @@ $add_menu = array (
         new menu_item2('updateblacklist', 'adminupdateblacklist', urd_modules::URD_CLASS_SPOTS, '', 'command'),
         new menu_item2('updatewhitelist', 'adminupdatewhitelist', urd_modules::URD_CLASS_SPOTS, '', 'command'),
         new menu_item2('update_db.php', 'update_database',urd_modules::URD_CLASS_GENERIC, '', 'jump'),
+        new menu_item2 ('cleanall', 'admincleandb', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('reload','adminrestart',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('import_all_settings','adminimport_all',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('export_all_settings','adminexport_all',urd_modules::URD_CLASS_GENERIC, '', 'command'),

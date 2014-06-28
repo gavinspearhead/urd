@@ -16,19 +16,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-01 16:37:15 +0200 (zo, 01 sep 2013) $
- * $Rev: 2907 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: action.php 2907 2013-09-01 14:37:15Z gavinspearhead@gmail.com $
+ * $Id: action.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$pathact = realpath(dirname(__FILE__));
-require_once "$pathact/../functions/autoincludes.php";
 
 class action
 {
@@ -43,7 +40,6 @@ class action
     private $primary_nntp;
     private $id; // the internal id of the action, should be incrementing
     private $paused; // is the thread paused or active
-    private $username; // the user that created the action
     private $userid; // the user id of the user that created the action
     private $queue_time; // the time the action was put on the queue
     private $start_time; // the time the action started running
@@ -55,9 +51,9 @@ class action
     private $preferred_server; // if this is 0 we try any active server, otherwise run it _only_ on the server given here; note if it is not active on starting this item, we need to re-schedule it with a new preferred server
     private $temp_fail_servers; // servers we have already tried to run this task on, but failed to connect, or timed out or other temporary failures
     private $perm_fail_servers; // servers that don't have any more articles for us
-    public function __construct ($cmd, $args, $username, $userid, $paused=FALSE, $priority=DEFAULT_PRIORITY)
+    public function __construct ($cmd, $args,  $userid, $paused=FALSE, $priority=DEFAULT_PRIORITY)
     {
-        assert(is_numeric($priority) && $priority >= 0 && is_bool($paused) &&  ((is_numeric($userid)  && $username != '') || ($cmd === NULL && $args === NULL && $username === NULL && $userid === NULL)));
+        assert(is_numeric($priority) && $priority >= 0 && is_bool($paused) &&  (is_numeric($userid) || ($cmd === NULL && $args === NULL && $userid === NULL)));
         if ($cmd === NULL) {
             $this->command_code = NULL;
             $this->command = NULL;
@@ -80,7 +76,6 @@ class action
         $this->primary_nntp = get_command_primary_nntp($cmd);
         $this->id = ++self::$lastid;
         $this->paused = (bool) $paused;
-        $this->username = $username;
         $this->userid = $userid;
         $this->queue_time = microtime(TRUE);
         $this->start_time = (int) 0;
@@ -122,7 +117,6 @@ class action
         $this->db_id = $action->get_dbid();
         $this->id = ++self::$lastid;
         $this->paused = FALSE;
-        $this->username = $action->get_username();
         $this->userid = $action->get_userid();
         $this->queue_time = microtime(TRUE);
         $this->priority = $action->get_priority();
@@ -195,10 +189,6 @@ class action
     public function get_userid()
     {
         return $this->userid;
-    }
-    public function get_username()
-    {
-        return $this->username;
     }
     public function max_exceeded($count)
     {
@@ -359,11 +349,6 @@ class action
     public function get_preview ()
     {
         return $this->preview;
-    }
-    public function match_username($username)
-    {
-        assert(is_string($userid));
-        return ($username == user_status::SUPER_USER || $this->username == $username);
     }
     public function match_userid($userid)
     {

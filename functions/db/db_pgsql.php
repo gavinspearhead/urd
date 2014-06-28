@@ -47,7 +47,7 @@ class db_update_pgsql extends db_update_abs
         }
 
         return $colType;
-    } # swDtToNative
+    } 
 
     /* converteert een mysql datatype naar een "URD" datatype */
     public function nativeDtToSw($colInfo)
@@ -59,15 +59,14 @@ class db_update_pgsql extends db_update_abs
         }
 
         return $colInfo;
-    } # nativeDtToSw
+    } 
 
     /* controleert of een index bestaat */
     public function indexExists($idxname, $tablename)
     {
         $q = $this->db->execute_query("SELECT indexname FROM pg_indexes WHERE schemaname = CURRENT_SCHEMA() AND tablename = '$tablename' AND indexname = '$idxname'");
-
         return !empty($q);
-    } # indexExists
+    } 
 
     /* controleert of een column bestaat */
     public function columnExists($tablename, $colname)
@@ -77,7 +76,7 @@ class db_update_pgsql extends db_update_abs
             WHERE table_schema = CURRENT_SCHEMA() AND table_name = '$tablename' AND column_name = '$colname'");
 
         return !empty($q);
-    } # columnExists
+    } 
 
     /* controleert of een full text index bestaat */
     public function ftsExists($ftsname, $tablename, array $colList)
@@ -91,7 +90,7 @@ class db_update_pgsql extends db_update_abs
         }
 
         return TRUE;
-    } # ftsExists
+    } 
 
     /* maakt een full text index aan */
     public function createFts($ftsname, $tablename, array $colList)
@@ -104,7 +103,7 @@ class db_update_pgsql extends db_update_abs
                 $this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
             }
         }
-    } # createFts
+    } 
 
     /* dropt en fulltext index */
     public function dropFts($ftsname, $tablename, array $colList)
@@ -112,7 +111,7 @@ class db_update_pgsql extends db_update_abs
         foreach ($colList as $num => $col) {
             $this->dropIndex($ftsname . '_' . $num, $tablename);
         }
-    } # dropFts
+    } 
 
     /* geeft FTS info terug */
     public function getFtsInfo($ftsname, $tablename, array $colList)
@@ -128,7 +127,7 @@ class db_update_pgsql extends db_update_abs
         }
 
         return $ftsList;
-    } # getFtsInfo
+    } 
 
     public function check_primary($tablename)
     {
@@ -148,28 +147,28 @@ class db_update_pgsql extends db_update_abs
         if (!$this->indexExists($idxname, $tablename)) {
             switch ($idxType) {
             case 'UNIQUE': {
-                $this->db->execute_query('CREATE UNIQUE INDEX "' . $idxname . '" ON ' . $tablename . '("' . implode("\",\"", $colList) . '")');
+                $this->db->execute_query('CREATE UNIQUE INDEX "' . $idxname . '" ON ' . $tablename . '("' . implode('","', $colList) . '")');
                 break;
-            } # case
+            } 
 
             case 'FULLTEXT' : {
-                $this->db->execute_query("CREATE INDEX \"" . $idxname . "\" ON " . $tablename . " USING gin(to_tsvector('dutch', \"" . implode("\",\"", $colList) . "\"))");
+                $this->db->execute_query('CREATE INDEX "' . $idxname . '" ON ' . $tablename . " USING gin(to_tsvector('dutch', \"" . implode('","', $colList) . '"))');
                 break;
-            } # case
+            } 
 
             case 'PRIMARY' :
                 $primkey = $this->check_primary($tablename);
                 if ($primkey) {
                     $this->db->execute_query('ALTER TABLE ' . $tablename . " DROP CONSTRAINT \"$primkey\"");
                 }
-                $this->db->execute_query('ALTER TABLE ' . $tablename . " ADD CONSTRAINT \"$idxname\" PRIMARY KEY (\"" . implode("\",\"", $colList) . "\")");
+                $this->db->execute_query('ALTER TABLE ' . $tablename . " ADD CONSTRAINT \"$idxname\" PRIMARY KEY (\"" . implode('","', $colList) . '")');
                 break;
             default	: {
-                $this->db->execute_query("CREATE INDEX \"" . $idxname . "\" ON " . $tablename . "(\"" . implode("\",\"", $colList) . "\")");
-            } # default
+                $this->db->execute_query('CREATE INDEX "' . $idxname . '" ON ' . $tablename . '("' . implode('","', $colList) . '")');
+            } 
             }
         }
-    } # addIndex
+    } 
 
     /* dropt een index als deze bestaat */
     public function dropIndex($idxname, $tablename)
@@ -177,16 +176,16 @@ class db_update_pgsql extends db_update_abs
         # Check eerst of de tabel bestaat, anders kan
         # indexExists mislukken en een fatal error geven
         if (!$this->tableExists($tablename)) {
-            return ;
+            return;
         }
 
         if ($this->indexExists($idxname, $tablename)) {
-            $this->db->execute_query("DROP INDEX \"" . $idxname . '"');
+            $this->db->execute_query('DROP INDEX "' . $idxname . '"');
         }
-    } # dropIndex
+    }
 
     /* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
-    public function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $auto_inc)
+    public function addColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $auto_inc=NULL)
     {
         if (!$this->columnExists($tablename, $colName)) {
 
@@ -196,7 +195,7 @@ class db_update_pgsql extends db_update_abs
                 case 'now' : $def_setting = 'DEFAULT now()';
                 break;
                 }
-            } elseif (strlen($colDefault) != 0 || $notNull) {
+            } elseif (!is_null($colDefault) || $notNull) {
                 if (!in_array(strtoupper($colType), array('BIGSERIAL', 'SERIAL'))) {
                     $def_setting = 'DEFAULT \'' . $colDefault . "'";
                 }
@@ -219,9 +218,9 @@ class db_update_pgsql extends db_update_abs
             case TRUE		: $nullStr = 'NOT NULL'; break;
             default			: $nullStr = '';
             }
-            $this->db->execute_query('ALTER TABLE ' . $tablename . " ADD COLUMN \"" . $colName . "\" " . $colType . " " . $colSetting . " " . $def_setting . " " . $nullStr .  " " . $auto_inc);
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD COLUMN "' . $colName . '" ' . $colType . ' ' . $colSetting . ' ' . $def_setting . ' ' . $nullStr . ' ' . $auto_inc);
         }
-    } # addColumn
+    }
     public function check_sequence($seq)
     {
         $q = $this->db->execute_query("select * FROM pg_statio_all_sequences WHERE relname = '$seq' AND schemaname = CURRENT_SCHEMA()");
@@ -230,11 +229,9 @@ class db_update_pgsql extends db_update_abs
     }
 
     /* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
-    public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what, $auto_inc)
+    public function modifyColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $what=NULL, $auto_inc=NULL)
     {
-        #
         # zet de DEFAULT waarde
-        #
 
         $def_setting = $colDefault;
         if ($colType == 'timestamp') {
@@ -252,7 +249,7 @@ class db_update_pgsql extends db_update_abs
             if (!$this->check_sequence($tablename . '_' . $colName . '_seq')) {
                 $this->db->execute_query('CREATE SEQUENCE ' . $tablename . '_' . $colName . '_seq' );
             }
-            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN ' . $colName . ' TYPE BIGINT, ALTER COLUMN ' . $colName . '  SET DEFAULT nextval(\''. $tablename . '_' . $colName . '_seq\')');
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN ' . $colName . ' TYPE BIGINT, ALTER COLUMN ' . $colName . ' SET DEFAULT nextval(\''. $tablename . '_' . $colName . '_seq\')');
 
             return;
         } else  if (strtoupper($colType) == 'SERIAL') {
@@ -261,7 +258,7 @@ class db_update_pgsql extends db_update_abs
             } catch (exception $e) {
                 // ignore
             }
-            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN ' . $colName . ' TYPE INTEGER, ALTER COLUMN ' . $colName . '  SET DEFAULT nextval(\''. $tablename . '_' . $colName . '_seq\')');
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN ' . $colName . ' TYPE INTEGER, ALTER COLUMN ' . $colName . ' SET DEFAULT nextval(\''. $tablename . '_' . $colName . '_seq\')');
         }
 
         # Enkel pgsql 9.1 (op dit moment beta) ondersteunt per column collation,
@@ -279,30 +276,30 @@ class db_update_pgsql extends db_update_abs
         }
 
         # zet de koloms type
-        $this->db->execute_query("ALTER TABLE " . $tablename . " ALTER COLUMN \"" . $colName . "\" TYPE " . $colType);
+        $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN "' . $colName . '" TYPE ' . $colType);
 
         # zet de default value
         if (strlen($def_setting) > 0) {
-            $this->db->execute_query('ALTER TABLE ' . $tablename . " ALTER COLUMN \"" . $colName . "\" SET " . $def_setting);
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN "' . $colName . '" SET ' . $def_setting);
         } else {
-            $this->db->execute_query('ALTER TABLE ' . $tablename . " ALTER COLUMN \"" . $colName . "\" DROP DEFAULT");
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN "' . $colName . '" DROP DEFAULT');
         }
 
         # en zet de null/not-null constraint
         if (strlen($notNull) > 0) {
-            $this->db->execute_query('ALTER TABLE ' . $tablename . " ALTER COLUMN \"" . $colName . "\" SET NOT NULL");
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN "' . $colName . '" SET NOT NULL');
         } else {
-            $this->db->execute_query('ALTER TABLE ' . $tablename . " ALTER COLUMN \"" . $colName . "\" DROP NOT NULL");
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ALTER COLUMN "' . $colName . '" DROP NOT NULL');
         }
-    } # modifyColumn
+    } 
 
     /* dropt een kolom (mits db dit ondersteunt) */
     public function dropColumn($colName, $tablename)
     {
         if ($this->columnExists($tablename, $colName)) {
-            $this->db->execute_query('ALTER TABLE ' . $tablename . " DROP COLUMN \"" . $colName . '"');
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' DROP COLUMN "' . $colName . '"');
         }
-    } # dropColumn
+    } 
 
     /* controleert of een tabel bestaat */
     public function tableExists($tablename)
@@ -310,9 +307,9 @@ class db_update_pgsql extends db_update_abs
         $q = $this->db->execute_query("SELECT tablename FROM pg_tables WHERE schemaname = CURRENT_SCHEMA() AND (tablename = '$tablename')");
 
         return !empty($q);
-    } # tableExists
+    } 
 
-    /* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
+    /* creeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
     public function createTable($tablename, $index_field, $collation, $engine)
     {
         if (!$this->tableExists($tablename)) {
@@ -327,7 +324,7 @@ class db_update_pgsql extends db_update_abs
 
             $this->db->execute_query('CREATE TABLE ' . $tablename . " ($index_field BIGSERIAL PRIMARY KEY) " . $colSetting);
         }
-    } # createTable
+    } 
 
     /* drop een table */
     public function dropTable($tablename)
@@ -335,19 +332,19 @@ class db_update_pgsql extends db_update_abs
         if ($this->tableExists($tablename)) {
             $this->db->execute_query('DROP TABLE ' . $tablename);
         }
-    } # dropTable
+    } 
 
     /* verandert een storage engine (concept dat enkel mysql kent :P ) */
     public function alterStorageEngine($tablename, $engine)
     {
         return FALSE;
-    } # alterStorageEngine
+    } 
 
     /* rename een table */
     public function renameTable($tablename, $newTableName)
     {
-        $this->db->execute_query('ALTER TABLE ' . $tablename . " RENAME TO " . $newTableName);
-    } # renameTable
+        $this->db->execute_query('ALTER TABLE ' . $tablename . ' RENAME TO ' . $newTableName);
+    } 
 
     /* dropped een foreign key constraint */
     public function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action)
@@ -375,7 +372,7 @@ class db_update_pgsql extends db_update_abs
                 $this->db->execute_query('ALTER TABLE ' . $tablename . " DROP FOREIGN KEY " . $res['CONSTRAINT_NAME']);
             }
         }
-    } # dropForeignKey
+    } 
 
     /* creeert een foreign key constraint */
     public function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action)
@@ -402,7 +399,7 @@ class db_update_pgsql extends db_update_abs
             $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD FOREIGN KEY (' . $colname . ")
                 REFERENCES " . $reftable . ' (' . $refcolumn . ') ' . $action);
         }
-    } # addForeignKey
+    } 
 
     /* Geeft, in een afgesproken formaat, de column formatie terug */
     public function getColumnInfo($tablename, $colname)
@@ -441,7 +438,7 @@ class db_update_pgsql extends db_update_abs
                 $q['COLUMN_DEFAULT'] = 'NOW';
             }
 
-            if (substr($q['COLUMN_DEFAULT'],0, 8) == 'nextval(') {
+            if (substr($q['COLUMN_DEFAULT'], 0, 8) == 'nextval(') {
                 $q['COLUMN_DEFAULT'] = '';
                 $q['EXTRA'] = 'auto_increment';
                 if ($q['COLUMN_TYPE'] == 'bigint') {
@@ -451,7 +448,7 @@ class db_update_pgsql extends db_update_abs
                 }
             }
             # pgsql typecast de default waarde standaard, maar
-            # wij gaar daar niet van uit, dus strip dat
+            # wij gaan daar niet van uit, dus strip dat
             if (strpos($q['COLUMN_DEFAULT'], ':') !== FALSE) {
                 $elems = explode(':', $q['COLUMN_DEFAULT']);
                 $q['COLUMN_DEFAULT'] = trim($elems[0], "'");
@@ -459,7 +456,7 @@ class db_update_pgsql extends db_update_abs
         }
 
         return $q;
-    } # getColumnInfo
+    } 
 
     /* Geeft, in een afgesproken formaat, de index informatie terug */
     public function getIndexInfo($idxname, $tablename, $type)
@@ -507,7 +504,7 @@ class db_update_pgsql extends db_update_abs
         }
 
         return $idxInfo;
-    } # getIndexInfo
+    }
 
     public function get_tables($tablename)
     {
@@ -525,4 +522,4 @@ class db_update_pgsql extends db_update_abs
     {
         $colList = preg_replace('/\([0-9]+\)/', '', $colList);
     }
-} # class
+} 

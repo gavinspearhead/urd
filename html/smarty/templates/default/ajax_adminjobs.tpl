@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-28 00:47:19 +0200 (wo, 28 aug 2013) $
- * $Rev: 2905 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_adminjobs.tpl 2905 2013-08-27 22:47:19Z gavinspearhead@gmail.com $
+ * $Id: ajax_adminjobs.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
 {$up="<img src='$IMGDIR/small_up.png' alt=''>"}
@@ -28,20 +28,20 @@
 {if $sort == "at_time"}{if $sort_dir=='desc'}{$at_time_sort=$up}{else}{$at_time_sort=$down}{/if}{else}{$at_time_sort=""}{/if}
 {if $sort == "interval"}{if $sort_dir=='desc'}{$interval_sort=$up}{else}{$interval_sort=$down}{/if}{else}{$interval_sort=""}{/if}
 
-<input type="hidden" name="order" id="order" value="{$sort}"/>
-<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir}"/>
+<input type="hidden" name="order" id="order" value="{$sort|escape:htmlall}"/>
+<input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
 
 <table class="tasks">
 <tr>
-<th id="descr_td" onclick="javascript:submit_search_jobs('command', 'asc');" class="buttonlike head round_left">{$LN_jobs_command} {$command_sort}</th>
-<th onclick="javascript:submit_search_jobs('username', 'asc');" class="fixwidth8c buttonlike head">{$LN_jobs_user} {$username_sort}</th>
-<th onclick="javascript:submit_search_jobs('at_time', 'asc');" class="fixwidth9 buttonlike head">{$LN_time} {$at_time_sort}</th>
-<th onclick="javascript:submit_search_jobs('interval', 'asc');" class="fixwidth5 buttonlike head">{$LN_jobs_period} {$interval_sort}</th>
+<th id="descr_td" onclick="javascript:submit_jobs_search('command', 'asc');" class="buttonlike head round_left">{$LN_jobs_command} {$command_sort}</th>
+<th onclick="javascript:submit_jobs_search('username', 'asc');" class="fixwidth8c buttonlike head">{$LN_jobs_user} {$username_sort}</th>
+<th onclick="javascript:submit_jobs_search('at_time', 'asc');" class="fixwidth9 buttonlike head">{$LN_time} {$at_time_sort}</th>
+<th onclick="javascript:submit_jobs_search('interval', 'asc');" class="fixwidth5 buttonlike head">{$LN_jobs_period} {$interval_sort}</th>
 <th class="fixwidth5 round_right head">{$LN_actions}</th>
 </tr>
 
 {foreach $alljobs as $job}
-<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 <td><div class="donotoverflowdamnit">{$job.task} <b>{$job.arg}</b></div></td>
 <td>{$job.user}</td>
 <td class="right">{$job.time}</td>

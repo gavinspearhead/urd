@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-19 23:50:53 +0200 (ma, 19 mei 2014) $
+ * $Rev: 3043 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edittransfers.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_edittransfers.php 3043 2014-05-19 21:50:53Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
@@ -29,9 +29,6 @@ require_once "$pathaet/../functions/ajax_includes.php";
 
 $cmd = get_request('cmd');
 $dlid = get_request('dlid');
-
-$db->escape($cmd);
-$db->escape($dlid);
 
 if (!is_numeric($dlid)) {
     throw new exception($LN['error_downloadnotfound'] . ': ' . $dlid);
@@ -99,24 +96,22 @@ case 'delete' :
     }
     if ($isadmin) {
         // Admins can delete any download
-        $db->delete_query('downloadinfo', "\"ID\" = '$dlid'");
-        $db->delete_query('downloadarticles', "\"downloadID\" = '$dlid'");
+        $db->delete_query('downloadinfo', '"ID" = ?', array($dlid));
+        $db->delete_query('downloadarticles', '"downloadID" = ?', array($dlid));
     } else {
-        $username = get_username($db, $userid);
-        $db->escape($username);
-        $sql = "SELECT \"ID\" FROM downloadinfo WHERE \"userid\" = '$userid' AND \"ID\" = '$dlid'";
-        $res = $db->execute_query($sql);
+        $sql = '"ID" FROM downloadinfo WHERE "userid" = ? AND "ID" = ?';
+        $res = $db->select_query($sql, array($userid, $dlid));
         if ($res[0]['ID'] == $dlid) {
-            $db->delete_query('downloadinfo', "\"ID\" = '$dlid'");
-            $db->delete_query('downloadarticles', "\"downloadID\" = '$dlid'");
+            $db->delete_query('downloadinfo', '"ID" = ?', array($dlid));
+            $db->delete_query('downloadarticles', '"downloadID" = ?', array($dlid));
         }
     }
     break;
 
 case 'showrename':
     // Get download info:
-    $sql = "* FROM downloadinfo WHERE \"ID\" = '$dlid'";
-    $res = $db->select_query($sql, 1);
+    $sql = '* FROM downloadinfo WHERE "ID"=?';
+    $res = $db->select_query($sql, 1, array($dlid));
     if (!isset($res[0]['name'])) {
         throw new exception ($LN['error_downloadnotfound']);
     }
@@ -147,7 +142,7 @@ case 'showrename':
         $smarty->assign('dldir_noedit',	1);
     }
 
-    $directories = get_directories($db, $username);
+    $directories = get_directories($db, $userid);
     $starttime = date('Y-m-d H:i:s', $start_time);
 
     $smarty->assign('starttime', $starttime);
@@ -169,13 +164,12 @@ case 'rename':
     // Actually rename the download
     challenge::verify_challenge_text($_POST['challenge']);
     $newname = trim(get_post('dlname', ''));
-    $db->escape($newname);
     $newpass = trim(get_post('dlpass', ''));
     $dl_dir = trim(get_post('dl_dir', ''));
     add_dir_separator($dl_dir);
     $newstarttime = strtotime(trim(get_post('starttime', '')));
-    $sql = "\"start_time\" FROM downloadinfo WHERE \"ID\" = '$dlid'";
-    $res = $db->select_query($sql, 1);
+    $sql = '"start_time" FROM downloadinfo WHERE "ID" = ?';
+    $res = $db->select_query($sql, 1, array($dlid));
     if (!isset($res[0]['start_time'])) {
         throw new exception($LN['error_downloadnotfound']);
     }
@@ -191,20 +185,19 @@ case 'rename':
             $start_time = $time();
         }
     }
-    $db->escape($newpass);
-    $db->escape($dl_dir);
     $unpar = (get_post('unpar', '0') == '1') ? 1 : 0;
     $unrar = (get_post('unrar', '0') == '1') ? 1 : 0;
     $subdl = (get_post('subdl', '0') == '1') ? 1 : 0;
     $add_setname = (get_post('add_setname', '0') == '1') ? 1 : 0;
-    $delete = (get_post ('delete', '0') == '1') ? 1 : 0;
-    $sql = "UPDATE downloadinfo SET \"name\" = '$newname', \"password\" = '$newpass', \"unrar\"= '$unrar', \"subdl\"= '$subdl', \"add_setname\" = '$add_setname', \"dl_dir\" = '$dl_dir',";
+    $delete = (get_post('delete', '0') == '1') ? 1 : 0;
+    $cols = array('name', 'password', 'unrar', 'subdl', 'add_setname', 'dl_dir', 'unpar', 'delete_files');
+    $vals = array($newname, $newpass, $unrar, $subdl, $add_setname, $dl_dir, $unpar, $delete);
     if ($start_time !== NULL) {
-        $sql .= "\"start_time\" = '$start_time', ";
+        $cols[] = 'start_time';
+        $vals[] = $start_time;
     }
 
-    $sql .= "\"unpar\"='$unpar', \"delete_files\"='$delete' WHERE \"ID\" = '$dlid'";
-    $res = $db->execute_query($sql);
+    $res = $db->update_query('downloadinfo', $cols, $vals, '"ID"=?', array($dlid));
     break;
 
 case 'move_up':

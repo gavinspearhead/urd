@@ -17,25 +17,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-04 23:41:51 +0200 (wo, 04 sep 2013) $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
  * $Rev $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_command.php 2921 2013-09-04 21:41:51Z gavinspearhead@gmail.com $
+ * $Id: urdd_command.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
-$pathcmd = realpath(dirname(__FILE__));
-
-require_once "$pathcmd/urdd_protocol.php";
-require_once "$pathcmd/../functions/urd_log.php";
-require_once "$pathcmd/../config.php";
-require_once "$pathcmd/../functions/defines.php";
-require_once "$pathcmd/urdd_help.php";
-require_once "$pathcmd/urdd_error.php";
 
 function do_command(DatabaseConnection $db, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
 {
@@ -96,7 +87,7 @@ class command
     public function db_intensive() { return $this->db_intensive;}
     public function call_function(DatabaseConnection $db, $arg_list, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid, $priority, $internal)
     {
-        assert( is_numeric($priority));
+        assert(is_numeric($priority));
         if ($this->enabled) {
             $fn = $this->do_function;
 
@@ -273,7 +264,7 @@ class commands_list
 
     public function match_command($str)
     {
-        $str = strtoupper($str);
+        $str = strtoupper(trim($str));
         if (isset($this->commands[$str])) {
             return $this->commands[$str];
         }
@@ -283,7 +274,7 @@ class commands_list
 
     public function compare_command($str, $cmd)
     {
-        $str = strtoupper($str);
+        $str = strtoupper(trim($str));
         if (isset($this->commands[$cmd])) {
             return $this->commands[$cmd]->get_command() == $str;
         }
@@ -381,7 +372,7 @@ class commands_list
         if ($res) {
             $response = urdd_protocol::get_response(240);
         } else {
-            $username = $conn_list->get_username();
+            $username = $conn_list->get_username($sock);
             write_log("Invalid password provided for $username", LOG_NOTICE);
             $response = urdd_protocol::get_response(530);
         }
@@ -589,8 +580,7 @@ class commands_list
 
     public static function command_purge_spots(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
     {
-        //$arg_list = split_args($args);
-        $response = queue_purge_spots($db, $servers,$userid, $priority);
+        $response = queue_purge_spots($db, $servers, $userid, $priority);
 
         return URDD_NOERROR;
     }
@@ -613,7 +603,6 @@ class commands_list
 
     public static function command_expire_spots(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
     {
-        //$arg_list = split_args($args);
         $response = queue_expire_spots($db, $servers, $userid, $priority);
 
         return URDD_NOERROR;
@@ -661,7 +650,6 @@ class commands_list
 
         return URDD_NOERROR;
     }
-
    
     public static function command_subscribe(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
     {
@@ -1015,7 +1003,7 @@ $commands_list->register_command( new command('QUIT', 'command_quit',FALSE, FALS
 $commands_list->register_command( new command('RESTART', 'command_restart',TRUE, TRUE, urdd_protocol::COMMAND_RESTART, FALSE, 'RESTART', 'Restart URDD', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('SCHEDULE', 'command_schedule',TRUE, FALSE, urdd_protocol::COMMAND_SCHEDULE, FALSE, 'SCHEDULE <command> @ \'<time>\' [# recurrence]', 'Run the given command at the given time, optionally repeat every recurrence.', '%l @ %t [# %n]', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('SENDSETINFO', 'command_sendsetinfo',TRUE, TRUE, urdd_protocol::COMMAND_SENDSETINFO, FALSE, 'SENDSETINFO', 'Send the extended set information to the news server', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_SYNC, ''));
-$commands_list->register_command( new command('SET', 'command_set', TRUE, TRUE, urdd_protocol::COMMAND_SET, FALSE, 'SET LOG_LEVEL <value>|SCHEDULER <bool>|SERVER <id> <priority>|PREFERRED <id>|MODULE <id> <bool>', 'Set the internal parameter to the given value.', '%s %s [%s]', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
+$commands_list->register_command( new command('SET', 'command_set', TRUE, TRUE, urdd_protocol::COMMAND_SET, FALSE, 'SET LOG_LEVEL <value>|SCHEDULER <bool>|SERVER <id> <priority>|PREFERRED <id>|MODULE <id> <bool>|ENABLE <id> | DISABLE <id>', 'Set the internal parameter to the given value.', '%s %s [%s]', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('SHOW', 'command_show', TRUE, FALSE, urdd_protocol::COMMAND_SHOW, FALSE, 'SHOW ALL|QUEUE|NEWSGROUPS|SUBSCRIBED|FEEDS|USERS|THREADS|JOBS|CONFIG|VERSION|SERVERS|TESTS|LOAD|MODULES|UPTIME|TIME|STATUS', 'Output all actions on the queue, all newsgroups, all subscribed newsgroups, rss feeds, all logged in users, all running actions, all scheduled jobs, the running configuration or all servers, the results of the performed tests at startup, the system load; ALL outputs the threads, queue, jobs, users, servers, status', '%s', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('SHUTDOWN', 'command_shutdown', TRUE, TRUE, urdd_protocol::COMMAND_SHUTDOWN, FALSE, 'SHUTDOWN', 'Shutdown URDD', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('START_POST', 'command_post_action', TRUE, FALSE, urdd_protocol::COMMAND_START_POST, TRUE, 'START_POST', 'No operation (internal use)', '', FALSE, FALSE, TRUE, urd_modules::URD_CLASS_POST, 'P'));
@@ -1089,5 +1077,5 @@ function get_command_db_intensive($cmd)
 {//return if a command needs an nntp connection
     global $commands_list;
 
-    return $commands_list-> get_command_db_intensive($cmd);
+    return $commands_list->get_command_db_intensive($cmd);
 }

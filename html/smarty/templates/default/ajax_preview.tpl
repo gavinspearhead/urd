@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-28 16:21:54 +0200 (wo, 28 aug 2013) $
- * $Rev: 2906 $
+ * $LastChangedDate: 2014-06-26 00:01:04 +0200 (do, 26 jun 2014) $
+ * $Rev: 3116 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_preview.tpl 2906 2013-08-28 14:21:54Z gavinspearhead@gmail.com $
+ * $Id: ajax_preview.tpl 3116 2014-06-25 22:01:04Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
@@ -29,7 +29,7 @@
 	<br/>
     <div class="centered inline">
     <span>
-    {urd_progressbar width=240 complete=$progress done=progress_done remain=progress_remain}
+    {urd_progressbar width=240 complete=$progress done=progress_done remain=progress_remain colour="green" background="grey"}
     <span class="progress floatleft">&nbsp;{$progress}%</span><br><span class="progress"> {$done_size} / {$dlsize}</span>
     </span>
     <input type="hidden" id="title_str" value="{$title_str|escape}"/>
@@ -43,8 +43,8 @@
     <div class="popup_wrapper700x400">
     <div class="popup_centered700x400">
 	{if $nroffiles == 1} 
-        <input type="hidden" value="{$do_reload}" id="do_reload"/>
-		<input type="hidden" value="{$filetype}" id="filetype"/>
+        <input type="hidden" value="{$do_reload|escape}" id="do_reload"/>
+		<input type="hidden" value="{$filetype|escape}" id="filetype"/>
 		<input type="hidden" value="{$path|escape}{$file|escape}" id="file"/>
 		{if $isnzb eq 0}
             <p>
@@ -73,7 +73,7 @@
 		{$LN_preview_autodisp}<br/>
         <input type="hidden" id="title_str" value=""/>
 		{$LN_preview_autofail}:<br/>
-		<span class="buttonlike" onclick="javascript:jump('viewfiles.php?dir={$path|escape}');">{$path}</span>
+		<span class="buttonlike" onclick="javascript:jump('viewfiles.php?dir={$path|escape}');">{$path|escape}</span>
 		<input type="hidden" name="redirect" id="redirect" value="viewfiles.php?dir={$path|escape}"/>
 	{/if}
     </div>

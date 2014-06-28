@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 16:28:23 +0200 (di, 03 sep 2013) $
- * $Rev: 2910 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: search.tpl 2910 2013-09-03 14:28:23Z gavinspearhead@gmail.com $
+ * $Id: search.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
 
@@ -47,7 +47,7 @@
 <table id="subcat_items_{$k1}{$k2}" class="hidden subcat">
 <tr>
 {$cnt="0"}
-{foreach $si.subcats as $k3=>$item2 }
+{foreach $si.subcats as $k3=>$item2}
 {if $item2 != '??'}
 {if $cnt == 3}</tr><tr>
 {$cnt="0"}
@@ -103,27 +103,27 @@
 </select>&nbsp;
 </td>
 <td>
-<input type="text" id="search" name="search" size="30" class="search" value="&lt;{$LN_search}&gt;" 
-onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'' } );"/>&nbsp;
+<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" 
+ onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'' } );"/>&nbsp;
 </td>
 </tr>
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="spotminsetsize" name="minsetsize"  size="6" value="{$spotminsetsize}"/></td> 
+<td><input type="text" id="spotminsetsize" name="minsetsize" size="6" value="{$spotminsetsize|escape}"/></td> 
 <td><div id="spotsetsize" style="width:100px;"></div></td>
-<td><input type="text" id="spotmaxsetsize" name="maxsetsize" size="6" value="{$spotmaxsetsize}"/></td>
+<td><input type="text" id="spotmaxsetsize" name="maxsetsize" size="6" value="{$spotmaxsetsize|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_age}:</td>
-<td><input type="text" id="spotminage" name="minage" size="6" value="{$spotminagelimit}"/></td> 
+<td><input type="text" id="spotminage" name="minage" size="6" value="{$spotminagelimit|escape}"/></td> 
 <td><div id="spotsetage" style="width:100px;"></div></td>
-<td><input type="text" id="spotmaxage" name="maxage" size="6" value="{$spotmaxagelimit}"/></td>
+<td><input type="text" id="spotmaxage" name="maxage" size="6" value="{$spotmaxagelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
-<td><input type="text" id="spotminrating" name="minrating" size="6" value="{$spotminratinglimit}"/></td> 
+<td><input type="text" id="spotminrating" name="minrating" size="6" value="{$spotminratinglimit|escape}"/></td> 
 <td><div id="spotrating" style="width:100px;"></div></td>
-<td><input type="text" id="spotmaxrating" name="maxrating" size="6" value="{$spotmaxratinglimit}"/></td>
+<td><input type="text" id="spotmaxrating" name="maxrating" size="6" value="{$spotmaxratinglimit|escape}"/></td>
 </tr>
 
 <tr>
@@ -140,7 +140,6 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 
 <p>&nbsp;</p>
 {/if}
-
 
 {if $show_groups neq 0} 
 <h3 class="title">{$LN_menugroupsearch}</h3>
@@ -170,33 +169,33 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 	</select>
     </td>
     <td>
-	<input type="text" name="search" size="30" class="search" value="&lt;{$LN_search}&gt;" onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="javascript:submit_enter(event,do_submit, 'searchform2');"/>
+	<input type="text" name="search" size="30" class="search" placeholder="{$LN_search}" onkeypress="javascript:submit_enter(event,do_submit, 'searchform2');"/>
     </td>
 
 </tr>
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="groupminsetsize" name="minsetsize" size="6" value="{$groupminsetsizelimit}"/></td> 
+<td><input type="text" id="groupminsetsize" name="minsetsize" size="6" value="{$groupminsetsizelimit|escape}"/></td> 
 <td><div id="groupsetsize" style="width:100px;"></div></td>
-<td><input type="text" id="groupmaxsetsize" name="maxsetsize" size="6" value="{$groupmaxsetsizelimit}"/></td>
+<td><input type="text" id="groupmaxsetsize" name="maxsetsize" size="6" value="{$groupmaxsetsizelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_age}:</td>
-<td><input type="text" id="groupminage" name="minage" size="6" value="{$groupminagelimit}"/></td> 
+<td><input type="text" id="groupminage" name="minage" size="6" value="{$groupminagelimit|escape}"/></td> 
 <td><div id="groupsetage" style="width:100px;"></div></td>
-<td><input type="text" id="groupmaxage" name="maxage" size="6" value="{$groupmaxagelimit}"/></td>
+<td><input type="text" id="groupmaxage" name="maxage" size="6" value="{$groupmaxagelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
-<td><input type="text" id="groupminrating" name="minrating" size="6" value="{$groupminratinglimit}"/></td> 
+<td><input type="text" id="groupminrating" name="minrating" size="6" value="{$groupminratinglimit|escape}"/></td> 
 <td><div id="groupsetrating" style="width:100px;"></div></td>
-<td><input type="text" id="groupmaxrating" name="maxrating" size="6" value="{$groupmaxratinglimit}"/></td>
+<td><input type="text" id="groupmaxrating" name="maxrating" size="6" value="{$groupmaxratinglimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_complete}:</td>
-<td><input type="text" id="groupmincomplete" name="mincomplete" size="6" value="{$groupmincompletelimit}"/></td> 
+<td><input type="text" id="groupmincomplete" name="mincomplete" size="6" value="{$groupmincompletelimit|escape}"/></td> 
 <td><div id="groupsetcomplete" style="width:100px;"></div></td>
-<td><input type="text" id="groupmaxcomplete" name="maxcomplete" size="6" value="{$groupmaxcompletelimit}"/></td>
+<td><input type="text" id="groupmaxcomplete" name="maxcomplete" size="6" value="{$groupmaxcompletelimit|escape}"/></td>
 </tr>
 
 <tr>
@@ -240,27 +239,27 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
     </td>
     <td>
 
-	<input type="text" name="search" size="30" class="search" value="&lt;{$LN_search}&gt;" onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="javascript:submit_enter(event,do_submit, 'searchform2');"/>
+	<input type="text" name="search" size="30" class="search" placeholder="{$LN_search}" onkeypress="javascript:submit_enter(event,do_submit, 'searchform2');"/>
 	<input type="hidden" value="" name="maxage"/>
     </td>
     </tr>
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="rssminsetsize" size="6" name="minsetsize" value="{$rssminsetsizelimit}"/></td> 
+<td><input type="text" id="rssminsetsize" size="6" name="minsetsize" value="{$rssminsetsizelimit|escape}"/></td> 
 <td><div id="rsssetsize" style="width:100px;"></div></td>
-<td><input type="text" id="rssmaxsetsize" size="6" name="maxsetsize" value="{$rssmaxsetsizelimit}"/></td>
+<td><input type="text" id="rssmaxsetsize" size="6" name="maxsetsize" value="{$rssmaxsetsizelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_age}:</td>
-<td><input type="text" id="rssminage" name="minage" size="6" value="{$rssminagelimit}"/></td> 
+<td><input type="text" id="rssminage" name="minage" size="6" value="{$rssminagelimit|escape}"/></td> 
 <td><div id="rsssetage" style="width:100px;"></div></td>
-<td><input type="text" id="rssmaxage" name="maxage" size="6" value="{$rssmaxagelimit}"/></td>
+<td><input type="text" id="rssmaxage" name="maxage" size="6" value="{$rssmaxagelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
-<td><input type="text" id="rssminrating" name="minrating" size="6" value="{$rssminratinglimit}"/></td> 
+<td><input type="text" id="rssminrating" name="minrating" size="6" value="{$rssminratinglimit|escape}"/></td> 
 <td><div id="rsssetrating" style="width:100px;"></a></div></td>
-<td><input type="text" id="rssmaxrating" name="maxrating" size="6" value="{$rssmaxratinglimit}"/></td>
+<td><input type="text" id="rssmaxrating" name="maxrating" size="6" value="{$rssmaxratinglimit|escape}"/></td>
 <td>
 
 <tr>

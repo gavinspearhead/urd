@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-02-16 01:03:46 +0100 (zo, 16 feb 2014) $
+ * $Rev: 3009 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: periods.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: periods.php 3009 2014-02-16 00:03:46Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -36,7 +36,7 @@ class period_c
     private $id;
     private $index;
 
-    public function __construct ($LN_id, $i, $n, $index)
+    public function __construct($LN_id, $i, $n, $index)
     {
         assert (is_numeric($LN_id) && ($i === NULL || is_numeric($i)) && is_numeric($index));
         global $LN;

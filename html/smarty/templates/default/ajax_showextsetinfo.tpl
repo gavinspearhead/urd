@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showextsetinfo.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_showextsetinfo.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
@@ -33,14 +33,14 @@
 </div>
 {elseif $srctype == 'edit'}
 <div>
-	<input type="hidden" id="extsetinfodisplay:{$setID}" value="edit"/>
+	<input type="hidden" id="extsetinfodisplay:{$setID}" name="extsetinfodisplay:{$setID}" value="edit"/>
 	<form id="ext_setinfo_{$setID}" method="post">
-	<div><input type="hidden" name="values[binarytype]" value="{$binarytype}"/></div>
+	<div><input type="hidden" name="values[binarytype]" value="{$binarytype|escape}"/></div>
 <table class="set_details ">
 		<tr class="comment"><td class="bold">
 		{$LN_showsetinfo_typeofbinary}:
 		</td><td class="extsetinput">
-			<select onchange="SaveExtSetBinaryType('{$setID}',this,'save', {$type});" name="binarytype">
+			<select onchange="save_extset_binary_type('{$setID}',this,'save', {$type});" name="binarytype">
 			{foreach $binarytypes as $binid=>$bintype}
 				<option value="{$binid}" {if $binid == $binarytype}selected="selected"{/if} >{$bintype}</option>
 			{/foreach}
@@ -66,7 +66,7 @@
 	{/foreach}
     <tr class="comment"><td colspan="2">&nbsp;</td>
 	<tr class="comment"><td colspan="2" class="center">
-	<input type="button" value="{$LN_apply}" class="submit" name="submit_button" onclick="javascript:SaveExtSetInfo('{$setID}', {$type});"/>
+	<input type="button" value="{$LN_apply}" class="submit" name="submit_button" onclick="javascript:save_extset_info('{$setID}', {$type});"/>
 	</td></tr>
 	</table>
 	</form>

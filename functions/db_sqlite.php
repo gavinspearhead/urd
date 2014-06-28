@@ -29,13 +29,7 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathdbc = realpath(dirname(__FILE__));
 
-require_once "$pathdbc/../config.php";
-require_once "$pathdbc/config_functions.php";
-require_once "$pathdbc/defines.php";
 require_once "$pathdbc/urd_exceptions.php";
-require_once "$pathdbc/db/urd_db_structure.php";
-require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
-require_once "$pathdbc/libs/adodb/adodb.inc.php";
 
 function sqlite_regexp($regex, $str)
 {
@@ -59,9 +53,10 @@ function sqlite_extract($what, $from)
 
 class DatabaseConnection_sqlite extends DatabaseConnection
 {
-    public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $force_new_connection=FALSE, $persistent=FALSE, $dbengine='')
+    public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
-        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $force_new_connection=FALSE, $persistent=FALSE, $dbengine='');
+        $this->uri = 'sqlite:' . $database;
+        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database,  $dbengine);
     }
     public function get_dow_timestamp($from)
     {
@@ -149,22 +144,15 @@ class DatabaseConnection_sqlite extends DatabaseConnection
         // todo
     }
 
-    public function connect($force_new_connection=FALSE)
+    public function connect()
     {
         echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
         try {
             if ($this->databasename == '') {
                 throw new exception('Database name must be provided');
             }
-
             $this->DB = ADONewConnection('pdo');
-            if (!$this->force_new_connection || $force_new_connection) {
-                $this->DB->Connect('sqlite:' . $this->databasename);
-            } elseif (!$this->persistent) {
-                $this->DB->NConnect('sqlite:' . $this->databasename);
-            } else {
-                $this->DB->PConnect('sqlite:' . $this->databasename);
-            }
+            $this->DB->NConnect($this->uri);
             $this->DB->_create_function('REGEXP', 'sqlite_regexp', 2);
             $this->DB->_create_function('EXTRACT', 'sqlite_extract', 2);
             $this->execute_query('PRAGMA synchronous=OFF');

@@ -15,36 +15,41 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-26 00:54:03 +0200 (vr, 26 jul 2013) $
- * $Rev: 2882 $
+ * $LastChangedDate: 2014-06-22 23:53:13 +0200 (zo, 22 jun 2014) $
+ * $Rev: 3113 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: install.4.inc.php 2882 2013-07-25 22:54:03Z gavinspearhead@gmail.com $
+ * $Id: install.4.inc.php 3113 2014-06-22 21:53:13Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
-if (!defined('ORIGINAL_PAGE')) die('This file cannot be accessed directly.');
+if (!defined('ORIGINAL_PAGE')) { 
+    die('This file cannot be accessed directly.');
+}
 
 // Check database account settings
 $OUT .= '<tr><td colspan="2" class="install1">Checking database</td></tr>' . "\n";
 
-if(!function_exists('echo_debug')) { function echo_debug(){}; }
-if(!function_exists('echo_debug_function')) { function echo_debug_function(){}; }
-if(!function_exists('echo_debug_file')) { function echo_debug_file(){}; }
-if(!function_exists('write_log')) { function write_log(){}; }
-$dbengine = $_REQUEST['dbengine'];
-$dbtype = $_REQUEST['dbtype'];
-$dbhost = $_REQUEST['dbhost'];
-$dbport = $_REQUEST['dbport'];
-$dbname = $_REQUEST['dbname'];
-$dbuser = $_REQUEST['dbuser'];
-$dbpass = $_REQUEST['dbpass'];
-$dbruser = $_REQUEST['dbruser'];
-$dbrpass = $_REQUEST['dbrpass'];
+
+$dbengine = get_request('dbengine');
+$dbtype = get_request('dbtype');
+$dbhost = get_request('dbhost');
+$dbport = get_request('dbport');
+$dbname = get_request('dbname');
+$dbuser = get_request('dbuser');
+$dbpass = get_request('dbpass');
+$dbruser = get_request('dbruser');
+$dbrpass = get_request('dbrpass');
 $dbclear = isset($_REQUEST['dbclear']) ? TRUE : FALSE;
 $dbuserclear = isset($_REQUEST['dbuserclear']) ? TRUE : FALSE;
-$keystore_path = $_REQUEST['keystore_path'];
-$encryption_key = $_REQUEST['encryption_key'];
+$keystore_path = get_request('keystore_path');
+$encryption_key = get_request('encryption_key');
+$reuse_keystore = get_request('reuse_keystore');
 
+
+
+if ($dbpass == '') {
+    $dbpass = generate_password(32);
+}
 
 // Store in session:
 $_SESSION['dbtype'] = $dbtype;
@@ -58,23 +63,13 @@ $_SESSION['dbrpass'] = $dbrpass;
 $_SESSION['dbclear'] = $dbclear; 
 $_SESSION['dbuserclear'] = $dbuserclear; 
 $_SESSION['keystore_path'] = $keystore_path; 
-
-require_once('../functions/db.class.php');
-require_once('../functions/db/urd_db_structure.php');
-require_once('../functions/functions.php');
-require_once('../functions/defaults.php');
-require_once('../functions/buttons.php');
-require_once('../functions/user_functions.php');
-require_once('../functions/module_functions.php');
-require_once('../functions/usenet_functions.php');
-require_once('../functions/keystore_functions.php');
-
+$_SESSION['reuse_keystore'] = $reuse_keystore; 
 
 // Sanity check:
 $skip = FALSE;
 if ($dbruser != '' && $dbuserclear && ($dbuser == 'root' || $dbuser== $dbruser)) {
 	$OUT .= '<tr colspan="2"><td>This installer will not allow you to delete the database administrator (root) account ! Change \'Database username\' to something else or deselect \'Delete existing user\'!</td></tr>';
-	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">'.$refreshpic.'</a></td></tr>';
+	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">' . $refreshpic . '</a></td></tr>';
     $skip = TRUE;
     $dbuserclear = FALSE;
 }
@@ -227,6 +222,7 @@ if ($dbtype == 'pdo_sqlite') {
 }
 
 
+$rv_db = FALSE;
 if ($db_created) {
     $OUT .= '<tr><td class="install2">Database user connection</td>';
 
@@ -242,7 +238,6 @@ if ($db_created) {
         }
         $rv_db = TRUE;
     } catch (exception $e) {
-        $rv_db = FALSE;
         $error = $e->getMessage();
     }
     $OUT .= GenRetVal($rv_db);
@@ -255,17 +250,17 @@ if ($db_created) {
             if ($rv_db === FALSE) {
                 throw new exception('User login required');
             }
-            $sdb = create_db_updater($dbtype, $db, TRUE);
-            $urd_db = create_db_structure($sdb, $dbengine);
+            $sdb = urd_db_structure::create_db_updater($dbtype, $db, TRUE);
+            $urd_db = urd_db_structure::create_db_structure($sdb, $dbengine);
             $rv_ct = TRUE;
         } catch (exception $e) {
             $rv_ct = FALSE;
             $error = $e->getMessage();
         }
         $OUT .= GenRetVal($rv_ct);
-        if ($rv_ct == FALSE)
+        if ($rv_ct == FALSE) {
             $OUT .= '<tr colspan="2"><td><span class="info">' . $error . '</span></td></tr>';
-
+        }
         // Load default DB
         $OUT .= '<tr><td class="install2">Creating URD root account</td>';
         try {
@@ -293,7 +288,7 @@ if ($db_created) {
         $OUT .= '<tr><td class="install2">Saving DB information</td>';
         $rv_sdi = FALSE;
         try {
-            WriteDBConfig($dbtype, $dbuser, $dbpass, $dbname, $dbhost, $dbport);
+            WriteDBConfig($dbtype, $dbuser, $dbpass, $dbname, $dbhost, $dbport, $dbengine);
             $rv_sdi = TRUE;
         } catch (exception $e) {
             $error = $e->getMessage();
@@ -308,7 +303,7 @@ if ($db_created) {
         try {
             $OUT .= '<tr><td class="install2">Creating keystore:</td>';
             set_config($db, 'keystore_path', $keystore_path);
-            keystore::create_keystore($db, $encryption_key);
+            keystore::create_keystore($db, $encryption_key, $reuse_keystore);
             $rv_kst = TRUE;
         } catch (exception $e) {
             $rv_kst = FALSE;
@@ -332,8 +327,9 @@ if ($db_created) {
         }
         $OUT .= GenRetVal($rv_cus);
 
-        if ($rv_cus == FALSE)
+        if ($rv_cus == FALSE) {
             $OUT .= '<tr colspan="2"><td><span class="info">' . $error . '</span></td></tr>';
+        }
     }
 
     // Storing default buttons:
@@ -362,5 +358,4 @@ if ($rv_db && $rv_ct && $rv_cr && $rv_sdi && $rv_cus && $rv_kst) {
     $OUT .= 'Please make sure you have the correct database details.<br/>';
     $OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">'.$refreshpic.'</a></td></tr>';
 }
-
 

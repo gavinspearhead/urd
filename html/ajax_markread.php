@@ -16,19 +16,19 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-21 23:20:44 +0200 (za, 21 jun 2014) $
+ * $Rev: 3105 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_markread.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_markread.php 3105 2014-06-21 21:20:44Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 
 $pathmr = realpath(dirname(__FILE__));
-require_once "$pathmr/../functions/html_includes.php";
+require_once "$pathmr/../functions/ajax_includes.php";
 
-if (!isset( $_GET['setid']) || ! isset($_GET['cmd']) || !isset($_GET['type'])) {
+if (!isset( $_GET['setid'], $_GET['cmd'], $_GET['type'])) {
     throw new exception('Parameter missing');
 }
 
@@ -39,7 +39,7 @@ $cmd = get_request('cmd');
 if (!in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT))) {
     throw new exception($LN['error_invalidvalue']);
 }
-
+try {
 switch (strtolower($cmd)) {
     case 'hide' :
         sets_marking::mark_set($db, $userid, $setid, 'statuskill', $type, 1);
@@ -60,5 +60,7 @@ switch (strtolower($cmd)) {
         throw new exception($LN['error_invalidaction']);
         break;
 }
-
+}catch (exception $e) {
+    var_dump($e);
+}
 die_html('OK');

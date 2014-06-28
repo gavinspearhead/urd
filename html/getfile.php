@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-19 23:50:53 +0200 (ma, 19 mei 2014) $
+ * $Rev: 3043 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: getfile.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: getfile.php 3043 2014-05-19 21:50:53Z gavinspearhead@gmail.com $
  */
 
 @define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -35,10 +35,12 @@ $closelink = ($preview ? 'close' : 'back');
 
 $is_admin = urd_user_rights::is_admin($db, $userid);
 
-try {
     $file = get_request('file', FALSE);
     if ($file !== FALSE) {
-        $file = my_realpath($file) ;
+        $basename =  basename($file);
+        $path = my_realpath(dirname($file));
+        add_dir_separator($path);
+        $file = $path . $basename;
     }
     if ($file === FALSE) {
         throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
@@ -58,9 +60,6 @@ try {
             throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'), NULL, NULL, $closelink);
         }
     }
-} catch (exception $e) {
-    throw new exception($LN['error_nodlpath'], 'admin_config.php', $LN['error_setithere']);
-}
 if (!file_exists($file) || !is_readable($file)) {
     throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
 }

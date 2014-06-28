@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-22 00:25:41 +0200 (zo, 22 jun 2014) $
+ * $Rev: 3106 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: web_functions.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: web_functions.php 3106 2014-06-21 22:25:41Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -28,8 +28,6 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathwf = realpath(dirname(__FILE__));
 
-require_once "$pathwf/defines.php";
-require_once "$pathwf/functions.php";
 require_once "$pathwf/autoincludes.php";
 
 function redirect($url, $delay = 0)
@@ -47,41 +45,62 @@ OUT;
     exit(NO_ERROR);
 }
 
-function get_cookie($var, $default='')
+function get_cookie($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
     if (!isset($_COOKIE[$var])) {
         return $default;
     }
+    if (function_exists($verify_fn)) {
+        if (!$verify_fn($_COOKIE[$var])) {
+            return $default;
+        }
+    }
 
     return $_COOKIE[$var];
 }
 
-function get_request($var, $default='')
+function get_request($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
     if (!isset($_REQUEST[$var])) {
         return $default;
     }
 
+    if (function_exists($verify_fn)) {
+        if (!$verify_fn($_REQUEST[$var])) {
+            return $default;
+        }
+    }
+    
     return $_REQUEST[$var];
 }
 
-function get_session($var, $default='')
+function get_session($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
     if (!isset($_SESSION[$var])) {
         return $default;
     }
+    if (function_exists($verify_fn)) {
+        if (!$verify_fn($_SESSION[$var])) {
+            return $default;
+        }
+    }
 
     return $_SESSION[$var];
 }
 
-function get_post($var, $default='')
+function get_post($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
     if (!isset($_POST[$var])) {
         return $default;
+    }
+    if (function_exists($verify_fn)) {
+        if (!$verify_fn($_POST[$var])) {
+            return $default;
+        }
     }
 
     return $_POST[$var];
@@ -91,26 +110,20 @@ function count_active_ng(DatabaseConnection $db)
 {
     $hidden_groups = SPOTS_GROUPS::get_hidden_groups();
     $q_hidden = '';
+    $input_arr = array(newsgroup_status::NG_SUBSCRIBED);
     if (count($hidden_groups) > 0) {
-        $h = '';
-        foreach ($hidden_groups as $gr) {
-            $db->escape($gr, TRUE);
-            $h .= " $gr,";
-        }
-        $h = rtrim($h, ',');
-        $q_hidden = " AND \"name\" NOT IN ($h) ";
+        $q_hidden = ' AND "name" NOT IN (' . str_repeat('?,', count($hidden_groups)-1) . '?)';
+        $input_arr = array_merge($input_arr, $hidden_groups);
     }
-
-    $sql = "count(*) AS cnt FROM groups WHERE \"active\"='" . NG_SUBSCRIBED . "'" . $q_hidden;
-    $res = $db->select_query($sql);
-
+    $sql = 'count(*) AS cnt FROM groups WHERE "active"=? ' . $q_hidden;
+    $res = $db->select_query($sql, $input_arr);
     return $res[0]['cnt'];
 }
 
 function count_active_rss(DatabaseConnection $db)
 {
-    $sql = "count(*) AS cnt FROM rss_urls WHERE \"subscribed\"='" . NG_SUBSCRIBED . "'";
-    $res = $db->select_query($sql);
+    $sql = 'count(*) AS cnt FROM rss_urls WHERE "subscribed"=?';
+    $res = $db->select_query($sql, array(newsgroup_status::NG_SUBSCRIBED));
 
     return $res[0]['cnt'];
 }
@@ -118,16 +131,14 @@ function count_active_rss(DatabaseConnection $db)
 function remove_rss_schedule(DatabaseConnection $db, urdd_client $uc, $id, $cmd)
 {
     assert(is_numeric($id));
-    $sql = "UPDATE rss_urls SET \"refresh_time\"=0, \"refresh_period\"=0 WHERE \"id\"='$id'";
-    $db->execute_query($sql);
+    $db->update_query_2('rss_urls', array('refresh_time'=>0, 'refresh_period'=>0), '"id"=?', array($id));
     $uc->unschedule(get_command($cmd), $id);
 }
 
 function remove_schedule(DatabaseConnection $db, urdd_client $uc, $id, $cmd)
 {
     assert(is_numeric($id));
-    $sql = "UPDATE groups SET \"refresh_time\"=0, \"refresh_period\"=0 WHERE \"ID\"='$id'";
-    $db->execute_query($sql);
+    $db->update_query_2('groups', array('refresh_time'=>0, 'refresh_period'=>0), '"ID"=?', array($id));
     $uc->unschedule(get_command($cmd), $id);
 }
 
@@ -151,35 +162,44 @@ function stop_urdd($userid)
     usleep(500000);
 }
 
-function command_description(DatabaseConnection $db, $task)
+function command_description(DatabaseConnection $db, $task_)
 {
     global $LN;
-    $task_parts = explode (' ', $task);
+    $task_parts = explode (' ', $task_);
     $cmd_code = get_command_code($task_parts[0]);
     $task = array('', '', 0, '');
     try {
         $name = '';
         switch ($cmd_code) {
-        case urdd_protocol::COMMAND_CONTINUE : 		            //continue first cause it will hit on other tasks as well
+        case urdd_protocol::COMMAND_CONTINUE: 	 //continue first cause it will hit on other tasks as well
             array_shift($task_parts);
-            $cmd = implode(' ', $task_parts);
             $task[0] = $LN['taskcontinue'];
-            list ($t, $a) = command_description($db, $cmd);
-            $task[1] = "$t $a";
-            $task[3] = '';
+            if (is_numeric($task_parts[0])) {
+                $task[1] = $LN['taskunknown'];
+            } else {
+                $cmd = implode(' ', $task_parts);
+                list ($t, $a) = command_description($db, $cmd);
+                $task[1] = "$t $a";
+                $task[3] = '';
+            }
             break;
         case urdd_protocol::COMMAND_PAUSE:	 //continue first cause it will hit on other tasks as well
             array_shift($task_parts);
             $cmd = implode(' ', $task_parts);
             $task[0] = $LN['taskpause'];
-            list ($t, $a) = command_description($db, $cmd);
+            if (is_numeric($task_parts[0])) {
+                $task[1] = $LN['taskunknown'];
+            } else {
+                list ($t, $a) = command_description($db, $cmd);
+                $task[1] = "$t $a";
+            }
             $task[3] = '';
             break;
         case urdd_protocol::COMMAND_UPDATE:
             $groupID = $task_parts[count($task_parts)-1];
             $task[0] = $LN['taskupdate'];
             if (is_numeric($groupID)) {
-                $group_name = shorten_newsgroup_name(group_name($db, $groupID),0);
+                $group_name = shorten_newsgroup_name(group_name($db, $groupID), 0);
                 $task[1] = htmlentities($group_name);
             }
             $task[3] = 'update';
@@ -188,7 +208,7 @@ function command_description(DatabaseConnection $db, $task)
             $groupID = $task_parts[count($task_parts)-1];
             $task[0] = $LN['taskpurge'];
             if (is_numeric($groupID)) {
-                $group_name = shorten_newsgroup_name(group_name($db, $groupID),0);
+                $group_name = shorten_newsgroup_name(group_name($db, $groupID), 0);
                 $task[1]= htmlentities($group_name);
             }
             $task[3] = 'purge';
@@ -197,7 +217,7 @@ function command_description(DatabaseConnection $db, $task)
             $groupID = $task_parts[count($task_parts)-1];
             $task[0] = $LN['taskexpire'];
             if (is_numeric($groupID)) {
-                $group_name = shorten_newsgroup_name(group_name($db, $groupID),0);
+                $group_name = shorten_newsgroup_name(group_name($db, $groupID), 0);
                 $task[1] = htmlentities($group_name);
             }
             $task[3] = 'expire';
@@ -206,7 +226,7 @@ function command_description(DatabaseConnection $db, $task)
             $groupID = $task_parts[count($task_parts)-1];
             $task[0] = $LN['taskgensets'];
             if (is_numeric($groupID)) {
-                $group_name = shorten_newsgroup_name(group_name($db, $groupID),0);
+                $group_name = shorten_newsgroup_name(group_name($db, $groupID), 0);
                 $task[1] = htmlentities($group_name);
             }
             $task[3] = 'update';
@@ -251,7 +271,7 @@ function command_description(DatabaseConnection $db, $task)
         case urdd_protocol::COMMAND_DOWNLOAD:
         case urdd_protocol::COMMAND_DOWNLOAD_ACTION:
             $id = $task_parts[count($task_parts)-1];
-            $task[0] = $LN['taskdownload'] .' ';
+            $task[0] = $LN['taskdownload'] . ' ';
             try {
                 $name = htmlentities(get_download_name($db, $id));
                 $task[2] = $id;
@@ -313,7 +333,7 @@ function command_description(DatabaseConnection $db, $task)
             break;
         case urdd_protocol::COMMAND_ADDDATA:
         case urdd_protocol::COMMAND_ADDSPOTDATA:
-            $id = $task_parts[1];
+            $id = isset($task_parts[1]) ? $task_parts[1] : 0;
             $preview = $task_parts[count($task_parts)-1];
             $preview = ($preview == 'preview') ? TRUE : FALSE;
             if ($preview) {
@@ -408,6 +428,10 @@ function command_description(DatabaseConnection $db, $task)
             $task[0] = $LN['taskpurgespots'];
             $task[3] = 'purge';
             break;
+        case urdd_protocol::COMMAND_SET:
+            $task[0] = $LN['taskset'];
+            $task[3] = 'set';
+            break;
         default:
             $task[0] = $LN['taskunknown'];
             $task[3] = 'download';
@@ -429,7 +453,7 @@ function get_maxperpage(DatabaseConnection $db, $userid)
 
 function get_languages()
 {
-    $langdir = realpath(dirname(__FILE__)). '/lang/';
+    $langdir = realpath(dirname(__FILE__)) . '/lang/';
     $l = glob($langdir . '*.php');
     $langs = array();
     foreach ($l as $lang) {
@@ -537,8 +561,8 @@ function start_preview(DatabaseConnection $db, $pbin_id, $pgroup_id, $userid)
     global $LN;
 
     $rprefs = load_config($db);
-    $sql = "SELECT \"subject\", \"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\" = '$pbin_id'";
-    $res = $db->execute_query($sql);
+    $sql = "\"subject\", \"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\" = ?";
+    $res = $db->select_query($sql, array($pbin_id));
     if (!isset($res[0])) {
         throw new exception($LN['error_binariesnotfound']);
     }
@@ -568,6 +592,7 @@ function start_preview(DatabaseConnection $db, $pbin_id, $pgroup_id, $userid)
 
     set_download_name($db, $dlid, $dlname);
     set_download_size($db, $dlid, $size);
+    set_start_time($db, $dlid, time());
     $uc->add_bin_data($dlid, $pgroup_id, $pbin_id, TRUE);
     add_stat_data($db, stat_actions::PREVIEW, $size, $userid);
 
@@ -591,8 +616,8 @@ function add_set_data(DatabaseConnection $db, urdd_client $uc, $userid, $dlid, $
             $uc->add_set_data($dlid, $setid);
         } elseif ($type == 'rss') {
             $type_val = USERSETTYPE_RSS;
-            $sql = "nzb_link FROM rss_sets WHERE \"setid\" = '$setid'";
-            $res = $db->select_query($sql, 1);
+            $sql = '"nzb_link" FROM rss_sets WHERE "setid"=?';
+            $res = $db->select_query($sql, 1, array($setid));
             if ($res !== FALSE) {
                 $url = $res[0]['nzb_link'];
                 $uc->parse_nzb($url, $dlid);
@@ -603,31 +628,30 @@ function add_set_data(DatabaseConnection $db, urdd_client $uc, $userid, $dlid, $
             $type_val = USERSETTYPE_SPOT;
             $uc->add_spot_data($dlid, $setid);
         } else {
-            throw new exception_internal ($LN['error_unknowntype'] . ': ' . $type);
+            throw new exception_internal($LN['error_unknowntype'] . ': ' . $type);
         }
         // mark user info
         $column = ($nzb_or_dl == 'download' ? 'statusread' : 'statusnzb');
-        $res = $db->select_query(" * FROM usersetinfo WHERE \"userID\" = '$userid' AND \"setID\" = '$setid' AND \"type\"='" . $type_val . "'", 1);
+        $res = $db->select_query('* FROM usersetinfo WHERE "userID"=? AND "setID"=? AND "type"=?', 1, array($userid, $setid, $type_val));
         if ($res === FALSE) {
-            $qry = "INSERT INTO usersetinfo (\"setID\", \"userID\", \"$column\", \"type\") VALUES ('$setid', '$userid', '" . sets_marking::MARKING_ON . "', '" . $type_val . "')";
+            $db->insert_query('usersetinfo', array('setID', 'userID', $column, 'type'), array($setid, $userid, sets_marking::MARKING_ON, $type_val));
         } else {
-            $qry = "UPDATE usersetinfo SET \"$column\" = '" . sets_marking::MARKING_ON . "' WHERE \"setID\" = '$setid' AND \"userID\" = '$userid' AND \"type\"='" . $type_val . "'";
+            $db->update_query_2('usersetinfo', array($column=>sets_marking::MARKING_ON), '"userID"=? AND "setID"=? AND "type"=?', array($userid, $setid, $type_val));
         }
-        $db->execute_query($qry);
     }
 }
 
 function get_timestamp()
 {
     global $LN;
-    $timestamp = get_request('timestamp', '');
+    $timestamp = trim(get_request('timestamp', ''));
     if ($timestamp != '') {
         $time_int = strtotime($timestamp);
         if ($time_int === FALSE) {
             $timestamp = NULL;
             $time_int = time();
         } elseif ($time_int < time() && $time_int > 0) { // the time is before now, so probably means tomorrow
-            $time_int += 24 * 60 * 60; // next day
+            $time_int += 24 * 3600; // next day
             $timestamp .= ' +1 day';
         }
     } else {
@@ -642,15 +666,15 @@ function get_setsize(DatabaseConnection $db, $setid, $type)
 {
     global $LN;
     if ($type == 'group') {
-        $sql = "\"size\" FROM setdata WHERE \"ID\" = '$setid'";
+        $sql = '"size" FROM setdata WHERE "ID" = ?';
     } elseif ($type == 'rss') {
-        $sql = "\"size\" FROM rss_sets WHERE \"setid\" = '$setid'";
+        $sql = '"size" FROM rss_sets WHERE "setid" = ?';
     } elseif ($type == 'spot') {
-        $sql = "\"size\" AS \"size\" FROM spots WHERE \"spotid\" = '$setid'";
+        $sql = '"size" AS "size" FROM spots WHERE "spotid" = ?';
     } else {
         throw new exception ($LN['error_invalidsetid']);
     }
-    $res = $db->select_query($sql, 1);
+    $res = $db->select_query($sql, 1, array($setid));
     if ($res === FALSE) {
         throw new exception($LN['error_invalidsetid']);
     }
@@ -677,10 +701,7 @@ function get_free_diskspace(DatabaseConnection $db, $userid)
     global $LN;
     $rprefs = load_config($db);
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-
-    if (!$uc->is_connected()) {
-        throw new exception($LN['error_urddconnect']);
-    }
+    check_connected($uc);
 
     $disk_space = $uc->diskfree('b');
 
@@ -695,10 +716,7 @@ function create_new_download(DatabaseConnection $db, $userid)
     $dl_dir = trim(get_post('dl_dir', ''));
     $add_setname = get_post('add_setname', '');
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-
-    if (!$uc->is_connected()) {
-        throw new exception($LN['error_urddconnect']);
-    }
+    check_connected($uc);
 
     $total_size = get_basket_size($db);
 
@@ -721,7 +739,6 @@ function create_new_download(DatabaseConnection $db, $userid)
     add_set_data($db, $uc, $userid, $dlid, 'download');
 
     list($timestamp, $time_int) = get_timestamp();
-
     $stat_id = add_stat_data($db, stat_actions::DOWNLOAD, 0, $userid); // fix stats
     set_stat_id($db, $dlid, $stat_id);
     foreach ($dlthreads as $id) {
@@ -747,26 +764,25 @@ function get_dlname_from_session(DatabaseConnection $db)
     $first_type = $_SESSION['setdata'][0]['type'];
     $dlname = '';
 
-    $db->escape($firstSetID);
     if ($first_type == 'group') {
-        $sql = 'SELECT setdata."subject", extsetdata."value" FROM ' 	.
-            "(setdata LEFT JOIN extsetdata ON setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'name') " .
-            "WHERE \"ID\" = '$firstSetID' ";
+        $sql = 'setdata."subject", extsetdata."value" FROM ' 	.
+            '(setdata LEFT JOIN extsetdata ON setdata."ID" = extsetdata."setID" AND extsetdata."name" = \'name\') ' .
+            'WHERE "ID" = ? ';
     } elseif ($first_type == 'rss') {
-        $sql = 'SELECT rss_sets."setname" AS "subject", extsetdata."value" FROM ' 	.
+        $sql = 'rss_sets."setname" AS "subject", extsetdata."value" FROM ' 	.
             "(rss_sets LEFT JOIN extsetdata ON rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'name') " .
-            "WHERE rss_sets.\"setid\" = '$firstSetID' ";
+            'WHERE rss_sets."setid" = ? ';
     } elseif ($first_type == 'spot') {
-        $sql = 'SELECT spots."title" AS "subject", extsetdata."value" FROM ' 	.
+        $sql = 'spots."title" AS "subject", extsetdata."value" FROM ' 	.
             "(spots LEFT JOIN extsetdata ON spots.\"spotid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'name') " .
-            "WHERE spots.\"spotid\" = '$firstSetID' ";
+            'WHERE spots."spotid" = ? ';
     } else {
         throw new exception ($LN['error_unknowntype'] . ': ' . $first_type);
     }
     $dlname = get_post('dlsetname', '');
 
     if ($dlname == '') {
-        $res0 = $db->execute_query($sql);
+        $res0 = $db->select_query($sql, array($firstSetID));
         // Is there an extset setname? If so, use it, else use the autogenerated setname
         if ($res0[0]['value'] != '') {
             $dlname = create_extset_download_name($db, $firstSetID);
@@ -785,10 +801,7 @@ function create_nzb(DatabaseConnection $db, $userid)
     global $LN;
     $rprefs = load_config($db);
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-
-    if (!$uc->is_connected()) {
-        throw new exception($LN['error_urddconnect']);
-    }
+    check_connected($uc);
 
     $result = $uc->make_nzb();
     if ($result === FALSE) {
@@ -843,11 +856,7 @@ function merge_sets(DatabaseConnection $db, $userid)
     }
     $rprefs = load_config($db);
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-
-    if (!$uc->is_connected()) {
-        throw new exception($LN['error_urddconnect']);
-    }
-
+    check_connected($uc);
     $uc->merge_sets($first_set, $other_sets);
     $uc->disconnect();
 }
@@ -856,81 +865,39 @@ function wipe_sets(DatabaseConnection $db, array $setids, $type, $userid)
 {
     global $LN;
     assert(is_numeric($userid));
-    $skip_int = (bool) get_pref($db, 'skip_int', $userid, 0);
-    if ($skip_int) {
-        $sets_str = '';
-        foreach ($setids as $set) {
-            $db->escape($set, TRUE);
-            $sets_str .= "$set, ";
-        }
-        $sets_str = rtrim($sets_str, ', ');
-    }
-
-    $prefs = load_config($db);
-    if ($type == USERSETTYPE_GROUP) {
-        $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-        if ($uc->is_connected() === FALSE) {
-            throw new exception($LN['error_urddconnect']);
-        }
-        if ($skip_int) {
-            $qry = "SELECT DISTINCT setdata.\"ID\" FROM setdata LEFT JOIN usersetinfo AS usi ON usi.\"setID\" = setdata.\"ID\" AND "
-                . "usi.\"type\"='$type' WHERE setdata.\"ID\" IN ($sets_str) AND (usi.\"statusint\" <> " . sets_marking::MARKING_ON . " OR usi.\"statusint\" IS NULL)";
-            $res = $db->execute_query($qry);
-            if ($res === FALSE) {
-                return;
-            }
-            $setids = array();
-            foreach ($res as $r) {
-                $setids[] = $r['ID'];
-            }
-        }
-
-        $uc->delete_set($setids, USERSETTYPE_GROUP);
-        $uc->disconnect();
-    } elseif ($type == USERSETTYPE_RSS) {
-        $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-        if ($uc->is_connected() === FALSE) {
-            throw new exception($LN['error_urddconnect']);
-        }
-        if ($skip_int) {
-            $qry = "SELECT DISTINCT rss_sets.\"setid\" FROM rss_sets LEFT JOIN usersetinfo AS usi ON usi.\"setID\" = rss_sets.\"ID\" "
-                . "AND \"type\"='$type' WHERE rss_sets.\"setID\" IN ($sets_str) AND usi.\"statusint\" <> " . sets_marking::MARKING_ON . " OR usi.\"statusint\" IS NULL)";
-            $res = $db->execute_query($qry);
-            if ($res === FALSE) {
-                return;
-            }
-
-            $setids = array();
-            foreach ($res as $r) {
-                $setids[] = $r['ID'];
-            }
-        }
-
-        $uc->delete_set($setids, USERSETTYPE_RSS);
-        $uc->disconnect();
-    } elseif ($type == USERSETTYPE_SPOT) {
-        $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-        if ($uc->is_connected() === FALSE) {
-            throw new exception($LN['error_urddconnect']);
-        }
-        if ($skip_int) {
-            $qry = "SELECT DISTINCT spots.\"spotid\" FROM spots LEFT JOIN usersetinfo AS usi ON usi.\"setID\" = spots.\"spotid\" "
-                . "AND \"type\"='$type' WHERE rss_sets.\"setID\" IN ($sets_str) AND usi.\"statusint\" <> " . sets_marking::MARKING_ON . " OR usi.\"statusint\" IS NULL)";
-            $res = $db->execute_query($qry);
-            if ($res === FALSE) {
-                return;
-            }
-
-            $setids = array();
-            foreach ($res as $r) {
-                $setids[] = $r['ID'];
-            }
-        }
-        $uc->delete_set($setids, USERSETTYPE_SPOT);
-        $uc->disconnect();
-    } else {
+    
+    if (!in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT))) { 
         throw new exception ($LN['error_unknowntype']);
     }
+    $prefs = load_config($db);
+    $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
+    check_connected($uc);
+    $skip_int = (bool) get_pref($db, 'skip_int', $userid, 0) && (count($setids) > 0);
+    if ($skip_int) {
+        $sets_str = str_repeat('?,', count($setids)-1) . '?';
+        if ($type == USERSETTYPE_GROUP) {
+            $qry = 'DISTINCT setdata."ID" AS "ID" FROM setdata LEFT JOIN usersetinfo AS usi ON usi."setID" = setdata."ID" AND '
+                . "usi.\"type\"=? WHERE setdata.\"ID\" IN ($sets_str) AND (usi.\"statusint\" <> ? OR usi.\"statusint\" IS NULL)";
+        } elseif ($type == USERSETTYPE_RSS) {
+            $qry = 'DISTINCT rss_sets."setid" AS "ID" FROM rss_sets LEFT JOIN usersetinfo AS usi ON usi."setID" = rss_sets."ID" '
+                . "AND \"type\"=? WHERE rss_sets.\"setID\" IN ($sets_str) AND (usi.\"statusint\" <> ? OR usi.\"statusint\" IS NULL)";
+        } elseif ($type == USERSETTYPE_SPOT) {
+            $qry = 'DISTINCT spots."spotid" AS "ID" FROM spots LEFT JOIN usersetinfo AS usi ON usi."setID" = spots."spotid" '
+                . "AND \"type\"=? WHERE spots.\"spotid\" IN ($sets_str) AND (usi.\"statusint\" <> ? OR usi.\"statusint\" IS NULL)";
+        }
+        $res = $db->select_query($qry, array_merge(array($type), $setids, array(sets_marking::MARKING_ON)));
+        if ($res === FALSE) {
+            return;
+        }
+
+        $setids = array();
+        foreach ($res as $r) {
+            $setids[] = $r['ID'];
+        }
+
+    }
+    $uc->delete_set($setids, $type);
+    $uc->disconnect();
 }
 
 function get_total_rss_sets(DatabaseConnection $db)
@@ -959,10 +926,8 @@ function get_minsetsize_feed(DatabaseConnection $db, $feed_id, $userid, $default
     assert(is_numeric($default));
     assert(is_numeric($userid));
     assert(is_numeric($feed_id));
-    $db->escape($feed_id, TRUE);
-    $db->escape($userid, TRUE);
-    $qry = "\"minsetsize\" FROM userfeedinfo WHERE \"feedid\"=$feed_id AND \"userid\"=$userid UNION SELECT $default";
-    $res = $db->select_query($qry, 1);
+    $qry = "\"minsetsize\" FROM userfeedinfo WHERE \"feedid\"=? AND \"userid\"=? UNION SELECT $default";
+    $res = $db->select_query($qry, 1, array($feed_id, $userid));
 
     return (!isset($res[0]['minsetsize'])) ? $default : $res[0]['minsetsize'];
 }
@@ -972,10 +937,8 @@ function get_maxsetsize_feed(DatabaseConnection $db, $feed_id, $userid, $default
     assert(is_numeric($default));
     assert(is_numeric($userid));
     assert(is_numeric($feed_id));
-    $db->escape($feed_id, TRUE);
-    $db->escape($userid, TRUE);
-    $qry = "\"maxsetsize\" FROM userfeedinfo WHERE \"feedid\"=$feed_id AND \"userid\"=$userid UNION SELECT $default";
-    $res = $db->select_query($qry, 1);
+    $qry = "\"maxsetsize\" FROM userfeedinfo WHERE \"feedid\"=? AND \"userid\"=? UNION SELECT $default";
+    $res = $db->select_query($qry, 1, array($feed_id, $userid));
 
     return (!isset($res[0]['maxsetsize'])) ? $default : $res[0]['maxsetsize'];
 }
@@ -985,10 +948,8 @@ function get_minsetsize_group(DatabaseConnection $db, $group_id, $userid, $defau
     assert(is_numeric($default));
     assert(is_numeric($userid));
     assert(is_numeric($group_id));
-    $db->escape($group_id, TRUE);
-    $db->escape($userid, TRUE);
-    $qry = "\"minsetsize\" FROM usergroupinfo WHERE \"groupid\"=$group_id AND \"userid\"=$userid UNION SELECT $default";
-    $res = $db->select_query($qry, 1);
+    $qry = "\"minsetsize\" FROM usergroupinfo WHERE \"groupid\"=? AND \"userid\"=? UNION SELECT $default";
+    $res = $db->select_query($qry, 1, array($group_id, $userid));
 
     return (!isset($res[0]['minsetsize'])) ? $default : $res[0]['minsetsize'];
 }
@@ -998,10 +959,8 @@ function get_maxsetsize_group(DatabaseConnection $db, $group_id, $userid, $defau
     assert(is_numeric($default));
     assert(is_numeric($userid));
     assert(is_numeric($group_id));
-    $db->escape($group_id, TRUE);
-    $db->escape($userid, TRUE);
-    $qry = "\"maxsetsize\" FROM usergroupinfo WHERE \"groupid\"=$group_id AND \"userid\"=$userid UNION SELECT $default";
-    $res = $db->select_query($qry, 1);
+    $qry = "\"maxsetsize\" FROM usergroupinfo WHERE \"groupid\"=? AND \"userid\"=? UNION SELECT $default";
+    $res = $db->select_query($qry, 1, array($group_id, $userid));
 
     return (!isset($res[0]['maxsetsize'])) ? $default : $res[0]['maxsetsize'];
 }
@@ -1076,9 +1035,8 @@ function set_down_status()
 function get_categories(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->escape($userid);
-    $sql = "* FROM categories WHERE \"userid\" = '$userid' ORDER BY \"name\"";
-    $res = $db->select_query($sql);
+    $sql = '* FROM categories WHERE "userid"=? ORDER BY "name"';
+    $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
     }
@@ -1117,7 +1075,7 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
     }
     $db->escape($userid, TRUE);
     $sql = "groups.\"ID\", groups.\"name\", groups.\"setcount\" FROM groups LEFT JOIN usergroupinfo ON groups.\"ID\" = \"groupid\" AND \"userid\" = $userid " .
-        " WHERE \"active\" = '" . NG_SUBSCRIBED . "' AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
+        ' WHERE "active" = \'' . newsgroup_status::NG_SUBSCRIBED . "' AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
     $res = $db->select_query($sql);
     if (!is_array($res)) {
         $res = array();
@@ -1126,27 +1084,27 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
     $subscribedgroups = array();
     $c = 0;
     foreach ($res as $arr) {
-        list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000);
+        list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($arr['ID'] == $groupID)) { // don't show empty groups anyway
             $subscribedgroups[$c] = array(
-                'id'=>$arr['ID'],
-                'name'=>$arr['name'],
-                'shortname'=>shorten_newsgroup_name($arr['name']),
-                'article_count'=>$size . $suffix,
-                'type' =>'group'
+                'id'            => $arr['ID'],
+                'name'          => $arr['name'],
+                'shortname'     => shorten_newsgroup_name($arr['name']),
+                'article_count' => $size . $suffix,
+                'type'          => 'group'
             );
             $c++;
         }
     }
     foreach ($categories as $arr) {
-        list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000);
+        list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || $arr['id'] == $categoryID) { // don't show empty categories either
             $subscribedgroups[$c] = array(
-                'id'=> $arr['id'],
-                'name'=>$arr['name'],
-                'shortname'=>$arr['name'],
-                'article_count'=>$size . $suffix,
-                'type'=>'category'
+                'id'            => $arr['id'],
+                'name'          => $arr['name'],
+                'shortname'     => $arr['name'],
+                'article_count' => $size . $suffix,
+                'type'          => 'category'
             );
             $c++;
         }
@@ -1158,11 +1116,10 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
 function get_userfeed_settings(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->escape($userid, TRUE);
-    $sql = "categories.\"name\" AS c_name, rss_urls.\"name\" AS f_name, userfeedinfo.\"minsetsize\", userfeedinfo.\"maxsetsize\", userfeedinfo.\"visible\" " .
-        "FROM userfeedinfo LEFT JOIN categories ON userfeedinfo.\"category\" = categories.\"id\" LEFT JOIN rss_urls ON userfeedinfo.feedid = rss_urls.\"id\" " .
-        "WHERE userfeedinfo.\"userid\" = $userid";
-    $res = $db->select_query($sql);
+    $sql = 'categories."name" AS c_name, rss_urls."name" AS f_name, userfeedinfo."minsetsize", userfeedinfo."maxsetsize", userfeedinfo."visible" ' .
+        'FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category" = categories."id" LEFT JOIN rss_urls ON userfeedinfo.feedid = rss_urls."id" ' .
+        'WHERE userfeedinfo."userid" = ?';
+    $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
     }
@@ -1173,11 +1130,10 @@ function get_userfeed_settings(DatabaseConnection $db, $userid)
 function get_usergroup_settings(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->escape($userid, TRUE);
-    $sql = "categories.\"name\" AS c_name, groups.\"name\" AS g_name, usergroupinfo.\"minsetsize\", usergroupinfo.\"maxsetsize\", usergroupinfo.\"visible\" ".
-        "FROM usergroupinfo LEFT JOIN categories ON usergroupinfo.\"category\" = categories.\"id\" LEFT JOIN groups ON usergroupinfo.\"groupid\" = groups.\"ID\" " .
-        "WHERE usergroupinfo.\"userid\" = $userid";
-    $res = $db->select_query($sql);
+    $sql = 'categories."name" AS c_name, groups."name" AS g_name, usergroupinfo."minsetsize", usergroupinfo."maxsetsize", usergroupinfo."visible" ' .
+        'FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" LEFT JOIN groups ON usergroupinfo."groupid" = groups."ID" ' .
+        'WHERE usergroupinfo."userid" = ?';
+    $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
     }
@@ -1188,12 +1144,11 @@ function get_usergroup_settings(DatabaseConnection $db, $userid)
 function get_used_categories_group(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->escape($userid);
-    $sql = "SUM(\"setcount\") AS cnt, usergroupinfo.\"category\", MAX(categories.\"name\") AS \"name\" FROM usergroupinfo "
-        . "JOIN groups ON \"groupid\" = groups.\"ID\" "
-        . "JOIN categories ON usergroupinfo.\"category\" = categories.\"id\" "
-        . "WHERE categories.\"userid\"=$userid AND usergroupinfo.\"category\" > 0 GROUP BY usergroupinfo.\"category\"";
-    $res = $db->select_query($sql);
+    $sql = 'SUM("setcount") AS cnt, usergroupinfo."category", MAX(categories."name") AS "name" FROM usergroupinfo '
+        . 'JOIN groups ON "groupid" = groups."ID" '
+        . 'JOIN categories ON usergroupinfo."category" = categories."id" '
+        . 'WHERE categories."userid"=? AND usergroupinfo."category" > 0 GROUP BY usergroupinfo."category"';
+    $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
     }
@@ -1207,7 +1162,7 @@ function get_used_categories_group(DatabaseConnection $db, $userid)
 
 function get_used_categories_spots(DatabaseConnection $db)
 {
-    $sql = "spots.\"category\", COUNT(\"id\") AS cnt FROM spots GROUP BY spots.\"category\"";
+    $sql = 'spots."category", COUNT("id") AS cnt FROM spots GROUP BY spots."category"';
     $res = $db->select_query($sql);
     if (!is_array($res)) {
         return array();
@@ -1224,31 +1179,29 @@ function subscribed_spots_select($categoryid, array $categories)
 {
     $subscribedspots = array();
      foreach ($categories as $row) {
-        list($size, $suffix) = format_size($row['setcount'], 'h', '', 1000);
+        list($size, $suffix) = format_size($row['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($row['id'] == $categoryid)) { // don't show empty groups anyway
-            $subscribedspots[$row['id']] = array ('id'=> $row['id'], 'article_count'=> $size . $suffix, 'name'=>$row['name']);
+            $subscribedspots[$row['id']] = array ('id'=> $row['id'], 'article_count' => $size . $suffix, 'name' => $row['name']);
         }
     }
 
     return $subscribedspots;
 }
 
-
 function get_used_categories_rss(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->escape($userid);
-    $sql = "SUM(\"feedcount\") AS cnt, userfeedinfo.\"category\", MAX(categories.\"name\") AS \"name\" FROM userfeedinfo "
-        . "JOIN rss_urls ON \"feedid\" = rss_urls.\"id\" "
-        . "JOIN categories ON userfeedinfo.\"category\" = categories.\"id\" "
-        . "WHERE categories.\"userid\"=$userid AND userfeedinfo.\"category\" > 0 GROUP BY userfeedinfo.\"category\"";
-    $res = $db->select_query($sql);
+    $sql = 'SUM("feedcount") AS cnt, userfeedinfo."category", MAX(categories."name") AS "name" FROM userfeedinfo '
+        . 'JOIN rss_urls ON "feedid" = rss_urls."id" '
+        . 'JOIN categories ON userfeedinfo."category" = categories."id" '
+        . 'WHERE categories."userid"=? AND userfeedinfo."category" > 0 GROUP BY userfeedinfo."category"';
+    $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
     }
     $categories = array();
     foreach ($res as $row) {
-        $categories["{$row['category']}"] = array('id'=> $row['category'], 'name'=>$row['name'], 'setcount'=>$row['cnt']);
+        $categories["{$row['category']}"] = array('id' => $row['category'], 'name' => $row['name'], 'setcount' => $row['cnt']);
     }
 
     return $categories;
@@ -1259,19 +1212,21 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
 {
     assert(is_numeric($userid));
     $adult = urd_user_rights::is_adult($db, $userid);
+    $input_arr = array($userid, rssfeed_status::RSS_SUBSCRIBED);
     $Qadult = '';
     if (!$adult) {
-        $Qadult = " AND rss_urls.adult != " . ADULT_ON . ' ';
+        $Qadult = ' AND rss_urls.adult != ? ';
+        $input_arr[] = ADULT_ON;
     }
-    $db->escape($userid, TRUE);
     $qfeed_id = '';
     if (is_numeric($feed_id)) {
-        $qfeed_id = "OR \"feedid\" = '$feed_id'";
+        $qfeed_id = 'OR "feedid" = ?';
+        $input_arr[] = $feed_id;
     }
     // Get the feeds:
-    $sql = "rss_urls.\"id\", \"name\", \"feedcount\" FROM rss_urls LEFT JOIN userfeedinfo ON rss_urls.\"id\" = \"feedid\" AND \"userid\" = $userid " .
-        " WHERE \"subscribed\" = '". RSS_SUBSCRIBED . "' AND (\"visible\" > 0 OR \"visible\" IS NULL $qfeed_id) $Qadult ORDER BY \"name\"";
-    $res = $db->select_query($sql);
+    $sql = 'rss_urls."id", "name", "feedcount" FROM rss_urls LEFT JOIN userfeedinfo ON rss_urls."id" = "feedid" AND "userid" = ? ' .
+        " WHERE \"subscribed\" = ? $Qadult AND (\"visible\" > 0 OR \"visible\" IS NULL $qfeed_id) ORDER BY \"name\"";
+    $res = $db->select_query($sql, $input_arr);
 
     if (!is_array($res)) {
         $res = array();
@@ -1280,26 +1235,26 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
     $c = 0;
     $subscribedfeeds = array();
     foreach ($res as $arr) {
-        list($size, $suffix) = format_size($arr['feedcount'], 'h', '', 1000);
+        list($size, $suffix) = format_size($arr['feedcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($arr['id'] == $feed_id)) { // don't show empty groups anyway
             $subscribedfeeds[$c] = array(
-                'id'=>$arr['id'],
-                'name'=>($arr['name']),
-                'type'=>'feed',
-                'article_count'=>$size . $suffix,
+                'id'            => $arr['id'],
+                'name'          => $arr['name'],
+                'type'          => 'feed',
+                'article_count' => $size . $suffix,
             );
             $c++;
         }
     }
 
     foreach ($categories as $arr) {
-        list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000);
+        list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($arr['id'] == $categoryID)) { // don't show empty categories either
             $subscribedfeeds[$c] = array(
-                'id'=> $arr['id'],
-                'name'=>($arr['name']),
-                'type'=>'category',
-                'article_count'=>$size . $suffix,
+                'id'            => $arr['id'],
+                'name'          => $arr['name'],
+                'type'          => 'category',
+                'article_count' => $size . $suffix,
             );
             $c++;
         }
@@ -1327,17 +1282,18 @@ function verify_access(DatabaseConnection $db, $module_bits, $needadmin, $rights
     }
 }
 
-
 function get_feed_last_updated(DatabaseConnection $db, $feed_id, $userid)
 {
     // get last update times for groups
     assert(is_numeric($userid));
-    $sql = "SELECT \"feedid\", \"last_update_seen\" FROM userfeedinfo WHERE \"userid\" = '$userid'";
+    $input_arr = array($userid);
+    $sql = '"feedid", "last_update_seen" FROM userfeedinfo WHERE "userid" = ?';
 
     if (is_numeric($feed_id) && $feed_id != 0) {
         $sql .= " AND \"feedid\" = '$feed_id'";
+        $input_arr[] = $feed_id;
     }
-    $res = $db->execute_query($sql);
+    $res = $db->select_query($sql, $input_arr);
     $feed_lastupdate = array();
     if ($res !== FALSE) {
         foreach ($res as $row) {
@@ -1348,22 +1304,23 @@ function get_feed_last_updated(DatabaseConnection $db, $feed_id, $userid)
     return $feed_lastupdate;
 }
 
-
 function get_group_last_updated(DatabaseConnection $db, $groupid, $userid)
 {
     assert(is_numeric($userid));
     // get last update times for groups
-    $sql = "\"groupid\", \"last_update_seen\" FROM usergroupinfo WHERE \"userid\" = '$userid'";
+    $input_arr = array($userid);
+    $sql = '"groupid", "last_update_seen" FROM usergroupinfo WHERE "userid" = ?';
     if ($groupid != '') {
         if (!is_numeric($groupid)) {
             $groupid = group_by_name($db, $groupid);
         }
         if ($groupid != 0) {
-            $sql .= " AND \"groupid\" = '$groupid'";
+            $sql .= " AND \"groupid\" = ?";
+            $input_arr[] = $groupid;
         }
     }
 
-    $res = $db->select_query($sql);
+    $res = $db->select_query($sql, $input_arr);
     $group_lastupdate = array();
     if ($res !== FALSE) {
         foreach ($res as $row) {
@@ -1373,7 +1330,6 @@ function get_group_last_updated(DatabaseConnection $db, $groupid, $userid)
 
     return $group_lastupdate;
 }
-
 
 function get_mail_templates()
 {
@@ -1391,7 +1347,6 @@ function get_mail_templates()
     return $mail_templates;
 }
 
-
 function get_stylesheets()
 {
     global $smarty;
@@ -1407,7 +1362,6 @@ function get_stylesheets()
 
     return $stylesheets;
 }
-
 
 function get_active_stylesheet(DatabaseConnection $db, $userid)
 {
@@ -1428,14 +1382,12 @@ function get_active_stylesheet(DatabaseConnection $db, $userid)
     return $stylesheet;
 }
 
-
 function to_ln($cat)
 {
     global $LN;
 
     return (isset($LN[$cat]) && $LN[$cat] != '') ? $LN[$cat] : '??' . $cat;
 }
-
 
 function get_subcats($hcat, $scat)
 {
@@ -1453,7 +1405,6 @@ function get_subcats($hcat, $scat)
     return $subcat;
 }
 
-
 function map_default_sort(array $prefs, array $mapping)
 {
     list($def_sort, $def_sort_order) = explode (' ', strtolower((isset($prefs['defaultsort']) ? ($prefs['defaultsort'] . ' ') : 'date asc')), 2);
@@ -1464,7 +1415,6 @@ function map_default_sort(array $prefs, array $mapping)
     return $def_sort . ' ' . $def_sort_order;
 }
 
-
 function export_settings(DatabaseConnection $db, $what, $filename, $userid=NULL)
 {
     header('Content-Type: text/html/force-download');
@@ -1474,7 +1424,6 @@ function export_settings(DatabaseConnection $db, $what, $filename, $userid=NULL)
     $xml->output_xml_data();
     die();
 }
-
 
 function get_subcats_requests()
 {
@@ -1498,24 +1447,24 @@ function get_subcats_requests()
     return array($subcats, $not_subcats, $off_subcats);
 }
 
-
 function spot_name_cmp(array $a, array $b)
 {
     return strcmp($a['name'], $b['name']);
 }
 
-
 function get_stats_years(DatabaseConnection $db, $userid, $isadmin)
 {
     $quser = '';
+    $input_arr = array();
     if (!$isadmin) {
         assert(is_numeric($userid));
-        $quser = "AND \"userid\" = '$userid'";
+        $input_arr[] = $userid;
+        $quser = 'AND "userid" = ?';
     }
 
     $ystr = $db->get_extract('year', '"timestamp"');
     $qry = " $ystr AS \"year\" FROM stats WHERE 1=1 $quser GROUP BY $ystr ORDER BY \"year\" DESC";
-    $res = $db->select_query($qry);
+    $res = $db->select_query($qry, $input_arr);
     $years = array();
 
     if (is_array($res)) {
@@ -1527,23 +1476,20 @@ function get_stats_years(DatabaseConnection $db, $userid, $isadmin)
     return $years;
 }
 
-
 function toggle_adult(DatabaseConnection $db, $type, $groupid, $value)
 {
     assert(is_numeric($groupid));
     if (!in_array($value, array(ADULT_ON, ADULT_OFF,ADULT_DEFAULT))) {
         throw new exception($LN['error_invalidvalue']);
     }
-    $db->escape($groupid, TRUE);
-    $db->escape($value, TRUE);
     if ($type == 'group') {
-        $sql = "UPDATE groups SET \"adult\" = $value WHERE \"ID\" = $groupid";
+        $table = 'groups';
     } elseif ($type == 'rss') {
-        $sql = "UPDATE rss_urls SET \"adult\" = $value WHERE \"ID\" = $groupid";
+        $table = 'rss_urls';
     } else {
         throw new exception($LN['error_unknowntype']);
     }
-    $db->execute_query($sql);
+    $db->update_query_2($table, array('adult'=>$value), '"ID"=?', array($groupid));
 }
 
 
@@ -1560,28 +1506,45 @@ function divide_sort($sort)
         $d = strtolower(trim($s[1]));
     }
 
-    return array('order'=>$o, 'direction'=>$d);
+    return array('order' => $o, 'direction' => $d);
 }
 
 
-function add_to_blacklist(DatabaseConnection $db, $spotterID)
+function add_to_blacklist(DatabaseConnection $db, $spotterID, $userid, $global, $source =blacklist::BLACKLIST_INTERNAL, $status=blacklist::ACTIVE)
 {
-    $db->escape($spotterID, FALSE);
-    $sql = "SELECT count(*) AS cnt FROM spot_blacklist WHERE \"spotter_id\" = '$spotterID' AND \"source\" = " . blacklist::BLACKLIST_INTERNAL;
-    $res = $db->execute_query($sql);
+    assert(is_bool($global) && is_numeric($userid));
+    if ($global && urd_user_rights::is_admin($db, $userid)) {
+        $userid = user_status::SUPER_USERID; // if it is set by the root user it is global, if by any other userid it's for that user onl
+    }
+    $sql = 'count(*) AS cnt FROM spot_blacklist WHERE "spotter_id" = ? AND "source" = ? AND "userid" = ?';
+    $res = $db->select_query($sql, array($spotterID, $source, $userid));
     if ($res[0]['cnt'] == 0) {
-        $add_ids = array($spotterID, blacklist::BLACKLIST_INTERNAL);
-        $cols = array('spotter_id', 'source');
+        $add_ids = array($spotterID, $source, $userid, $status);
+        $cols = array('spotter_id', 'source', 'userid', 'status');
         $db->insert_query('spot_blacklist', $cols, $add_ids);
     }
 }
 
+function add_to_whitelist(DatabaseConnection $db, $spotterID, $userid, $global, $source=whitelist::WHITELIST_INTERNAL, $status=whitelist::ACTIVE)
+{
+    assert(is_bool($global) && is_numeric($userid));
+    if ($global && urd_user_rights::is_admin($db, $userid)) { // if it is set by the root user it is global, if by any other userid it's for that user only
+        $userid == user_status::SUPER_USERID;
+    }
+
+    $sql = 'count(*) AS cnt FROM spot_whitelist WHERE "spotter_id" = ? AND "source" = ? AND "userid" = ?';
+    $res = $db->select_query($sql, array($spotterID, $source, $userid));
+    if ($res[0]['cnt'] == 0) {
+        $add_ids = array($spotterID, $source, $userid, $status);
+        $cols = array('spotter_id', 'source', 'userid', 'status');
+        $db->insert_query('spot_whitelist', $cols, $add_ids);
+    }
+}
 
 function get_spotterid_from_spot(DatabaseConnection $db, $spotid)
 {
-    $db->escape($spotid, TRUE);
-    $sql = "\"spotter_id\" FROM spots WHERE \"spotid\" = $spotid";
-    $res = $db->select_query($sql, 1);
+    $sql = '"spotter_id" FROM spots WHERE "spotid" = ?';
+    $res = $db->select_query($sql, 1, array($spotid));
     if (!isset($res[0]['spotter_id'])) {
         return FALSE;
     }
@@ -1589,14 +1552,13 @@ function get_spotterid_from_spot(DatabaseConnection $db, $spotid)
     return $res[0]['spotter_id'];
 }
 
-
-function get_pages ($totalsets, $perpage, $offset)
+function get_pages($totalsets, $perpage, $offset)
 {
     assert (is_numeric($totalsets) && is_numeric($perpage) && is_numeric($offset));
     $size = SKIPPER_SIZE;
     $totalpages = max(1, ceil($totalsets / $perpage));      // Total number of pages.
-    $activepage = ceil(($offset+1) / $perpage);     // This is the page we're on. (+1 because 0/100 = page 1)
-    $start = max($activepage - floor($size/2), 1);  // We start at 1 unless we're now on page 12, then we show page 2.
+    $activepage = ceil(($offset + 1) / $perpage);     // This is the page we're on. (+1 because 0/100 = page 1)
+    $start = max($activepage - floor($size / 2), 1);  // We start at 1 unless we're now on page 12, then we show page 2.
     $end = min($start + $size, $totalpages);        // We don't go beyond 'totalpages' ofcourse.
     $start = max($end - $size, 1);                  // Re-check $start, in case the pagenumber is near the end
 
@@ -1614,15 +1576,10 @@ function get_pages ($totalsets, $perpage, $offset)
     return array($pages, $activepage, $totalpages, $offset);
 }
 
-function get_directories(DatabaseConnection $db, $username)
+function get_directories(DatabaseConnection $db, $userid)
 {
     $dlpath = get_dlpath($db);
-    if (!is_numeric($username)) {
-        $userid = get_userid($db, $username);
-    } else {
-        $userid = $username;
-        $username = get_username($db, $userid);
-    }
+    $username = get_username($db, $userid);
 
     $user_dlpath = $dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
     $dir = dir($user_dlpath);
@@ -1642,14 +1599,14 @@ function get_spots_stats_by_dow(DatabaseConnection $db)
     global $LN;
     $time_stamp = $db->get_dow_timestamp('"stamp"');
 
-    $sql = "SELECT count(*) as cnt, $time_stamp AS dow, \"category\" FROM spots  GROUP BY $time_stamp, \"category\" ";
-    $res = $db->execute_query($sql);
+    $sql = "count(*) AS cnt, $time_stamp AS dow, \"category\" FROM spots GROUP BY $time_stamp, \"category\" ";
+    $res = $db->select_query($sql);
     if ($res === FALSE) {
         $res = array();
     }
     $stats = array();
     foreach (range(1, 7) as $i) {
-            $stats[ ($i - 1) ] = array( html_entity_decode($LN['short_day_names'][$i]), 0, 0, 0, 0);
+            $stats[ ($i - 1) ] = array(html_entity_decode($LN['short_day_names'][$i]), 0, 0, 0, 0);
     }
 
     foreach ($res as $row) {
@@ -1671,15 +1628,15 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
     $time_stamp = $db->get_timestamp('"stamp"');
     $time_extract = $db->get_extract($period, $time_stamp);
 
-    $sql = "SELECT count(*) as cnt, $time_extract AS mnth, \"category\" FROM spots GROUP BY $time_extract, \"category\"";
-    $res = $db->execute_query($sql);
+    $sql = "count(*) AS cnt, $time_extract AS mnth, \"category\" FROM spots GROUP BY $time_extract, \"category\"";
+    $res = $db->select_query($sql);
     if ($res === FALSE) {
         $res = array();
     }
     $stats = array();
     if ($period == 'month') {
         foreach (range(1,12) as $i) {
-            $stats[ $i ] = array( html_entity_decode($LN['short_month_names'][$i]), 0, 0, 0, 0);
+            $stats[ $i ] = array(html_entity_decode($LN['short_month_names'][$i]), 0, 0, 0, 0);
         }
     } elseif ($period == 'week') {
         $max_week = 0;
@@ -1687,11 +1644,11 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
             $max_week = max($max_week, (int) date('W', mktime(0, 0, 0, 12, $r)));
         }
         foreach (range(1,$max_week) as $i) {
-            $stats[ $i ] = array($i, 0, 0, 0,0 );
+            $stats[ $i ] = array($i, 0, 0, 0, 0);
         }
     } elseif ($period == 'hour') {
         foreach (range(0, 23) as $i) {
-            $stats[ $i ] = array($i, 0, 0, 0,0 );
+            $stats[ $i ] = array($i, 0, 0, 0, 0);
         }
     }
     foreach ($res as $row) {
@@ -1706,14 +1663,14 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
 
 function get_spots_stats(DatabaseConnection $db)
 {
-    $sql = "SELECT count(*) as cnt, category FROM spots GROUP BY category";
-    $res = $db->execute_query($sql);
+    $sql = 'count(*) AS "cnt", "category" FROM spots GROUP BY "category"';
+    $res = $db->select_query($sql);
     if ($res === FALSE) {
         $res = array(0, 0, 0, 0);
     }
     $stats = array();
     foreach ($res as $row) {
-        $stats[ $row['category'] ] = $row[ 'cnt'];
+        $stats[ $row['category'] ] = $row['cnt'];
     }
 
     return $stats;
@@ -1747,7 +1704,7 @@ function insert_wbr($str, $size = 64)
     $str_new = '';
     $t = 0;
     $in_tag = 0;
-    for ($i=0; $i< $l ; $i++) {
+    for ($i = 0; $i < $l; $i++) {
         if ($str[$i] == '<') {
             $t = 0;
             $in_tag++;
@@ -1759,7 +1716,7 @@ function insert_wbr($str, $size = 64)
         if ($in_tag > 0) {
             continue;
         }
-        if (ctype_space($str[$i]) ) {
+        if (ctype_space($str[$i])) {
             $t = 0;
         } else {
             $t++;
@@ -1778,14 +1735,14 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
     $Qsearch = '';
     // Search google style:
     if ($search != '') {
-        $search = trim(str_replace('*',' ',$search));
+        $search = trim(str_replace('*', ' ', $search));
         $search = strtolower($search);
         $keywords = explode(' ', $search);
         $Qsearch1 = $Qsearch2 = $Qsearch3 = '';
         $next = $not = '';
         foreach ($keywords as $keyword) {
             $keyword = trim($keyword);
-            if ($keyword == '') { continue;}
+            if ($keyword == '') { continue; }
             if ($next == '') {
                 $qand = 'AND';
             } elseif ($next == 'NOT') {
@@ -1817,13 +1774,13 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
         }
         $Qsearch .= 'AND ( 1=0 ';
         if ($Qsearch1 != '') {
-            $Qsearch .= " OR ( 1=1 $Qsearch1 ) ";
+            $Qsearch .= " OR (1=1 $Qsearch1 ) ";
         }
         if ($Qsearch2 != '') {
             $Qsearch .= " OR (1=1 $Qsearch2 ) ";
         }
         if ($Qsearch3 != '') {
-            $Qsearch .= " OR (1=1 $Qsearch3 )";
+            $Qsearch .= " OR (1=1 $Qsearch3 ) ";
         }
         $Qsearch .= ')';
     }
@@ -1833,7 +1790,7 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
 
 function get_size_limits_spots(DatabaseConnection $db)
 {
-    $sql = "min(size) AS minsetsize, max(size) AS maxsetsize FROM spots";
+    $sql = 'min("size") AS minsetsize, max("size") AS maxsetsize FROM spots';
     $res = $db->select_query($sql, 1);
 
     return array($res[0]['minsetsize'], $res[0]['maxsetsize']);
@@ -1841,7 +1798,7 @@ function get_size_limits_spots(DatabaseConnection $db)
 
 function get_age_limits_spots(DatabaseConnection $db)
 {
-    $now =  time();
+    $now = time();
     $sql = "min({$now} - \"stamp\") AS \"minage\", max({$now} - \"stamp\") AS \"maxage\" FROM spots";
     $res = $db->select_query($sql, 1);
 
@@ -1850,12 +1807,13 @@ function get_age_limits_spots(DatabaseConnection $db)
 
 function get_size_limits_groups(DatabaseConnection $db, $groupID=NULL)
 {
-    $sql = "min(size) AS minsetsize, max(size) AS maxsetsize FROM setdata";
+    $sql = 'min("size") AS minsetsize, max("size") AS maxsetsize FROM setdata';
+    $input_arr = array();
     if (is_numeric($groupID) && $groupID > 0) {
-        $db->escape($groupID, TRUE) ;
-        $sql .= " WHERE \"groupID\" = $groupID";
+        $input_arr[] = $groupID;
+        $sql .= ' WHERE "groupID" = ?';
     }
-    $res = $db->select_query($sql, 1);
+    $res = $db->select_query($sql, 1, $input_arr);
 
     return array($res[0]['minsetsize'], $res[0]['maxsetsize']);
 }
@@ -1863,24 +1821,26 @@ function get_size_limits_groups(DatabaseConnection $db, $groupID=NULL)
 function get_age_limits_groups(DatabaseConnection $db, $groupID=NULL)
 {
     $now = time();
+    $input_arr = array();
     $sql = "min({$now} - \"date\") AS \"minage\", max({$now} - \"date\") AS \"maxage\" FROM setdata";
     if (is_numeric($groupID) && $groupID > 0) {
-        $db->escape($groupID, TRUE) ;
-        $sql .= " WHERE \"groupID\" = $groupID";
+        $input_arr[] = $groupID;
+        $sql .= ' WHERE "groupID" = ?';
     }
-    $res = $db->select_query($sql, 1);
+    $res = $db->select_query($sql, 1, $input_arr);
 
     return array($res[0]['minage'], $res[0]['maxage']);
 }
 
 function get_size_limits_rsssets(DatabaseConnection $db, $rss_id=NULL)
 {
-    $sql = "min(size) AS minsetsize, max(size) AS maxsetsize FROM rss_sets";
+    $sql = 'min("size") AS minsetsize, max("size") AS maxsetsize FROM rss_sets';
+    $input_arr = array();
     if (is_numeric($rss_id) && $rss_id > 0) {
-        $db->escape($rss_id, TRUE) ;
-        $sql .= " WHERE \"rss_id\" = $rss_id";
+        $input_arr[] = $rss_id;
+        $sql .= ' WHERE "rss_id" = ?';
     }
-    $res = $db->select_query($sql, 1);
+    $res = $db->select_query($sql, 1, $input_arr);
 
     return array($res[0]['minsetsize'], $res[0]['maxsetsize']);
 }
@@ -1889,11 +1849,13 @@ function get_age_limits_rsssets(DatabaseConnection $db, $rss_id=NULL)
 {
     $now = time();
     $sql = "min({$now} - \"timestamp\") AS \"minage\", max({$now} - \"timestamp\") AS \"maxage\" FROM rss_sets";
+    $input_arr = array();
     if (is_numeric($rss_id) && $rss_id > 0) {
-        $db->escape($rss_id, TRUE) ;
-        $sql .= " WHERE \"rss_id\" = $rss_id";
+        $input_arr[] = $rss_id;
+        $sql .= ' WHERE "rss_id" = ?';
+
     }
-    $res = $db->select_query($sql, 1);
+    $res = $db->select_query($sql, 1, $input_arr);
 
     return array($res[0]['minage'], $res[0]['maxage']);
 }
@@ -1912,3 +1874,164 @@ function nearest($val, $up)
 
     return $v;
 }
+
+function get_poster_from_set(DatabaseConnection $db, $setid)
+{
+    $groupid = get_groupid_for_set($db, $setid);
+    $sql = "\"fromname\" FROM parts_$groupid LEFT JOIN binaries_$groupid ON parts_$groupid.\"binaryID\" = binaries_$groupid.\"binaryID\" where setID = ? AND fromname != ''";
+    $res = $db->select_query($sql, 1, array($setid));
+    if (!isset($res[0]['fromname']) ) {
+        throw new exception($LN['error_binariesnotfound']);
+    }
+    $fromname = $res[0]['fromname'];
+
+    return $fromname;
+}
+
+// parse list of comma separated language tags and sort it by the quality value
+function parse_language_list($language_list)
+{
+    $languages = array();
+    $language_ranges = explode(',', trim($language_list));
+    foreach ($language_ranges as $language_range) {
+        if (preg_match('/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/', trim($language_range), $match)) {
+            if (!isset($match[2])) {
+                $match[2] = '1.0';
+            } else {
+                $match[2] = (string) floatval($match[2]);
+            }
+            if (!isset($languages[$match[2]])) {
+                $languages[$match[2]] = array();
+            }
+            $languages[$match[2]][] = strtolower($match[1]);
+        }
+    }
+    krsort($languages);
+
+    return $languages;
+}
+
+// compare two parsed arrays of language tags and find the matches
+function find_language_matches($accepted, $available)
+{
+    $matches = array();
+    $any = FALSE;
+    foreach ($accepted as $acceptedQuality => $acceptedValues) {
+        $acceptedQuality = floatval($acceptedQuality);
+        if ($acceptedQuality === 0.0) continue;
+        foreach ($available as $availableQuality => $availableValues) {
+            $availableQuality = floatval($availableQuality);
+            if ($availableQuality === 0.0) continue;
+            foreach ($acceptedValues as $acceptedValue) {
+                if ($acceptedValue === '*') {
+                    $any = TRUE;
+                }
+                foreach ($availableValues as $availableValue) {
+                    $matchingGrade = match_language($acceptedValue, $availableValue);
+                    if ($matchingGrade > 0) {
+                        $q = (string) ($acceptedQuality * $availableQuality * $matchingGrade);
+                        if (!isset($matches[$q])) {
+                            $matches[$q] = array();
+                        }
+                        if (!in_array($availableValue, $matches[$q])) {
+                            $matches[$q][] = $availableValue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (count($matches) === 0 && $any) {
+        $matches = $available;
+    }
+    krsort($matches);
+
+    return $matches;
+}
+
+// compare two language tags and distinguish the degree of matching
+function match_language($a, $b)
+{
+    $a = explode('-', $a);
+    $b = explode('-', $b);
+    for ($i = 0, $n = min(count($a), count($b)); $i < $n; $i++) {
+        if ($a[$i] !== $b[$i]) break;
+    }
+
+    return $i === 0 ? 0 : ((float) $i / count($a));
+}
+
+function detect_language()
+{
+    $accepted   = parse_language_list($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+    $available  = parse_language_list('en, fr, de, sv, nl');
+    $matches    = find_language_matches($accepted, $available);
+
+    // the default is English
+    $lang = 'english';
+    foreach ($matches as $ln1) {
+        foreach ($ln1 as $ln) {
+            switch (substr(trim($ln), 0, 2)) {
+                case 'en':
+                    $lang = 'english';
+
+                    return $lang;
+                    break;
+                case 'nl':
+                    $lang = 'nederlands';
+
+                    return $lang;
+                    break;
+                case 'fr':
+                    $lang = 'francais';
+
+                    return $lang;
+                    break;
+                case 'de':
+                    $lang = 'deutsch';
+
+                    return $lang;
+                    break;
+                case 'sv':
+                    $lang = 'svenska';
+
+                    return $lang;
+                    break;
+            }
+        }
+    }
+
+    return $lang;
+}
+
+
+function verify_time($time1, $time2, $name)
+{
+    global $LN;
+
+    if (!is_numeric($time1)) {
+            throw new exception($name . ': ' . $LN['error_notanumber'] . " ({$LN['time']}) ");
+        }
+        if (!is_numeric($time2)) {
+            throw new exception($name . ': ' . $LN['error_notanumber'] . " ({$LN['time']}) ");
+        }
+        if ($time1 > 23 || $time1 < 0) {
+            throw new exception($name . ': ' . $LN['error_toomanydays'] . " ({$LN['time']}) ");
+        }
+        if ($time2 > 59 || $time1 < 0) {
+            throw new exception($name . ': ' . $LN['error_toomanymins'] . " ({$LN['time']}) ");
+        }
+}
+
+function verify_expire($expire, $name)
+{
+    global $uprefs, $LN;
+    $max_expire = $uprefs['maxexpire'];
+    if (!is_numeric($expire)) {
+        throw new exception($name . ': ' . $LN['error_invalidvalue'] . ': ' . $LN['ng_expire_time'] . ' ' . htmlentities($expire));
+    }
+    if ($expire > $max_expire || $expire < 1) {
+        throw new exception($name . ': ' . $LN['error_bogusexptime']);
+    }
+}
+

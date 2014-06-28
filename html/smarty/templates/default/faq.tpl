@@ -14,10 +14,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2012-05-22 00:05:19 +0200 (Tue, 22 May 2012) $
- * $Rev: 2523 $
- * $Author: gavinspearhead $
- * $Id: faq.tpl 2523 2012-05-21 22:05:19Z gavinspearhead $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
+ * $Author: gavinspearhead@gmail.com $
+ * $Id: faq.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
 
@@ -35,4 +35,12 @@
 
 </div>
 <br/>
+
+<script>
+$(document).ready(function() {
+        update_search_bar_height();
+    }
+);
+</script>
+
 {include file="foot.tpl"}

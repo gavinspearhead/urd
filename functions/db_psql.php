@@ -29,19 +29,19 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathdbc = realpath(dirname(__FILE__));
 
-require_once "$pathdbc/../config.php";
-require_once "$pathdbc/config_functions.php";
-require_once "$pathdbc/defines.php";
 require_once "$pathdbc/urd_exceptions.php";
-require_once "$pathdbc/db/urd_db_structure.php";
-require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
-require_once "$pathdbc/libs/adodb/adodb.inc.php";
 
 class DatabaseConnection_psql extends DatabaseConnection
 {
-    public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $force_new_connection=FALSE, $persistent=FALSE, $dbengine='')
+    public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
-        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $force_new_connection=FALSE, $persistent=FALSE, $dbengine='');
+        if ($databasetype == 'pdo_pgsql') {
+            if ($database == '') { $database = 'postgres'; }
+            $this->uri = "pgsql:host=$hostname;dbname=$database;" . (($port != '') ? "port=$port;" : '');
+        } else {
+            $this->uri .= $hostname . (($port != '') ? ":$port" : '');
+        }
+        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine);
     }
     public function get_dow_timestamp($from)
     {
@@ -105,8 +105,8 @@ class DatabaseConnection_psql extends DatabaseConnection
     }
     public function create_dbuser($host, $user, $pass)
     {
-        $this->escape($user);
-        $this->escape($pass);
+        $this->escape($user, FALSE);
+        $this->escape($pass, FALSE);
 
         $sql = "CREATE USER \"$user\" WITH PASSWORD '$pass'";
         $this->execute_query($sql);
@@ -114,8 +114,8 @@ class DatabaseConnection_psql extends DatabaseConnection
 
     public function grant_rights($host, $dbname, $dbuser)
     {
-        $this->escape($dbname);
-        $this->escape($dbuser);
+        $this->escape($dbname, FALSE);
+        $this->escape($dbuser, FALSE);
 
         $sql = "ALTER DATABASE \"$dbname\" OWNER TO \"$dbuser\"";
         $this->execute_query($sql);
@@ -123,14 +123,14 @@ class DatabaseConnection_psql extends DatabaseConnection
 
     public function create_database($dbname)
     {
-        $this->escape($dbname);
+        $this->escape($dbname, FALSE);
         $sql = "CREATE DATABASE \"$dbname\"";
         $this->execute_query($sql);
     }
 
     public function optimise_table($table)
     {
-        $this->escape($table);
+        $this->escape($table, FALSE);
         if ($table == '__ALL__') {
             $sql = 'VACUUM FULL ANALYZE ';
         } else {
@@ -150,10 +150,10 @@ class DatabaseConnection_psql extends DatabaseConnection
     }
     public function get_tables()
     {
-        return array (0=>array(0=>'__ALL__')); // postfix doesn't have a show tables equivalent. We use a trick here: we return all and for optimising we run the vacuum full without a table name. Nasty? yes. Works? yes.
+        return array (0 => array(0 => '__ALL__')); // postfix doesn't have a show tables equivalent. We use a trick here: we return all and for optimising we run the vacuum full without a table name. Nasty? yes. Works? yes.
     }
 
-    public function connect($force_new_connection=FALSE)
+    public function connect()
     {
         echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
         try {
@@ -162,11 +162,11 @@ class DatabaseConnection_psql extends DatabaseConnection
                 case 'postgres8':
                 case 'postgres9':
                     $this->DB = NewADOConnection($this->databasetype);
-                    $this->DB->NConnect($this->uri, $this->username, $this->password, $this->databasename); // psql always reconnects... or weird shit happens
+                    $this->DB->NConnect($this->uri, $this->username, $this->password, $this->databasename); 
                     break;
                 case 'pdo_pgsql':
                     $this->DB = ADONewConnection('pdo');
-                    $this->DB->NConnect($this->uri, $this->username, $this->password); // psql always reconnects... or weird shit happens
+                    $this->DB->NConnect($this->uri, $this->username, $this->password); 
                     break;
                 case 'postgres':
                 case 'postgres64':
@@ -205,9 +205,8 @@ class DatabaseConnection_psql extends DatabaseConnection
         $res = $this->execute_query('SELECT lastval() AS lv');
         if (isset($res[0]['lv'])) {
             return $res[0]['lv'];
-        } else {
-            return FALSE;
         }
+        return FALSE;
     }
 
 }

@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  This file is part of Urd.
  *
@@ -16,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: index.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: index.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 header('Location: ../html/index.php');

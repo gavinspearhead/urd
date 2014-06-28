@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showquickmenu.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showquickmenu.php 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -27,7 +27,6 @@ $__auth = 'silent';
 $pathqm = realpath(dirname(__FILE__));
 
 require_once "$pathqm/../functions/ajax_includes.php";
-require_once "$pathqm/../functions/pref_functions.php";
 
 $subject = '';
 
@@ -45,7 +44,7 @@ if (isset($_GET['type']) && isset($_GET['subject']) && isset($_GET['srctype'])) 
     case 'setdetails':
         $selection = get_request('selection', 0);
         if ($selection == 1) {
-        if ($button_count == 1) {
+            if ($button_count == 1) {
                 $button = end($buttons); // the last will be the first
                 $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
             } elseif ($button_count > 1) {
@@ -97,6 +96,9 @@ if (isset($_GET['type']) && isset($_GET['subject']) && isset($_GET['srctype'])) 
         }
 
         $items[] = new QuickMenuItem('setshowesi', $LN['quickmenu_setshowesi'], 'quickdisplay', 'showextinfo');
+        if ($srctype == USERSETTYPE_SPOT && $isposter) {
+            $items[] = new QuickMenuItem('post_spot_comment', $LN['quickmenu_comment_spot'], 'post_spot_comment');
+        }
         if (urd_user_rights::is_seteditor($db, $userid) /*&& $srctype != USERSETTYPE_SPOT*/) {
             $items[] = new QuickMenuItem('seteditesi', $LN['quickmenu_seteditesi'], 'quickdisplay', 'editextinfo');
             // $items[] = new QuickMenuItem('setguessesisafe',$LN['quickmenu_setguessesisafe'],'guessextsetinfosafe','editextinfo');
@@ -108,18 +110,24 @@ if (isset($_GET['type']) && isset($_GET['subject']) && isset($_GET['srctype'])) 
                 }
             }
         }
+        if ($selection == 1) {
+            $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
+            $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
+        }
+
         if ($srctype == USERSETTYPE_SPOT && $isadmin) {
+                $items[] = new QuickMenuItem('add_blacklist', $LN['quickmenu_addglobalblacklist'], 'add_blacklist_global');
+                $items[] = new QuickMenuItem('add_whitelist', $LN['quickmenu_addglobalwhitelist'], 'add_whitelist_global');
+        }
+        if ($srctype == USERSETTYPE_SPOT) {
                 $items[] = new QuickMenuItem('add_blacklist', $LN['quickmenu_addblacklist'], 'add_blacklist');
+                $items[] = new QuickMenuItem('add_whitelist', $LN['quickmenu_addwhitelist'], 'add_whitelist');
         }
         if ($srctype == USERSETTYPE_SPOT && $isposter) {
                 $items[] = new QuickMenuItem('report_spam', $LN['quickmenu_report_spam'], 'report_spam');
         }
         if (urd_user_rights::is_seteditor($db, $userid) && $srctype == USERSETTYPE_SPOT) {
             // todo $items[] = new QuickMenuItem('spotedit', $LN['quickmenu_editspot'], 'quickdisplay', 'editspot');
-        }
-        if ($selection == 1) {
-            $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
-            $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
         }
         if ($killflag) {
             $items[] = new QuickMenuItem($subject, $LN['browse_resurrectset'], 'unhide_set');
@@ -129,6 +137,9 @@ if (isset($_GET['type']) && isset($_GET['subject']) && isset($_GET['srctype'])) 
 
         if ($srctype == USERSETTYPE_RSS) {
             $items[] = new QuickMenuItem($subject, $LN['browse_savenzb'], 'follow_link');
+        }
+        if ($srctype == USERSETTYPE_GROUP) {
+            $items[] = new QuickMenuItem('add_posterblacklist', $LN['quickmenu_addposterblacklist'], 'add_posterblacklist');
         }
         break;
     case 'setsearch': // Search buttons for a set
@@ -173,10 +184,10 @@ function get_search_buttons(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
     $activebuttons = array();
-    $max_buttons = get_config($db, 'maxbuttons', MAX_SEARCH_BUTTONS);
+    $max_buttons = get_config($db, 'maxbuttons', button::MAX_SEARCH_BUTTONS);
     $buttons = array();
     for ($i = 1; $i <= $max_buttons; $i++) {
-        $b = get_pref($db,  "button$i", $userid, 'none');
+        $b = get_pref($db, "button$i", $userid, 'none');
           if ($b != 'none') {
             $buttons[] = $b;
         }
@@ -184,21 +195,20 @@ function get_search_buttons(DatabaseConnection $db, $userid)
     if (count($buttons) == 0) {
         return array();
     }
-    $ids = '';
+    $ids = array();
     foreach ($buttons as $button) {
-        $db->escape($button, TRUE);
-        $ids .= "$button,";
+        $ids[] = $button;
     }
-    $ids = rtrim($ids, ', ');
-
-    $qry = "* FROM searchbuttons WHERE \"id\" in ($ids) ORDER BY \"name\"";
-    $res = $db->select_query($qry);
-    if ($res === FALSE) {
-        return array('foo');
-    }
-    foreach ($res as $row) {
-        $row['name'] = htmlentities(utf8_decode($row['name']));
-        $activebuttons[] = $row;
+    if (count($ids) > 0 ) {
+        $qry = '* FROM searchbuttons WHERE "id" IN (' . str_repeat('?,', count($ids) - 1) . '?) ORDER BY "name"';
+        $res = $db->select_query($qry, $ids);
+        if ($res === FALSE) {
+            return array();
+        }
+        foreach ($res as $row) {
+            $row['name'] = htmlentities(utf8_decode($row['name']));
+            $activebuttons[] = $row;
+        }
     }
 
     return $activebuttons;
@@ -206,8 +216,8 @@ function get_search_buttons(DatabaseConnection $db, $userid)
 
 function find_special_file(DatabaseConnection $db, $setID)
 {
-    $sql = "* FROM setdata WHERE \"ID\" = '$setID'";
-    $res = $db->select_query($sql, 1);
+    $sql = '* FROM setdata WHERE "ID"=?';
+    $res = $db->select_query($sql, 1, array($setID));
     if ($res === FALSE) {
         return array(FALSE, FALSE, FALSE, FALSE);
     }
@@ -215,23 +225,23 @@ function find_special_file(DatabaseConnection $db, $setID)
     $rv1 = $rv2 = $rv3 = $rv4 = FALSE;
 
     $groupID = $res[0]['groupID'];
-    $sql = "* FROM binaries_$groupID WHERE \"setID\" = '$setID' AND \"subject\" $search_type '.*[.](jpg|gif|png|jpeg)([^.].*)?$'";
-    $res = $db->select_query($sql, 1);
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ? ";
+    $res = $db->select_query($sql, 1, array($setID, '.*[.](jpg|gif|png|jpeg)([^.].*)?$'));
     if ($res !== FALSE) {
         $rv1 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
     }
-    $sql = "* FROM binaries_$groupID WHERE \"setID\" = '$setID' AND \"subject\" $search_type '.*[.]nfo([^.].*)?$'";
-    $res = $db->select_query($sql, 1);
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ?";
+    $res = $db->select_query($sql, 1, array($setID, '.*[.]nfo([^.].*)?$'));
     if ($res !== FALSE) {
         $rv2 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
     }
-    $sql = "* FROM binaries_$groupID WHERE \"setID\" = '$setID' AND \"subject\" $search_type '.*[.]nzb([^.].*)?$'";
-    $res = $db->select_query($sql, 1);
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ?";
+    $res = $db->select_query($sql, 1, array($setID, '.*[.]nzb([^.].*)?$'));
     if ($res !== FALSE) {
         $rv3 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
     }
-    $sql = "* FROM binaries_$groupID WHERE \"setID\" = '$setID' AND \"subject\" $search_type '.*[.](wmv|mpg|mp4|avi|mkv|mov|flv)([^.].*)?$'";
-    $res = $db->select_query($sql, 1);
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ?";
+    $res = $db->select_query($sql, 1, array($setID, 'sample.*[.](wmv|mpg|mp4|avi|mkv|mov|flv)([^.].*)?$'));
     if ($res !== FALSE) {
         $rv4 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
     }
@@ -243,4 +253,5 @@ init_smarty('', 0);
 $smarty->assign('items',	 $items);
 $smarty->assign('srctype',   $srctype);     // group or rss or spot
 $smarty->assign('subject',   $subject);
+
 $smarty->display('ajax_quickmenu.tpl');

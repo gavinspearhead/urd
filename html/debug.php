@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-29 01:03:02 +0200 (do, 29 mei 2014) $
+ * $Rev: 3058 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: debug.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: debug.php 3058 2014-05-28 23:03:02Z gavinspearhead@gmail.com $
  */
 
 
@@ -173,9 +173,13 @@ function get_svn_rev()
         $svnversion_path = $v;
         $rv = TRUE;
     }
-    if (!$rv) { return FALSE; }
+    if (!$rv) { 
+        return FALSE; 
+    }
     $v = exec($svnversion_path, $foo, $rv);
-
+    if (!isset($foo[1])) { 
+        return FALSE; 
+    }
     return $foo[1];
 }
 
@@ -234,7 +238,7 @@ $settings = array();
 $settings['System name'] = implode(' ', posix_uname());
 $settings['PHP_version'] = phpversion() . ' (should be at least 5.1.2)';
 $settings['Loaded php.ini file'] = php_ini_loaded_file();
-$settings['Browser agent'] = $_SERVER['HTTP_USER_AGENT'] ;
+$settings['Browser agent'] = $_SERVER['HTTP_USER_AGENT'];
 $settings['database type'] = $db->get_databasetype();
 $db_srv_info = $db->get_database_server_info();
 $settings['database description'] = isset($db_srv_info['description']) ? $db_srv_info['description'] : '';
@@ -250,7 +254,7 @@ $sl = get_svn_latest_rev();
 if ($s != '') {
     $settings['URD svn revision'] = $s;
     $settings['URD latest revision'] = $sl;
-    $highlight = array(array($s, 'red'),array($sl, 'red'));
+    $highlight = array(array($s, 'red'), array($sl, 'red'));
 } else {
     $settings['URD svn revision'] = 'No svn used';
     $highlight = array();
@@ -291,8 +295,8 @@ echo "<h2>Some basic system settings useful for debugging download directory pro
 
 $apache_info = posix_getpwuid(posix_geteuid());
 $a_gid = posix_getgrgid(posix_getegid());
-$a_userid = $apache_info['name'] . ' (' . $apache_info['uid'] . ')' ;
-$a_groupid = $a_gid['name'] . ' (' . $apache_info['gid'] . ')' ;
+$a_userid = $apache_info['name'] . ' (' . $apache_info['uid'] . ')';
+$a_groupid = $a_gid['name'] . ' (' . $apache_info['gid'] . ')';
 $settings['Apache userid'] = $a_userid;
 $settings['Apache groupid'] = $a_groupid;
 $settings['URD Install path'] = get_urd_path();

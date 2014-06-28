@@ -55,24 +55,15 @@
 <ul class="tabs">
 <li onclick="javascript:toggle_table('groupstable', 'user', 'admin')" id="button_global" class="tab{if $page_tab == 'admin'} tab_selected{/if}">{$LN_global_settings}</li>
 <li onclick="javascript:toggle_table('groupstable', 'admin', 'user')" id="button_user" class="tab{if $page_tab != 'admin'} tab_selected{/if}">{$LN_user_settings}
-<input type="hidden" id="page_tab" value="{$page_tab}"/></li>
+<input type="hidden" id="page_tab" value="{$page_tab|escape:htmlall}"/></li>
 </ul>
 </div>
 {/strip}
 {/capture}
 
-{strip}
-<h3 class="title">
-{if $unsubscribed eq 0 } 
-{$LN_ng_subscribed|escape}: {$LN_ng_newsgroups|escape}
-{else}
-{$LN_ng_newsgroups|escape}{/if}
-</h3> 
-{/strip}
-
 <form action="ajax_groups.php" method="post" id="newsgroupform">
 <div class="hidden">
-<input type="hidden" name="page" id="page1" value="{$page_tab}"/>
+<input type="hidden" name="page" id="page1" value="{$page_tab|escape:htmlall}"/>
 <input type="hidden" id="order" name="order" value="{$sort|escape}"/>
 <input type="hidden" id="order_dir" name="order_dir" value="{$sort_dir|escape}"/>
 </div>
@@ -116,7 +107,7 @@
 <th {urd_popup type="small" text=$LN_ng_tooltip_lastupdated } class="center general buttonlike head" onclick="javascript:load_groups( { order : 'last_updated', defsort: 'desc' } );">{$LN_ng_lastupdated} {$last_updated_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_expire } class="{$admin_hidden} center admin buttonlike head" onclick="javascript:load_groups( { order : 'expire', defsort: 'desc' } );">{$LN_ng_expire_time} {$expire_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_admin_minsetsize } class="{$admin_hidden} center admin head buttonlike" onclick="javascript:load_groups( { order : 'admin_minsetsize', defsort: 'desc' } );">{$LN_ng_admin_minsetsize} {$admin_minsetsize_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_admin_maxsetsize } class="{$admin_hidden} center admin head buttonlike" onclick="javascript:load_groups( { order : 'admin_maxsetsize', defsort: 'desc' } );">{$LN_ng_admin_maxsetsize} {$admin_maxsetsize_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_admin_maxsetsize } class="{$admin_hidden} center admin head buttonlike {if $isadmin == 0 or $urdd_online == 0 }round_right{/if}" onclick="javascript:load_groups( { order : 'admin_maxsetsize', defsort: 'desc' } );">{$LN_ng_admin_maxsetsize} {$admin_maxsetsize_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_visible } class="{$user_hidden} center user buttonlike head" onclick="javascript:load_groups( { order : 'visible', defsort: 'desc' } );">{$LN_ng_visible} {$visible_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_minsetsize } class="{$user_hidden} center user buttonlike head round_right" onclick="javascript:load_groups( { order : 'minsetsize', defsort: 'desc' } );">{$LN_ng_minsetsize} {$minsetsize_sort}</th>
 {if $isadmin neq 0 and $urdd_online neq 0 }
@@ -127,12 +118,12 @@
 </tr>
 
 {foreach $allgroups as $group}
-<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2')" onmouseout="javascript:ToggleClass(this,'highlight2')">
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 
 <td class="general">{$group.number} </td>
 <td class="general">
-{urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}"} 
-<input type="hidden" id="ng_id_{$group.id}" value="{$group.name}"/>
+{urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_ng('{$group.id}');"} 
+<input type="hidden" id="ng_id_{$group.id}" value="{$group.name|escape:htmlall}"/>
 </td>
 {if $group.description neq ''}
 {$space='<br/>'}
@@ -145,7 +136,7 @@
 {$group.name|escape:htmlall}</span>
 </td>
 <td class="{$user_hidden} user center">
-<select name="category[{$group.id}]" id="category_{$group.id}">
+<select name="category[{$group.id}]" id="category_{$group.id}" onchange="javascript:update_category('groups', {$group.id});">
     <option value="0">{$LN_nocategory}</option>
     {foreach $categories as $item}		
         <option {if $item.id == $group.category }selected="selected"{/if} value="{$item.id}">{$item.name|escape:htmlall}</option>
@@ -158,23 +149,23 @@
 {urd_checkbox value="{$group.adult}" name="adult[{$group.id}]" id="adult_{$group.id}" readonly="{$isadmin eq 0}" post_js="update_adult('group', '{$group.id}')"} 
 </td>
 <td class="general right">{$group.lastupdated}</td>
-<td class="{$admin_hidden} admin right"><input type="text" size="2" value="{$group.expire}" name="expire[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if}/></td>
-<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_minsetsize}" name="admin_minsetsize[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if}/></td>
-<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_maxsetsize}" name="admin_maxsetsize[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if}/></td>
+<td class="{$admin_hidden} admin right"><input type="text" size="2" value="{$group.expire|escape:htmlall}" id="expire_{$group.id}" name="expire[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'expire', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_minsetsize|escape:htmlall}" id="minsetsize_{$group.id}" name="admin_minsetsize[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'minsetsize', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_maxsetsize|escape:htmlall}" id="maxsetsize_{$group.id}" name="admin_maxsetsize[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'maxsetsize', {$group.id});"/></td>
 <td class="{$user_hidden} user center">
-{urd_checkbox value="{$group.visible}" name="visible[{$group.id}]" id="visible_{$group.id}"} 
+{urd_checkbox value="{$group.visible}" name="visible[{$group.id}]" id="visible_{$group.id}" post_js="toggle_visibility('group','{$group.id}');"} 
 </td>
-<td class="{$user_hidden} user center"><input type="text" size="2" value="{$group.minsetsize}" name="minsetsize[{$group.id}]"/>
-<input type="text" size="2" value="{$group.maxsetsize}" name="maxsetsize[{$group.id}]"/>
+<td class="{$user_hidden} user center"><input type="text" size="2" value="{$group.minsetsize|escape:htmlall}" name="minsetsize[{$group.id}]" id="user_minsetsize_{$group.id}" onchange="javascript:update_user_ng_value('groups', 'user_minsetsize', {$group.id});"/>
+<input type="text" size="2" value="{$group.maxsetsize}" id="user_maxsetsize_{$group.id}" name="maxsetsize[{$group.id}]" onchange="javascript:update_user_ng_value('groups', 'user_maxsetsize', {$group.id});"/>
 </td>
 
 {if $isadmin neq 0 and $urdd_online neq 0}
 <td class="{$admin_hidden} admin center"> 
-<select name="period[{$group.id}]" size="1" class="update">
+<select name="period[{$group.id}]" id="period_{$group.id}" size="1" class="update" onchange="javascript:update_ng_time('groups', {$group.id});">
 {html_options values=$periods_keys output=$periods_texts selected=$group.select}
 </select>
 </td>
-<td class="nowrap {$admin_hidden} admin center">@ <input type="text" id="time1_{$group.id}" name="time1[{$group.id}]" value="{$group.time1}" class="time"/>:<input type="text" id="time2_{$group.id}" class="time" name="time2[{$group.id}]" value="{if isset($group.time2) }{$group.time2|string_format:"%02d"}{/if}"/>
+<td class="nowrap {$admin_hidden} admin center">@ <input type="text" id="time1_{$group.id}" name="time1[{$group.id}]" value="{$group.time1|escape:htmlall}" class="time" onchange="javascript:update_ng_time('groups', {$group.id});"/>:<input type="text" id="time2_{$group.id}" class="time" name="time2[{$group.id}]" value="{if isset($group.time2) }{$group.time2|string_format:"%02d"}{/if}" onchange="javascript:update_ng_time('groups', {$group.id});"/>
 </td>
 {if $group.active_val eq $NG_SUBSCRIBED and $isadmin neq 0 and $urdd_online neq 0} 
 <td class="{$admin_hidden} right admin">

@@ -58,13 +58,13 @@
 </div>
 {/foreach}
 {/capture}
-
 {* Search form *}
 {capture assign="searchform"}
+<div>
 <form id="searchform" method="get">
 <div id="advanced_search_button" class="floatleft iconsize dynimgplus buttonlike" onclick="javascript:fold_adv_search('advanced_search_button', 'advanced_search');" {urd_popup type="small" text=$LN_advanced_search }>
 </div>&nbsp;
-    <input type="hidden" name="order" value="{$order}" id="searchorder"/>
+    <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} onclick='javascript:select_next("select_catid",-1);'/>&nbsp;
 	<select name="catID" class="search" id="select_catid" onchange='javascript:do_select_subcat();'>
@@ -78,8 +78,8 @@
     <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick='javascript:select_next("select_catid",1);'/>&nbsp;
     {$subcatdivs}
     <input type="button" id="subcatbutton" class="submitsmall {if $catid == ''}invisible{/if}" value="{$LN_spots_subcategories}" onclick="javascript:show_subcat_selector();" />&nbsp;
-<input type="text" id="search" name="search" size="30" class="search" value="{if $search == ''}&lt;{$LN_search}&gt;{else}{$search|escape:htmlall}{/if}" 
-onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
+    <input type="text" id="search" name="search" size="30" placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}" 
+ onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
 <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } );" />
 &nbsp;
 
@@ -93,7 +93,7 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 {/foreach}
 </select>
 </span>
-<input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick="javascript:select_next_search('saved_search',1); "/>
+<input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick="javascript:select_next_search('saved_search',1);"/>
 </span>
 
 <div id="minibasketdiv" class="hidden"></div>
@@ -102,18 +102,18 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 <table>
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="minsetsize"  size="6" value="{$minsetsize}"/></td> 
+<td><input type="text" id="minsetsize"  size="6" value="{$minsetsize|escape:htmlall}"/></td> 
 <td><div id="setsize" style="width:100px;"></div></td>
-<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize}"/></td>
+<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize|escape:htmlall}"/></td>
 <td>{$LN_age}:</td>
-<td><input type="text" id="minage" name="minage" size="6" value="{$minage}"/></td> 
+<td><input type="text" id="minage" name="minage" size="6" value="{$minage|escape:htmlall}"/></td> 
 <td><div id="setage" style="width:100px;"></div></td>
-<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage}"/></td>
+<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage|escape:htmlall}"/></td>
 </tr>
 
 <tr>
 <td>{$LN_poster_name}:</td>
-<td><input type="text" id="poster" name="poster" size="10" value="{$poster}"/></td>
+<td><input type="text" id="poster" name="poster" size="10" value="{$poster|escape:htmlall}"/></td>
 <td></td>
 <td>
 <select name="flag" class="search" id="flag">
@@ -127,15 +127,16 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 </select>&nbsp;
 </td>
 <td>{$LN_rating}:</td>
-<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating}"/></td> 
+<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating|escape:htmlall}"/></td> 
 <td><div id="setrating" style="width:100px;"></div></td>
-<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating}"/></td>
+<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating|escape:htmlall}"/></td>
 <td colspan="3"></td>
 <td><input type="button" value="{$LN_reset}" class="submitsmall" onclick='clear_form("searchform");do_select_subcat();'/></td>
 </tr>
 </table>
 </div>
 </form>
+</div>
 {/capture}
 
 {capture assign="rss_link"}
@@ -144,18 +145,16 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 {/strip}
 {/capture}
 
-{$rss_link}
-{$searchform}
-
+{capture assign="basketform"}
 <form method="post" id="setform">
 <div id="basketdiv" class="down3"></div>
 
 {* We need this stuff to remember any the search options *}
 <div>
 <input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE}"/>
-<input type="hidden" name="offset" id="offset" value="{$offset}"/>
-<input type="hidden" name="spotid" id="spotid" value="{$spotid}"/>
-<input type="hidden" name="cat_id" id="cat_id" value="{$catid}"/>
+<input type="hidden" name="offset" id="offset" value="{$offset|escape:htmlall}"/>
+<input type="hidden" name="spotid" id="spotid" value="{$spotid|escape:htmlall}"/>
+<input type="hidden" name="cat_id" id="cat_id" value="{$catid|escape:htmlall}"/>
 <input type="hidden" name="dlname" id="dlname" value=""/>
 <input type="hidden" name="whichbutton" value="" id="whichbutton"/>
 <input type="hidden" name="previewBinID" value="" id="previewBinID"/>
@@ -165,6 +164,15 @@ onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" onkeypress="jav
 <input type="hidden" name="type" id="type" value="spots"/>
 </div>
 </form>
+{/capture}
+
+{$rss_link}
+
+<div id="searchformdiv" class="hidden">
+{$searchform}
+{$basketform}
+</div>
+
 {* And display it here and at the bottom: *}
 <div class="innerwaitingdiv" id="waitingdiv">
 <div class="waitingimg centered"></div>
@@ -181,7 +189,6 @@ $(document).ready(function() {
    init_slider({$minsetsizelimit}, {$maxsetsizelimit}, "#setsize", "#minsetsize", "#maxsetsize");
    init_slider({$minratinglimit}, {$maxratinglimit}, "#setrating", "#minrating", "#maxrating");
    init_slider({$minagelimit}, {$maxagelimit}, "#setage", "#minage", "#maxage");
-
     {if ($categoryID == '') && ($_saved_search != '')}
         update_search_names('{$_saved_search|escape:javascript}');
         update_spot_searches('{$_saved_search|escape:javascript}');
@@ -196,12 +203,12 @@ $(document).ready(function() {
             {/if}
             }
         );
-
     {/if}
-
     set_scroll_handler('#contentout', load_sets);
     {* Load basket: *}
     update_basket_display();
+    $('#searchbar').html($('#searchformdiv').html());
+    $('#searchformdiv').html('');
 });
 </script>
 {/strip}

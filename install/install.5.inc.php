@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-17 12:45:45 +0200 (wo, 17 jul 2013) $
- * $Rev: 2876 $
+ * $LastChangedDate: 2014-06-27 23:58:52 +0200 (vr, 27 jun 2014) $
+ * $Rev: 3125 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: install.5.inc.php 2876 2013-07-17 10:45:45Z gavinspearhead@gmail.com $
+ * $Id: install.5.inc.php 3125 2014-06-27 21:58:52Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -49,11 +49,10 @@ $urdupdatechecked = $urdupdatecheck ? 'CHECKED' : '';
 
 $OUT .= <<<USERAC
 
-
-<tr><td class="install2">URD admin username:</td><td class="install3">
+<tr><td class="install2">URD administrator username:</td><td class="install3">
 <input type="text" name="urduser" value="$urdusername"></td></tr>
 <tr><td class="install2">URD user email address:</td><td class="install3">
-<input type="text" name="urdemail" value="$urdusermail"></td></tr>
+<input type="email" name="urdemail" value="$urdusermail"></td></tr>
 <tr><td class="install2">URD full name:</td><td class="install3">
 <input type="text" name="urdfullname" value="$urduserfull"></td></tr>
 <tr><td class="install2">URD password (1):<br/>

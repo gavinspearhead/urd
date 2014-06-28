@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-08 18:21:08 +0200 (zo, 08 jun 2014) $
+ * $Rev: 3088 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: do_functions.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: do_functions.php 3088 2014-06-08 16:21:08Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -28,17 +28,6 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathdf = realpath(dirname(__FILE__));
 
-require_once "$pathdf/../functions/autoincludes.php";
-require_once "$pathdf/../functions/defines.php";
-require_once "$pathdf/../config.php";
-require_once "$pathdf/../functions/functions.php";
-require_once "$pathdf/urdd_command.php";
-require_once "$pathdf/urdd_protocol.php";
-require_once "$pathdf/urdd_error.php";
-require_once "$pathdf/../functions/urd_log.php";
-require_once "$pathdf/../functions/mail_functions.php";
-require_once "$pathdf/../functions/extset_functions.php";
-require_once "$pathdf/spots_functions.php";
 
 function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
@@ -63,15 +52,9 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
         }
         foreach ($section->segments->segment as $segment) {
             $messageID = (string) $segment;
-            $segment_str = $segment->asXML();
-            if (preg_match("/<segment.* bytes=\"([^\"]+)\"/", $segment_str, $result)) {
-                $size = $result[1];
-            }
-
-            if (preg_match("/<segment.* number=\"([^\"]+)\"/", $segment_str, $result)) {
-                $part_number = $result[1];
-            }
-
+            $segment_attr = $segment->attributes();
+            $size = (int)($segment_attr['bytes']);
+            $part_number = (int)($segment_attr['number']);
             $total_size += $size;
 
             $vals = array($dlid, $groupid, $part_number, $cleansubject, $status, $messageID, $binaryID, $size);
@@ -116,7 +99,7 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
     try {
         libxml_use_internal_errors(TRUE);
         $nzb_file = @(new SimpleXMLElement($url, LIBXML_PARSEHUGE, TRUE));
-        if ($nzb_file  === NULL) {
+        if ($nzb_file === NULL) {
             $msg = implode("\n", libxml_get_errors());
             throw new exception($msg);
         }
@@ -143,7 +126,7 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
     $dlpath = get_dlpath($db) . SPOOL_PATH;
     if (substr($url, 0, strlen($dlpath)) == $dlpath && substr($url, -11) == '.processing') {
         // in the spool directory we rename the file so it isn't processed again.
-        $new_name = find_unique_name(substr($url, 0, strlen($url) - 11), '', '', '.processed', TRUE);
+        $new_name = find_unique_name(substr($url, 0, -11), '', '', '.processed', TRUE);
         rename($url, $new_name);
     }
     dec_dl_lock($db, $dlid);
@@ -158,14 +141,12 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
 {
     assert (is_resource($file) && is_numeric($groupid) && is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $db->escape($binaryid, TRUE);
-    $db->escape($dlid, TRUE);
-    $res = $db->select_query("\"active\" FROM groups WHERE \"ID\"=$groupid", 1);
-    if ($res === FALSE || $res[0]['active'] != NG_SUBSCRIBED) {
+    $res = $db->select_query('"active" FROM groups WHERE "ID"=?', 1, array($groupid));
+    if ($res === FALSE || $res[0]['active'] != newsgroup_status::NG_SUBSCRIBED) {
         $res = FALSE;
     } else {
-        $sql = "*, \"date\" AS unixdate FROM binaries_$groupid WHERE \"binaryID\" = $binaryid";
-        $res = $db->select_query($sql);
+        $sql = "*, \"date\" AS unixdate FROM binaries_$groupid WHERE \"binaryID\"=?";
+        $res = $db->select_query($sql, array($binaryid));
     }
     try {
         $group = group_name($db, $groupid);
@@ -189,8 +170,8 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
     $str .= "\t\t<group>{$group}</group>\n";
     $str .= "\t</groups>\n";
     $str .= "\t<segments>\n";
-    $sql = "\"ID\", \"messageID\", \"partnumber\", \"size\" FROM downloadarticles WHERE \"binaryID\" = $binaryid AND \"downloadID\" = $dlid ORDER BY \"partnumber\"";
-    $res2 = $db->select_query($sql);
+    $sql = '"ID", "messageID", "partnumber", "size" FROM downloadarticles WHERE "binaryID"=? AND "downloadID"=? ORDER BY "partnumber"';
+    $res2 = $db->select_query($sql, array($binaryid, $dlid));
     if ($res2 === FALSE) {
         $res2 = array();
     }
@@ -261,13 +242,11 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     $str = '<' . '?' . 'xml version="1.0" encoding="us-ascii"' . '?' . '>' . "\n"; // screws up syntax highlighting... hence the wacky sequence of < and ? and ? and > ... DO NOT CHANGE!
     $str .= '<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">'. "\n";
     $str .= '<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">' . "\n"; /// Note this URL is dead!
-    $str .= '<!-- Created by ' .  urd_version::get_urd_name() . ' ' . urd_version::get_version() . ' : http://www.urdland.com : The web-based usenet resource downloader. -->' . "\n";
+    $str .= '<!-- Created by ' . urd_version::get_urd_name() . ' ' . urd_version::get_version() . ' : http://www.urdland.com : The web-based usenet resource downloader. -->' . "\n";
     $size += fwrite($file, $str);
-    $odlid = $dlid;
-    $db->escape($dlid, TRUE);
     try {
-        $query = "\"binaryID\", count(*) AS cnt, max(\"groupID\") AS \"groupID\", max(\"name\") AS subject FROM downloadarticles WHERE \"downloadID\"=$dlid GROUP BY \"binaryID\" ORDER BY \"binaryID\"";
-        $res = $db->select_query($query);
+        $query = "\"binaryID\", count(*) AS cnt, max(\"groupID\") AS \"groupID\", max(\"name\") AS subject FROM downloadarticles WHERE \"downloadID\" = ? GROUP BY \"binaryID\" ORDER BY \"binaryID\"";
+        $res = $db->select_query($query, array($dlid));
         if ($res === FALSE) {
             throw new exception('Could not find any articles', INTERNAL_FAILURE);
         }
@@ -275,7 +254,7 @@ function do_make_nzb(DatabaseConnection $db, action $item)
         $counter = 0;
         $status = QUEUE_RUNNING;
         foreach ($res as $binary) {
-            $size += write_binary($db, $binary['binaryID'], $binary['groupID'], $binary['cnt'], $binary['subject'], $file, $odlid);
+            $size += write_binary($db, $binary['binaryID'], $binary['groupID'], $binary['cnt'], $binary['subject'], $file, $dlid);
             $counter++;
             update_queue_status($db, $item->get_dbid(), $status, 0, floor(($counter / $total_count) * 100));
         }
@@ -299,14 +278,14 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     } else {
         fclose($file);
     }
-    $userid =  $item->get_userid();
-    $done = move_file_to_nzb($db, $odlid, $fn, $dlpath, $basename, $ext, $userid);
-    set_permissions($db, $done); // setting  permissions must be last otherwise we may not be able to move the file
+    $userid = $item->get_userid();
+    $done = move_file_to_nzb($db, $dlid, $fn, $dlpath, $basename, $ext, $userid);
+    set_permissions($db, $done); // setting permissions must be last otherwise we may not be able to move the file
     set_group($db, $done);
 
     $status = QUEUE_FINISHED;
     update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Created NZB file $basename$ext");
-    cleanup_download_articles($db, $odlid);
+    cleanup_download_articles($db, $dlid);
     add_stat_data($db, stat_actions::GETNZB, $size, $userid);
 
     return NO_ERROR;
@@ -343,8 +322,8 @@ function create_make_nzb(DatabaseConnection $db, server_data &$servers, $userid,
     }
     $status = DOWNLOAD_READY;
     $download_par_files = get_pref($db, 'download_par', $userid) ? TRUE : FALSE;
-    $id = add_download($db, $username, $userid, 0, 0, 0, 0, $status, '', download_types::NZB, TRUE, $download_par_files);
-    $item = new action(urdd_protocol::COMMAND_MAKE_NZB, $id, $username, $userid, TRUE);
+    $id = add_download($db, $userid, 0, 0, 0, 0, $status, '', download_types::NZB, TRUE, $download_par_files);
+    $item = new action(urdd_protocol::COMMAND_MAKE_NZB, $id, $userid, TRUE);
     $item->set_dlpath($dl_path);
     set_download_dir($db, $id, $dl_path);
     $res = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
@@ -362,7 +341,7 @@ function do_priority(DatabaseConnection $db, array $arg_list, server_data &$serv
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     assert (is_numeric($userid));
 
-    if (!isset($arg_list[0]) && !isset($arg_list[1])) {
+    if (!isset($arg_list[0], $arg_list[1])) {
         return urdd_protocol::get_response(501);
     }
     $priority = $arg_list[1];
@@ -382,47 +361,38 @@ function do_priority(DatabaseConnection $db, array $arg_list, server_data &$serv
 function regenerate_setnames(DatabaseConnection $db, array $setidarray)
 {
     foreach ($setidarray as $setid => $foo) {
-        $db->escape($setid, TRUE);
-        $sql = "\"name\", \"value\", \"type\" FROM extsetdata WHERE \"setID\" = $setid";
-        $res = $db->select_query($sql);
+        $sql = '"name", "value", "type" FROM extsetdata WHERE "setID" = ?';
+        $res = $db->select_query($sql, array($setid));
         if ($res === FALSE) {
             continue;
         }
         // Convert to proper format:
-        $namevalues = array();
         $type = $res[0]['type'];
+        $namevalues = array();
         foreach ($res as $row) {
             $namevalues[$row['name']] = $row['value'];
         }
-        $setname = generate_set_name($db, $namevalues);
-        $db->escape($setname, TRUE);
+        $setname = urd_extsetinfo::generate_set_name($db, $namevalues);
 
         // Setname in db?
         if (isset($namevalues['setname'])) {
-            $sql = "UPDATE extsetdata SET \"value\" = $setname WHERE \"setID\" = $setid AND \"name\" = 'setname' AND \"type\"=$type";
+            $db->update_query_2('extsetdata', array('value'=>$setname), '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
         } else {
-            $sql = "INSERT INTO extsetdata (\"setID\", \"name\", \"value\", \"committed\", \"type\") VALUES ($setid, 'setname', $setname, 1, $type)";
+            $db->insert_query('extsetdata', array('setID', 'name','value', 'committed', 'type'), array($setid, 'setname', $setname, 1, $type));
         }
-        $db->execute_query($sql);
     }
 }
 
 function update_group_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
-    $db->escape($name, TRUE);
-    $db->escape($timestamp, TRUE);
-    $sql = "UPDATE groups SET \"extset_update\" = $timestamp WHERE \"name\" LIKE $name";
-    $db->execute_query($sql);
+    $db->update_query_2('groups', array('extset_update'=>$timestamp), '"name" LIKE ?', array($name));
 }
 
 function update_feed_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
-    $db->escape($name, TRUE);
-    $db->escape($timestamp, TRUE);
-    $sql = "UPDATE rss_urls SET \"extset_update\" = $timestamp WHERE \"url\" LIKE $name";
-    $db->execute_query($sql);
+    $db->update_query_2('rss_urls', array('extset_update'=>$timestamp), '"url" LIKE ?', array($name));
 }
 
 function do_check_version(DatabaseConnection $db, action $item)
@@ -456,10 +426,7 @@ function do_check_version(DatabaseConnection $db, action $item)
 function update_rss_status(DatabaseConnection $db, $id, $last_updated)
 {
     assert(is_numeric($id) && is_numeric($last_updated));
-    $db->escape($last_updated, TRUE);
-    $db->escape($id, TRUE);
-    $qry = "UPDATE \"rss_urls\" SET \"last_updated\"=$last_updated WHERE \"id\"=$id";
-    $db->execute_query($qry);
+    $db->update_query_2('rss_urls', array('last_updated'=>$last_updated), '"id" = ?', array($id));
 }
 
 function do_update_rss(DatabaseConnection $db, action $item)
@@ -546,7 +513,7 @@ function do_update(DatabaseConnection $db, action $item)
         }
         $nzb->disconnect();
         $status = QUEUE_FINISHED;
-        $db->update_postcount($groupArr['ID']);
+        update_postcount($db, $groupArr['ID']);
         update_queue_status($db, $item->get_dbid(), $status, 0, 100);
     } catch (exception $e) {
         write_log('Update failed '. $e->getMessage(), LOG_WARNING);
@@ -612,7 +579,7 @@ function do_gensets(DatabaseConnection $db, action $item)
     $groupid = $groupArr['ID'];
     $expire = time() - ($groupArr['expire'] * 24 * 3600);
     try {
-        $db->update_binary_info($args, $groupname, $do_expire, $expire, $item, $minsetsize, $maxsetsize);
+        update_binary_info($db, $args, $groupname, $do_expire, $expire, $item, $minsetsize, $maxsetsize);
         $old_setcount = get_sets_count_group($db, $groupid);
         $setcount = count_sets_group($db, $groupid);
         $new_sets = $setcount - $old_setcount;
@@ -703,7 +670,7 @@ function do_expire(DatabaseConnection $db, action $item)
 
         return GROUP_NOT_FOUND;
     }
-    $count = $db->expire_binaries($groupid, $item->get_dbid());
+    $count = expire_binaries($db, $groupid, $item->get_dbid());
     $setcount = count_sets_group($db, $groupid);
     update_group_setcount($db, $groupid, $setcount);
     $status = QUEUE_FINISHED;
@@ -726,17 +693,8 @@ function do_cleandb(DatabaseConnection $db, action $item)
     $post_par_failed_status = POST_PAR_FAILED;
     $post_cancelled_status = POST_CANCELLED;
 
-    $db->escape($cancelled_status, TRUE);
-    $db->escape($finished_status, TRUE);
-    $db->escape($rar_failed, TRUE);
-    $db->escape($par_failed, TRUE);
-    $db->escape($cksfv_failed, TRUE);
-    $db->escape($failed_status, TRUE);
     $userid = $item->get_userid();
-    $username = get_username($db, $userid);
     $isadmin = urd_user_rights::is_admin($db, $userid);
-    $db->escape($username, TRUE);
-    $db->escape($userid, TRUE);
     try {
         $arg = strtolower($item->get_args());
         if ($arg == 'all') { // do not use truncate as that will reset the autoinc values too
@@ -746,10 +704,10 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 $db->truncate_table('queueinfo');
                 $db->truncate_table('postinfo');
             } else {
-                $db->delete_query('downloadinfo', 'userid = ' . $userid );
+                $db->delete_query('downloadinfo', 'userid = ?', array($userid));
                 $db->delete_query('downloadarticles', '"downloadID" NOT IN (SELECT "ID" FROM downloadinfo)');
-                $db->delete_query('queueinfo', 'userid = ' . $userid);
-                $db->delete_query('postinfo', 'userid = ' . $userid);
+                $db->delete_query('queueinfo', 'userid = ?', array($userid));
+                $db->delete_query('postinfo', 'userid = ?', array($userid));
             }
         } elseif ($arg == 'users') {
             if ($isadmin) {
@@ -772,30 +730,26 @@ function do_cleandb(DatabaseConnection $db, action $item)
             }
             if ($cleandbage > 0) {// 0 = disabled
                 // Clean up downloadinfo:
+                $input_arr = array();
                 if ($timebased) {
                     $timestamp = time() - $cleandbage;
                 } else {
                     $timestamp = time();
                 }
-                $quser1 = $quser2 = '';
+                $quser2 = '';
                 if (!$isadmin) {
-                    $quser1 = ' AND username = ' . $username;
-                    $quser2 = ' AND userid = ' . $userid;
+                    $quser2 = ' AND userid = ?';
+                    $input_arr[] = $userid;
                 }
-                $qry = "\"start_time\" < $timestamp $quser2 "
-                    . " AND (\"status\" = $finished_status OR \"status\" = $rar_failed OR \"status\" = $par_failed OR \"status\" = $cksfv_failed "
-                    . " OR \"status\" = $cancelled_status OR \"status\" = $failed_status) ";
-                $db->delete_query('downloadinfo', $qry);
+                $qry = "1=1 $quser2 AND \"start_time\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
+                $db->delete_query('downloadinfo', $qry, array_merge($input_arr, array($timestamp, $finished_status, $rar_failed, $par_failed, $cksfv_failed, $cancelled_status, $failed_status)));
 
-                $qry = "\"start_time\" < $timestamp $quser2 "
-                    . " AND (\"status\" = $post_finished_status OR \"status\" = $post_rar_failed_status OR \"status\" = $post_par_failed_status"
-                    . " OR \"status\" = $post_cancelled_status) ";
-                $db->delete_query('postinfo', $qry);
+                $qry = "1=1 $quser2 AND \"start_time\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
+                $db->delete_query('postinfo', $qry, array_merge($input_arr, array($timestamp, $post_finished_status, $post_rar_failed_status, $post_par_failed_status, $post_cancelled_status)));
 
                 // Clean up queueinfo:
-                $qry = "\"lastupdate\" < $timestamp $quser2 AND (\"status\" = '" . QUEUE_FINISHED . "' OR \"status\" = '" . QUEUE_FAILED
-                    . "' OR \"status\" = '" . QUEUE_CRASH . "' OR \"status\" = '" . QUEUE_CANCELLED . "' OR \"status\" = '" . QUEUE_REMOVED . "') ";
-                $db->delete_query('queueinfo', $qry);
+                $qry = "1=1 $quser2 AND \"lastupdate\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
+                $db->delete_query('queueinfo', $qry, array_merge($input_arr, array($timestamp, QUEUE_FINISHED, QUEUE_FAILED, QUEUE_CRASH, QUEUE_CANCELLED, QUEUE_REMOVED)));
             }
 
             // Clean downloadarticles from any lost records:
@@ -849,14 +803,13 @@ function do_clean_users(DatabaseConnection $db)
     if ($age == 0) {
         return TRUE;
     }
-    $timestamp = time() - ($age * 60 * 60 *24);
-    $db->escape($timestamp, TRUE);
-    $qry = "count(*) AS \"cnt\" FROM users WHERE \"isadmin\" != '" . user_status::USER_ADMIN . "' AND \"last_active\" < $timestamp AND \"regtime\" < $timestamp";
-    $res = $db->select_query($qry);
+    $timestamp = time() - ($age * 3600 *24);
+    $qry = 'count(*) AS "cnt" FROM users WHERE "isadmin" != ? AND "last_active" < ? AND "regtime" < ?';
+    $res = $db->select_query($qry, array(user_status::USER_ADMIN, $timestamp, $timestamp));
     $cnt = $res[0]['cnt'];
     if ($cnt > 0) {
         write_log("Deleting $cnt users", LOG_NOTICE);
-        $db->delete_query('users', "\"isadmin\" != '" . user_status::USER_ADMIN . "' AND \"last_active\" < $timestamp AND \"regtime\" < $timestamp");
+        $db->delete_query('users', '"isadmin" != ? AND "last_active" < ? AND "regtime" < ?', array(user_status::USER_ADMIN, $timestamp, $timestamp));
     } else {
         write_log('No users to delete', LOG_INFO);
     }
@@ -872,7 +825,7 @@ function do_cleandir(DatabaseConnection $db, action $item)
     $nzb_dir = $dlpath . NZB_PATH;
     $preview_dir = $dlpath . PREVIEW_PATH;
     $filecache_dir = $dlpath . FILELIST_CACHE_PATH;
-    $age = get_config($db, 'clean_dir_age') * 24 * 60 * 60; // db age is saved in days... convert to seconds
+    $age = get_config($db, 'clean_dir_age') * 24 * 3600; // db age is saved in days... convert to seconds
     $preview = $tmp = $nzb = $post = $filecache = FALSE;
     $arg = $item->get_args();
     $cnt1 = $cnt2 = $cnt3 = $cnt4 = 0;
@@ -903,10 +856,9 @@ function do_cleandir(DatabaseConnection $db, action $item)
     }
     $error = '';
     try {
-         if ($filecache === TRUE) {
+        if ($filecache === TRUE) {
             list ($cnt1, $error) = rmdirtree($tmp_dir, $age, FALSE);
         }
-
         if ($tmp === TRUE) {
             list ($cnt1, $error) = rmdirtree($tmp_dir, $age, FALSE);
         }
@@ -989,7 +941,7 @@ function do_purge(DatabaseConnection $db, action $item)
         return GROUP_NOT_FOUND;
     }
     try {
-        $db->purge_binaries($args);
+        purge_binaries($db, $args);
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Finished');
     } catch (exception $e) {
@@ -1035,14 +987,9 @@ function do_diskfree(DatabaseConnection $db, $format='')
     }
 }
 
-function remove_special_zip_strings($line)
-{
-    return str_replace(array('=C','=B','=A','=D'), array("\n", "\r", "\0",'='), $line);
-}
-
 function get_spot_nzb(DatabaseConnection $db, $spotid)
 {
-    $res = $db->select_query("nzbs FROM spots WHERE \"spotid\" = '$spotid'", 1);
+    $res = $db->select_query('"nzbs" FROM spots WHERE "spotid" = ?', 1, array($spotid));
     if (!isset($res[0]['nzbs'])) {
         throw new exception('Invalid Set ID');
     }
@@ -1051,7 +998,7 @@ function get_spot_nzb(DatabaseConnection $db, $spotid)
         throw new exception('No nzbs found');
     }
 
-    $nzbs = unserialize($db->decompress($nzbs));
+    $nzbs = unserialize(db_decompress($nzbs));
 
     return $nzbs;
 }
@@ -1077,7 +1024,7 @@ function do_addspotdata(DatabaseConnection $db, action $item)
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
 
-        $res = $db->select_query("* FROM downloadinfo WHERE \"ID\" = '$dlid'", 1);
+        $res = $db->select_query('* FROM downloadinfo WHERE "ID" = ?', 1, array($dlid));
         if ($res === FALSE) {
             $status = QUEUE_QUEUED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
@@ -1190,7 +1137,7 @@ function do_adddata(DatabaseConnection $db, action $item)
         if (get_download_articles_count($db, $dlid) == 0) {
             set_download_size($db, $dlid, 0);
         }
-        $res = $db->select_query("* FROM downloadinfo WHERE \"ID\" = '$dlid'", 1);
+        $res = $db->select_query('* FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
         if ($res === FALSE) {
             throw new exception('Download not found', ERR_DOWNLOAD_NOT_FOUND);
         }
@@ -1199,7 +1146,7 @@ function do_adddata(DatabaseConnection $db, action $item)
         case 'set':
             $setid = $args[2];
             $status = DOWNLOAD_READY;
-            $res = $db->select_query("* FROM setdata WHERE \"ID\" = '$setid'", 1);
+            $res = $db->select_query('* FROM setdata WHERE "ID"=?', 1, array($setid));
             if ($res === FALSE) {
                 throw new exception('Invalid Set ID');
             }
@@ -1208,18 +1155,16 @@ function do_adddata(DatabaseConnection $db, action $item)
 
             $parts = 'parts_' . $groupid;
             $binaries = 'binaries_' . $groupid;
-            $sql = "INSERT INTO downloadarticles (\"downloadID\", \"groupID\", \"status\", \"partnumber\", \"name\", \"messageID\", \"binaryID\", \"size\") "
+            $sql = 'INSERT INTO downloadarticles ("downloadID", "groupID", "status", "partnumber", "name", "messageID", "binaryID", "size") '
                 . "SELECT '$dlid', '$groupid', '$status', \"partnumber\", bin.\"subject\", \"messageID\", par.\"binaryID\", par.\"size\" FROM $parts AS par "
-                . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"setID\" = '$setid'";
-            $res2 = $db->execute_query($sql);
+                . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"setID\" = ?";
+            $res2 = $db->execute_query($sql, array($setid));
 
-            $sql = "\"value\" FROM extsetdata WHERE \"setID\" = '$setid' AND \"name\"= 'password'";
-            $res3 = $db->select_query($sql, 1);
+            $sql = '"value" FROM extsetdata WHERE "setID"=? AND "name"=?';
+            $res3 = $db->select_query($sql, 1, array($setid, 'password'));
             if (isset($res3[0]['value'])) {
                 $pw = $res3[0]['value'];
-                $db->escape($pw, TRUE);
-                $sql = "UPDATE downloadinfo SET \"password\" = $pw WHERE \"ID\" = '$dlid' AND \"password\" = ''";
-                $db->execute_query($sql);
+                $db->update_query_2('downloadinfo', array('password'=>$pw), '"ID" = ? AND "password" = ?', array($dlid, ''));
             }
             add_download_size($db, $dlid, $size);
             dec_dl_lock($db, $dlid);
@@ -1232,11 +1177,10 @@ function do_adddata(DatabaseConnection $db, action $item)
             $parts = 'parts_' . $groupid;
             $status = DOWNLOAD_READY;
             $binaries = 'binaries_' . $groupid;
-            $db->escape($binid, TRUE);
-            $sql = "INSERT INTO downloadarticles (\"downloadID\", \"groupID\", \"status\", \"partnumber\", \"name\", \"messageID\", \"binaryID\", \"size\") "
-                .  "SELECT '$dlid', '$groupid', '$status', \"partnumber\", bin.\"subject\", \"messageID\", $binid, par.\"size\" FROM $parts AS par "
-                .  "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"binaryID\" = $binid";
-            $res2 = $db->execute_query($sql);
+            $sql = 'INSERT INTO downloadarticles ("downloadID", "groupID", "status", "partnumber", "name", "messageID", "binaryID", "size") '
+                 . "SELECT '$dlid', '$groupid', '$status', \"partnumber\", bin.\"subject\", \"messageID\", '$binid', par.\"size\" FROM $parts AS par "
+                 . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"binaryID\" = ?";
+            $res2 = $db->execute_query($sql, array($binid));
 
             dec_dl_lock($db, $dlid);
             break;
@@ -1271,7 +1215,7 @@ function do_set(DatabaseConnection $db, server_data &$servers, array $arg_list, 
     if (!urd_user_rights::is_admin($db, $userid)) {
         return urdd_protocol::get_response(532);
     }
-    if (!isset($arg_list[0]) || !isset($arg_list[1])) {
+    if (!isset($arg_list[0], $arg_list[1])) {
         return urdd_protocol::get_response(501);
     }
     switch (strtoupper($arg_list[0])) {
@@ -1300,36 +1244,54 @@ function do_set(DatabaseConnection $db, server_data &$servers, array $arg_list, 
         break;
     case 'SERVER':
         try {
-            if (isset($arg_list[1]) && is_numeric($arg_list[1]) && isset($arg_list[2]) && is_numeric($arg_list[2])) {
-                $id = $arg_list[1];
+            $response = urdd_protocol::get_response(501);
+            if (isset($arg_list[1], $arg_list[2]) && is_numeric($arg_list[1]) && is_numeric($arg_list[2])) {
+                $server_id = $arg_list[1];
                 $prio = $arg_list[2];
                 if ($prio == 0) {
-                    $servers->disable_server($id);
-                    disable_usenet_server($db, $id);
+                    write_log('Disabling server: ' . $server_id, LOG_INFO);
+                    $servers->set_server_priority($server_id, DISABLED_USENET_SERVER_PRIORITY);
+                    disable_usenet_server($db, $server_id);
                 } else {
-                    $servers->enable_server($id, $prio);
-                    enable_usenet_server($db, $id, $prio);
+                    write_log('Enabling server: ' . $server_id . ' at prio ' . $prio, LOG_INFO);
+                    $servers->set_server_priority($server_id, $prio);
+                    enable_usenet_server($db, $server_id, $prio);
                 }
                 $response = urdd_protocol::get_response(200);
-            } elseif (isset($arg_list[1]) && ($arg_list[1] == 'reload') && isset($arg_list[2]) && is_numeric($arg_list[2])) {
-                $servers->reload_server($db, $arg_list[2]);
-                $response = urdd_protocol::get_response(200);
-            } elseif (isset($arg_list[1]) && ($arg_list[1] == 'load') && isset($arg_list[2]) && is_numeric($arg_list[2])) {
-                $servers->load_server($db, $arg_list[2]);
-                $response = urdd_protocol::get_response(200);
-            } elseif (isset($arg_list[1]) && ($arg_list[1] == 'delete') && isset($arg_list[2]) && is_numeric($arg_list[2])) {
-                $servers->delete_server($arg_list[2]);
-                $response = urdd_protocol::get_response(200);
-            } elseif (isset($arg_list[1]) && ($arg_list[1] == 'posting') && isset($arg_list[2]) && is_numeric($arg_list[2])) {
-                $servers->enable_posting($arg_list[2]);
-                set_posting($db, $arg_list[2], TRUE);
-                $response = urdd_protocol::get_response(200);
-            } elseif (isset($arg_list[1]) && ($arg_list[1] == 'noposting') && isset($arg_list[2]) && is_numeric($arg_list[2])) {
-                set_posting($db, $arg_list[2], FALSE);
-                $servers->disable_posting($arg_list[2]);
-                $response = urdd_protocol::get_response(200);
-            } else {
-                $response = urdd_protocol::get_response(501);
+            } elseif (isset($arg_list[1]) && isset($arg_list[2])) {
+                $arg1 = strtoupper($arg_list[1]);
+                if ($arg1 == 'ENABLE' && is_numeric($arg_list[2])) {
+                    $prio = DEFAULT_USENET_SERVER_PRIORITY;
+                    $server_id = $arg_list[2];
+                    if (isset($arg_list[3]) && is_numeric($arg_list[3])) {
+                        $prio = $arg_list[3];
+                    }
+                    $servers->enable_server($server_id, $prio);
+                    write_log('Enabling server: ' . $server_id . ' at prio ' . $prio, LOG_INFO);
+                    $response = urdd_protocol::get_response(200);
+                } elseif ($arg1 == 'DISABLE' && is_numeric($arg_list[2])) {
+                    $servers->disable_server($db, $arg_list[2]);
+                    $response = urdd_protocol::get_response(200);
+                } elseif ($arg1 == 'RELOAD' && is_numeric($arg_list[2])) {
+                    $servers->reload_server($db, $arg_list[2]);
+                    $response = urdd_protocol::get_response(200);
+                } elseif ($arg1 == 'LOAD' && is_numeric($arg_list[2])) {
+                    $servers->load_server($db, $arg_list[2]);
+                    $response = urdd_protocol::get_response(200);
+                } elseif ($arg1 == 'DELETE' && is_numeric($arg_list[2])) {
+                    $servers->delete_server($arg_list[2]);
+                    $response = urdd_protocol::get_response(200);
+                } elseif ($arg1 == 'POSTING' && is_numeric($arg_list[2])) {
+                    $servers->enable_posting($arg_list[2]);
+                    set_posting($db, $arg_list[2], TRUE);
+                    $response = urdd_protocol::get_response(200);
+                } elseif ($arg1 == 'NOPOSTING' && is_numeric($arg_list[2])) {
+                    set_posting($db, $arg_list[2], FALSE);
+                    $servers->disable_posting($arg_list[2]);
+                    $response = urdd_protocol::get_response(200);
+                } else {
+                    $response = urdd_protocol::get_response(501);
+                }
             }
         } catch (exception $e) {
             echo_debug_trace($e, DEBUG_SERVER);
@@ -1353,7 +1315,7 @@ function do_set(DatabaseConnection $db, server_data &$servers, array $arg_list, 
         break;
     case 'MODULE':
         try {
-            if (isset($arg_list[1]) && is_numeric($arg_list[1]) && isset($arg_list[2])) {
+            if (isset($arg_list[1], $arg_list[2]) && is_numeric($arg_list[1])) {
                 global $yes, $commands_list;
                 $module = $arg_list[1];
                 $onoff = in_array(strtoupper($arg_list[2]), $yes)? TRUE : FALSE;
@@ -1405,7 +1367,7 @@ function do_optimise(DatabaseConnection $db, action $item)
             $perc = ceil(((float) $cntr * 100) / $total_rows);
             $time_left = 0;
             if ($perc != 0) {
-                $time_left = ($mtime - $stime)  * (($total_rows - $cntr) / $cntr);
+                $time_left = ($mtime - $stime) * (($total_rows - $cntr) / $cntr);
             }
             update_queue_status($db, $item->get_dbid(), $status, $time_left , $perc, "Optimising {$row[0]}");
             $db->optimise_table($row[0]);
@@ -1457,43 +1419,49 @@ function do_unschedule(DatabaseConnection $db, array $arg_list, server_data &$se
 
 function do_schedule(DatabaseConnection $db, array $arg_list, server_data &$servers, $userid)
 {
+    // arg_list contains an array of Command, @, timestamp , #, recucurrence
     assert (is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     if (!isset($arg_list[0])) {
+        // no argument found
         return urdd_protocol::get_response(501);
     }
-    $cmd = trim(strtoupper($arg_list[0]));
-    if (match_command($cmd) === FALSE) {
-        return urdd_protocol::get_response(501);
-    }
-    $arg = '';
-    if ($arg_list[1][0] != '@') {
-        $arg = $arg_list[1];
-    }
-
+    // see if we get a valid command to schedule
     // format is:
     // schedule "command arguments" @ start_time # recurrence in seconds
     // with the "" optional and the # as well.
     $args = implode(' ', $arg_list);
     $parts = explode('@', $args);
+
     if (!isset($parts[1])) {
+        /// no timestamp found
+        return urdd_protocol::get_response(501);
+    }
+    $arguments = $parts[0];
+    $arguments = split_args($arguments);
+    $cmd = array_shift($arguments);
+    if (match_command($cmd) === FALSE) {
         return urdd_protocol::get_response(501);
     }
     $parts = explode('#', $parts[1]);
     $stime = trim($parts[0]);
     $repeat = NULL;
     if (isset($parts[1])) {
+        // there is a recurrence thingie
         $repeat = trim($parts[1]);
     }
     $stime = strtotime($stime);
     if ($stime === FALSE) {
+        // no proper time found
         return urdd_protocol::get_response(521);
     }
     if ($repeat !== NULL && !is_numeric($repeat)) {
+        // no proper recurrence found
         return urdd_protocol::get_response(522);
     }
-    $username = get_username($db, $userid);
-    $item = new action($cmd, $arg, $username, $userid, FALSE);
+    // no put it all back together
+    $arguments = implode(' ', $arguments);
+    $item = new action($cmd, $arguments, $userid, FALSE);
     $now = time();
     if (($repeat !== NULL) && ($now > $stime)) {
         while ($now > $stime) {
@@ -1503,7 +1471,6 @@ function do_schedule(DatabaseConnection $db, array $arg_list, server_data &$serv
         $stime += 24 * 60 * 60; // next day
     }
     $servers->add_schedule($db, new job($item, $stime, $repeat));
-
     return sprintf(urdd_protocol::get_response(201), $item->get_id());
 }
 
@@ -1562,7 +1529,7 @@ function do_preempt(DatabaseConnection $db, server_data &$servers, array $arg_li
             $rv = $servers->move_top($db, $id, $e_userid);
             $response = urdd_protocol::get_response(($rv === FALSE) ? 510 : 200);
         } catch (exception $e) {
-            $response =  urdd_protocol::get_response(501);
+            $response = urdd_protocol::get_response(501);
         }
     } else {
         $response = urdd_protocol::get_response(501);
@@ -1659,7 +1626,7 @@ function do_subscribe_rss(DatabaseConnection $db, array $arg_list, server_data &
                 } else {
                     $exp = $def_exp;
                 }
-                update_feed_state($db, $id, RSS_SUBSCRIBED, $exp);
+                update_feed_state($db, $id, rssfeed_status::RSS_SUBSCRIBED, $exp);
 
                 $response = queue_update_rss($db, urdd_protocol::COMMAND_UPDATE_RSS, array($arg_list[0]), $userid, $servers);
 
@@ -1667,7 +1634,7 @@ function do_subscribe_rss(DatabaseConnection $db, array $arg_list, server_data &
             } elseif (strtolower($arg_list[1]) == 'off' && $is_subscribed !== FALSE) {
                 $rss = new urdd_rss($db);
                 $rss->purge_rss($db, $id);
-                update_feed_state($db, $id, RSS_UNSUBSCRIBED, $def_exp);
+                update_feed_state($db, $id, rssfeed_status::RSS_UNSUBSCRIBED, $def_exp);
                 $response = urdd_protocol::get_response(200);
 
                 return $response;
@@ -1692,7 +1659,7 @@ function do_subscribe(DatabaseConnection $db, array $arg_list, server_data &$ser
             $is_subscribed = group_subscribed($db, $id);
             $default_exp = get_config($db, 'default_expire_time');
             $onoff = (isset($arg_list[1]) && strtolower($arg_list[1]) == 'on') ? TRUE : FALSE;
-            $exp = (isset($arg_list[2]) && is_numeric($arg_list[2])) ?  $arg_list[2] : $default_exp;
+            $exp = (isset($arg_list[2]) && is_numeric($arg_list[2])) ? $arg_list[2] : $default_exp;
             $minsetsize = (isset($arg_list[3]) && is_numeric($arg_list[3])) ? $arg_list[3] : 0;
             $maxsetsize = (isset($arg_list[4]) && is_numeric($arg_list[4])) ? $arg_list[4] : 0;
             $adult = (isset($arg_list[5]) && is_numeric($arg_list[5])) ? $arg_list[5] : ADULT_OFF;
@@ -1702,13 +1669,13 @@ function do_subscribe(DatabaseConnection $db, array $arg_list, server_data &$ser
                 set_group_minsetsize($db, $id, $minsetsize);
                 set_group_maxsetsize($db, $id, $maxsetsize);
             } elseif (isset($arg_list[1]) && strtolower($arg_list[1]) == 'on' && $is_subscribed === FALSE) {
-                $db->subscribe($id, $exp, $minsetsize, $maxsetsize);
+                subscribe($db, $id, $exp, $minsetsize, $maxsetsize);
                 $response = queue_update($db, urdd_protocol::COMMAND_UPDATE, array($id), $userid, $servers);
 
                 return $response;
             } elseif (!$onoff && $is_subscribed !== FALSE) {
-                $res = $db->unsubscribe($id);
-                $db->purge_binaries($id);
+                $res = unsubscribe($db, $id);
+                purge_binaries($db, $id);
 
                 return urdd_protocol::get_response($res ? 200 : 402);
             }
@@ -1727,8 +1694,8 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $args = explode (' ', $item->get_args());
     $dlid = $args[0];
-    $query = "\"unpar\", \"unrar\", \"subdl\", \"delete_files\", \"destination\", \"first_run\" FROM downloadinfo WHERE \"ID\"=$dlid";
-    $res = $db->select_query($query, 1);
+    $query = '"unpar", "unrar", "subdl", "delete_files", "destination", "first_run" FROM downloadinfo WHERE "ID"=?';
+    $res = $db->select_query($query, 1, array($dlid));
     if ($res === FALSE) {
         $cksfv = $unpar = $concat = $delete_files = $first_run = $dl_subs = 0;
     } else {
@@ -1876,7 +1843,6 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
     return NO_ERROR;
 }
 
-
 function do_move(DatabaseConnection $db, server_data &$servers, array $arg_list, $userid)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -1916,7 +1882,6 @@ function do_move(DatabaseConnection $db, server_data &$servers, array $arg_list,
     return urdd_protocol::get_response(200);
 }
 
-
 function do_merge_sets(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -1941,7 +1906,7 @@ function do_merge_sets(DatabaseConnection $db, action $item)
     unset($elems[0]);
     $setid2 = $elems;
     try {
-        $db->merge_sets($setid1, $setid2);
+        merge_sets($db, $setid1, $setid2);
     } catch (exception $e) {
         $status = QUEUE_FAILED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Merge failed');
@@ -2000,21 +1965,18 @@ function do_delete_set(DatabaseConnection $db, action $item)
             $cmt .= "Set not found $setid ";
             continue;
         }
-        $db->escape($setid, TRUE);
-        $sql = "\"binaryID\" FROM binaries_$group_id WHERE \"setID\" = $setid";
-        $res = $db->select_query($sql);
+        $sql = "\"binaryID\" FROM binaries_$group_id WHERE \"setID\" = ?";
+        $res = $db->select_query($sql, array($setid));
         $binary_ids = ($res === FALSE) ? array() : $res;
 
-        $db->delete_query('setdata', "\"ID\" = $setid");
+        $db->delete_query('setdata', '"ID" = ?', array($setid));
 
-        $sql = "\"setID\" = $setid";
-        $db->delete_query("binaries_$group_id", $sql);
+        $sql = '"setID" = ?';
+        $db->delete_query("binaries_$group_id", $sql, array($setid));
 
-        $db->escape($binary_ids, TRUE);
         foreach ($binary_ids as $row) {
             $bin_id = $row['binaryID'];
-            $db->escape($bin_id, TRUE);
-            $db->delete_query("parts_$group_id", "\"binaryID\" = $bin_id");
+            $db->delete_query("parts_$group_id", '"binaryID" = ?', array($bin_id));
         }
         $groupids[$group_id] = 1;
         update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), $cmt);
@@ -2038,8 +2000,7 @@ function do_delete_spot(DatabaseConnection $db, action $item)
     $status = QUEUE_RUNNING;
     $cnt = 0;
     foreach ($setids as $setid) {
-        $db->escape($setid, TRUE);
-        $db->delete_query('spots', "\"spotid\" = $setid");
+        $db->delete_query('spots', '"spotid" = ?', array($setid));
         update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     $status = QUEUE_FINISHED;
@@ -2058,8 +2019,7 @@ function do_delete_set_rss(DatabaseConnection $db, action $item)
     foreach ($setids as $setid) {
         $feed_id = get_feedid_for_set($db, $setid);
         $feeds[$feed_id] = 1;
-        $db->escape($setid, TRUE);
-        $db->delete_query('rss_sets', "\"setid\" = $setid");
+        $db->delete_query('rss_sets', '"setid" = ?', array($setid));
         update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     foreach ($feeds as $feed => $dummy) {
@@ -2081,11 +2041,9 @@ function do_post_message(DatabaseConnection $db, action $item)
         throw new exception('Message ID not a number');
     }
     $userid = $item->get_userid();
-    $db->escape($msg_id, TRUE);
-    $db->escape($userid, TRUE);
     try {
-        $sql = " * FROM post_messages WHERE \"id\" = $msg_id AND \"userid\" = $userid";
-        $res = $db->select_query($sql, 1);
+        $sql = " * FROM post_messages WHERE \"id\" = ? AND \"userid\" = ?";
+        $res = $db->select_query($sql, 1, array($msg_id, $userid));
         if (!isset($res[0]['id'])) {
             throw new exception('Message not found: '. $msg_id, ERR_MESSAGE_NOT_FOUND);
         }
@@ -2125,7 +2083,7 @@ function do_post_message(DatabaseConnection $db, action $item)
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Failed');
         // and now?
     }
-    $db->delete_query('post_messages', "\"id\" = $msg_id AND \"userid\" = $userid");
+    $db->delete_query('post_messages', "\"id\" = ? AND \"userid\" = ?", array($msg_id, $userid));
 
     return NO_ERROR;
 }
@@ -2166,27 +2124,21 @@ function do_getnfo(DatabaseConnection $db, action $item)
                 break;
             }
 
-            $ids = '';
+            $ids = array();
 
             foreach ($res as $row) {
                 if ($row['groupID'] != $groupid) {
                     $groupid = $row['groupID'];
                     $nzb->select_group($groupid, $code);
                 }
-                $id = $row['id'];
-                $db->escape($id, TRUE);
-                $ids .= $id . ',';
-                $binaryID = $row['binaryID'];
-                $db->escape($binaryID, TRUE);
-                $sql = "* FROM parts_$groupid WHERE \"binaryID\" = $binaryID";
-                $res2 = $db->select_query($sql);
+                $ids[] = $row['id'];
+                $sql = "* FROM parts_$groupid WHERE \"binaryID\" = ?";
+                $res2 = $db->select_query($sql, array($row['binaryID']));
                 if (!is_array($res2)) {
                     continue;
                 }
                 foreach ($res2 as $article) {
-                   // $msg_id = '<' . $article['messageID'] . '>';
                     try {
-                    //    $art = $nzb->get_article($msg_id);
                         $art = $nzb->get_article($article['messageID']);
                         $art = implode("\n", $art);
                         $nfo = explode("\n", yenc_decode($art));
@@ -2206,8 +2158,7 @@ function do_getnfo(DatabaseConnection $db, action $item)
                 $time_left = 0;
             }
             update_queue_status($db, $item->get_dbid(), $status, $time_left , $perc, 'Getting nfo files');
-            $ids = rtrim($ids, ',');
-            $db->delete_query('nfo_files', "\"id\" in ( $ids )");
+            $db->delete_query('nfo_files', '"id" in ( ' . (str_repeat('?,', count($ids) - 1)). '? )', $ids);
         }
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. ' . $totalcount . ' articles');
@@ -2255,18 +2206,16 @@ function do_getspots(DatabaseConnection $db, action $item)
             return $rv;
         }
 
-        $poster_blacklist = get_config($db, 'poster_blacklist');
-        $poster_blacklist = explode('\r\n', $poster_blacklist);
-        $db->update_postcount($groupArr_spots['ID']);
+        update_postcount($db, $groupArr_spots['ID']);
 
-        $spots_count = urd_spots::load_spots($db, $nzb, $item, $poster_blacklist);
+        $spots_count = urd_spots::load_spots($db, $nzb, $item);
         add_stat_data($db, stat_actions::SPOT_COUNT, $spots_count, user_status::SUPER_USERID);
 
         sets_marking::mark_interesting($db, USERSETTYPE_SPOT);
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. ' . $spots_count);
     } catch (exception $e) {
-        write_log('Update failed '. $e->getMessage(), LOG_WARNING);
+        write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
         $status = QUEUE_FAILED;
         $comment = $e->getMessage();
@@ -2295,13 +2244,10 @@ function fetch_image_articles(DatabaseConnection $db, URD_NNTP $nntp, array $art
     try {
         foreach ($articles as $art) {
             $article = $nntp->get_article($art);
-            //$article = $nntp->get_article('<' . $art . '>');
-            foreach ($article as $a) {
-                $data .= remove_special_zip_strings($a);
-            }
+            $data .= implode('', $article);
         }
 
-        return $data;
+        return remove_special_zip_strings($data);
     } catch (exception $e) {
         if ($e->getCode() == ERR_ARTICLE_NOT_FOUND) {
             return FALSE;
@@ -2312,7 +2258,8 @@ function fetch_image_articles(DatabaseConnection $db, URD_NNTP $nntp, array $art
 
 function get_unfetched_spot_images_count(DatabaseConnection $db)
 {
-        $sql = "count(*) AS cnt FROM spot_images WHERE \"fetched\" = 0 AND \"image\" LIKE 'articles:%'";
+        $like = $db->get_pattern_search_command('LIKE');
+        $sql = "count(*) AS cnt FROM spot_images WHERE \"fetched\"=0 AND \"image\" $like 'articles:%'";
         $res = $db->select_query($sql);
         if (!isset($res[0]['cnt'])) {
             throw new exception('counter not set');
@@ -2326,8 +2273,10 @@ function do_getspot_images(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     try {
+        $like = $db->get_pattern_search_command('LIKE');
         $pathu = my_realpath(dirname(__FILE__));
         $image_cache_dir = get_dlpath($db) . IMAGE_CACHE_PATH;
+        add_dir_separator($image_cache_dir);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
             $server_id = $item->get_preferred_server();
@@ -2342,31 +2291,31 @@ function do_getspot_images(DatabaseConnection $db, action $item)
 
         $image_count = 0;
         while (TRUE) {
-            $sql = "* FROM spot_images WHERE \"fetched\" = 0 AND \"image\" LIKE 'articles:%'";
+            $sql = "\"image\", \"spotid\" FROM spot_images WHERE \"fetched\" = 0 AND \"image\" $like 'articles:%'";
             $res = $db->select_query($sql, 50);
             if (!isset($res[0])) {
                 break;
             }
-            $ids = '';
+            $ids = array();
             foreach ($res as $row) {
                 $articles = unserialize(substr($row['image'], 9));
                 $spotid = $row['spotid'];
-                $ids .= "'" . $spotid . "',";
+                $ids[] = $spotid;
                 $image_data = fetch_image_articles($db, $nntp, $articles['segment']);
                 if ($image_data !== FALSE) {
                     $image_count++;
-                    file_put_contents($image_cache_dir . DIRECTORY_SEPARATOR . $spotid . '.jpg', $image_data);
+                    file_put_contents($image_cache_dir . $spotid . '.jpg', $image_data);
                 }
             }
-            $ids = trim($ids, ',');
-            $db->update_query('spot_images', array('fetched'), array(1), "\"spotid\" IN ( $ids )");
+            if (count($ids) > 0) {
+                $db->update_query_2('spot_images', array('fetched'=>1), '"spotid" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
+            }
             update_queue_status($db, $item->get_dbid(), NULL, 0, floor((100 * $image_count) / $count), 'Loaded ' . $image_count . ' images');
         }
         $nntp->disconnect();
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. Loaded ' . $image_count . ' images');
     } catch (exception $e) {
-        $nntp->disconnect();
         write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
         $status = QUEUE_FAILED;
@@ -2405,20 +2354,18 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
         }
         $nzb = connect_nntp($db, $server_id);
 
-        $poster_blacklist = get_config($db, 'poster_blacklist');
-        $poster_blacklist = explode('\r\n', $poster_blacklist);
-
         $rv = update_headers($db, $nzb, $groupArr_reports, $item, $server_id);
         if ($rv != NO_ERROR) {
             return $rv;
         }
-        $db->update_postcount($groupArr_reports['ID']);
+        update_postcount($db, $groupArr_reports['ID']);
         $comment_count = urd_spots::load_spot_reports($db, $nzb, $item, $groupArr_reports['expire']);
 
+        $nzb->disconnect();
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. Loaded ' . $comment_count . ' reports');
     } catch (exception $e) {
-        write_log('Update failed '. $e->getMessage(), LOG_WARNING);
+        write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
         $status = QUEUE_FAILED;
         $comment = $e->getMessage();
@@ -2460,14 +2407,11 @@ function do_getspot_comments(DatabaseConnection $db, action $item)
         }
         $nzb = connect_nntp($db, $server_id);
 
-        $poster_blacklist = get_config($db, 'poster_blacklist');
-        $poster_blacklist = explode('\r\n', $poster_blacklist);
-
         $rv = update_headers($db, $nzb, $groupArr_comments, $item, $server_id);
         if ($rv != NO_ERROR) {
             return $rv;
         }
-        $db->update_postcount($groupArr_comments['ID']);
+        update_postcount($db, $groupArr_comments['ID']);
         $comment_count = urd_spots::load_spot_comments($db, $nzb, $item, $groupArr_comments['expire']);
 
         $status = QUEUE_FINISHED;
@@ -2512,8 +2456,7 @@ function do_getblacklist(DatabaseConnection $db, action $item)
 
         return HTTP_CONNECT_ERROR;
     }
-    $blacklist = load_blacklist($db, blacklist::BLACKLIST_EXTERNAL);
-    $add_ids = array();
+    $blacklist = load_blacklist($db, blacklist::BLACKLIST_EXTERNAL, NULL, TRUE);
     $old = 0;
     foreach ($spotter_ids as $id) {
         if (strlen($id) < 3) {
@@ -2523,25 +2466,23 @@ function do_getblacklist(DatabaseConnection $db, action $item)
             $blacklist[$id]++;
             $old++;
         } else {
-            $add_ids[$id] = array($id, blacklist::BLACKLIST_EXTERNAL);
+            $add_ids[$id] = array($id, blacklist::BLACKLIST_EXTERNAL, blacklist::ACTIVE, 0);
         }
     }
     if (count($add_ids) > 0) {
-        $cols = array('spotter_id', 'source');
+        $cols = array('spotter_id', 'source', 'status', 'userid');
         $db->insert_query('spot_blacklist', $cols, $add_ids);
     }
-    $del = '';
+    $del = array();
     $cnt = 0;
     foreach ($blacklist as $id => $val) {
         if ($val == 0) {
             $cnt++;
-            $db->escape($id, TRUE);
-            $del .= $id . ',';
+            $del[] = $id;
         }
     }
     if ($cnt > 0) {
-        $del = rtrim($del, ',');
-        $db->delete_query('spot_blacklist', "\"spotter_id\" IN ($del)");
+        $db->delete_query('spot_blacklist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
     }
 
     $status = QUEUE_FINISHED;
@@ -2568,7 +2509,7 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
 
         return HTTP_CONNECT_ERROR;
     }
-    $whitelist = load_whitelist($db, whitelist::WHITELIST_EXTERNAL);
+    $whitelist = load_whitelist($db, whitelist::WHITELIST_EXTERNAL, NULL);
     $add_ids = array();
     $old = 0;
     foreach ($spotter_ids as $id) {
@@ -2579,25 +2520,23 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
             $whitelist[$id]++;
             $old++;
         } else {
-            $add_ids[$id] = array($id, whitelist::WHITELIST_EXTERNAL);
+            $add_ids[$id] = array($id, whitelist::WHITELIST_EXTERNAL, whitelist::ACTIVE, 0);
         }
     }
     if (count($add_ids) > 0) {
-        $cols = array('spotter_id', 'source');
+        $cols = array('spotter_id', 'source', 'status', 'userid');
         $db->insert_query('spot_whitelist', $cols, $add_ids);
     }
-    $del = '';
+    $del = array();
     $cnt = 0;
     foreach ($whitelist as $id => $val) {
         if ($val == 0) {
             $cnt++;
-            $db->escape($id, TRUE);
-            $del .= $id . ',';
+            $del[]= $id;
         }
     }
     if ($cnt > 0) {
-        $del = rtrim($del, ',');
-        $db->delete_query('spot_whitelist', "\"spotter_id\" IN ($del)");
+        $db->delete_query('spot_whitelist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
     }
 
     $status = QUEUE_FINISHED;

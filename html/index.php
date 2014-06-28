@@ -16,19 +16,26 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-28 23:05:24 +0200 (za, 28 jun 2014) $
+ * $Rev: 3131 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: index.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: index.php 3131 2014-06-28 21:05:24Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $path_idx_std = realpath(dirname(__FILE__));
+
+if (!file_exists('../.installed')) {
+    header('Location: ../install/install.php');
+}
+
 $process_name = 'urd_web'; // needed for message format in syslog and logging
 
-require_once "$path_idx_std/../functions/defines.php";
 require_once "$path_idx_std/../config.php";
+require_once "$path_idx_std/../functions/defines.php";
 require_once "$path_idx_std/../functions/urdversion.php";
+require_once "$path_idx_std/../functions/functions.php";
+require_once "$path_idx_std/../functions/file_functions.php";
 
 if (isset($config['urdweb_logfile'])) {
     $config['log_file'] = $config['urdweb_logfile'];
@@ -36,19 +43,17 @@ if (isset($config['urdweb_logfile'])) {
     $config['log_file'] = '/dev/null';
 }
 
-require_once "$path_idx_std/../functions/functions.php";
 require_once "$path_idx_std/../functions/db.class.php";
 require_once "$path_idx_std/../functions/urd_log.php";
 require_once "$path_idx_std/../functions/web_functions.php";
 
 // initialise some stuff
 try {
-    $db = connect_db();  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     die_html("Connection to database failed. $msg\n");
 }
-
 require_once "$path_idx_std/../functions/checkauth.php";
 
 // first include all the php files that only define stuff
@@ -64,10 +69,10 @@ if (strstr($index_page, DIRECTORY_SEPARATOR) !== FALSE) {
 }
 
 if ($index_page == '' || !file_exists("$index_page.php")) {
-    $index_page = get_pref($db, 'index_page_root', 0);
+    $index_page = get_config($db, 'index_page_root');
 }
 if ($index_page == '' || !file_exists("$index_page.php")) {
-    header ('location: browse.php');
+    header ('location: transfers.php');
 } else {
     header("Location: $index_page.php");
 }

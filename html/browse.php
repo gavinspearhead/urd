@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: browse.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: browse.php 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -28,7 +28,6 @@ if (!defined('ORIGINAL_PAGE')) {
 $pathidx = realpath(dirname(__FILE__));
 
 require_once "$pathidx/../functions/html_includes.php";
-require_once "$pathidx/../functions/menu.php";
 
 verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid, FALSE);
 
@@ -37,14 +36,12 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
 }
 
 $origroupID = $groupID = get_request('groupID', '');
-$minsetsize = get_request('minsetsize', 0);
-if (!is_numeric($minsetsize)) {
-    $minsetsize = 0;
-}
-$maxage  = get_request('maxage', '');
+$minsetsize = get_request('minsetsize', 0, 'is_numeric');
+$maxage  = get_request('maxage', '', 'is_numeric');
 
+$search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
 $saved_search = get_request('saved_search', '');
-if ($saved_search == '' && $groupID == '') {
+if ($saved_search == '' && $groupID == '' && $search == '') {
     $origroupID = $groupID = get_pref($db, 'default_group', $userid, '');
 }
 
@@ -88,7 +85,6 @@ if (isset($groupID[9]) && substr_compare($groupID, 'category_', 0, 9) == 0) {
     $selected = '';
     $groupID = $categoryID = $origroupID = 0;
 }
-
 if ($groupID == 0) {
     $rss_groupid = '0';
     $rss_minsetsize = $minsetsize;
@@ -112,38 +108,47 @@ $title = $LN['browse_download'] . ' ' . $LN['from'] . ' ' . $totbin. ' ' . $LN['
 
 // Get the required values:
 // ori = passed back to the front-end, these are used in the database (backend):
-$search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
-if ($search == (html_entity_decode("<{$LN['search']}>"))) {
-    $search = '';
-}
 
 list($minsetsizelimit, $maxsetsizelimit) = get_size_limits_groups($db);
 list($minagelimit, $maxagelimit) = get_age_limits_groups($db);
+
 $minsetsizelimit = nearest($minsetsizelimit / (1024 * 1024), FALSE);
 $maxsetsizelimit = nearest($maxsetsizelimit / (1024 * 1024), TRUE);
 $minagelimit = nearest($minagelimit / (3600 * 24), FALSE);
 $maxagelimit = nearest($maxagelimit / (3600 * 24), TRUE);
-$maxsetsize = $maxsetsizelimit;
-$minsetsize = $minsetsizelimit;
 
-$offset  = get_request('offset', 0);
+$minsetsize = get_pref($db, 'minsetsize', $userid, NULL);
+if ($minsetsize !== NULL) {
+    $minsetsize /= (1024 * 1024);
+}
+$maxsetsize = get_pref($db, 'maxsetsize', $userid, NULL);
+if ($maxsetsize !== NULL) {
+    $maxsetsize /= (1024 * 1024);
+}
+if ($maxsetsize <= 0) { 
+    $maxsetsize = NULL;
+}
+if ($minsetsize <= 0) { 
+    $minsetsize = NULL;
+}
+$offset  = get_request('offset', 0, 'is_numeric');
 $order   = get_request('order', '');
 $flag    = get_request('flag', '');
-$maxage  = get_request('maxage', $maxagelimit);
-$minage  = get_request('minage', $minagelimit);
-$minsetsize = get_request('minsetsize', $minsetsize);
-$maxsetsize = get_request('maxsetsize', $maxsetsize);
-$maxrating  = get_request('maxrating', 10);
-$minrating  = get_request('minrating', 0);
-$maxcomplete = get_request('maxcomplete', 100);
-$mincomplete = get_request('mincomplete', 0);
+$maxage  = get_request('maxage', $maxagelimit, 'is_numeric');
+$minage  = get_request('minage', $minagelimit, 'is_numeric');
+$minsetsize = get_request('minsetsize', $minsetsize, 'is_numeric');
+$maxsetsize = get_request('maxsetsize', $maxsetsize, 'is_numeric');
+$maxrating  = get_request('maxrating', 10, 'is_numeric');
+$minrating  = get_request('minrating', 0, 'is_numeric');
+$maxcomplete = get_request('maxcomplete', 100, 'is_numeric');
+$mincomplete = get_request('mincomplete', 0, 'is_numeric');
 
 $setid = get_request('setid', '');
 $subscribedgroups = subscribed_groups_select($db, $groupID, $categoryID, $categories, $userid);
 $posting = urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST) && urd_user_rights::is_poster($db, $userid);
 
 if ($order == '') {
-    $order = map_default_sort($prefs, array('subject' => 'better_subject',));
+    $order = map_default_sort($prefs, array('subject' => 'better_subject'));
 }
 
 init_smarty($title, 1, $add_menu);
@@ -181,5 +186,4 @@ $smarty->assign('saved_searches',	$saved_searches);
 $smarty->assign('_saved_search',	$saved_search);
 
 $smarty->assign('subscribedgroups',	$subscribedgroups);
-
 $smarty->display('browse.tpl');

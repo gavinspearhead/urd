@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-15 00:41:23 +0200 (zo, 15 jun 2014) $
+ * $Rev: 3095 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edit_usenet_servers.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_edit_usenet_servers.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
@@ -28,22 +28,22 @@
 
 <div class="light">
 <br/>
-<input type="hidden" name="id" id="id" value="{$id}"/></td>
+<input type="hidden" name="id" id="id" value="{$id|escape:htmlall}"/></td>
 <table class="hmid">
 
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_name_msg|escape }>{$LN_name}:</td>
-<td colspan="3"><input type="text" name="name" id="name" value="{$name|escape}" size="{$text_box_size}"/></td>
+<td colspan="3"><input type="text" name="name" id="name" value="{$name|escape}" placeholder="{$LN_name}" required size="{$text_box_size}"/></td>
 </tr>
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_hostname_msg|escape }>{$LN_usenet_hostname}:</td>
-<td colspan="3"><input type="text" name="hostname" id="hostname" value="{$hostname|escape}" size="{$text_box_size}"/></td>
+<td colspan="3"><input type="text" name="hostname" id="hostname" value="{$hostname|escape}" placeholder="{$LN_usenet_hostname}" required size="{$text_box_size}"/></td>
 </tr>
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_port_msg|escape }>{$LN_usenet_port}:</td>
-<td ><input type="text" name="port" value="{$port|escape}" id="port" size="{$number_box_size}"/></td>
+<td ><input type="text" name="port" value="{$port|escape}" id="port" required size="{$number_box_size}"/></td>
 <td {urd_popup type="small" text=$LN_usenet_secport_msg|escape }>{$LN_usenet_secport}:</td>
-<td> <input type="text" id="sec_port" name="secure_port" value="{$sec_port|escape}" size="{$number_box_size}"/> </td>
+<td> <input type="text" id="sec_port" name="secure_port" value="{$sec_port|escape}" required size="{$number_box_size}"/> </td>
 </tr>
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_connectiontype_msg|escape }>{$LN_usenet_connectiontype}:</td>
@@ -56,11 +56,11 @@
 </tr>
 <tr id="authuser" class="{if $authentication neq 1}hidden{/if}">
 <td {urd_popup type="small" text=$LN_usenet_username_msg|escape }>{$LN_username}:</td>
-<td colspan="3"><input type="text" name="username" value="{$username|escape}" id="username" size="{$text_box_size}"/></td>
+<td colspan="3"><input type="text" name="username" value="{$username|escape}" id="username" placeholder="{$LN_username}" size="{$text_box_size}"/></td>
 </tr>
 <tr id="authpass" class="{if $authentication neq 1}hidden{/if}">
 <td {urd_popup type="small" text=$LN_usenet_password_msg|escape }>{$LN_password}:</td>
-<td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" size="{$text_box_size}"/> &nbsp;&nbsp; 
+<td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" placeholder="{$LN_password}" size="{$text_box_size}"/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('password');"
     </td>
 </tr>

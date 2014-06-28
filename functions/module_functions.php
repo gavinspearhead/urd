@@ -31,7 +31,7 @@ class module
     public $name;
     public $optional;
     public $modules;
-    public function __construct ($name_, $optional_, $modules_)
+    public function __construct($name_, $optional_, $modules_)
     {
         assert(is_bool($optional_));
         $this->name = $name_;
@@ -191,13 +191,15 @@ function check_php_modules(test_result_list &$test_results, $modules, &$module_m
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
 
     $php_modules = array (
-        new module('curl',      FALSE, urd_modules::URD_CLASS_RSS|urd_modules::URD_CLASS_SYNC),
+        new module('curl',      FALSE, urd_modules::URD_CLASS_RSS | urd_modules::URD_CLASS_SYNC),
         new module('openssl',   TRUE,  urd_modules::URD_CLASS_GENERIC),
         new module('pcntl',     FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('pcre',      FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('posix',     FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('sockets',   FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('SPL',       FALSE, urd_modules::URD_CLASS_GENERIC),
+        new module('mcrypt',    FALSE, urd_modules::URD_CLASS_GENERIC),
+        new module('json',      FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('gmp',       FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('xmlreader', TRUE,  urd_modules::URD_CLASS_GENERIC),
         new module('xmlwriter', TRUE,  urd_modules::URD_CLASS_GENERIC)

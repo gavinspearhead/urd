@@ -22,7 +22,7 @@
  * $Id: ajax_admincontrol.php 2567 2012-07-08 11:46:01Z gavinspearhead $
  */
 
-function smarty_modifier_capitalise($string, $uc_digits = false)
+function smarty_modifier_capitalise($string, $uc_digits = FALSE)
 {
     smarty_modifier_capitalise_ucfirst(null, $uc_digits);
 
@@ -31,7 +31,7 @@ function smarty_modifier_capitalise($string, $uc_digits = false)
 
 function smarty_modifier_capitalise_ucfirst($string, $uc_digits = null)
 {
-    static $_uc_digits = false;
+    static $_uc_digits = FALSE;
 
     if (isset($uc_digits)) {
         $_uc_digits = $uc_digits;
@@ -39,9 +39,11 @@ function smarty_modifier_capitalise_ucfirst($string, $uc_digits = null)
         return;
     }
 
-    if(substr($string[0],0,1) != "'" && !preg_match("!\d!",$string[0]) || $_uc_digits)
+    if(substr($string[0], 0, 1) != "'" && !preg_match("!\d!", $string[0]) || $_uc_digits) {
 
-        return mb_convert_case($string[0],MB_CASE_TITLE );
-    else
+        return mb_convert_case($string[0], MB_CASE_TITLE);
+    }
+    else {
         return $string[0];
+    }
 }

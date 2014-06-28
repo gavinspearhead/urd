@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_edit_usenet_servers.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_edit_usenet_servers.php 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -27,8 +27,6 @@ $__auth = 'silent';
 
 $pathaeus = realpath(dirname(__FILE__));
 require_once "$pathaeus/../functions/ajax_includes.php";
-require_once "$pathaeus/../functions/functions.php";
-require_once "$pathaeus/../functions/urd_log.php";
 require_once "$pathaeus/../functions/pref_functions.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
@@ -85,8 +83,6 @@ $connection_types = array (
 $cmd = get_request('cmd');
 $id = get_request('id');
 
-$db->escape($cmd);
-$db->escape($id);
 
 function verify_usenet_server_id(DatabaseConnection $db, $id)
 {
@@ -94,8 +90,8 @@ function verify_usenet_server_id(DatabaseConnection $db, $id)
     if (!is_numeric($id)) {
         throw new exception($LN['error_nosuchserver']);
     }
-    $sql = "COUNT(*) AS cnt FROM usenet_servers WHERE \"id\" = '$id'";
-    $res = $db->select_query($sql);
+    $sql = 'COUNT(*) AS cnt FROM usenet_servers WHERE "id" = ?';
+    $res = $db->select_query($sql, array($id));
     if ($res === FALSE) {
         throw new exception($LN['error_nosuchserver']);
     }
@@ -140,7 +136,7 @@ case 'delete_server':
     challenge::verify_challenge_text($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     delete_usenet_server($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'],$prefs_root['urdd_port'],$userid);
+    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
     if ($uc->is_connected()) {
         $uc->set('server', 'delete', $id);
         usleep(50000);
@@ -149,7 +145,7 @@ case 'delete_server':
 case 'disable_posting':
     challenge::verify_challenge_text($_POST['challenge']);
     verify_usenet_server_id($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'],$prefs_root['urdd_port'],$userid);
+    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
     if ($uc->is_connected()) {
         $uc->set('server', 'noposting', $id);
         usleep(50000);
@@ -228,7 +224,7 @@ case 'showeditusenetserver':
         $password = '';
         $threads = 1;
         $port = 119;
-        $sec_port = 563 ;
+        $sec_port = 563;
         $authentication = 0;
         $priority = 10;
         $connection = 'off';
@@ -327,9 +323,8 @@ case 'update_usenet_server':
             $password = '';
         }
         if ($id == 'new') {
-            $db->escape($name);
-            $query = "\"id\" FROM usenet_servers WHERE \"name\"='$name'";
-            $res = $db->select_query($query, 1);
+            $query = '"id" FROM usenet_servers WHERE "name"=?';
+            $res = $db->select_query($query, 1, array($name));
             if ($res === FALSE) {
                 $pref_server = get_config($db, 'preferred_server', 0);
                 $id = add_usenet_server($db, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
@@ -348,8 +343,8 @@ case 'update_usenet_server':
                 throw new exception ($LN['error_usenetserverexists']);
             }
         } elseif (is_numeric($id)) {
-            $query = "\"name\" FROM usenet_servers WHERE \"id\"='$id'";
-            $res = $db->select_query($query, 1);
+            $query = '"name" FROM usenet_servers WHERE "id"=?';
+            $res = $db->select_query($query, 1, array($id));
             if ($res !== FALSE) {
                 update_usenet_server($db, $id, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
 
@@ -371,7 +366,7 @@ case 'reload_servers':
 
     $search = $o_search = (trim(get_request('search', '')));
     $Qsearch = '';
-    if ($search != '' && utf8_decode($search) != html_entity_decode("<{$LN['search']}>")) {
+    if ($search != '') {
         $search = "%$search%";
         $db->escape($search, TRUE);
         $like = $db->get_pattern_search_command('LIKE');
@@ -384,7 +379,7 @@ case 'reload_servers':
        $sort_dir = 'asc';
     }
 
-    $sql = "* FROM usenet_servers $Qsearch ORDER BY $sort $sort_dir" ;
+    $sql = "* FROM usenet_servers $Qsearch ORDER BY $sort $sort_dir";
     $res = $db->select_query($sql);
     if ($res == FALSE) {
         $res = array();

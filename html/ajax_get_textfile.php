@@ -27,7 +27,7 @@
 
 $pathgf = realpath(dirname(__FILE__));
 
-require_once "$pathgf/../functions/html_includes.php";
+require_once "$pathgf/../functions/ajax_includes.php";
 
 $idx = get_request('idx', '');
 $preview = get_request('preview', 0) ? TRUE : FALSE;
@@ -36,7 +36,7 @@ $is_admin = urd_user_rights::is_admin($db, $userid);
 try {
     $file = get_request('file', FALSE);
     if ($file !== FALSE) {
-        $file = my_realpath($file) ;
+        $file = my_realpath($file);
     }
     if ($file === FALSE) {
         throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));

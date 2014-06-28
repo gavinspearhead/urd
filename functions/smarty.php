@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-07 00:34:21 +0200 (za, 07 sep 2013) $
- * $Rev: 2924 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: smarty.php 2924 2013-09-06 22:34:21Z gavinspearhead@gmail.com $
+ * $Id: smarty.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
@@ -29,21 +29,19 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathsm = realpath(dirname(__FILE__));
 
-//require_once $pathsm . '/web_functions.php';
-//require_once $pathsm . '/autoincludes.php';
-require_once $pathsm . '/defines.php';
 require_once $pathsm . '/menu.php';
 require_once $pathsm . '/smarty_plugins/smarty_includes.php';
 
 function init_smarty($title, $show_menu=1, $custom_menu=NULL)
 {
     ob_start();
-    global $LN, $smarty, $db, $isadmin, $config, $time_a, $userid;
+    global $LN, $smarty, $db, $isadmin, $config, $userid;
     $clickjack = get_config($db, 'clickjack', TRUE) ? TRUE : FALSE;
     if ($clickjack) {
         @header('X-Frame-Options: sameorigin'); // click jack prevention
     }
     $modules = urd_modules::get_urd_module_config(get_config($db, 'modules'));
+    $smarty->enableSecurity();
     $smarty->setCompileCheck(isset($config['smarty_compile_check']) ? $config['smarty_compile_check'] : TRUE);
     $show_post = $modules[urd_modules::URD_CLASS_POST];
     $show_makenzb = $modules[urd_modules::URD_CLASS_MAKENZB];
@@ -59,7 +57,6 @@ function init_smarty($title, $show_menu=1, $custom_menu=NULL)
     $smarty->assign('allow_robots',    get_config($db, 'allow_robots', 0));
     $smarty->assign('heading', 		   $title);
     $smarty->assign('stylesheet',	   $stylesheet);
-    $smarty->assign('__show_time',     '');
     $smarty->assign('show_sync',       $show_sync);
     $smarty->assign('show_groups',     $show_groups);
     $smarty->assign('show_rss',        $show_rss);
@@ -70,17 +67,17 @@ function init_smarty($title, $show_menu=1, $custom_menu=NULL)
     $smarty->assign('show_viewfiles',  $show_viewfiles);
     $smarty->assign('show_download',   $show_download);
     $smarty->assign('isadmin',         $isadmin);
-    $smarty->assign('time_a',          $time_a);
     $smarty->assign('VERSION',         urd_version::get_version());
     $smarty->assign('url',             urd_version::get_urdland_url());
-    $smarty->assign('link',            ''); // need to fix
-    $smarty->assign('msg',             ''); // need to fix
+    $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
+    $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
+    $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
     $smarty->assign('showmenu',	       $show_menu);
     $urdd_online = check_urdd_online($db);
     $smarty->assign('offline_message', $LN['urdddisabled'] . ' -- ' . $LN['enableurddfirst']);
     $smarty->assign('urdd_online',    (int) $urdd_online);
     if ($show_menu != 0) {
-        $smarty->assign('menu',		   generate_menu($db, $LN, $isadmin, $custom_menu, $userid));
+        $smarty->assign('menu',		   menu::generate_menu($db, $LN, $isadmin, $custom_menu, $userid));
     } else {
         $smarty->assign('menu',		   array());
     }
@@ -99,7 +96,9 @@ if (isset($userid)) {
     $lang = select_language($db, $userid);
 } else {
     $template = select_template($db, NULL);
-    $lang = select_language($db, NULL);
+    if (!isset($lang)) { 
+        $lang = select_language($db, NULL);
+    }
 }
 if ($template === NULL) {
     $template = DEFAULT_TEMPLATE;

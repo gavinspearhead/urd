@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-05-29 01:03:02 +0200 (do, 29 mei 2014) $
+ * $Rev: 3058 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: pr_file.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: pr_file.php 3058 2014-05-28 23:03:02Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -38,7 +38,7 @@ class pr_file
         assert ($ext != '' && $filename != '');
         $this->ext = $ext;
         $this->base = $base;
-        $this->files [] = $filename;
+        $this->files[] = $filename;
     }
 }
 
@@ -60,7 +60,7 @@ class pr_list
             if (($f->ext == $ext) && ($f->base == $base)) {
                 $f->files[] = $filename;
 
-                return ;
+                return;
             }
         }
         $this->file_list[] = new pr_file($ext, $base, $filename);

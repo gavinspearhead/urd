@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-19 23:50:53 +0200 (ma, 19 mei 2014) $
+ * $Rev: 3043 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_calendar.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_calendar.php 3043 2014-05-19 21:50:53Z gavinspearhead@gmail.com $
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -160,6 +160,6 @@ case 'show_calendar':
     $smarty->display('ajax_calendar.tpl');
     break;
 default:
-    throw new exception($LN['error_invalidaction'] );
+    throw new exception($LN['error_invalidaction']);
     break;
 }

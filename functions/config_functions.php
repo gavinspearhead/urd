@@ -28,10 +28,11 @@ if (!defined('ORIGINAL_PAGE')) {
 
 class config_cache
 {
-    const CACHE_TIMEOUT = 15; // seconds
+    const CACHE_TIMEOUT = 5; // seconds
 
     private static $data = NULL;
     private static $timestamp = 0;
+
     public static function store($value, $userid, $index=NULL)
     {
         assert(is_numeric($userid));
@@ -53,6 +54,47 @@ class config_cache
             self::$timestamp = time();
         }
     }
+    public static function get_matching($userid, $pattern)
+    {
+        assert(is_numeric($userid));
+        if (isset($_SESSION)) {
+            // we are a webbased thingie so we can store in session
+            if (isset($_SESSION['urd_cache']['timeout']) && ($_SESSION['urd_cache']['timeout'] + self::CACHE_TIMEOUT <= time())) {
+                unset($_SESSION['urd_cache']);
+            }
+            if (isset($_SESSION['urd_cache'][$userid])) { 
+                $rv = array();
+                foreach ($_SESSION['urd_cache'][$userid] as $key => $value) {
+                    if (($pos = strpos($key, $pattern)) !== FALSE) {
+                        $k = substr_replace($key, '', $pos, strlen($pattern));
+                        $rv[$k] = $value;
+                    }
+                }
+                return $rv;
+            }
+
+            return FALSE;
+        } elseif (isset(self::$data[$userid])) {
+            // we must be urdd so we take our own storage;
+            $rv = array();
+            foreach(self::$data[$userid] as $key => $value) {
+                if (strpos($key, $pattern) !== FALSE) {
+                    $k = substr($key, strlen($pattern));
+                    $rv[$k] = $value;
+                }
+            }
+
+            if ($rv !== array() && isset(self::$data[$userid]) && (self::$timestamp + self::CACHE_TIMEOUT <= time())) {
+                    // we don't want to cache for ever, but just be on the save side
+                unset(self::$data[$userid]);
+            }
+
+            return $val;
+        }
+
+        return FALSE;
+    }
+
     public static function get($userid, $index = NULL)
     {
         assert(is_numeric($userid));
@@ -79,7 +121,7 @@ class config_cache
             }
             if ($val !== FALSE && isset(self::$data[$userid]) && (self::$timestamp + self::CACHE_TIMEOUT <= time())) {
                     // we don't want to cache for ever, but just be on the save side
-                unset(self::$data[$userid]);
+                self::$data= NULL;
             }
 
             return $val;
@@ -103,12 +145,41 @@ class config_cache
             if (isset($_SESSION['urd_cache'])) { // we are a webbased thingie so we can store in session
                 unset($_SESSION['urd_cache']);
             }
-        } elseif (isset(self::$data[$index])) { // we must be urdd so we take our own storage;
+        } elseif (isset(self::$data)) { // we must be urdd so we take our own storage;
             self::$data = NULL;
         }
     }
 }
 
+function reset_custom_config(DatabaseConnection $db)
+{
+    $val = config_cache::get_matching(user_status::SUPER_USERID, '__custom_');
+    if (!is_array($val)) {
+        return;
+    }
+    foreach($val as $key => $item) {
+        unset_pref($db, '__custom_' . $key, $userid);
+    }
+}
+
+function reset_custom_prefs(DatabaseConnection $db, $userid)
+{
+    assert(is_numeric($userid));
+    $val = get_custom_prefs($db, $userid);
+    foreach($val as $key => $item) {
+        unset_pref($db, '__custom_' . $key, $userid);
+    }
+}
+
+function get_custom_prefs(DatabaseConnection $db, $userid)
+{
+    $val = config_cache::get_matching($userid, '__custom_');
+    if ($val === FALSE) {
+            $prefs = load_prefs($db, $userid, TRUE);
+            $val = config_cache::get_matching($userid, '__custom_');
+    }
+    return $val;
+}
 
 function get_config(DatabaseConnection $db, $name, $default = NULL)
 {
@@ -116,7 +187,6 @@ function get_config(DatabaseConnection $db, $name, $default = NULL)
     assert ($name != '');
 
     $val = config_cache::get(user_status::SUPER_USERID);
-
     if (isset($val[$name])) {
         return $val[$name];
     }
@@ -132,16 +202,10 @@ function get_config(DatabaseConnection $db, $name, $default = NULL)
     }
 }
 
-
-function get_pref(DatabaseConnection $db, $name, $username, $default=NULL)
+function get_pref(DatabaseConnection $db, $name, $userid, $default=NULL)
 {
     global $LN;
-    assert ($name != '');
-    if (is_numeric($username)) {
-        $userid = $username;
-    } else { 
-        $userid = get_userid($db, $username);
-    }
+    assert ($name != '' && is_numeric($userid));
     $val = config_cache::get($userid);
     if (isset($val[$name])) {
         return $val[$name];
@@ -158,9 +222,9 @@ function get_pref(DatabaseConnection $db, $name, $username, $default=NULL)
     }
 }
 
-
 function load_config(DatabaseConnection $db, $force = FALSE)
 {
+    assert(is_bool($force));
     if (!$force) {
         $val = config_cache::get(user_status::SUPER_USERID);
         if ($val !== FALSE) {
@@ -168,7 +232,7 @@ function load_config(DatabaseConnection $db, $force = FALSE)
         }
     }
 
-    $res = $db->select_query('"option", "value" FROM preferences WHERE "userID" = 0');
+    $res = $db->select_query('"option", "value" FROM preferences WHERE "userID"=?', array(user_status::SUPER_USERID));
     if (!is_array($res)) {
         $res = array();
     }
@@ -183,23 +247,18 @@ function load_config(DatabaseConnection $db, $force = FALSE)
 }
 
 
-function load_prefs(DatabaseConnection $db, $username, $force = FALSE)
+function load_prefs(DatabaseConnection $db, $userid, $force = FALSE)
 {
-    if (!is_numeric($username)) {
-        $userid = get_userid($db, $username);
-    } else {
-        $userid = $username;
-        $username = get_username($db, $userid);
-    }
+    assert(is_numeric($userid)); 
     if (!$force) {
         $val = config_cache::get($userid);
         if ($val !== FALSE) {
             return $val;
         }
     }
-    $query = "\"userID\", \"option\", \"value\" FROM preferences WHERE \"userID\"= '$userid'";
+    $query = '"userID", "option", "value" FROM preferences WHERE "userID"= ?';
 
-    $res = $db->select_query($query);
+    $res = $db->select_query($query, array($userid));
     if (!is_array($res)) {
         $res = array();
     }
@@ -212,9 +271,7 @@ function load_prefs(DatabaseConnection $db, $username, $force = FALSE)
     }
     if ($uid !== NULL) {
         config_cache::store($prefs, $uid);
-        if (!is_numeric($username)) {
-            config_cache::store($prefs, $userid);
-        }
+        config_cache::store($prefs, $userid);
     }
 
     return $prefs;
@@ -261,7 +318,6 @@ function set_prefs(DatabaseConnection $db, $userid, array $settings)
     }
 }
 
-
 function set_configs(DatabaseConnection $db, array $settings)
 {
     foreach ($settings as $n => $v) {
@@ -269,91 +325,97 @@ function set_configs(DatabaseConnection $db, array $settings)
     }
 }
 
+function unset_config(DatabaseConnection $db, $name)
+{
+    assert($name != '');
+    config_cache::clear(user_status::SUPER_USERID);
+    $db->delete_query('preferences', '"option"=? AND "userID"=?', array($name, user_status::SUPER_USERID));
+}
+
+function unset_pref(DatabaseConnection $db, $name, $userid)
+{
+    assert($name != '' && is_numeric($userid));
+    config_cache::clear($userid);
+    $db->delete_query('preferences', '"option"=? AND "userID"=?', array($name, $userid));
+}
 
 function set_pref(DatabaseConnection $db, $name, $value, $userid)
 {
-    assert ($name != '' && is_numeric($userid));
+    assert($name != '' && is_numeric($userid));
     if ($userid == '0') { // we're trying to set root prefs... these are the config tho
         set_config($db, $name, $value);
 
         return;
     }
-    $dbname = $name;
-    $dbuserid = $userid;
-    $db->escape($dbname, TRUE);
-    $db->escape($dbuserid, TRUE);
-    $res = $db->select_query("\"value\", \"userID\" FROM preferences WHERE \"option\" = $dbname AND \"userID\" = $dbuserid", 1);
-    if ($res !== FALSE) {
-        $db->escape($value, TRUE);
-        $db->execute_query("UPDATE \"preferences\" SET \"value\" = $value WHERE \"option\" = $dbname AND \"userID\" = $dbuserid");
-    } else {
-        $db->insert_query('preferences', array ('value', 'option', 'userID'), array ($value, $name, $userid));
-    }
     config_cache::clear($userid);
+    $res = $db->select_query('"value", "userID" FROM preferences WHERE "option"=? AND "userID"=?', 1, array($name, $userid));
+    if ($res !== FALSE) {
+        $db->update_query_2('preferences', array('value'=>$value), '"option"=? AND "userID"=?', array($name, $userid));
+    } else {
+        $db->insert_query('preferences', array('value', 'option', 'userID'), array($value, $name, $userid));
+    }
 }
 
 function set_config(DatabaseConnection $db, $name, $value)
 {
-    assert ($name !== '');
-    $dbname = $name;
-    $db->escape($dbname, TRUE);
-    $res = $db->select_query("\"value\" FROM preferences WHERE \"option\" = $dbname AND \"userID\" = 0", 1);
-    if ($res !== FALSE) {
-        $db->escape($value, TRUE);
-        $db->execute_query("UPDATE preferences SET \"value\" = $value WHERE \"option\" = $dbname AND \"userID\" = 0");
-    } else {
-        $db->insert_query('preferences', array ('value', 'option', 'userID'), array ($value, $name, user_status::SUPER_USERID));
-    }
+    assert($name !== '');
     config_cache::clear(user_status::SUPER_USERID);
+    $res = $db->select_query('"value", "userID" FROM preferences WHERE "option"=? AND "userID"=?', 1, array($name, user_status::SUPER_USERID));
+    if ($res !== FALSE) {
+        $db->update_query_2('preferences', array('value'=>$value), '"option"=? AND "userID"=?', array($name, user_status::SUPER_USERID));
+    } else {
+        $db->insert_query('preferences', array('value', 'option', 'userID'), array($value, $name, user_status::SUPER_USERID));
+    }
 }
 
 function clean_config(DatabaseConnection $db)
 {
     config_cache::clear(user_status::SUPER_USERID);
-    $db->delete_query('preferences', "\"userID\" = 0");
+    $db->delete_query('preferences', '"userID"=?', array(user_status::SUPER_USERID));
 }
 
 function clean_pref(DatabaseConnection $db, $userid)
 {
-    global $LN;
     assert(is_numeric($userid));
     if ($userid == user_status::SUPER_USERID) {
+        global $LN;
         throw new exception ($LN['error_resetnotallowed'], ERR_ACCESS_DENIED);
     }
+    config_cache::clear($userid);
     clean_categories($db, $userid);
     clean_usergroupinfo($db, $userid);
-    $db->escape($userid, FALSE);
-    $db->delete_query('preferences', " \"userID\" = '$userid'");
-    config_cache::clear($userid);
+    $db->delete_query('preferences', '"userID"=?', array($userid));
 }
 
 function reset_pref(DatabaseConnection $db, $userid)
 {
-    global $LN;
     assert(is_numeric($userid));
     if ($userid == user_status::SUPER_USERID) {
+        global $LN;
         throw new exception ($LN['error_resetnotallowed'], ERR_ACCESS_DENIED);
     }
-    $prefArray = get_default_prefs();
+    $pref_array = get_default_prefs();
 
-    foreach ($prefArray as $var => $val) {
+    foreach ($pref_array as $var => $val) {
         set_pref($db, $var, $val, $userid);
     }
+    reset_custom_prefs($db, $userid);
 }
 
 function reset_config(DatabaseConnection $db)
 {
-    $prefArray = get_default_config();
-    foreach ($prefArray as $var => $val) {
-        set_pref($db, $var, $val, user_status::SUPER_USERID);
+    $pref_array = get_default_config();
+    foreach ($pref_array as $var => $val) {
+        set_config($db, $var, $val);
     }
+    reset_custom_config($db);
 }
 
 function update_settings(DatabaseConnection $db, $userid)
 {
-    global $LN;
     assert (is_numeric($userid));
     if (get_username($db, $userid) === FALSE) {
+        global $LN;
         throw new exception ($LN['error_nosuchuser'], ERR_INVALID_USERNAME);
     }
     if ($userid == user_status::SUPER_USERID) {
@@ -375,7 +437,7 @@ function update_settings(DatabaseConnection $db, $userid)
         $arr[] = array ($userid, $var, $val);
     }
 
-    $db->insert_query('preferences', array ('userID', 'option', 'value'), $arr);
+    $db->insert_query('preferences', array('userID', 'option', 'value'), $arr);
 
     return $cnt;
 }
@@ -404,3 +466,21 @@ function check_prefs(DatabaseConnection $db, $sendmail=TRUE)
         }
     }
 }
+
+function set_custom_text(DatabaseConnection $db, $userid, $name, $value, $orig_name)
+{
+    global $LN;
+    if (strlen($name) != strspn(strtoupper($name), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_')) {
+       throw new exception($LN['buttons_invalidname'] . strspn(strtoupper($name), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'));
+    }
+    if ($name == '') { 
+       throw new exception($LN['error_missingname']);
+    }
+    if ($name == $orig_name || $orig_name == '__new') {
+        set_pref($db, "__custom_$name", $value, $userid);
+    } else {
+        unset_pref($db, "__custom_$name", $userid);
+        set_pref($db, "__custom_$name", $value, $userid);
+    }
+}
+

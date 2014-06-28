@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-04 23:41:51 +0200 (wo, 04 sep 2013) $
- * $Rev: 2921 $
+ * $LastChangedDate: 2013-11-22 23:26:21 +0100 (vr, 22 nov 2013) $
+ * $Rev: 2954 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: rssfeeds.php 2921 2013-09-04 21:41:51Z gavinspearhead@gmail.com $
+ * $Id: rssfeeds.php 2954 2013-11-22 22:26:21Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -36,6 +36,7 @@ $add_menu = array (
             new menu_item2 ('editcategories', 'editcategories', urd_modules::URD_CLASS_RSS, '', 'command'),
         )
 );
+
 if ($isadmin) {
     $add_menu['actions'][] = new menu_item2 ('new_rss', 'feeds_addfeed', urd_modules::URD_CLASS_RSS, '', 'command');
     $add_menu['actions'][] = new menu_item2 ('import_rss', 'import_feeds', urd_modules::URD_CLASS_RSS, '', 'command');

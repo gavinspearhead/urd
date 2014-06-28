@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-04-27 23:43:02 +0200 (zo, 27 apr 2014) $
+ * $Rev: 3033 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_admin_log.tpl 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_admin_log.tpl 3033 2014-04-27 21:43:02Z gavinspearhead@gmail.com $
  *}
 
 {$up="<img src='$IMGDIR/small_up.png' alt=''>"}
@@ -37,7 +37,7 @@
 <th onclick="submit_sort_log('msg')" class="head buttonlike round_right">{$LN_log_msg} {$msg_sort}</th>
 </tr>
 {foreach $logs as $log}
-<tr class="even content" onmouseover="javascript:ToggleClass(this,'highlight2');" onmouseout="javascript:ToggleClass(this,'highlight2');">
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 <td>{$log.date|escape:htmlall}</td>
 <td>{$log.time|escape:htmlall}</td>
 <td>{$log.level|escape:htmlall}</td>

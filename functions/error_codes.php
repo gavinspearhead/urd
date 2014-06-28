@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-06-22 00:25:41 +0200 (zo, 22 jun 2014) $
+ * $Rev: 3106 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: error_codes.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: error_codes.php 3106 2014-06-21 22:25:41Z gavinspearhead@gmail.com $
  */
 
 // urdd error codes -- start at 128
@@ -79,4 +79,6 @@ define ('ERR_NNTP_AUTH_FAILED', 182);
 define ('ERR_MESSAGE_NOT_FOUND', 183);
 define ('ERR_INVALID_SIGNATURE', 184);
 define ('ERR_SERVER_INACTIVE', 185);
+define ('ERR_SPOT_NOT_FOUND', 186);
+define ('ERR_NO_SUCH_USER', 187);
 define ('ERR_INTERNAL_ERROR', 1000001);

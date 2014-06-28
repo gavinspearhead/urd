@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  This file is part of Urd.
  *
@@ -22,4 +21,4 @@
  * $Id: index.php 1713 2010-08-22 12:08:17Z gavinspearhead $
  */
 
-header("Location: ../../html/index.php");
+header('Location: ../../html/index.php');

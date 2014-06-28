@@ -38,17 +38,17 @@ function get_permissions_array()
 {
     global $LN;
     $permissions = array(
-            ''     => $LN['config_perms']['none'],
-            '0400' => $LN['config_perms']['0400'],
-            '0600' => $LN['config_perms']['0600'],
-            '0640' => $LN['config_perms']['0640'],
-            '0644' => $LN['config_perms']['0644'],
-            '0660' => $LN['config_perms']['0660'],
-            '0664' => $LN['config_perms']['0664'],
-            '0666' => $LN['config_perms']['0666']
-            );
+        ''     => $LN['config_perms']['none'],
+        '0400' => $LN['config_perms']['0400'],
+        '0600' => $LN['config_perms']['0600'],
+        '0640' => $LN['config_perms']['0640'],
+        '0644' => $LN['config_perms']['0644'],
+        '0660' => $LN['config_perms']['0660'],
+        '0664' => $LN['config_perms']['0664'],
+        '0666' => $LN['config_perms']['0666']
+    );
 
-        return $permissions;
+    return $permissions;
 }
 
 function get_on_off_array()
@@ -66,10 +66,10 @@ function get_cleandir_dirs_array()
 {
     global $LN;
     $cleandir_dirs = array(
-            'all'       => $LN['all'],
-            'preview'   => $LN['preview'],
-            'tmp'       => $LN['temporary']
-            );
+        'all'       => $LN['all'],
+        'preview'   => $LN['preview'],
+        'tmp'       => $LN['temporary']
+    );
 
     return $cleandir_dirs;
 }
@@ -128,14 +128,14 @@ function urdd_connected(DatabaseConnection $db, $userid)
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
 
     return $uc->is_connected();
-
 }
 
 function show_config(DatabaseConnection $db, $userid)
 {
-    global $LN, $SETTYPES, $isadmin, $periods, $smarty;
+    assert(is_numeric($userid));
+    global $LN, $isadmin, $periods, $smarty;
 
-    $follow_link_msg = $shaping_msg = $auto_expire_msg = $urdd_restart_msg = $nntp_useauth_msg = $auto_reg_msg = $register_msg = $hiddenfiles_msg = $urdd_daemonise_msg = '';
+    $follow_link_msg = $shaping_msg = $auto_expire_msg = $urdd_restart_msg = $nntp_useauth_msg = $auto_reg_msg = $register_msg = $hiddenfiles_msg = $urdd_daemonise_msg = $nntp_all_servers_msg = '';
     $sendmail_msg = $webdownload_msg = $auto_download_msg = $check_nntp_connections_msg = $user_scripts_msg = $global_scripts_msg = $download_spots_comments_msg = $download_spots_reports_msg = '';
     $parse_nfo_msg = $keep_int_msg = $compress_nzb_msg = $webeditfile_msg = $config_viewfiles_msg = $auto_getnfo_msg = $allow_robots_msg = $clickjack_msg = $download_spots_images_msg = '';
     $config_groups_msg = $config_makenzb_msg = $config_usenzb_msg = $config_post_msg = $config_rss_msg = $config_sync_msg = $config_download_msg = $need_challenge_msg = $use_encrypted_passwords_msg = '';
@@ -172,7 +172,7 @@ function show_config(DatabaseConnection $db, $userid)
 
     $levels = user_levels::get_user_levels();
 
-    foreach ($SETTYPES as $t) {
+    foreach (urd_extsetinfo::$SETTYPES as $t) {
         if (!isset($settype_msg[$t])) {
             $settype_msg[$t] = verify_text($prefArray_root["settype_$t"]);
         }
@@ -203,7 +203,7 @@ function show_config(DatabaseConnection $db, $userid)
         $url_msg = verify_url($prefArray_root['baseurl']);
     }
     if (!isset($admin_email_msg)) {
-        $admin_email_msg = verify_email_address($prefArray_root['admin_email']);
+        $admin_email_msg = verify_email_address($prefArray_root['admin_email']) ;
     }
     if (!isset($unrar_path_msg)) {
         $unrar_path_msg = verify_prog($prefArray_root['unrar_path'], TRUE);
@@ -415,60 +415,58 @@ function show_config(DatabaseConnection $db, $userid)
     if (!isset($default_stylesheet_msg)) {
         $default_stylesheet_msg = verify_array($prefArray_root['default_stylesheet'], array_keys($stylesheets));
     }
+    if (!isset($spots_max_categories_msg)) {
+        $spots_max_categories_msg = verify_numeric($prefArray_root['spots_max_categories'], 0);
+    }
+
     if (!isset($maxbuttons_msg)) {
         $maxbuttons_msg = verify_numeric($prefArray_root['maxbuttons'], 0);
     }
     if (!isset($update_msg)) {
         $update_msg = verify_array($prefArray_root['period_update'], $periods->get_period_keys());
     }
+    $getspots_blacklist_msg = '';
     if ($prefArray_root['period_getspots_blacklist'] > 0) {
         if (!isset($getspots_msg)) {
             $getspots_blacklist_msg = verify_numeric($prefArray_root['time1_getspots_blacklist'], 0, 23);
             $getspots_blacklist_msg .= verify_numeric($prefArray_root['time2_getspots_blacklist'], 0, 59);
         }
-    } else {
-        $getspots_blacklist_msg = '';
     }
+    $getspots_whitelist_msg = '';
     if ($prefArray_root['period_getspots_whitelist'] > 0) {
         if (!isset($getspots_msg)) {
             $getspots_whitelist_msg = verify_numeric($prefArray_root['time1_getspots_whitelist'], 0, 23);
             $getspots_whitelist_msg .= verify_numeric($prefArray_root['time2_getspots_whitelist'], 0, 59);
         }
-    } else {
-        $getspots_whitelist_msg = '';
     }
 
+    $getspots_msg = '';
     if ($prefArray_root['period_getspots'] > 0) {
         if (!isset($getspots_msg)) {
             $getspots_msg = verify_numeric($prefArray_root['time1_getspots'], 0, 23);
             $getspots_msg .= verify_numeric($prefArray_root['time2_getspots'], 0, 59);
         }
-    } else {
-        $getspots_msg = '';
     }
+    $update_msg = '';
     if ($prefArray_root['period_update'] > 0) {
         if (!isset($update_msg)) {
             $update_msg = verify_numeric($prefArray_root['time1_update'], 0, 23);
             $update_msg .= verify_numeric($prefArray_root['time2_update'], 0, 59);
         }
-    } else {
-        $update_msg = '';
     }
+    $sendinfo_msg = '';
     if ($prefArray_root['period_sendinfo'] > 0) {
         if (!isset($sendinfo_msg)) {
             $sendinfo_msg = verify_numeric($prefArray_root['time1_sendinfo'], 0, 23);
             $sendinfo_msg .= verify_numeric($prefArray_root['time2_sendinfo'], 0, 59);
         }
-    } else {
-        $sendinfo_msg = '';
     }
+    $getinfo_msg = '';
     if ($prefArray_root['period_getinfo'] > 0) {
         if (!isset($getinfo_msg)) {
             $getinfo_msg = verify_numeric($prefArray_root['time1_getinfo'], 0, 23);
             $getinfo_msg .= verify_numeric($prefArray_root['time2_getinfo'], 0, 59);
         }
-    } else {
-        $getinfo_msg = '';
     }
 
     if (!isset($nglist_msg)) {
@@ -566,15 +564,14 @@ function show_config(DatabaseConnection $db, $userid)
         $yyencode_pars_msg = verify_text_opt('yyencode_pars', TRUE, NULL);
     }
 
-    $poster_blacklist = ($prefArray_root['poster_blacklist']);
-    $poster_blacklist = clean_textarea_data($poster_blacklist);
-    $poster_blacklist = clean_list($poster_blacklist);
-
-    $hidden_files_list = $prefArray_root['global_hidden_files_list'];
-    $hidden_files_list = str_replace('\n', "\n", $hidden_files_list);
-    $hidden_files_list = str_replace('\r', '', $hidden_files_list);
-    $hidden_files_list = clean_list($hidden_files_list);
-
+    $poster_blacklist = unserialize($prefArray_root['poster_blacklist']);
+    if ($poster_blacklist === FALSE) { 
+        $poster_blacklist = $prefArray_root['poster_blacklist'];
+    }
+    $hidden_files_list = unserialize($prefArray_root['global_hidden_files_list']);
+    if ($hidden_files_list === FALSE) { 
+        $hidden_files_list = $prefArray_root['global_hidden_files_list'];
+    }
     $module_config = urd_modules::get_urd_module_config($prefArray_root['modules']);
 
     $urdd_cfg = array (
@@ -586,6 +583,8 @@ function show_config(DatabaseConnection $db, $userid)
                 $nntp_maxdlthreads_msg, $prefArray_root['nntp_maxdlthreads'], NUMBER_BOX_SIZE),
             new pref_numeric_noformat(user_levels::CONFIG_LEVEL_MASTER, $LN['config_db_intensive_maxthreads'], 'db_intensive_maxthreads', $LN['config_db_intensive_maxthreads_msg'],
                 $db_intensive_maxthreads_msg, $prefArray_root['db_intensive_maxthreads'], NUMBER_BOX_SIZE),
+            new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_nntp_all_servers'], 'nntp_all_servers', $LN['config_nntp_all_servers_msg'],
+                $nntp_all_servers_msg, $prefArray_root['nntp_all_servers']),
             new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_check_nntp_connections'], 'check_nntp_connections', $LN['config_check_nntp_connections_msg'],
                 $check_nntp_connections_msg, $prefArray_root['check_nntp_connections']),
             new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_urdd_host'], 'urdd_host', $LN['config_urdd_host_msg'], $urdd_host_msg, $prefArray_root['urdd_host'], TEXT_BOX_SIZE),
@@ -600,16 +599,16 @@ function show_config(DatabaseConnection $db, $userid)
             new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_pidpath'], 'pidpath', $LN['config_pidpath_msg'], $pidpath_msg, $prefArray_root['pidpath'], TEXT_BOX_SIZE),
             new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_uid'], 'urdd_uid', $LN['config_urdd_uid_msg'], $urdd_uid_msg, $prefArray_root['urdd_uid'], TEXT_BOX_SIZE),
             new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_gid'], 'urdd_gid', $LN['config_urdd_gid_msg'], $urdd_gid_msg, $prefArray_root['urdd_gid'], TEXT_BOX_SIZE)
-            );
+                );
 
     $networking = array (
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_admin_email'], 'admin_email', $LN['config_admin_email_msg'], $admin_email_msg, $prefArray_root['admin_email'], TEXT_BOX_SIZE),
+            new pref_email(user_levels::CONFIG_LEVEL_BASIC, $LN['config_admin_email'], 'admin_email', $LN['config_admin_email_msg'], $admin_email_msg, $prefArray_root['admin_email'], TEXT_BOX_SIZE),
             new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_baseurl'], 'baseurl', $LN['config_baseurl_msg'], $url_msg, $prefArray_root['baseurl'], TEXT_BOX_SIZE),
             new pref_numeric(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_socket_timeout'], 'socket_timeout', $LN['config_socket_timeout_msg'],
                 $socket_timeout_msg, $prefArray_root['socket_timeout'], NUMBER_BOX_SIZE),
             new pref_numeric(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_connection_timeout'], 'urdd_connection_timeout', $LN['config_urdd_connection_timeout_msg'], $urdd_connection_timeout_msg, $prefArray_root['urdd_connection_timeout'], NUMBER_BOX_SIZE),
             new pref_checkbox(user_levels::CONFIG_LEVEL_MASTER, $LN['config_shaping'], 'shaping', $LN['config_shaping_msg'],
-                $shaping_msg, $prefArray_root['shaping'], "toggle_hide('shaping1', 'hidden'); toggle_hide('shaping2', 'hidden')"),
+                $shaping_msg, $prefArray_root['shaping'], "$('#shaping1').toggleClass('hidden'); $('#shaping2').toggleClass('hidden')"),
             new pref_numeric(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxdl'], 'maxdl', $LN['config_maxdl_msg'],
                 $maxdl_msg, $prefArray_root['maxdl'], NUMBER_BOX_SIZE, NULL, 'shaping1', $prefArray_root['shaping'] ? NULL : 'hidden'),
             new pref_numeric(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxul'], 'maxul', $LN['config_maxul_msg'],
@@ -626,7 +625,7 @@ function show_config(DatabaseConnection $db, $userid)
     }
     if ($module_config[urd_modules::URD_CLASS_DOWNLOAD]) {
         $download_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_allow_global_scripts'], 'allow_global_scripts', $LN['config_allow_global_scripts_msg'],
-                $global_scripts_msg, $prefArray_root['allow_global_scripts'], "toggle_hide('hide_userscripts', 'hidden')");
+                $global_scripts_msg, $prefArray_root['allow_global_scripts'], "$('hide_userscripts').toggleClass('hidden')");
         $download_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_allow_user_scripts'], 'allow_user_scripts', $LN['config_allow_user_scripts_msg'],
                 $user_scripts_msg, $prefArray_root['allow_user_scripts'], NULL, 'hide_userscripts', $prefArray_root['allow_global_scripts'] == 1 ? NULL : 'hidden');
         $download_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_auto_download'], 'auto_download', $LN['config_auto_download_msg'],
@@ -654,7 +653,7 @@ function show_config(DatabaseConnection $db, $userid)
                 $trickle_path_msg, $prefArray_root['trickle_path'], TEXT_BOX_SIZE),
             new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_subdownloader_path'], 'subdownloader_path', $LN['config_subdownloader_path_msg'],
                 $subdownloader_path_msg, $prefArray_root['subdownloader_path'], TEXT_BOX_SIZE)
-            );
+                );
 
     $prog_params = array(
             new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_pars'], 'urdd_pars', $LN['config_urdd_pars_msg'],
@@ -677,8 +676,8 @@ function show_config(DatabaseConnection $db, $userid)
 
     // we show this one if URDD is offline
     $maintenance_offline = array(
-            new pref_plain(user_levels::CONFIG_LEVEL_BASIC, $LN['urdddisabled'], $LN['urdddisabled'], $LN['enableurddfirst'], NULL, NULL)
-            );
+        new pref_plain(user_levels::CONFIG_LEVEL_BASIC, $LN['urdddisabled'], $LN['urdddisabled'], $LN['enableurddfirst'], NULL, NULL)
+    );
 
     // Maintenance  options
     $maintenance[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_update'], $LN['config_period_update_msg'],
@@ -705,9 +704,9 @@ function show_config(DatabaseConnection $db, $userid)
 
     if ($module_config[urd_modules::URD_CLASS_SYNC]) {
         $maintenance[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_sendinfo'], $LN['config_period_sendinfo_msg'],
-                $sendinfo_msg, 'period_sendinfo', $prefArray_root['period_sendinfo'], 'time1_sendinfo', $prefArray_root['time1_sendinfo'], 'time2_sendinfo', $prefArray_root['time2_sendinfo']);
+            $sendinfo_msg, 'period_sendinfo', $prefArray_root['period_sendinfo'], 'time1_sendinfo', $prefArray_root['time1_sendinfo'], 'time2_sendinfo', $prefArray_root['time2_sendinfo']);
         $maintenance[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getinfo'], $LN['config_period_getinfo_msg'],
-                $getinfo_msg, 'period_getinfo', $prefArray_root['period_getinfo'], 'time1_getinfo', $prefArray_root['time1_getinfo'], 'time2_getinfo', $prefArray_root['time2_getinfo']);
+            $getinfo_msg, 'period_getinfo', $prefArray_root['period_getinfo'], 'time1_getinfo', $prefArray_root['time1_getinfo'], 'time2_getinfo', $prefArray_root['time2_getinfo']);
     }
 
     // Global settings
@@ -730,8 +729,8 @@ function show_config(DatabaseConnection $db, $userid)
     $global_settings[] = new pref_numeric_noformat(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxbuttons'], 'maxbuttons', $LN['config_maxbuttons_msg'],
             $maxbuttons_msg, $prefArray_root['maxbuttons'], NUMBER_BOX_SIZE);
 
-        $notify_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_sendmail'], 'sendmail', $LN['config_sendmail_msg'],
-            $sendmail_msg, $prefArray_root['sendmail'], 'toggle_hide(\'hide_maa\', \'hidden\');toggle_hide(\'hide_macta\', \'hidden\');toggle_hide(\'hide_mad\', \'hidden\');toggle_hide(\'hide_mds\', \'hidden\');toggle_hide(\'hide_mnis\', \'hidden\');toggle_hide(\'hide_mnp\', \'hidden\');toggle_hide(\'hide_mnu\', \'hidden\');toggle_hide(\'hide_mpr\', \'hidden\');');
+    $notify_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_sendmail'], 'sendmail', $LN['config_sendmail_msg'],
+            $sendmail_msg, $prefArray_root['sendmail'], '$(\'#hide_maa\').toggleClass(\'hidden\');$(\'#hide_macta\').toggleClass(\'hidden\');$(\'#hide_mad\').toggleClass(\'hidden\');$(\'#hide_mds\').toggleClass(\'hidden\');$(\'#hide_mnis\').toggleClass(\'hidden\');$(\'#hide_mnp\').toggleClass(\'hidden\');$(\'#hide_mnu\').toggleClass(\'hidden\');$(\'#hide_mpr\').toggleClass(\'hidden\');');
 
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_account_activated'], 'mail_account_activated', $LN['config_mail_account_activated_msg'],
             $mail_account_activated_msg, $mail_templates, $prefArray_root['mail_account_activated'], NULL, 'hide_maa',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
@@ -775,7 +774,7 @@ function show_config(DatabaseConnection $db, $userid)
         $global_settings[] = new pref_numeric(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_maxpreviewsize'], 'maxpreviewsize', $LN['config_maxpreviewsize_msg'],
                 $maxpreviewsize_msg, $prefArray_root['maxpreviewsize'], NUMBER_BOX_SIZE);
         $global_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_global_hiddenfiles'], 'global_hiddenfiles', $LN['config_global_hiddenfiles_msg'],
-                $hiddenfiles_msg, $prefArray_root['global_hiddenfiles'], "toggle_hide('hidfil', 'hidden')");
+                $hiddenfiles_msg, $prefArray_root['global_hiddenfiles'], "$('#hidfil').toggleClass('hidden')");
         $global_settings[] = new pref_textarea(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_global_hidden_files_list'], 'global_hidden_files_list', $LN['config_global_hidden_files_list_msg'],
                 $hidden_files_list_msg, $hidden_files_list, 10, 40, NULL, 'hidfil', $prefArray_root['global_hiddenfiles'] ? NULL : 'hidden');
         $global_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_compress_nzb'], 'compress_nzb', $LN['config_compress_nzb_msg'],
@@ -783,7 +782,7 @@ function show_config(DatabaseConnection $db, $userid)
     }
 
     $global_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_register'], 'register', $LN['config_register_msg'],
-            $register_msg, $prefArray_root['register'], "toggle_hide('auto_reg_tr', 'hidden'); toggle_value('register')");
+            $register_msg, $prefArray_root['register'], "$('#auto_reg_tr').toggleClass('hidden');");
     $global_settings[] =  new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_auto_reg'], 'auto_reg', $LN['config_auto_reg_msg'],
             $auto_reg_msg, $prefArray_root['auto_reg'], NULL, 'auto_reg_tr', $prefArray_root['register'] ? '' : 'hidden');
 
@@ -815,6 +814,8 @@ function show_config(DatabaseConnection $db, $userid)
                 $spots_expire_time_msg, $prefArray_root['spots_expire_time'], NUMBER_BOX_SIZE);
         $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spot_expire_spam_count'], 'spot_expire_spam_count', $LN['config_spot_expire_spam_count_msg'],
                 $spot_expire_spam_count_msg, $prefArray_root['spot_expire_spam_count'], NUMBER_BOX_SIZE);
+        $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_max_categories'], 'spots_max_categories', $LN['config_spots_max_categories_msg'],
+                $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
     }
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_default_expire_time'], 'default_expire_time', $LN['config_default_expire_time_msg'],
             $default_expire_time_msg, $prefArray_root['default_expire_time'], NUMBER_BOX_SIZE);
@@ -850,11 +851,11 @@ function show_config(DatabaseConnection $db, $userid)
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxheaders'], 'maxheaders', $LN['config_maxheaders_msg'],
             $maxheaders_msg, $prefArray_root['maxheaders'], NUMBER_BOX_SIZE);
     $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_auto_getnfo'], 'auto_getnfo', $LN['config_auto_getnfo_msg'],
-            $auto_getnfo_msg, $prefArray_root['auto_getnfo'], "toggle_hide('follow_link_tr', 'hidden')");
+            $auto_getnfo_msg, $prefArray_root['auto_getnfo'], "$('#follow_link_tr').toggleClass('hidden')");
     $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_follow_link'], 'follow_link', $LN['config_follow_link_msg'],
             $follow_link_msg, $prefArray_root['follow_link'], NULL, 'follow_link_tr', $prefArray_root['auto_getnfo'] ? '' : 'hidden');
-    $set_updating[] = new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_poster_blacklist'], 'poster_blacklist',$LN['config_poster_blacklist_msg'], '',
-            utf8_decode($poster_blacklist), 10, 40);
+    $set_updating[] = new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_poster_blacklist'], 'poster_blacklist', $LN['config_poster_blacklist_msg'], '',
+            $poster_blacklist, 10, 40);
 
     $modules = array(
             new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_module_groups'], 'module[' . urd_modules::URD_CLASS_GROUPS . ']', $LN['config_module_groups_msg'],
@@ -877,13 +878,18 @@ function show_config(DatabaseConnection $db, $userid)
                 $module_msg[urd_modules::URD_CLASS_VIEWFILES], $module_config[urd_modules::URD_CLASS_VIEWFILES]),);
 
     $format_strings = array();
-    foreach ($SETTYPES as $t) {
+    foreach (urd_extsetinfo::$SETTYPES as $t) {
         $format_strings[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['settype'][$t], "settype_$t", $LN['settype_msg'][$t], $settype_msg[$t], $prefArray_root["settype_$t"], TEXT_BOX_SIZE);
     }
+    $custom = array();
+    $custom_prefs = get_custom_prefs($db, user_status::SUPER_USERID);
+    foreach( $custom_prefs as $key => $value) {
+        $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], $key, $LN['pref_custom_msg'], '', $value, TEXT_BOX_SIZE);
+    }
+    $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], '__new', $LN['pref_custom_msg'], '', '', TEXT_BOX_SIZE);
 
     $pref_list[] = new pref_list('config_globalsettings', $global_settings);
     $pref_list[] = new pref_list('pref_downloading', $download_settings);
-
     $pref_list[] = new pref_list('config_notifysettings', $notify_settings);
     $pref_list[] = new pref_list('config_urdd_head', $urdd_cfg);
     $pref_list[] = new pref_list('config_networking', $networking);
@@ -897,8 +903,10 @@ function show_config(DatabaseConnection $db, $userid)
     } else {
         $pref_list[] = new pref_list('config_maintenance', $maintenance_offline);
     }
-    init_smarty($LN['config_title'], 0);
-
+    $pref_list[] = new pref_list('pref_custom_values', $custom);
+    init_smarty('', 0);
+    $current_tab = get_post('current_tab', '');
+    $smarty->assign('current_tab',  $current_tab);
     $smarty->assign('level', 		$pref_level);
     $smarty->assign('pref_list', 	$pref_list);
     $smarty->display('ajax_settings.tpl');
@@ -906,17 +914,18 @@ function show_config(DatabaseConnection $db, $userid)
 
 function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$value)
 {
-    global $LN, $isadmin, $SETTYPES;
+    global $LN, $isadmin;
 
-    foreach ($SETTYPES as $t) {
+    foreach (urd_extsetinfo::$SETTYPES as $t) {
         if ($name == "settype_$t") {
             $rv = verify_text($value);
 
             return $rv;
         }
     }
-
     switch ($name) {
+        case 'pref_level':
+            return verify_array($value, array_keys(user_levels::get_user_levels()));
         case 'urdd_maxthreads':
             $rv = verify_numeric($value, 1);
             $value = unformat_size($value, 1000);
@@ -1305,8 +1314,6 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
             $value = unformat_size($value, 1000);
 
             return $rv;
-        case '':
-            return $rv;
         default:
             throw new exception ($LN['error_invalidvalue']);
     }
@@ -1338,7 +1345,6 @@ function set_period_configs(DatabaseConnection $db, urdd_client $uc, $name, $val
         case 'period_getspots_blacklist':
             $cmd = urdd_protocol::COMMAND_GETBLACKLIST;
             break;
-
         case 'period_getspots_whitelist':
             $cmd = urdd_protocol::COMMAND_GETWHITELIST;
             break;
@@ -1380,6 +1386,9 @@ function set_period_configs(DatabaseConnection $db, urdd_client $uc, $name, $val
         if ($rv !=  '') {
             throw new exception($rv['msg']);
         }
+        set_config($db, $name, $value);
+        set_config($db, $t1, $time1);
+        set_config($db, $t2, $time2);
         process_schedule($uc, $value, $time1, $time2, $cmd, $par1, $par2);
     } else {
         set_config($db, $name, 0);
@@ -1403,31 +1412,31 @@ function verify_bool(DatabaseConnection $db, $name, urdd_client $uc, $value)
         case 'module[' . urd_modules::URD_CLASS_SPOTS . ']':
             $mod = urd_modules::URD_CLASS_SPOTS;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         case 'module[' . urd_modules::URD_CLASS_MAKENZB. ']':
             $mod = urd_modules::URD_CLASS_MAKENZB;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         case 'module[' . urd_modules::URD_CLASS_RSS . ']':
             $mod = urd_modules::URD_CLASS_RSS;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         case 'module[' . urd_modules::URD_CLASS_POST . ']':
             $mod = urd_modules::URD_CLASS_POST;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         case 'module[' . urd_modules::URD_CLASS_SYNC . ']':
             $mod = urd_modules::URD_CLASS_SYNC;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         case 'module[' . urd_modules::URD_CLASS_DOWNLOAD . ']':
             $mod = urd_modules::URD_CLASS_DOWNLOAD;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         case 'module[' . urd_modules::URD_CLASS_VIEWFILES. ']':
             $mod = urd_modules::URD_CLASS_VIEWFILES;
             $uc->set('module', $mod, $value ? 'on' : 'off');
-            break ;
+            break;
         default:
             set_config($db, $name, $value);
     }
@@ -1435,10 +1444,14 @@ function verify_bool(DatabaseConnection $db, $name, urdd_client $uc, $value)
 
 function set_configuration(DatabaseConnection $db, urdd_client $uc, $userid, $name, $value, $type)
 {
+    assert(is_numeric($userid));
     global $LN;
 
-
     switch ($type) {
+        case 'custom_text':
+            $orig_name = get_post('original_name');
+            $rv = set_custom_text($db, user_status::SUPER_USERID, $name, $value, $orig_name);
+            break;
         case 'period':
             $time1 = get_request('time1');
             $time2 = get_request('time2');
@@ -1446,8 +1459,8 @@ function set_configuration(DatabaseConnection $db, urdd_client $uc, $userid, $na
             set_period_configs($db, $uc, $name, $value, $time1, $time2, $extra);
             break;
         case 'checkbox':
-            if (!in_array($value, array(0,1,2))) {
-                throw new exception ($LN['error_invalidvalue'] .  "'<i>$value</i>'");
+            if (!in_array($value, array(0, 1, 2))) {
+                throw new exception ($LN['error_invalidvalue'] . "'<i>$value</i>'");
             } 
             verify_bool($db, $name, $uc, $value);
             break;
@@ -1455,6 +1468,7 @@ function set_configuration(DatabaseConnection $db, urdd_client $uc, $userid, $na
             //            $rv = set_multi_select($db, $userid, $name, $value);
             break;
         case 'text':
+        case 'email':
         case 'textarea':
         case 'select':
             $rv = verify_text_field($db, $uc, $name, $value);
@@ -1464,7 +1478,11 @@ function set_configuration(DatabaseConnection $db, urdd_client $uc, $userid, $na
             if ($name == 'scheduler' && urdd_connected($db, $userid)) {
                 $uc->set('scheduler', $value);
             }
-            set_config($db, $name, $value);
+            if ($name == 'pref_level') { 
+                set_pref($db, $name, $value, $userid); // pref level is a user setting, not a config, but here for convenience
+            } else {
+                set_config($db, $name, $value);
+            }
             break;
         default:
             throw new exception ($LN['error_invalidvalue']);
@@ -1495,7 +1513,9 @@ function get_ln_val($name)
         case 'module[' . urd_modules::URD_CLASS_VIEWFILES. ']':
             return $LN['config_module_viewfiles'];
     }
-
+    if ($name == 'pref_level') {
+        return $LN['pref_level'];
+    }
     if (substr($name, 0, 8) == 'settype_' && is_numeric(substr($name, 8))) {
         return $LN['settype'][substr($name, 8)];
     } else {
@@ -1504,20 +1524,37 @@ function get_ln_val($name)
 }
 
 switch ($cmd) {
+    case 'reset':
+        challenge::verify_challenge_text($_POST['challenge']);
+        reset_config($db);
+        die_html('OK');
+        break;
+
     case 'show':
         init_smarty('', 0);
         show_config($db, $userid);
+        break;
+    case 'delete':
+        challenge::verify_challenge_text($_POST['challenge']);
+        $option = get_post('option');
+        unset_config($db, "__custom_$option");
+        die_html('OK');
         break;
     case 'set':
         $rprefs = load_config($db);
         $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
         challenge::verify_challenge_text($_POST['challenge']);
         $option = get_post('option');
+        if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
         $value = get_post('value');
         $type = get_post('type');
         set_configuration($db, $uc, $userid, $option, $value, $type);
         config_cache::clear_all();
-        die_html('OK' . $LN['saved'] . ': ' . get_ln_val($option));
+        if ($type == 'custom_text') {
+            die_html('OK' . $LN['saved'] . ': ' . get_ln_val('custom') . " $option ");
+        } else {
+            die_html('OK' . $LN['saved'] . ': ' . get_ln_val($option));
+        }
         break;
     case 'load_settings':
         challenge::verify_challenge_text($_POST['challenge']);
@@ -1535,9 +1572,9 @@ switch ($cmd) {
         die_html('OK');
         break;
     case 'export_settings':
-        export_settings($db, 'config', "urd_config.xml");
+        export_settings($db, 'config', 'urd_config.xml');
         break;
     default:
-        throw new exception("O-oh - Unknown command $cmd" . implode($_POST, ' '));
+        throw new exception("O-oh - Unknown command $cmd!" . implode($_POST, ' '));
         break;
 }

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-06 00:06:11 +0200 (di, 06 aug 2013) $
- * $Rev: 2891 $
+ * $LastChangedDate: 2014-04-27 21:55:06 +0200 (zo, 27 apr 2014) $
+ * $Rev: 3032 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_update_session.php 2891 2013-08-05 22:06:11Z gavinspearhead@gmail.com $
+ * $Id: ajax_update_session.php 3032 2014-04-27 19:55:06Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
@@ -52,6 +52,5 @@ if ($type == 'post') {
 } elseif ($type == 'control') {
     $_SESSION['control_status'] = (++$_SESSION['control_status'] % 2);
 }
-
 
 die_html('OK');

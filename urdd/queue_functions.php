@@ -17,34 +17,22 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:50:58 +0200 (di, 03 sep 2013) $
- * $Rev: 2911 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: queue_functions.php 2911 2013-09-03 21:50:58Z gavinspearhead@gmail.com $
+ * $Id: queue_functions.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathqf = realpath(dirname(__FILE__));
-
-require_once "$pathqf/../functions/autoincludes.php";
-require_once "$pathqf/../functions/defines.php";
-require_once "$pathqf/../config.php";
-require_once "$pathqf/../functions/functions.php";
-require_once "$pathqf/urdd_command.php";
-require_once "$pathqf/urdd_protocol.php";
-require_once "$pathqf/urdd_error.php";
-require_once "$pathqf/../functions/urd_log.php";
-
-function queue_generic(DatabaseConnection $db, server_data &$servers, $userid, $command, $arg, $priority=DEFAULT_PRIORITY, $restart = TRUE, $paused=FALSE)
+function queue_generic(DatabaseConnection $db, server_data &$servers, $userid, $command, $arg, $priority=DEFAULT_PRIORITY, $restart=TRUE, $paused=FALSE)
 {
     assert(is_numeric($priority) && is_numeric($userid) && is_bool($restart));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     try {
-        $username = get_username($db, $userid);
-        $item = new action($command, $arg, $username, $userid, $paused);
+        $item = new action($command, $arg, $userid, $paused);
     } catch (exception $e) {
         return urdd_protocol::get_response(500); // should not happen....
     }
@@ -67,12 +55,11 @@ function queue_generic(DatabaseConnection $db, server_data &$servers, $userid, $
 
 function queue_addspotdata(DatabaseConnection $db, server_data &$servers, array $arg_list, $userid, $priority=DEFAULT_PRIORITY)
 {
-    assert(is_numeric($priority)  && is_numeric($userid));
+    assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     // TODO set database/servers to lock download
-    if (isset($arg_list[0]) && is_numeric($arg_list[0]) && isset($arg_list[1])) {
-        $username = get_username($db, $userid);
-        $item = new action(urdd_protocol::COMMAND_ADDSPOTDATA, implode (' ', $arg_list), $username, $userid);
+    if (isset($arg_list[0], $arg_list[1]) && is_numeric($arg_list[0])) {
+        $item = new action(urdd_protocol::COMMAND_ADDSPOTDATA, implode (' ', $arg_list), $userid);
         if ($servers->has_equal($item)) {
             $response = urdd_protocol::get_response(403);
         } else {
@@ -92,16 +79,14 @@ function queue_addspotdata(DatabaseConnection $db, server_data &$servers, array 
     return $response;
 }
 
-
 function queue_adddata(DatabaseConnection $db, server_data &$servers, array $arg_list, $userid, $priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $preview = FALSE;
     // TODO set database/servers to lock download
-    if (isset($arg_list[0]) && is_numeric($arg_list[0]) && isset($arg_list[1]) && isset($arg_list[2])) {
-        $username = get_username($db, $userid);
-        $item = new action(urdd_protocol::COMMAND_ADDDATA, implode (' ', $arg_list), $username, $userid);
+    if (isset($arg_list[0], $arg_list[1], $arg_list[2]) && is_numeric($arg_list[0])) {
+        $item = new action(urdd_protocol::COMMAND_ADDDATA, implode (' ', $arg_list), $userid);
         if ((isset($arg_list[3]) && strtolower($arg_list[3]) == 'preview') || (isset($arg_list[4]) && strtolower($arg_list[4]) == 'preview')) {
             $preview = TRUE;
             $item->set_preview(TRUE);
@@ -184,7 +169,7 @@ function queue_merge_sets(DatabaseConnection $db, server_data &$servers, $arg, $
 
 function queue_cleandir(DatabaseConnection $db, server_data &$servers, $arg, $userid, $priority=DEFAULT_PRIORITY)
 {
-    assert(is_numeric($priority)  && is_numeric($userid));
+    assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
 
     return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_CLEANDIR, $arg, $priority);
@@ -210,10 +195,11 @@ function queue_getspot_comments(DatabaseConnection $db, server_data &$servers, $
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item1 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $username, $userid);
-    $item2 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $username, $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)) {
+    $item1 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
+    $item2 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
+    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
+    $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
+    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3)|| $servers->has_equal($item4)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -224,10 +210,11 @@ function queue_getspot_reports(DatabaseConnection $db, server_data &$servers, $u
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item1 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $username, $userid);
-    $item2 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $username, $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) ) {
+    $item1 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
+    $item2 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
+    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
+    $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
+    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3)|| $servers->has_equal($item4) ) {
         return urdd_protocol::get_response(403);
     }
 
@@ -236,12 +223,13 @@ function queue_getspot_reports(DatabaseConnection $db, server_data &$servers, $u
 
 function queue_getspot_images(DatabaseConnection $db, server_data &$servers, $userid, $priority=DEFAULT_PRIORITY)
 {
-    assert(is_numeric($priority)  && is_numeric($userid));
+    assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item1 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $username, $userid);
-    $item3 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $username, $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item3)) {
+    $item1 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
+    $item2 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
+    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
+    $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
+    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3)|| $servers->has_equal($item4)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -252,13 +240,13 @@ function queue_getspots(DatabaseConnection $db, server_data &$servers, $userid, 
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $username, $userid);
-    $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $username, $userid);
-    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $username, $userid);
-    $item4 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $username, $userid);
-    $item5 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $username, $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item5) || $servers->has_equal($item4)) {
+    $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
+    $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
+    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
+    $item4 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
+    $item5 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
+    $item6 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item4) || $servers->has_equal($item5)|| $servers->has_equal($item6)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -269,12 +257,13 @@ function queue_expire_spots(DatabaseConnection $db, server_data &$servers, $user
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-
-    $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $username, $userid);
-    $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $username, $userid);
-    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $username, $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)) {
+    $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
+    $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
+    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
+    $item4 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
+    $item5 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
+    $item6 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item5) || $servers->has_equal($item4)|| $servers->has_equal($item6)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -285,12 +274,13 @@ function queue_purge_spots(DatabaseConnection $db, server_data &$servers, $useri
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-
-    $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $username, $userid);
-    $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $username, $userid);
-    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $username, $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)) {
+    $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
+    $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
+    $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
+    $item4 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
+    $item5 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
+    $item6 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item5) || $servers->has_equal($item4)|| $servers->has_equal($item6)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -301,8 +291,7 @@ function queue_getwhitelist(DatabaseConnection $db, server_data &$servers, $user
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item = new action(urdd_protocol::COMMAND_GETWHITELIST, '', $username, $userid);
+    $item = new action(urdd_protocol::COMMAND_GETWHITELIST, '', $userid);
     if ($servers->has_equal($item)) {
         return urdd_protocol::get_response(403);
     }
@@ -314,8 +303,7 @@ function queue_getblacklist(DatabaseConnection $db, server_data &$servers, $user
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item = new action(urdd_protocol::COMMAND_GETBLACKLIST, '', $username, $userid);
+    $item = new action(urdd_protocol::COMMAND_GETBLACKLIST, '', $userid);
     if ($servers->has_equal($item)) {
         return urdd_protocol::get_response(403);
     }
@@ -327,8 +315,7 @@ function queue_getnfo(DatabaseConnection $db, server_data &$servers, $userid, $p
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item = new action(urdd_protocol::COMMAND_GETNFO, '', $username, $userid);
+    $item = new action(urdd_protocol::COMMAND_GETNFO, '', $userid);
     if ($servers->has_equal($item)) {
         return urdd_protocol::get_response(403);
     }
@@ -358,8 +345,7 @@ function queue_getsendsetinfo(DatabaseConnection $db, $cmd, server_data &$server
 {
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $username = get_username($db, $userid);
-    $item = new action(urdd_protocol::COMMAND_SENDSETINFO, '', $username, $userid);
+    $item = new action(urdd_protocol::COMMAND_SENDSETINFO, '', $userid);
     if ($servers->has_equal($item)) {
         return urdd_protocol::get_response(403);
     }
@@ -369,9 +355,8 @@ function queue_getsendsetinfo(DatabaseConnection $db, $cmd, server_data &$server
         if ($curl_mod === FALSE) {
             $err_str = 'curl ';
         }
-        trim($err_str);
 
-        return sprintf(urdd_protocol::get_response(504), $err_str);
+        return sprintf(urdd_protocol::get_response(504), trim($err_str));
     }
 
     return queue_generic($db, $servers, $userid, $cmd, '', $priority);
@@ -384,11 +369,10 @@ function queue_gensets(DatabaseConnection $db, server_data &$servers, array $arg
     if (!isset($arg_list[0])) {
         $response = urdd_protocol::get_response(501);
     } elseif (is_numeric($arg_list[0])) {
-        $username = get_username($db, $userid);
-        $item = new action(urdd_protocol::COMMAND_GENSETS, $arg_list[0], $username, $userid);
-        $item2 = new action(urdd_protocol::COMMAND_UPDATE, $arg_list[0], $username, $userid);
-        $item3 = new action(urdd_protocol::COMMAND_PURGE, $arg_list[0], $username, $userid);
-        $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arg_list[0], $username, $userid);
+        $item = new action(urdd_protocol::COMMAND_GENSETS, $arg_list[0], $userid);
+        $item2 = new action(urdd_protocol::COMMAND_UPDATE, $arg_list[0], $userid);
+        $item3 = new action(urdd_protocol::COMMAND_PURGE, $arg_list[0], $userid);
+        $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arg_list[0], $userid);
         if ($servers->has_equal($item) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4)) {
             $response = urdd_protocol::get_response(403);
         } else {
@@ -433,14 +417,13 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
         }
     }
     if ($url !== NULL) {
-        $username = get_username($db, $userid);
         if ($dlid === NULL) {
             list($code, $dlid) = do_create_download($db, $servers, $userid, NULL, FALSE);
             if ($start_time == 0) {
                 set_start_time($db, $dlid, time());
             } else {
                 set_start_time($db, $dlid, $start_time);
-                $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid", $username, $userid, TRUE);
+                $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid", $userid, TRUE);
                 $job = new job($item_unpause, $start_time, NULL); //try again in XX secs
                 $servers->add_schedule($db, $job);
             }
@@ -450,7 +433,7 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
                 return $response;
             }
         }
-        $item = new action(urdd_protocol::COMMAND_PARSE_NZB, "$dlid '{$url}'", $username, $userid);
+        $item = new action(urdd_protocol::COMMAND_PARSE_NZB, "$dlid '{$url}'", $userid);
         $res = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
         if ($res !== FALSE) {
             inc_dl_lock($db, $dlid); // lock the dowload so it won't start until it is unlocked and all setdata is added to the article tabels
@@ -465,7 +448,6 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
     return $response;
 }
 
-
 function queue_check_version(DatabaseConnection $db, server_data &$servers, $userid, $priority)
 {
     assert(is_numeric($priority) && is_numeric($userid));
@@ -473,7 +455,6 @@ function queue_check_version(DatabaseConnection $db, server_data &$servers, $use
 
     return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_CHECK_VERSION, '', $priority);
 }
-
 
 function queue_purge_expire_all(DatabaseConnection $db, $cmd, server_data &$servers, $userid, $priority=DEFAULT_PRIORITY)
 {
@@ -494,8 +475,7 @@ function queue_purge_expire_all(DatabaseConnection $db, $cmd, server_data &$serv
     if ($ids !== FALSE) {
         $rv = TRUE;
         foreach ($ids as $arr) {
-            $username = get_username($db, $userid);
-            $item = new action($cmd, $arr, $username, $userid);
+            $item = new action($cmd, $arr, $userid);
             if ($servers->has_equal($item)) {
                 ; // what to do     $response = $responses[403];
             } else {
@@ -518,7 +498,6 @@ function queue_purge_expire_all(DatabaseConnection $db, $cmd, server_data &$serv
     return $response;
 }
 
-
 function queue_gensets_all(DatabaseConnection $db, server_data &$servers, $userid, $priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid));
@@ -530,11 +509,10 @@ function queue_gensets_all(DatabaseConnection $db, server_data &$servers, $useri
     if ($groups !== FALSE) {
         $rv = TRUE;
         foreach ($groups as $arr) {
-            $username = get_username($db, $userid);
-            $item = new action(urdd_protocol::COMMAND_GENSETS, $arr, $username, $userid);
-            $item2 = new action(urdd_protocol::COMMAND_UPDATE, $arr, $username, $userid);
-            $item3 = new action(urdd_protocol::COMMAND_EXPIRE, $arr, $username, $userid);
-            $item4 = new action(urdd_protocol::COMMAND_PURGE, $arr, $username, $userid);
+            $item = new action(urdd_protocol::COMMAND_GENSETS, $arr, $userid);
+            $item2 = new action(urdd_protocol::COMMAND_UPDATE, $arr, $userid);
+            $item3 = new action(urdd_protocol::COMMAND_EXPIRE, $arr, $userid);
+            $item4 = new action(urdd_protocol::COMMAND_PURGE, $arr, $userid);
             if (!$servers->has_equal($item) && !$servers->has_equal($item2) && !$servers->has_equal($item3) && !$servers->has_equal($item4)) {
                 $rv = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
                 if ($rv === FALSE) {
@@ -557,7 +535,6 @@ function queue_gensets_all(DatabaseConnection $db, server_data &$servers, $useri
     return $response;
 }
 
-
 function queue_update_all(DatabaseConnection $db, server_data &$servers, $userid, $priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid));
@@ -570,11 +547,10 @@ function queue_update_all(DatabaseConnection $db, server_data &$servers, $userid
     if ($groups !== FALSE) {
         $rv = TRUE;
         foreach ($groups as $arr) {
-            $username = get_username($db, $userid);
-            $item = new action(urdd_protocol::COMMAND_UPDATE, $arr, $username, $userid);
-            $item3 = new action(urdd_protocol::COMMAND_PURGE, $arr, $username, $userid);
-            $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arr, $username, $userid);
-            $item2 = new action(urdd_protocol::COMMAND_GENSETS, $arr, $username, $userid);
+            $item = new action(urdd_protocol::COMMAND_UPDATE, $arr, $userid);
+            $item3 = new action(urdd_protocol::COMMAND_PURGE, $arr, $userid);
+            $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arr, $userid);
+            $item2 = new action(urdd_protocol::COMMAND_GENSETS, $arr, $userid);
             if (!$servers->has_equal($item) && ! $servers->has_equal($item2) && !$servers->has_equal($item3) && !$servers->has_equal($item4)) {
                 $rv = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
                 if ($rv === FALSE) {
@@ -597,7 +573,6 @@ function queue_update_all(DatabaseConnection $db, server_data &$servers, $userid
     return $response;
 }
 
-
 function queue_update_rss_all(DatabaseConnection $db, server_data &$servers, $userid, $priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid));
@@ -610,8 +585,7 @@ function queue_update_rss_all(DatabaseConnection $db, server_data &$servers, $us
     if ($feeds !== FALSE) {
         $rv = TRUE;
         foreach ($feeds as $arr) {
-            $username = get_username($db, $userid);
-            $item = new action(urdd_protocol::COMMAND_UPDATE_RSS, $arr, $username, $userid);
+            $item = new action(urdd_protocol::COMMAND_UPDATE_RSS, $arr, $userid);
             if (!$servers->has_equal($item)) {
                 $rv = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
                 if ($rv === FALSE) {
@@ -634,25 +608,23 @@ function queue_update_rss_all(DatabaseConnection $db, server_data &$servers, $us
     return $response;
 }
 
-
 function queue_purge_expire(DatabaseConnection $db, $cmd, array $arg_list, $userid, server_data &$servers,$priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid) );
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-        if (!isset($arg_list[0])) {
+    if (!isset($arg_list[0])) {
         $response = urdd_protocol::get_response(501);
     } elseif (is_numeric($arg_list[0])) {
-        $username = get_username($db, $userid);
-        $item = new action($cmd, $arg_list[0], $username, $userid);
+        $item = new action($cmd, $arg_list[0], $userid);
         if ($cmd == urdd_protocol::COMMAND_PURGE || $cmd == urdd_protocol::COMMAND_UPDATE || $cmd == urdd_protocol::COMMAND_GENSETS || $cmd == urdd_protocol::COMMAND_EXPIRE) {
-            $item1 = new action(urdd_protocol::COMMAND_UPDATE, $arg_list[0], $username, $userid);
-            $item2 = new action(urdd_protocol::COMMAND_GENSETS, $arg_list[0], $username, $userid);
-            $item3 = new action(urdd_protocol::COMMAND_PURGE, $arg_list[0], $username, $userid);
-            $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arg_list[0], $username, $userid);
+            $item1 = new action(urdd_protocol::COMMAND_UPDATE, $arg_list[0], $userid);
+            $item2 = new action(urdd_protocol::COMMAND_GENSETS, $arg_list[0], $userid);
+            $item3 = new action(urdd_protocol::COMMAND_PURGE, $arg_list[0], $userid);
+            $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arg_list[0], $userid);
         } elseif ($cmd == urdd_protocol::COMMAND_PURGE_RSS || $cmd == urdd_protocol::COMMAND_UPDATE_RSS || $cmd == urdd_protocol::COMMAND_EXPIRE_RSS) {
-            $item1 = new action(urdd_protocol::COMMAND_UPDATE_RSS, $arg_list[0], $username, $userid);
-            $item3 = $item2 = new action(urdd_protocol::COMMAND_PURGE_RSS, $arg_list[0], $username, $userid);
-            $item4 = new action(urdd_protocol::COMMAND_EXPIRE_RSS, $arg_list[0], $username, $userid);
+            $item1 = new action(urdd_protocol::COMMAND_UPDATE_RSS, $arg_list[0], $userid);
+            $item3 = $item2 = new action(urdd_protocol::COMMAND_PURGE_RSS, $arg_list[0],$userid);
+            $item4 = new action(urdd_protocol::COMMAND_EXPIRE_RSS, $arg_list[0], $userid);
         } else {
             $response = urdd_protocol::get_response(599);
         }
@@ -677,7 +649,6 @@ function queue_purge_expire(DatabaseConnection $db, $cmd, array $arg_list, $user
     return $response;
 }
 
-
 function queue_update_rss(DatabaseConnection $db, $cmd, array $arg_list, $userid, server_data &$servers,$priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid));
@@ -686,10 +657,9 @@ function queue_update_rss(DatabaseConnection $db, $cmd, array $arg_list, $userid
     if (!isset($arg_list[0])) {
         $response = urdd_protocol::get_response(501);
     } elseif (is_numeric($arg_list[0])) {
-        $username = get_username($db, $userid);
-        $item = new action($cmd, $arg_list[0], $username, $userid);
-        $item2 = new action(urdd_protocol::COMMAND_PURGE_RSS, $arg_list[0], $username, $userid);
-        $item3 = new action(urdd_protocol::COMMAND_EXPIRE_RSS, $arg_list[0], $username, $userid);
+        $item = new action($cmd, $arg_list[0], $userid);
+        $item2 = new action(urdd_protocol::COMMAND_PURGE_RSS, $arg_list[0], $userid);
+        $item3 = new action(urdd_protocol::COMMAND_EXPIRE_RSS, $arg_list[0], $userid);
         if ($servers->has_equal($item)||$servers->has_equal($item2)||$servers->has_equal($item3)) {
             $response = urdd_protocol::get_response(403);
         } else {
@@ -709,7 +679,6 @@ function queue_update_rss(DatabaseConnection $db, $cmd, array $arg_list, $userid
     return $response;
 }
 
-
 function queue_update(DatabaseConnection $db, $cmd, array $arg_list, $userid, server_data &$servers,$priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_numeric($userid));
@@ -717,11 +686,10 @@ function queue_update(DatabaseConnection $db, $cmd, array $arg_list, $userid, se
     if (!isset($arg_list[0])) {
         $response = urdd_protocol::get_response(501);
     } elseif (is_numeric($arg_list[0])) {
-        $username = get_username($db, $userid);
-        $item = new action($cmd, $arg_list[0], $username, $userid);
-        $item2 = new action(urdd_protocol::COMMAND_GENSETS, $arg_list[0], $username, $userid);
-        $item3 = new action(urdd_protocol::COMMAND_PURGE, $arg_list[0], $username, $userid);
-        $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arg_list[0], $username, $userid);
+        $item = new action($cmd, $arg_list[0], $userid);
+        $item2 = new action(urdd_protocol::COMMAND_GENSETS, $arg_list[0], $userid);
+        $item3 = new action(urdd_protocol::COMMAND_PURGE, $arg_list[0], $userid);
+        $item4 = new action(urdd_protocol::COMMAND_EXPIRE, $arg_list[0], $userid);
         if ($servers->has_equal($item) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4)) {
             $response = urdd_protocol::get_response(403);
         } else {
@@ -741,7 +709,6 @@ function queue_update(DatabaseConnection $db, $cmd, array $arg_list, $userid, se
     return $response;
 }
 
-
 function queue_unpar_unrar(DatabaseConnection $db, $dir, $id, server_data &$servers, $userid, $preview=FALSE, $priority=DEFAULT_PRIORITY)
 {
     assert(is_numeric($priority) && is_bool($preview) && is_numeric($userid));
@@ -749,14 +716,13 @@ function queue_unpar_unrar(DatabaseConnection $db, $dir, $id, server_data &$serv
     if (!is_numeric($id)) {
         return urdd_protocol::get_response(501);
     }
-    $query = "\"destination\" FROM downloadinfo WHERE \"ID\"=$id";
-    $res = $db->select_query($query, 1);
+    $query = '"destination" FROM downloadinfo WHERE "ID"=?';
+    $res = $db->select_query($query, 1, array($id));
     if ($res === FALSE) {
         return urdd_protocol::get_response(512);
     }
 
-    $username = get_username($db, $userid);
-    $item = new action (urdd_protocol::COMMAND_UNPAR_UNRAR, $id, $username, $userid);
+    $item = new action (urdd_protocol::COMMAND_UNPAR_UNRAR, $id, $userid);
     if ($dir == '' || $dir === NULL) {
         $dir = $res[0]['destination'];
     }
@@ -770,10 +736,9 @@ function queue_unpar_unrar(DatabaseConnection $db, $dir, $id, server_data &$serv
     return urdd_protocol::get_response(200);
 }
 
-
 function queue_find_servers(DatabaseConnection $db, server_data &$servers, array $arg_list, $userid, $priority=DEFAULT_PRIORITY)
 {
-    assert(is_numeric($priority)  && is_numeric($userid));
+    assert(is_numeric($priority) && is_numeric($userid));
     if (!$servers->has_nntp_task()) {
         return urdd_protocol::get_response(401);
     }
@@ -783,8 +748,7 @@ function queue_find_servers(DatabaseConnection $db, server_data &$servers, array
 
     try {
         $arg = isset($arg_list[0]) ? $arg_list[0] : '';
-        $username = get_username($db, $userid);
-        $item = new action(urdd_protocol::COMMAND_FINDSERVERS, $arg, $username, $userid);
+        $item = new action(urdd_protocol::COMMAND_FINDSERVERS, $arg, $userid);
     } catch (exception $e) {
         return urdd_protocol::get_response(500); // should not happen....
     }

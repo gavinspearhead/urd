@@ -35,9 +35,9 @@ function get_search_type_array()
 {
     global $LN;
     $search_type_array = array(
-            'LIKE' => $LN['search_type_like'],
-            'REGEXP' => $LN['search_type_regexp']
-            );
+        'LIKE' => $LN['search_type_like'],
+        'REGEXP' => $LN['search_type_regexp']
+    );
 
     return $search_type_array;
 }
@@ -53,21 +53,21 @@ function get_basket_type_array()
 {
     global $LN;
     $basket_type_array = array(
-            basket_type::SMALL => $LN['basket_type_small'],
-            basket_type::LARGE => $LN['basket_type_large']
-            );
+        basket_type::SMALL => $LN['basket_type_small'],
+        basket_type::LARGE => $LN['basket_type_large']
+    );
 
-    return $basket_type_array ;
+    return $basket_type_array;
 }
 
 function get_encrar_array()
 {
     global $LN;
     $encrar_array = array (
-            encrar::ENCRAR_CONTINUE => $LN['continue'],
-            encrar::ENCRAR_CANCEL   => $LN['cancel'],
-            encrar::ENCRAR_PAUSE    => $LN['pause']
-            );
+        encrar::ENCRAR_CONTINUE => $LN['continue'],
+        encrar::ENCRAR_CANCEL   => $LN['cancel'],
+        encrar::ENCRAR_PAUSE    => $LN['pause']
+    );
 
     return $encrar_array;
 }
@@ -152,21 +152,6 @@ function get_sort_array()
 $dlpath = get_dlpath($db);
 $scripts_path = $dlpath . SCRIPTS_PATH;
 
-function get_preflevel_array()
-{
-    $level_array = user_levels::get_user_levels();
-
-    return $level_array;
-}
-
-function get_indexpage_array(DatabaseConnection $db, $userid)
-{
-    global $isadmin;
-    $modules = urd_modules::get_urd_module_config(get_config($db, 'modules'));
-    $index_page_array = get_index_page_array($isadmin, $modules);
-
-    return $index_page_array;
-}
 
 $cmd = get_request('cmd', '');
 
@@ -175,7 +160,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
     global $LN;
     switch ($name) {
         case 'spot_spam_limit':
-            $rv = verify_numeric($value, 1, NULL, 1000);
+            $rv = verify_numeric($value, 0, NULL, 1000);
             $value = unformat_size($value, 1000);
             return $rv;
         case 'maxsetname':
@@ -250,9 +235,9 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
         case 'stylesheet':
             return verify_array($value, array_keys(get_stylesheets()));
         case 'pref_level':
-            return verify_array($value, array_keys(get_preflevel_array($db, $userid)));
+            return verify_array($value, array_keys(user_levels::get_user_levels()));
         case 'index_page':
-            return verify_array($value, array_keys(get_indexpage_array($db, $userid)));
+            return verify_array($value, array_keys(get_index_page_array(urd_user_rights::is_admin($db, $userid), urd_modules::get_urd_module_config(get_config($db, 'modules')))));
         case 'hidden_files_list':
             $value = clean_area($value);
 
@@ -292,13 +277,25 @@ function set_buttons(DatabaseConnection $db, $userid, $value)
 
 function set_multi_select(DatabaseConnection $db, $userid, $name, $value)
 {
+    global $LN;
     switch ($name) {
         case 'buttons':
             set_buttons($db, $userid, $value);
 
             return;
+        case 'global_scripts':
+            $value = explode(':', $value);
+            $value = implode("\n", $value);
+
+            set_pref($db, $name, $value, $userid);
+            return;
+        case 'user_scripts':
+            $value = explode(':', $value);
+            $value = implode("\n", $value);
+            set_pref($db, $name, $value, $userid);
+            return;
         default:
-            throw new exception ($LN['error_invalidvalue']);
+            throw new exception ($LN['error_invalidvalue'] . ' '. $name . ' ' . $value );
     }
 }
 
@@ -308,13 +305,18 @@ function set_preferences(DatabaseConnection $db, $userid, $name, $value, $type)
     switch ($type) {
         case 'checkbox':
             if (!in_array($value, array(0,1,2))) {
-                throw new exception ($LN['error_invalidvalue'] .  "'<i>$value</i>'");
+                throw new exception($LN['error_invalidvalue'] .  "'<i>$value</i>'");
             }
             set_pref($db, $name, $value, $userid);
             break;
         case 'multiselect':
             $rv = set_multi_select($db, $userid, $name, $value);
             break;
+        case 'custom_text':
+            $orig_name = get_post('original_name');
+            $rv = set_custom_text($db, $userid, $name, $value, $orig_name);
+            break;
+        case 'email':
         case 'text':
         case 'textarea':
         case 'select':
@@ -348,7 +350,7 @@ function change_password(DatabaseConnection $db, $userid)
             }
 
             $oldpass = hash('sha256',  $salt . $oldpass . $salt);
-            $res = $db->select_query("\"name\" FROM users WHERE \"ID\"='$userid' AND \"pass\" = '$oldpass'");
+            $res = $db->select_query("\"name\" FROM users WHERE \"ID\"=? AND \"pass\" = ?", array($userid, $oldpass));
             if ($res === FALSE) {
                 throw new exception($LN['error_pwincorrect']);
             } else {
@@ -374,6 +376,8 @@ function get_ln_val($name)
     global $LN;
     if ($name == 'pref_level') {
         return $LN['pref_level'];
+    } elseif (substr($name, 0, 13) == 'spot_category') {
+        return $LN['pref_spots_category_mapping'] . ' ' . $LN[substr($name, 14)];
     } else {
         return $LN ['pref_' . $name];
     }
@@ -407,8 +411,8 @@ function show_preferences(DatabaseConnection $db, $userid)
     $prefArray = load_prefs($db, $userid, TRUE);
     $module_config = urd_modules::get_urd_module_config(get_config($db, 'modules'));
 
-    $global_scripts_array = get_scripts($db, $scripts_path, $username, TRUE);
-    $user_scripts_array = get_scripts($db, $scripts_path, $username, FALSE);
+    $global_scripts_array = get_scripts($db, $scripts_path, $userid, TRUE);
+    $user_scripts_array = get_scripts($db, $scripts_path, $userid, FALSE);
     $category_array = get_categories_array($db, $userid);
     $level_array = user_levels::get_user_levels();
     $templates = get_templates();
@@ -493,7 +497,7 @@ function show_preferences(DatabaseConnection $db, $userid)
         $minngsize_msg = verify_numeric($prefArray['minngsize'],0, NULL, 1000);
     }
     if (!isset($spot_spam_limit_msg)) {
-        $spot_spam_limit_msg = verify_numeric($prefArray['spot_spam_limit'],0, NULL, 1000);
+        $spot_spam_limit_msg = verify_numeric($prefArray['spot_spam_limit'], 0, NULL, 1000);
     }
     if (!isset($setsperpage_msg)) {
         $setsperpage_msg = verify_numeric($prefArray['setsperpage'],1, NULL, 1000);
@@ -552,7 +556,7 @@ function show_preferences(DatabaseConnection $db, $userid)
 
     $button_array = array();
     foreach ($searchbuttons as $k => $button) {
-        $button_array[$k] = array('name'=>$button, 'on'=>0, 'id'=>$k);
+        $button_array[$k] = array('name' => $button, 'on' => 0, 'id' => $k);
     }
 
     foreach ($cur_buttons as $b) {
@@ -561,17 +565,14 @@ function show_preferences(DatabaseConnection $db, $userid)
         }
     }
 
-    $search_terms = $prefArray['search_terms'];
-    $search_terms = clean_textarea_data($search_terms);
-    $search_terms = clean_list($search_terms);
+    $search_terms = @unserialize($prefArray['search_terms']);
+    if ($search_terms === FALSE) {$search_terms = $prefArray['search_terms']; }
 
-    $blocked_terms = $prefArray['blocked_terms'];
-    $blocked_terms = clean_textarea_data($blocked_terms);
-    $blocked_terms = clean_list($blocked_terms);
+    $blocked_terms = @unserialize($prefArray['blocked_terms']);
+    if ($blocked_terms === FALSE) { $blocked_terms = $prefArray['blocked_terms']; }
 
-    $hidden_files_list = $prefArray['hidden_files_list'];
-    $hidden_files_list = clean_textarea_data($hidden_files_list);
-    $hidden_files_list = clean_list($hidden_files_list);
+    $hidden_files_list = @unserialize($prefArray['hidden_files_list']);
+    if ($hidden_files_list === FALSE) { $hidden_files_list = $prefArray['hidden_files_list']; }
 
     $login = array(
             new pref_plain(user_levels::CONFIG_LEVEL_BASIC, $LN['username'], $LN['username_msg'], $username, NULL, NULL),
@@ -585,7 +586,7 @@ function show_preferences(DatabaseConnection $db, $userid)
             );
 
     $spots = array(
-            new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_spot_spam_limit'], 'spot_spam_limit',$LN['pref_spot_spam_limit_msg'], $spot_spam_limit_msg, $prefArray['spot_spam_limit'], NUMBER_BOX_SIZE ),
+            new pref_numeric_noformat(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_spot_spam_limit'], 'spot_spam_limit', $LN['pref_spot_spam_limit_msg'], $spot_spam_limit_msg, $prefArray['spot_spam_limit'], NUMBER_BOX_SIZE),
             new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_image'], 'show_image', $LN['pref_show_image_msg'], $show_image_msg, $prefArray['show_image']),
             new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_subcats'], 'show_subcats', $LN['pref_show_subcats_msg'], $show_subcats_msg, $prefArray['show_subcats']),
             new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_spot'], 'default_spot', $LN['pref_default_spot_msg'], $default_spot_msg, $spot_array, $prefArray['default_spot']),
@@ -599,8 +600,8 @@ function show_preferences(DatabaseConnection $db, $userid)
     }
     $display = array (
             new pref_select (user_levels::CONFIG_LEVEL_ALWAYS, $LN['pref_level'], 'pref_level', $LN['pref_level_msg'], $pref_level_msg, $level_array, $prefArray['pref_level'], 'load_prefs();'),
-            new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_language'], 'language', $LN['pref_language_msg'], $language_msg, $languages, $prefArray['language'], "window.location = 'prefs.php';"),
-            new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_stylesheet'], 'stylesheet', $LN['pref_stylesheet_msg'], $stylesheet_msg, $stylesheets, $prefArray['stylesheet'], 'change_stylesheet(\'stylesheet\');"'),
+            new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_language'], 'language', $LN['pref_language_msg'], $language_msg, $languages, $prefArray['language'], 'reload_prefs();'),
+            new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_stylesheet'], 'stylesheet', $LN['pref_stylesheet_msg'], $stylesheet_msg, $stylesheets, $prefArray['stylesheet'], 'change_stylesheet(\'stylesheet\');'),
             new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_template'], 'template', $LN['pref_template_msg'], $template_msg, $templates, $prefArray['template']),
             new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_defaultsort'], 'defaultsort', $LN['pref_defaultsort_msg'], $defaultsort_msg, $sort_array, $prefArray['defaultsort']),
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetname'], 'maxsetname',$LN['pref_maxsetname_msg'], $maxsetname_msg, $prefArray['maxsetname'], NUMBER_BOX_SIZE ),
@@ -610,7 +611,7 @@ function show_preferences(DatabaseConnection $db, $userid)
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize'], NUMBER_BOX_SIZE) ,
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setcompleteness'], 'setcompleteness', $LN['pref_setcompleteness_msg'], $setcompleteness_msg,  $prefArray['setcompleteness'], NUMBER_BOX_SIZE),
             new pref_checkbox (user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
-            new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], 'toggle_hide(\'hidfil\', \'hidden\');'),
+            new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),
             new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hidden_files_list'], 'hidden_files_list', $LN['pref_hidden_files_list_msg'], $hidden_files_list_msg, $hidden_files_list, 10, 40, NULL, 'hidfil', $prefArray['hiddenfiles']? NULL : 'hidden'),
             new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $button_array, 5),
             new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_group'], 'default_group', $LN['pref_default_group_msg'], $default_group_msg, $groups_array, $prefArray['default_group']),
@@ -627,7 +628,7 @@ function show_preferences(DatabaseConnection $db, $userid)
             new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_unrar'], 'unrar',$LN['pref_unrar_msg'], $unrar_msg, $prefArray['unrar']),
             new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_delete_files'], 'delete_files', $LN['pref_delete_files_msg'], $delete_files_msg, $prefArray['delete_files']),
             new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_download_text_file'], 'download_text_file', $LN['pref_download_text_file_msg'], $download_text_file_msg, $prefArray['download_text_file']),
-            new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_use_auto_download'], 'use_auto_download', $LN['pref_use_auto_download_msg'], $use_auto_download_msg, $prefArray['use_auto_download'],  'toggle_hide(\'autodlnzb\', \'hidden\');', NULL, $auto_download?'':'hidden'),
+            new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_use_auto_download'], 'use_auto_download', $LN['pref_use_auto_download_msg'], $use_auto_download_msg, $prefArray['use_auto_download'],  '$(\'#autodlnzb\').toggleClass(\'hidden\');', NULL, $auto_download?'':'hidden'),
             new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_use_auto_download_nzb'], 'use_auto_download_nzb', $LN['pref_use_auto_download_nzb_msg'], $use_auto_download_nzb_msg, $prefArray['use_auto_download_nzb'], NULL, 'autodlnzb', ($auto_download &&$prefArray['use_auto_download']) ?'':'hidden'),
             new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_format_dl_dir'], 'format_dl_dir',$LN['pref_format_dl_dir_msg'], $format_dl_dir_msg, $prefArray['format_dl_dir'], TEXT_BOX_SIZE),
             new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_download_delay'], 'download_delay', $LN['pref_download_delay_msg'], $download_delay_msg, $prefArray['download_delay'], NUMBER_BOX_SIZE),
@@ -635,9 +636,9 @@ function show_preferences(DatabaseConnection $db, $userid)
             new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_subs_lang'], 'subs_lang',$LN['pref_subs_lang_msg'], $subs_lang_msg, $prefArray['subs_lang'], TEXT_BOX_SIZE),
             );
 
-    $downloading[] = new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_type'],  'search_type', $LN['pref_search_type_msg'], $search_type_msg, $search_type_array, $prefArray['search_type']);
-    $downloading[] = new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_terms'], 'search_terms',$LN['pref_search_terms_msg'], '', utf8_decode($search_terms), 10, 40);
-    $downloading[] = new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms',$LN['pref_blocked_terms_msg'], '', utf8_decode($blocked_terms), 10 , 40);
+    $downloading[] = new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_type'], 'search_type', $LN['pref_search_type_msg'], $search_type_msg, $search_type_array, $prefArray['search_type']);
+    $downloading[] = new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_terms'], 'search_terms', $LN['pref_search_terms_msg'], '', $search_terms, 10, 40);
+    $downloading[] = new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms', $LN['pref_blocked_terms_msg'], '', $blocked_terms, 10 , 40);
 
     if ($allow_global_scripts != 0) {
         if (count($global_scripts_array) > 0) {
@@ -649,12 +650,18 @@ function show_preferences(DatabaseConnection $db, $userid)
     }
 
     $posting = array (
-            new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email',$LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email'], TEXT_BOX_SIZE ),
-            new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name',$LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name'], TEXT_BOX_SIZE ),
-            new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_recovery_size'], 'recovery_size',$LN['pref_recovery_size_msg'], $recovery_size_msg, $prefArray['recovery_size'], NUMBER_BOX_SIZE ),
-            new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_rarfile_size'], 'rarfile_size',$LN['pref_rarfile_size_msg'], $rarfile_size_msg, $prefArray['rarfile_size'], NUMBER_BOX_SIZE ),
+            new pref_email (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email',$LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email'], TEXT_BOX_SIZE),
+            new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name',$LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name'], TEXT_BOX_SIZE),
+            new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_recovery_size'], 'recovery_size',$LN['pref_recovery_size_msg'], $recovery_size_msg, $prefArray['recovery_size'], NUMBER_BOX_SIZE),
+            new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_rarfile_size'], 'rarfile_size',$LN['pref_rarfile_size_msg'], $rarfile_size_msg, $prefArray['rarfile_size'], NUMBER_BOX_SIZE),
             );
 
+    $custom = array();
+    $custom_prefs = get_custom_prefs($db, $userid);
+    foreach( $custom_prefs as $key => $value) {
+        $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], $key, $LN['pref_custom_msg'], '', $value, TEXT_BOX_SIZE);
+    }
+    $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], '__new', $LN['pref_custom_msg'], '', '', TEXT_BOX_SIZE);
     $pref_list[] = new pref_list('pref_display', $display);
     if ($module_config[urd_modules::URD_CLASS_SPOTS]) {
         $pref_list[] = new pref_list('pref_spots', $spots);
@@ -666,8 +673,11 @@ function show_preferences(DatabaseConnection $db, $userid)
         $pref_list[] = new pref_list('pref_posting', $posting);
     }
     $pref_list[] = new pref_list('pref_login', $login);
+    $pref_list[] = new pref_list('pref_custom_values', $custom);
 
-    init_smarty($LN['pref_title'], 0);
+    init_smarty('', 0);
+    $current_tab = get_post('current_tab', '');
+    $smarty->assign('current_tab',  $current_tab);
     $smarty->assign('level', 		$pref_level);
     $smarty->assign('pref_list', 	$pref_list);
     $smarty->display('ajax_settings.tpl');
@@ -688,9 +698,20 @@ switch ($cmd) {
         $option = get_post('option');
         $value = get_post('value');
         $type = get_post('type');
+        if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
         config_cache::clear($userid);
         set_preferences($db, $userid, $option, $value, $type);
-        die_html('OK' . $LN['saved'] . ': ' . get_ln_val($option));
+        if ($type == 'custom_text') {
+            die_html('OK' . $LN['saved'] . ': ' . get_ln_val('custom') . " $option ");
+        } else {
+            die_html('OK' . $LN['saved'] . ': ' . get_ln_val($option));
+        }
+        break;
+    case 'delete':
+        challenge::verify_challenge_text($_POST['challenge']);
+        $option = get_post('option');
+        unset_pref($db, "__custom_$option", $userid);
+        die_html('OK');
         break;
     case 'load_settings':
         challenge::verify_challenge_text($_POST['challenge']);

@@ -15,10 +15,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-05-20 00:39:39 +0200 (ma, 20 mei 2013) $
- * $Rev: 2828 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: getfile.tpl 2828 2013-05-19 22:39:39Z gavinspearhead@gmail.com $ 
+ * $Id: getfile.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $ 
 *}{include file=$header title=$title|escape:htmlall}
 <div id="textcontent">
 </div>
@@ -27,9 +27,9 @@ $(document).ready(function() {
     show_image("{$file|escape:javascript}", "{$idx|escape:javascript}");
 });
 </script>
-<input type="hidden" id="filename" value="{$file}"/>
-<input type="hidden" id="preview" value="{$preview}"/>
-<input type="hidden" id="idx" value="{$idx}"/>
+<input type="hidden" id="filename" value="{$file|escape}}"/>
+<input type="hidden" id="preview" value="{$preview|escape}}"/>
+<input type="hidden" id="idx" value="{$idx|escape}}"/>
 <br/>
 
 {include file=$footer}

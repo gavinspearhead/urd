@@ -89,7 +89,7 @@ class db_update_mysql extends db_update_abs
             preg_match('/\(([[:digit:]]+)\)/', $col, $m2);
             $len = (isset($m2[1])? $m2[1]: '');
 
-            $c = '"' .  $name . '"' ;
+            $c = '"' .  $name . '"';
             if ($len != '') {
                 $c .= "($len) ";
             }
@@ -114,9 +114,9 @@ class db_update_mysql extends db_update_abs
                 }
             } else {
                 $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols);");
-            } # else
+            } 
         }
-    } # addIndex
+    } 
 
     /* controleert of een full text index bestaat */
     public function ftsExists($ftsname, $tablename, array $colList)
@@ -130,7 +130,7 @@ class db_update_mysql extends db_update_abs
         }
 
         return TRUE;
-    } # ftsExists
+    } 
 
     /* maakt een full text index aan */
     public function createFts($ftsname, $tablename, array $colList)
@@ -143,7 +143,7 @@ class db_update_mysql extends db_update_abs
                 $this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
             }
         }
-    } # createFts
+    } 
 
     /* dropt en fulltext index */
     public function dropFts($ftsname, $tablename, array $colList)
@@ -151,7 +151,7 @@ class db_update_mysql extends db_update_abs
         foreach ($colList as $num => $col) {
             $this->dropIndex($ftsname . '_' . $num, $tablename);
         }
-    } # dropFts
+    } 
 
     /* geeft FTS info terug */
     public function getFtsInfo($ftsname, $tablename, array $colList)
@@ -175,7 +175,7 @@ class db_update_mysql extends db_update_abs
         # Check eerst of de tabel bestaat, anders kan
         # indexExists mislukken en een fatal error geven
         if (!$this->tableExists($tablename)) {
-            return ;
+            return;
         }
         if ($this->indexExists($idxname, $tablename)) {
             if ($idxname == 'PRIMARY') {
@@ -184,10 +184,10 @@ class db_update_mysql extends db_update_abs
                 $this->db->execute_query('DROP INDEX ' . $idxname . ' ON ' . $tablename);
             }
         }
-    } # dropIndex
+    } 
 
     /* voegt een column toe, kijkt wel eerst of deze nog niet bestaat */
-    public function addColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $auto_inc)
+    public function addColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $auto_inc=NULL)
     {
         if (!$this->columnExists($tablename, $colName)) {
             # zet de DEFAULT waarde
@@ -198,7 +198,7 @@ class db_update_mysql extends db_update_abs
                 case 'now' : $def_setting = 'DEFAULT CURRENT_TIMESTAMP';
                 break;
                 }
-            } elseif (strlen($colDefault) != 0) {
+            } elseif (!is_null($colDefault)) {
                 $def_setting = 'DEFAULT \'' . $colDefault . "'";
             }
             # converteer het kolom type naar het type dat wij gebruiken
@@ -227,12 +227,12 @@ class db_update_mysql extends db_update_abs
             default			: $nullStr = '';
             }
 
-            $this->db->execute_query('ALTER TABLE ' . $tablename .  " ADD COLUMN(\"" . $colName . "\" " . $colType . " " . $colSetting . " " . $def_setting . " " . $nullStr .  " " . $auto_inc .  ")");
+            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD COLUMN("' . $colName . "\" " . $colType . ' ' . $colSetting . ' ' . $def_setting . ' ' . $nullStr . ' ' . $auto_inc . ')');
         }
-    } # addColumn
+    } 
 
     /* wijzigt een column - controleert *niet* of deze voldoet aan het prototype */
-    public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what, $auto_inc)
+    public function modifyColumn($colName, $tablename, $colType, $colDefault=NULL, $notNull=TRUE, $collation=NULL, $what=NULL, $auto_inc=NULL)
     {
         # zet de DEFAULT waarde
         #
@@ -242,7 +242,7 @@ class db_update_mysql extends db_update_abs
             case 'now' : $def_setting = 'DEFAULT CURRENT_TIMESTAMP';
             break;
             }
-        } elseif (strlen($colDefault) != 0) {
+        } elseif (!is_null($colDefault)) {
             $def_setting = 'DEFAULT \'' . $colDefault . "'";
         }
         if (strtoupper($colType) == 'BIGSERIAL') {
@@ -273,7 +273,8 @@ class db_update_mysql extends db_update_abs
         }
 
         $this->db->execute_query('ALTER TABLE ' . $tablename .  " MODIFY COLUMN \"" . $colName . "\" " . $colType . " " . $colSetting . " " . $def_setting . " " . $nullStr . " " . $auto_inc );
-    } # modifyColumn
+        echo ('ALTER TABLE ' . $tablename .  " MODIFY COLUMN \"" . $colName . "\" " . $colType . " " . $colSetting . " " . $def_setting . " " . $nullStr . " " . $auto_inc );
+    }
 
     /* dropt een kolom (mits db dit ondersteunt) */
     public function dropColumn($colName, $tablename)
@@ -281,15 +282,15 @@ class db_update_mysql extends db_update_abs
         if ($this->columnExists($tablename, $colName)) {
             $this->db->execute_query('ALTER TABLE ' . $tablename . ' DROP COLUMN ' . $colName);
         }
-    } # dropColumn
+    } 
 
     /* controleert of een tabel bestaat */
     public function tableExists($tablename)
     {
-        $q = $this->db->execute_query("SHOW TABLES LIKE '" . $tablename . "'");
+        $q = $this->db->execute_query("SHOW TABLES LIKE '$tablename'");
 
         return !empty($q);
-    } # tableExists
+    } 
 
     /* ceeert een lege tabel met enkel een ID veld, collation kan UTF8 of ASCII zijn */
     public function createTable($tablename, $index_field, $collation, $engine)
@@ -306,9 +307,9 @@ class db_update_mysql extends db_update_abs
             case 'myisam'   : $enginesetting = 'ENGINE MyIsam'; break;
             case 'innodb'   : $enginesetting = 'ENGINE InnoDB'; break;
             }
-            $this->db->execute_query('CREATE TABLE ' . $tablename . " ($index_field BIGINT PRIMARY KEY AUTO_INCREMENT) " . $colSetting . "  $enginesetting" );
+            $this->db->execute_query("CREATE TABLE $tablename ($index_field BIGINT(20) UNSIGNED PRIMARY KEY AUTO_INCREMENT) $colSetting $enginesetting");
         }
-    } # createTable
+    } 
 
     /* drop een table */
     public function dropTable($tablename)
@@ -316,19 +317,19 @@ class db_update_mysql extends db_update_abs
         if ($this->tableExists($tablename)) {
             $this->db->execute_query('DROP TABLE ' . $tablename);
         }
-    } # dropTable
+    } 
 
     /* verandert een storage engine (concept dat enkel mysql kent :P ) */
     public function alterStorageEngine($tablename, $engine)
     {
         $q = $this->db->execute_query("SELECT ENGINE
             FROM information_schema.TABLES
-            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $tablename . "'");
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '$tablename'");
 
         if (strtolower($q) != strtolower($engine)) {
-            $this->db->execute_query("ALTER TABLE " . $tablename . " ENGINE=" . $engine);
+            $this->db->execute_query("ALTER TABLE $tablename ENGINE= $engine");
         }
-    } # alterStorageEngine
+    } 
 
     /* rename een table */
     public function renameTable($tablename, $newTableName)
@@ -347,7 +348,7 @@ class db_update_mysql extends db_update_abs
             AND REFERENCED_COLUMN_NAME = '" . $refcolumn . "'");
         if (!empty($q)) {
             foreach ($q as $res) {
-                $this->db->execute_query('ALTER TABLE ' . $tablename . " DROP FOREIGN KEY " . $res['CONSTRAINT_NAME']);
+                $this->db->execute_query('ALTER TABLE ' . $tablename . ' DROP FOREIGN KEY ' . $res['CONSTRAINT_NAME']);
             }
         }
     } # dropForeignKey
@@ -357,10 +358,10 @@ class db_update_mysql extends db_update_abs
     {
         $q = $this->db->execute_query("SELECT * FROM information_schema.key_column_usage
             WHERE TABLE_SCHEMA = DATABASE()
-            AND TABLE_NAME = '" . $tablename . "'
-            AND COLUMN_NAME = '" . $colname . "'
-            AND REFERENCED_TABLE_NAME = '" . $reftable . "'
-            AND REFERENCED_COLUMN_NAME = '" . $refcolumn . "'");
+            AND TABLE_NAME = '$tablename'
+            AND COLUMN_NAME = '$colname'
+            AND REFERENCED_TABLE_NAME = '$reftable'
+            AND REFERENCED_COLUMN_NAME = '$refcolumn'");
         if (empty($q)) {
             $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD FOREIGN KEY (' . $colname . ') REFERENCES ' . $reftable . ' (' . $refcolumn . ') ' . $action);
         }
@@ -377,8 +378,8 @@ class db_update_mysql extends db_update_abs
             COLLATION_NAME,
             EXTRA
             FROM information_schema.COLUMNS
-            WHERE TABLE_NAME = '" . $tablename . "'
-            AND COLUMN_NAME = '" . $colname . "'
+            WHERE TABLE_NAME = '$tablename'
+            AND COLUMN_NAME = '$colname'
             AND TABLE_SCHEMA = DATABASE()");
         if (!empty($q)) {
             $q = $q[0];
@@ -391,6 +392,12 @@ class db_update_mysql extends db_update_abs
             if (strcasecmp($q['COLUMN_DEFAULT'], 'current_timestamp') == 0 && $q['COLUMN_TYPE'] == 'timestamp') {
                 $q['COLUMN_DEFAULT'] = 'NOW';
             }
+            if (strcasecmp($q['COLUMN_DEFAULT'], 'NULL') == 0) {
+                $q['COLUMN_DEFAULT'] = NULL;
+            }
+            if (strcasecmp($q['COLUMN_DEFAULT'], '\'\'') == 0) {
+                $q['COLUMN_DEFAULT'] = '';
+            }
             if (strtolower($q['EXTRA']) == 'auto_increment') {
                 if (strtolower($q['COLUMN_TYPE']) == 'bigint(20) unsigned') {
                     $q['COLUMN_TYPE'] = 'BIGSERIAL';
@@ -402,7 +409,7 @@ class db_update_mysql extends db_update_abs
         }
 
         return $q;
-    } # getColumnInfo
+    } 
 
     /* Geeft, in een afgesproken formaat, de index informatie terug */
     public function getIndexInfo($idxname, $tablename, $type)
@@ -416,8 +423,8 @@ class db_update_mysql extends db_update_abs
             lower(index_type) as index_type
             FROM information_schema.STATISTICS
             WHERE TABLE_SCHEMA = DATABASE()
-            AND table_name = '" . $tablename . "'
-            AND index_name = '" . $idxname . "'
+            AND table_name = '$tablename'
+            AND index_name = '$idxname'
             ORDER BY seq_in_index");
         if (!is_array($q)) {
             return $q;
@@ -428,11 +435,11 @@ class db_update_mysql extends db_update_abs
         }
 
         return $q;
-    } # getIndexInfo
+    } 
 
     public function get_tables($tablename)
     {
-        $q = $this->db->execute_query("SHOW TABLES LIKE '" . $tablename . "'");
+        $q = $this->db->execute_query("SHOW TABLES LIKE '$tablename'");
         if (!$q) return array();
         $tables = array();
         foreach ($q as $t) {

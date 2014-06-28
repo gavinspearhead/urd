@@ -16,14 +16,13 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-07 00:34:21 +0200 (za, 07 sep 2013) $
- * $Rev: 2924 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: register.php 2924 2013-09-06 22:34:21Z gavinspearhead@gmail.com $
+ * $Id: register.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
-//var_dump($_POST); die;
 $pathreg = realpath(dirname(__FILE__));
 $pathca = realpath($pathreg. '/../functions/');
 
@@ -44,23 +43,26 @@ require_once "$pathreg/../functions/urd_log.php";
 require_once "$pathreg/../functions/autoincludes.php";
 require_once "$pathreg/../functions/defaults.php";
 require_once "$pathreg/../functions/functions.php";
+require_once "$pathreg/../functions/file_functions.php";
 
 try {
-    $db = connect_db(TRUE, FALSE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     die_html("Connection to database failed. $msg");
 }
 require_once "$pathreg/../functions/config_functions.php";
 config_cache::clear(user_status::SUPER_USERID); // needed to read tthe right values
-require_once "$pathreg/../functions/file_functions.php";
 require_once "$pathreg/../functions/user_functions.php";
 
 $prefs = load_config($db, TRUE);
 require_once "$pathreg/../functions/web_functions.php";
+$lang = detect_language() . '.php';
+
 require_once "$pathreg/../functions/mail_functions.php";
 require_once "$pathreg/../html/fatal_error.php";
 require_once "$pathreg/../functions/defines.php";
+
 require_once "$pathreg/../functions/smarty.php";
 require_once "$pathreg/../functions/exception.php";
 
@@ -76,8 +78,8 @@ if (isset($_GET['activate']) && isset($_GET['username'])) {
     $username = $_GET['username'];
     $token = $_GET['activate'];
     $time = time();
-    $sql = "* FROM users WHERE \"name\"='$username' AND \"token\"='$token' AND \"active\" = '" . user_status::USER_PENDING . "'";
-    $res = $db->select_query($sql, 1);
+    $sql = '* FROM users WHERE "name"=? AND "token"=? AND "active" = ?';
+    $res = $db->select_query($sql, 1, array($username, $token, user_status::USER_PENDING));
     if ($res === FALSE) {
         throw new exception($LN['error_nosuchuser']);
     }
@@ -90,8 +92,7 @@ if (isset($_GET['activate']) && isset($_GET['username'])) {
     }
     $auto_reg = $prefs['auto_reg'];
     $active = ($auto_reg == 0) ? user_status::USER_INACTIVE : user_status::USER_ACTIVE;
-    $sql = "UPDATE users SET \"active\" = '$active', \"token\"='' WHERE \"ID\" = '$id'";
-    $res = $db->execute_query($sql);
+    $res = $db->update_query_2('users', array('active'=>$active, 'token'=>11), '"ID"=?', array($id));
     $admin_email = $prefs['admin_email'];
     urd_mail::mail_admin_new_user($db, $username, $row['fullname'], $admin_email, $admin_email, $_SERVER['REMOTE_ADDR'], $email);
     if ($active == user_status::USER_ACTIVE) {
@@ -106,6 +107,6 @@ if (isset($_GET['activate']) && isset($_GET['username'])) {
 $captcha = extension_loaded ('gd') ? 1 : 0;
 
 init_smarty($title, 0);
-$smarty->assign('captcha',	$captcha);
-$smarty->assign('subpage',	$subpage);
+$smarty->assign('captcha', $captcha);
+$smarty->assign('subpage', $subpage);
 $smarty->display('register.tpl');

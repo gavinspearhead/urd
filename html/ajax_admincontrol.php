@@ -15,17 +15,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_admincontrol.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_admincontrol.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 $pathadctl = realpath(dirname(__FILE__));
 
-require_once "$pathadctl/../functions/html_includes.php";
-require_once "$pathadctl/../functions/pref_functions.php";
+require_once "$pathadctl/../functions/ajax_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
@@ -50,7 +49,6 @@ function parse_server_info($xml)
         $row['id'] = (string) $a->id;
         $data[] = $row;
     }
-
     return $data;
 }
 
@@ -162,7 +160,7 @@ if ($uc->is_connected()) {
 
 $_SESSION['control_status'] = $control_status = get_session('control_status', 0);
 
-init_smarty($LN['control_title'], 0);
+init_smarty('', 0);
 $smarty->assign('isconnected',      $isconnected);
 $smarty->assign('disable_urdland',  $disable_urdland);
 $smarty->assign('queue_info',       $queue_info);
@@ -173,7 +171,7 @@ $smarty->assign('load_info',        $load_info);
 $smarty->assign('control_status',   $control_status);
 $smarty->assign('servers_info',     $servers_info);
 $smarty->assign('servers_totals',   $servers_totals);
-$smarty->assign('referrer',         'action');
+$smarty->assign('referrer',         'admin_control');
 $smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
 $smarty->assign('disk_perc',		$disk_perc);
 $smarty->assign('nodisk_perc',		$nodisk_perc);

@@ -21,7 +21,6 @@
  * $Id$
  */
 
-
 html
 {
     border: none;
@@ -261,6 +260,16 @@ th
     display: inline;
 }
 
+.centered_nojs
+{
+    left: 25%;
+    right: 25%;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    z-index:10000000;
+}
 .centered
 {
     left: 50%;
@@ -369,15 +378,23 @@ td.user, th.user
     margin-right: 1px;
 }
 
-
 .down2
 {
     margin-top:2px;
 }
+.down5
+{
+    margin-top:5px;
+}
 
-.down4
+.down6
 {
     margin-top:6px;
+}
+
+.down100
+{
+    margin-top:100px;
 }
 
 .down3
@@ -397,7 +414,6 @@ td.user, th.user
     margin-top:-8px;
 }
 
-
 .overflow
 {
     overflow:auto;
@@ -409,7 +425,7 @@ td.user, th.user
     white-space:nowrap;
 }
 
-.down5
+.down_5
 {
     top:5px;
 }
@@ -437,6 +453,7 @@ img.max100x100
 {
     top: 0px;
 }
+
 .invisible
 {
     visibility: hidden;
@@ -483,7 +500,6 @@ div.inline
     right: 10px; 
 }
 
-
 table.uploads 
 {
     width: 95%;
@@ -501,7 +517,7 @@ td.righted
 
 .width100
 {
-    width:100%;
+    width: 100%;
 }
 
 .padding10
@@ -516,13 +532,12 @@ td.righted
     margin-right: 10px;
 }
 
-
 th.round_left, td.round_left 
 {
     border-radius: 9px 0 0 0;
     border-collapse: collapse;
 }
-th.round_right , td.round_right
+th.round_right, td.round_right
 {
     border-radius: 0 9px 0 0;
     border-collapse: collapse;
@@ -530,6 +545,21 @@ th.round_right , td.round_right
 th.round_both, td.round_both 
 {
     border-radius: 9px 9px 0 0;
+    border-collapse: collapse;
+}
+th.round_left_bottom, td.round_left_bottom 
+{
+    border-radius: 0 0 9px 0;
+    border-collapse: collapse;
+}
+th.round_right_bottom, td.round_right_bottom
+{
+    border-radius: 0 0 0 9px;
+    border-collapse: collapse;
+}
+th.round_both_bottom, td.round_both_bottom 
+{
+    border-radius: 0 0 9px 9px;
     border-collapse: collapse;
 }
 
@@ -545,7 +575,6 @@ th.round_both, td.round_both
     margin-top:5px;
 }
 
-
 .on_top 
 {
     z-index:100000;
@@ -553,16 +582,15 @@ th.round_both, td.round_both
 
 #overlay_content
 {
-    position:fixed;
+    position: fixed;
     display: none;
     z-index: 1000010;
     overflow: hidden;
 }
 
-
 #overlay_content2
 {
-    position:fixed;
+    position: fixed;
     display: none;
     z-index: 10000020;
     overflow: hidden;
@@ -606,7 +634,6 @@ th.round_both, td.round_both
     vertical-align: bottom;
     display: none;
 }
-    
 
 pre.small
 {
@@ -619,7 +646,6 @@ pre.small
     right: 20px;
     top: 15px;
 }
-
 
 div.sets_inner
 {
@@ -643,7 +669,6 @@ div.sets_inner
 }
 
 .popup_wrapper525x300
-
 {
     display: table;
     height:266px;
@@ -664,5 +689,54 @@ div.sets_inner
 {
     display: table-cell;
     vertical-align: middle;
+}
+
+#setstable
+{
+    overflow-y:auto;
+}
+
+#searchbar
+{
+    margin-top:24px;
+    position:fixed;
+    z-index: 100;
+    margin-left:20px;
+    margin-right:20px;
+    padding-top:1px;
+    padding-left:3px;
+    padding-right:3px;
+    width: 80%;
+}
+#topcontent
+{
+    height: 100%;
+    position: absolute;
+    display:block;
+    top: 22px;
+    left: 0px;
+    width: 100%;
+    overflow-y: auto;
+}
+
+#contentout
+{
+    _overflow-y: auto;
+    height:100%; 
+}
+
+.status_light
+{
+  height: 12px;
+  width:12px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+.progress_text
+{
+    position:relative;
+    top: 0; 
+    right: 0; 
+    display:inline
 }
 

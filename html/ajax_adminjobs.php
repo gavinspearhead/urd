@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_adminjobs.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_adminjobs.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -27,7 +27,7 @@ $__auth = 'silent';
 
 $pathadt = realpath(dirname(__FILE__));
 
-require_once "$pathadt/../functions/html_includes.php";
+require_once "$pathadt/../functions/ajax_includes.php";
 require_once "$pathadt/../functions/pref_functions.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
@@ -42,7 +42,7 @@ if (!in_array($sort_dir, array('asc', 'desc'))) {
     $sort_dir = 'desc';
 }
 
-$qry = "* FROM schedule ORDER BY \"$sort\" $sort_dir";
+$qry = "*, users.\"name\" AS \"username\" FROM schedule LEFT JOIN users ON users.\"ID\" = schedule.\"userid\" ORDER BY \"$sort\" $sort_dir";
 $res = $db->select_query($qry);
 $jobs = array();
 if ($res === FALSE) {

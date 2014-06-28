@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-04-27 21:55:06 +0200 (zo, 27 apr 2014) $
+ * $Rev: 3032 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showtransfers.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showtransfers.php 3032 2014-04-27 19:55:06Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
@@ -43,7 +43,7 @@ function calculate_speed($size, $remain, $ETA)
     return $speed;
 }
 
-class DownloadInfo
+class download_info
 {
     public $status;
     public $name;
@@ -58,7 +58,7 @@ class DownloadInfo
     public $username;
 }
 
-class UploadInfo
+class upload_info
 {
     public $status;
     public $name;
@@ -77,15 +77,17 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_USENZB, FALSE, 'P', $userid, TRUE);
     $infoarray_upload = array();
+    $input_arr = array();
     if ($isadmin) {
         // Admins can see any upload
         $sql_up = ' * FROM postinfo ORDER BY "status" ASC, "id" DESC';
     } else {
-        $sql_up = " * FROM postinfo WHERE \"userid\" = '$userid' ORDER BY \"status\" ASC, \"id\" DESC";
+        $sql_up = " * FROM postinfo WHERE \"userid\" = ? ORDER BY \"status\" ASC, \"id\" DESC";
+        $input_arr[] = $userid;
     }
 
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST)) {
-        $res_up = $db->select_query($sql_up);
+        $res_up = $db->select_query($sql_up, $input_arr);
         if ($res_up === FALSE) {
             $res_up = array();
         }
@@ -101,10 +103,10 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
             $dest = $row['tmp_dir'];
 
             // Get more information for this download (when it's in progress:)
-            $sql = "SELECT * FROM queueinfo WHERE \"description\" = '" . get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid' OR "
+            $sql = "* FROM queueinfo WHERE \"description\" = '" . get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid' OR "
                 . " (\"description\" = '" . get_command(urdd_protocol::COMMAND_POST) . " $postid' AND \"status\" NOT IN ( '" . QUEUE_FINISHED . '\',\'' . QUEUE_REMOVED . "')) OR"
                 . " (\"description\" = '" . get_command(urdd_protocol::COMMAND_START_POST) . " $postid' AND \"status\" NOT IN ( '" . QUEUE_FINISHED . '\',\'' . QUEUE_REMOVED . "'))";
-            $res3 = $db->execute_query($sql);
+            $res3 = $db->select_query($sql);
             if ($res3 === FALSE || $db->num_rows() == 0) {
                 continue;
             }
@@ -160,7 +162,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
                 default :             $cat = 'unknown'; break;
             }
 
-            $info = new UploadInfo();
+            $info = new upload_info();
             $info->status = $cat;
             $info->name = $dlname;
             $info->ETA = $fETA;
@@ -236,6 +238,9 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             $qstatus = '';
             $ETA = 0;
             foreach ($res3 as $queue) {
+                if ($qstatus == QUEUE_RUNNING) {
+                    $status = DOWNLOAD_ACTIVE;
+                }
                 if ($qstatus != QUEUE_RUNNING) {
                     $qstatus = $queue['status'];
                 }
@@ -280,8 +285,7 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
                 case DOWNLOAD_FAILED:        $cat = 'dlfailed'; break;
                 default :                    $cat = 'unknown'; break;
             }
-
-            $info = new DownloadInfo();
+            $info = new download_info();
             $info->status = $cat;
             $info->name = $dlname;
             $info->ETA = $fETA;
@@ -290,6 +294,13 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             $info->speed = $speed;
             $info->comment = $comment;
             $info->destination = $dest;
+            $info->nfo_link = '';
+            if ($status == DOWNLOAD_FINISHED) {
+                $nfo_file = glob($dest . DIRECTORY_SEPARATOR . '*.nfo', GLOB_NOSORT);
+                if (isset($nfo_file[0])) {
+                    $info->nfo_link = $nfo_file[0];
+                }
+            }
             $info->dlid = $dlid;
             $info->username = get_username($db, $userid);
             list($_size, $suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);

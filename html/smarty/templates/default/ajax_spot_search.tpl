@@ -23,16 +23,16 @@
 {strip}
 {if $usersettype == $USERSETTYPE_SPOT}
 <select id="saved_search" onchange="javascript:update_spot_searches();">
-<option value=""></option>
+<option value="" {if $current == ""}selected="selected"{/if}></option>
 {foreach $saved_searches as $saved_search}
-<option value="{$saved_search}" {if $current == $saved_search}selected="selected"{/if}>{$saved_search}&nbsp;</option>
+<option value="{$saved_search|escape}" {if $current == $saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
 </select>
 {else if $usersettype == $USERSETTYPE_GROUP || $usersettype == $USERSETTYPE_RSS }
 <select id="saved_search" onchange="javascript:update_browse_searches();">
 <option value=""></option>
 {foreach $saved_searches as $saved_search}
-<option value="{$saved_search}" {if $saved_search == $current}selected="selected"{/if}>{$saved_search}&nbsp;</option>
+<option value="{$saved_search|escape}" {if $saved_search == $current}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
 </select>
 {else}

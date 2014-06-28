@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-19 23:50:53 +0200 (ma, 19 mei 2014) $
+ * $Rev: 3043 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: exception.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: exception.php 3043 2014-05-19 21:50:53Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -35,18 +35,19 @@ define ('DEFAULT_MSG', 'Our sincere apologies but a fatal error has occurred. Fo
 // Default exception handler:
 function exception_handler(exception $exception)
 {
-    global $__message, $LN, $title, $config, $smarty, $userid;
-    $thisScript = basename($_SERVER['PHP_SELF']);
-    if (strpos($thisScript, 'ajax_') === FALSE) {
+    global $__message, $LN, $config, $smarty;
+    $this_script = basename($_SERVER['PHP_SELF']);
+    if (strpos($this_script, 'ajax_') === FALSE) {
         // Not an ajax-script, so display entire page
         if (debug_match(DEBUG_CLIENT, $config['urdd_debug_level'])) {
-            $__message[] = $exception->getMessage();
+            $__message = $exception->getMessage();
         } else {
-            $__message[] = DEFAULT_MSG;
+            $__message = DEFAULT_MSG;
         }
         init_smarty($LN['fatal_error_title'], 1);
-        $smarty->assign('__message', $__message);
+        $smarty->assign('msg', $__message);
         $smarty->assign('closelink', 'back');
+        $smarty->assign('link', NULL);
         $smarty->display('fatal_error.tpl');
     } else {
         // Ajax script, output bare html

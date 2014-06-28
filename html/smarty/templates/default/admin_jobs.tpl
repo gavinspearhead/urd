@@ -14,14 +14,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-04-28 00:55:09 +0200 (zo, 28 apr 2013) $
- * $Rev: 2823 $
+ * $LastChangedDate: 2013-12-07 17:40:41 +0100 (za, 07 dec 2013) $
+ * $Rev: 2972 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: admin_jobs.tpl 2823 2013-04-27 22:55:09Z gavinspearhead@gmail.com $
+ * $Id: admin_jobs.tpl 2972 2013-12-07 16:40:41Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
 
+<div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_jobs_title}</h3>
+</div>
 
 <div id="jobsdiv">
 </div>
@@ -29,6 +31,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     update_jobs();
+    $('#searchbar').html( $('#searchformdiv').html());
 });
 </script>
 

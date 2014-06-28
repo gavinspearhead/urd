@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-15 00:41:23 +0200 (zo, 15 jun 2014) $
+ * $Rev: 3095 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_show_upload.tpl 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: ajax_show_upload.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
@@ -31,15 +31,15 @@
 <form method="post" action="parsenzb.php" id='parseform'>
 <div>
 <input type="hidden" name="timestamp" value="" id='timestamp1'/> 
-<input type="hidden" name="challenge" value="{$challenge}"/>
+<input type="hidden" name="challenge" value="{$challenge|escape}"/>
 <input type="hidden" name="dl_dir" value="" id='dl_dir1'/> 
 <input type="hidden" name="add_setname" id="add_setname1"/>
 <input type="hidden" name="setname" id="setname1"/>
 	{$LN_transfers_nzblocation}:<br/>
     {if $localfile != ''}
-	<input type="text" name="file" id="url" size="30" value="{$localfile}" {urd_popup type="small" text=$LN_transfers_nzblocationext} onchange="update_setname('url');" autofocus="autofocus"/>
+	<input type="text" name="file" id="url" size="30" placeholder="{$LN_filename}" value="{$localfile|escape}" {urd_popup type="small" text=$LN_transfers_nzblocationext} onchange="update_setname('url');" autofocus="autofocus"/>
     {else}
-	<input type="text" name="url" id="url" size="30" {urd_popup type="small" text=$LN_transfers_nzblocationext} onchange="update_setname('url');"/>
+	<input type="text" name="url" id="url" size="30" placeholder="" {urd_popup type="small" text=$LN_transfers_nzblocationext} onchange="update_setname('url');"/>
     {/if}
 	</div>
 </form>
@@ -49,24 +49,27 @@
 <form method='post' enctype='multipart/form-data' action='upload.php' id='uploadform'>
 <div>
 <input type="hidden" name="timestamp" value="" id='timestamp2'/> 
-<input type="hidden" name="challenge" value="{$challenge}"/>
+<input type="hidden" name="challenge" value="{$challenge|escape}"/>
 <input type="hidden" name="dl_dir" value="" id='dl_dir2'/> 
 <input type="hidden" name="add_setname" id="add_setname2"/>
 <input type="hidden" name="setname" id="setname2"/>
 {$LN_transfers_nzbupload}:<br/>
-<input type="file" name="upfile" id="upfile" {urd_popup type="small" text=$LN_transfers_nzbuploadext} onchange="update_setname('upfile');"/>
+
+<input type="text" name="_upfile" id="_upfile" style="width:150px;" {urd_popup type="small" text=$LN_transfers_nzbuploadext}/>
+<input type="file" name="upfile" id="upfile" style="display:none" onchange="update_setname('upfile'); $('#_upfile').val($(this).val());"/>
+<input type="button" class="submitsmall" value="{$LN_browse}" onclick="$('#upfile').click();"/>
 </div>
 </form>
 </td>
 </tr>
 <tr>
-<td>{$LN_basket_setname}:<br/><input name="setname" id="setname" type="text" value="" size="30"/></td><td>&nbsp;</td>
-<td class="vtop">{$LN_browse_schedule_at}:<br/><input name="timestamp" id="timestamp" type="text" value="{$download_delay}" size="20" onclick="javascript:show_calendar(null, null, null);" onkeyup="javascript:hide_popup('calendardiv', 'calendar');"/></td></tr>
+<td>{$LN_basket_setname}:<br/><input name="setname" id="setname" type="text" value="{$setname|escape}" size="30"/></td><td>&nbsp;</td>
+<td class="vtop">{$LN_browse_schedule_at}:<br/><input name="timestamp" id="timestamp" type="text" value="{$download_delay|escape}" size="20" onclick="javascript:show_calendar(null, null, null);" onkeyup="javascript:hide_popup('calendardiv', 'calendar');"/></td></tr>
 <tr><td colspan="3">
 {$LN_browse_download_dir}:<br/>
 <div id="dl_dir_span">
     <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300"/>&nbsp;</div>
-    <div class="foldericon iconsize floatleft" onclick="toggle_hide('dir_select_span', 'hidden'); toggle_hide('dl_dir_span', 'hidden');"></div>
+    <div class="foldericon iconsize floatleft" onclick="$('#dir_select_span').toggleClass('hidden'); $('#dl_dir_span').toggleClass('hidden');"></div>
 </div>
 <div id="dir_select_span" class="hidden">
 <select id="dir_select" onchange="select_dir('dir_select', 'dl_dir');" class="width300">
@@ -79,7 +82,7 @@
 
 </td></tr>
 <tr><td>
-{urd_checkbox value="$add_setname" name="add_setname" id="add_setname" data="$LN_browse_add_setname" } 
+{urd_checkbox value="$add_setname" name="add_setname" id="add_setname" data="$LN_browse_add_setname"} 
 </td>
 <tr><td colspan="3">&nbsp;</td></tr>
 

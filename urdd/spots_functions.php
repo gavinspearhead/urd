@@ -28,11 +28,11 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathsf = realpath(dirname(__FILE__));
 
-require_once "$pathsf/../functions/defines.php";
-require_once "$pathsf/../functions/functions.php";
-
 class urd_spots
 {
+    const SPOT_BODY_SIZE_LIMIT      = 51200;
+    const SPOT_COMMENT_SIZE_LIMIT   = 10240;
+
     private static function make_spot_id($spotid, $message_id, $poster)
     {
         return md5($spotid . $message_id . $poster);
@@ -41,78 +41,83 @@ class urd_spots
     public static function add_spot(DatabaseConnection $db, array $spot_data)
     {
         //echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-        $o_spotid = $spotid = self::make_spot_id($spot_data['spotid'], $spot_data['messageid'], $spot_data['poster']);
-        $db->escape($spotid, TRUE);
-        $sql = "\"spotid\" FROM spots WHERE \"spotid\" = $spotid";
-        $res = $db->select_query($sql, 1);
+        $spotid = self::make_spot_id($spot_data['spotid'], $spot_data['messageid'], $spot_data['poster']);
+        $res = $db->select_query('"spotid" FROM spots WHERE "spotid"=?', 1, array($spotid));
         static $cols = array (
-                'messageid',
-                'spotid',
-                'category',
-                'subcat',
-                'poster',
-                'spotter_id',
-                'subcata',
-                'subcatb',
-                'subcatc',
-                'subcatd',
-                'subcatz',
-                'title',
-                'tag',
-                'stamp',
-                'size',
-                'url',
-                'nzbs',
-                'description',
-                'reports',
-                'comments',
-                );
+            'messageid',
+            'spotid',
+            'category',
+            'subcat',
+            'poster',
+            'spotter_id',
+            'subcata',
+            'subcatb',
+            'subcatc',
+            'subcatd',
+            'subcatz',
+            'title',
+            'tag',
+            'stamp',
+            'size',
+            'url',
+            'nzbs',
+            'description',
+            'reports',
+            'comments',
+            'rating',
+            'rating_count',
+        );
         $vals = array (
-                $spot_data['messageid'],
-                $o_spotid,
-                (is_numeric($spot_data['category']) ? $spot_data['category'] : 0),
-                (is_numeric($spot_data['sub']) ? $spot_data['sub'] : 0) ,
-                $spot_data['poster'],
-                $spot_data['spotter_id'],
-                $spot_data['subcata'],
-                $spot_data['subcatb'],
-                $spot_data['subcatc'],
-                $spot_data['subcatd'],
-                $spot_data['subcatz'],
-                $spot_data['title'],
-                $spot_data['tag'],
-                $spot_data['date'],
-                $spot_data['size'],
-                $spot_data['url'],
-                (($spot_data['nzb'] != '') ? $db->compress(serialize($spot_data['nzb'])) : ''),
-                $db->compress($spot_data['body']),
-                0,
-                0,
-                );
+            $spot_data['messageid'],
+            $spotid,
+            (is_numeric($spot_data['category']) ? $spot_data['category'] : 0),
+            (is_numeric($spot_data['sub']) ? $spot_data['sub'] : 0),
+            $spot_data['poster'],
+            $spot_data['spotter_id'],
+            $spot_data['subcata'],
+            $spot_data['subcatb'],
+            $spot_data['subcatc'],
+            $spot_data['subcatd'],
+            $spot_data['subcatz'],
+            $spot_data['title'],
+            $spot_data['tag'],
+            $spot_data['date'],
+            $spot_data['size'],
+            $spot_data['url'],
+            (($spot_data['nzb'] != '') ? db_compress(serialize($spot_data['nzb'])) : ''),
+            db_compress($spot_data['body']),
+            0,
+            0,
+            0,
+            0,
+        );
         if (!isset($res[0]['spotid'])) {
             $db->insert_query('spots', $cols, $vals);
             if (is_string($spot_data['image'])) {
-                $db->insert_query('spot_images', array('spotid', 'image', 'fetched', 'stamp'), array($o_spotid, $spot_data['image'], ((substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), $spot_data['date']));
+                $db->insert_query('spot_images', array('spotid', 'image', 'fetched', 'stamp'), 
+                        array($spotid, $spot_data['image'], 
+                            ((substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), $spot_data['date']));
             }
         } else {
-            $db->update_query('spots', $cols, $vals, "\"spotid\" = $spotid");
+            $db->update_query('spots', $cols, $vals, '"spotid" = ?', array($spotid));
             if (is_string($spot_data['image'])) {
-                $db->update_query('spot_images', array('image', 'fetched'), array($spot_data['image'], (substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), "\"spotid\" = $spotid");
+                $db->update_query('spot_images', array('image', 'fetched'), 
+                        array($spot_data['image'], (substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), '"spotid"=?', array($spotid));
             }
         }
 
-        return $o_spotid;
+        return $spotid;
     }
 
     private static function parse_spot_report(array $lines)
     {
         $header = array();
         foreach ($lines as $line) {
-            $hdr = explode(': ', $line, 2);
+            $hdr = explode(':', $line, 2);
             if (count($hdr) < 2) {
                 continue;
             }
-            $header[$hdr[0]] = $hdr[1];
+            $header[$hdr[0]] = trim($hdr[1]);
         }
 
         $reportId = trim($header['Message-ID'], '<>');
@@ -123,15 +128,13 @@ class urd_spots
             $report['date'] = strtotime($header['Date']);
             $report['message_id'] = $reportId;
             $report['keyword'] = $tmp[0];
-            $report['reference'] = substr($tmp[1], 1, strlen($tmp[1]) - 2);
+            $report['reference'] = substr($tmp[1], 1, -1);
         }
-
         return $report;
     }
 
-    private static function parse_spot_header(array $header, $message_id, array $poster_blacklist, array $spot_blacklist)
+    private static function parse_spot_header(array $header, $message_id, array $spot_blacklist)
     {
-        //echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         $spot_data = array(
                 'from' => '',
                 'subject' => '',
@@ -141,6 +144,7 @@ class urd_spots
                 'user-key'=> '',
                 'xml' =>'',
                 'messageid' => $message_id,
+                'user-avatar' => '',
                 'verified' => FALSE
                 );
         $spotParser = new SpotParser();
@@ -152,7 +156,7 @@ class urd_spots
             }
 
             $parts[1] = trim($parts[1]);
-            switch (strtolower($parts[0])) {
+            switch (strtolower(trim($parts[0]))) {
                 case 'from':
                     $spot_data['from'] .= $parts[1];
                     $from = $parts[1];
@@ -182,10 +186,13 @@ class urd_spots
                     }
                     break;
                 case 'x-user-signature' :
-                    $spot_data['user-signature'] = SpotParser::unspecialString(substr($line, 18));
+                    $spot_data['user-signature'] = SpotParser::unspecial_string(substr($line, 18));
                     break;
                 case 'x-xml' :
                     $spot_data['xml'] .= substr($line, 7);
+                    break;
+                case 'x-user-avatar':
+                    $spot_data['user-avatar'] .= substr($line, 15);
                     break;
             }
         }
@@ -195,14 +202,9 @@ class urd_spots
                 $spot_data['user-signature'] == '') {
             return FALSE;
         }
-        $from = $spot_data['from'];
-        foreach ($poster_blacklist as $poster) {
-            if ($poster != '' && preg_match("|$poster|", $from)) {
-                return FALSE;
-            }
-        }
-# Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
-        $spot_data = array_merge($spotParser->parseFull($spot_data['xml']), $spot_data);
+        
+        // Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
+        $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
         if ($spot_data['title'] == '') {
             return FALSE;
         }
@@ -214,9 +216,9 @@ class urd_spots
     {
         $spotSigning = new SpotSigning(extension_loaded('openssl'));
         $spot_data['verified'] = $spotSigning->verifyFullSpot($spot_data);
-# als de spot verified is, toon dan de userid van deze user
+        // als de spot verified is, toon dan de userid van deze user
         if ($spot_data['verified']) {
-            $spot_data['userid'] = $spotSigning->calculateUserid($spot_data['user-key']['modulo']);
+            $spot_data['userid'] = $spotSigning->calculate_userid($spot_data['user-key']['modulo']);
         }
 
         return $spot_data;
@@ -225,7 +227,7 @@ class urd_spots
     private static function parse_spot_data(array &$spot_data)
     {
         $spotParser = new SpotParser();
-        $spot_data = array_merge($spotParser->parseFull($spot_data['xml']), $spot_data);
+        $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
     }
 
     public static function expire_spots(DatabaseConnection $db, $dbid)
@@ -242,38 +244,42 @@ class urd_spots
             return 0;
         }
 
-        $time = time();
         // Expire : from days to seconds
         $expire_time *= 24 * 3600;
         // convert to epochtime:
+        $time = time();
         $expire = $time - $expire_time;
         $safety_expire = $time - (24 * 3600);
         $type = USERSETTYPE_SPOT;
         $marking_on = sets_marking::MARKING_ON;
         $spam_count = $keep_int = '';
-        if (get_config($db, 'keep_interesting', FALSE)) {
-            $keep_int = " AND \"spotid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\" = '$type' AND \"statusint\" = '$marking_on') ";
-        }
+        $inputarr = array($expire);
         $spot_expire_spam_count = get_config($db, 'spot_expire_spam_count', 0);
         if ($spot_expire_spam_count > 0) {
-            $db->escape($spot_expire_spam_count, TRUE);
-            $spam_count = " OR spots.\"reports\" > $spot_expire_spam_count ";
+            $spam_count = ' OR spots."reports" > ?';
+            $inputarr[] = $spot_expire_spam_count;
         }
+        if (get_config($db, 'keep_interesting', FALSE)) {
+            $keep_int = ' AND "spotid" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
+            $inputarr[] = $type;
+            $inputarr[] = $marking_on;
+        }
+
         echo_debug('Deleting expired spots', DEBUG_DATABASE);
 
-        $sql = "count(\"spotid\") AS cnt FROM spots WHERE ( \"stamp\" < $expire $spam_count ) $keep_int";
-        $res = $db->select_query($sql);
+        $sql = "count(\"spotid\") AS cnt FROM spots WHERE (\"stamp\" < ? $spam_count ) $keep_int";
+        $res = $db->select_query($sql, -1, -1, $inputarr);
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
         }
-        write_log('Deleting '. $cnt . ' spots');
+        write_log('Deleting ' . $cnt . ' spots');
         update_queue_status ($db, $dbid, NULL, 0, 1);
 
         // expiring
-        $res = $db->delete_query('spots', " ( \"stamp\" < $expire $spam_count ) $keep_int" );
+        $res = $db->delete_query('spots', " (\"stamp\" < ? $spam_count ) $keep_int", $inputarr);
         echo_debug("Deleted {$cnt} spots", DEBUG_DATABASE);
-        $sql = "count(*) FROM spot_images WHERE \"spotid\" NOT IN (SELECT \"spotid\" FROM spots)";
+        $sql = 'count(*) AS "cnt" FROM spot_images WHERE "spotid" NOT IN (SELECT "spotid" FROM spots)';
         $res = $db->select_query($sql);
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
@@ -287,12 +293,12 @@ class urd_spots
         // delete files from cache too
 
         write_log('Deleting '. $cnt . ' spot images');
-        $res = $db->delete_query('spot_images', "\"spotid\" NOT IN (SELECT \"spotid\" FROM spots) AND \"stamp\" < $safety_expire");
+        $res = $db->delete_query('spot_images', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));
         echo_debug("Deleted {$cnt} spot images", DEBUG_DATABASE);
 
         update_queue_status ($db, $dbid, NULL, 0, 40);
-        $sql = "count(*) FROM spot_comments WHERE \"spotid\" NOT IN (SELECT \"spotid\" FROM spots) AND \"stamp\" < $safety_expire";
-        $res = $db->select_query($sql);
+        $sql = 'count(*) AS cnt FROM spot_comments WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?';
+        $res = $db->select_query($sql, array($safety_expire));
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
@@ -300,20 +306,20 @@ class urd_spots
 
         update_queue_status ($db, $dbid, NULL, 0, 60);
         write_log('Deleting '. $cnt . ' spot comments');
-        $res = $db->delete_query('spot_comments', "\"spotid\" NOT IN (SELECT \"spotid\" FROM spots) AND \"stamp\" < $safety_expire");
+        $res = $db->delete_query('spot_comments', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));
         echo_debug("Deleted {$cnt} spot comments", DEBUG_DATABASE);
 
         update_queue_status ($db, $dbid, NULL, 0, 80);
         // expiring reports
-        $sql = "count(*) FROM spot_reports WHERE \"spotid\" NOT IN (SELECT \"spotid\" FROM spots) AND \"stamp\" < $safety_expire";
-        $res = $db->select_query($sql);
+        $sql = 'count(*) AS cnt FROM spot_reports WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?';
+        $res = $db->select_query($sql, array($safety_expire));
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
         }
         update_queue_status ($db, $dbid, NULL, 0, 90);
         write_log('Deleting '. $cnt . ' spot reports');
-        $res = $db->delete_query('spot_reports', "\"spotid\" NOT IN (SELECT \"spotid\" FROM spots) AND \"stamp\" < $safety_expire");
+        $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));
         echo_debug("Deleted {$cnt} spot reports", DEBUG_DATABASE);
         self::update_spots_report_count($db);
         self::update_spots_comment_count($db);
@@ -332,31 +338,28 @@ class urd_spots
         $comments_groupid = group_by_name($db, $group_comments);
         $group_reports = get_config($db, 'spots_reports_group');
         $reports_groupid = group_by_name($db, $group_reports);
-        $sql = "count(\"spotid\") AS cnt FROM spots";
+        $spots_cnt = $report_cnt = $comment_cnt = $image_cnt = 0;
+        $sql = 'count("spotid") AS cnt FROM spots';
         $res = $db->select_query($sql);
-        $cnt = 0;
         if (isset($res[0]['cnt'])) {
-            $cnt = $res[0]['cnt'];
+            $spots_cnt = $res[0]['cnt'];
         }
-        $sql = "count(\"id\") AS cnt FROM spot_comments";
+        $sql = 'count("id") AS cnt FROM spot_comments';
         $res = $db->select_query($sql);
-        $comment_cnt = 0;
         if (isset($res[0]['cnt'])) {
             $comment_cnt = $res[0]['cnt'];
         }
-        $sql = "count(\"id\") AS cnt FROM spot_reports";
+        $sql = 'count("id") AS cnt FROM spot_reports';
         $res = $db->select_query($sql);
-        $report_cnt = 0;
         if (isset($res[0]['cnt'])) {
             $report_cnt = $res[0]['cnt'];
         }
-        $sql = "count(\"spotid\") AS cnt FROM spot_images";
+        $sql = 'count("spotid") AS cnt FROM spot_images';
         $res = $db->select_query($sql);
-        $image_cnt = 0;
         if (isset($res[0]['cnt'])) {
             $report_cnt = $res[0]['cnt'];
         }
-        write_log("Deleted $cnt spots, $comment_cnt comments, $report_cnt reports and $image_cnt images", LOG_NOTICE);
+        write_log("Deleted $spots_cnt spots, $comment_cnt comments, $report_cnt reports and $image_cnt images", LOG_NOTICE);
         update_queue_status ($db, $dbid, NULL, 0, 1);
 
         $res = $db->truncate_table('spots');
@@ -366,11 +369,11 @@ class urd_spots
 
         self::delete_image_cache($db, TRUE);
 
-        echo_debug("Deleted $cnt spots, $comment_cnt comments, $report_cnt reports and $image_cnt images", DEBUG_DATABASE);
+        echo_debug("Deleted $spots_cnt spots, $comment_cnt comments, $report_cnt reports and $image_cnt images", DEBUG_DATABASE);
         update_queue_status ($db, $dbid, NULL, 0, 100);
-        $db->purge_binaries($groupid);
-        $db->purge_binaries($comments_groupid);
-        $db->purge_binaries($reports_groupid);
+        purge_binaries($db, $groupid);
+        purge_binaries($db, $comments_groupid);
+        purge_binaries($db, $reports_groupid);
 
         return $cnt;
     }
@@ -378,21 +381,25 @@ class urd_spots
     public static function delete_image_cache(DatabaseConnection $db, $all=TRUE, $safety_expire=0)
     {
         $image_dir = get_dlpath($db) . IMAGE_CACHE_PATH;
+        add_dir_separator($image_dir);
         if ($all === TRUE) {
-            array_map('unlink', glob($image_dir . DIRECTORY_SEPARATOR . '*'));
+            array_map('unlink', glob($image_dir . '*'));
         } else {
-            $a = glob ($image_dir . DIRECTORY_SEPARATOR . '*');
-            $ids = array_map('pathinfo', $a, array_fill(0, count($a), PATHINFO_FILENAME));
+            $ids = array();
+            $a = glob ($image_dir . '*');
+            $cnt = count($a);
+            if ($cnt > 0) {
+                $ids = array_map('pathinfo', $a, array_fill(0, $cnt, PATHINFO_FILENAME));
+            }
             $cnt = 0;
             foreach ($ids as $id) {
-                $o_id = $id;
-                $db->escape($id, TRUE);
-                $sql = "\"spotid\" FROM spots WHERE \"spotid\" = $id";
-                $res = $db->select_query($sql, 1);
+                $filename = $image_dir . $id . '.jpg';
+                $sql = '"spotid" FROM spots WHERE "spotid"=?';
+                $res = $db->select_query($sql, 1, array($id));
                 if (!isset($res[0]['spotid'])) {
                     $cnt ++;
-                    if (file_exists($image_dir . $o_id . '.jpg')) {
-                        @unlink($image_dir . $o_id . '.jpg');
+                    if (file_exists($filename)) {
+                        @unlink($filename);
                     }
                 }
             }
@@ -400,15 +407,20 @@ class urd_spots
         }
     }
 
-    public static function parse_spot_comment(array $header)
+    public static function parse_spot_comment(array $header, array $spot_blacklist)
     {
         $res = array();
+        $res['rating'] = 0; // default rating is 0
         foreach ($header as $line) {
             $line = explode(':', $line, 2);
             switch (strtolower($line[0])) {
                 case 'message-id':
                     $msgid = trim($line[1], "<>\t ");
                     $res['messageid'] = $msgid;
+                    $msgid_parts = explode('.', $msgid);
+                    if (count($msgid_parts) == 5) {
+                        $res['rating'] = (int)$msgid_parts[1];
+                    }
                     break;
                 case 'references' :
                     $ref = trim($line[1], "<>\t ");
@@ -417,20 +429,28 @@ class urd_spots
                 case 'from':
                     $from = trim($line[1]);
                     $res['fullfrom'] = $from;
-                    $res['from'] = trim(substr($from, 0, strpos($from, '<') - 1));
-                    $res['spotter_id'] = self::parse_spotterid(substr($from, strpos($from, '<')));
+                    $pos = strpos($from, '<');
+                    $res['from'] = trim(substr($from, 0, $pos - 1));
+                    $spotter_id = self::parse_spotterid(substr($from, $pos));
+
+                    if (isset($spot_blacklist[$spotter_id])) {
+                        echo_debug("User $spotter_id on blacklist - spot comment not added", DEBUG_SERVER);
+
+                        throw new exception('Poster blacklisted');
+                    }
+                    $res['spotter_id'] = $spotter_id;
                     break;
                 case 'x-user-key':
                     $key = trim($line[1]);
                     $xml = simplexml_load_string($key);
-                    if ($xml !== false) {
+                    if ($xml !== FALSE) {
                         $res['user-key']['exponent'] = (string) $xml->Exponent;
                         $res['user-key']['modulo'] = (string) $xml->Modulus;
                     }
                     break;
                 case 'x-user-signature':
                     $sig = trim($line[1]);
-                    $res['user-signature'] = SpotParser::unspecialString($sig);
+                    $res['user-signature'] = SpotParser::unspecial_string($sig);
                     break;
                 case 'date':
                     $sig = trim($line[1]);
@@ -443,6 +463,18 @@ class urd_spots
         }
 
         return $res;
+    }
+
+    private static function update_spot_comment_ratings(DatabaseConnection$db, array $ratings)
+    {
+        foreach($ratings as $spotid => $rating) {
+            $cnt = count($rating);
+            $sum = array_sum($rating);
+            $db->escape($cnt, FALSE);
+            $db->escape($sum, FALSE);
+            $sql = "UPDATE spots SET \"rating_count\" = \"rating_count\" + $cnt, \"rating\" = (\"rating\" + $sum) / (rating_count + $cnt) WHERE \"spotid\" = ?";
+            $db->execute_query($sql, array($spotid));
+        }
     }
 
     private static function parse_links($data)
@@ -482,10 +514,10 @@ class urd_spots
     {
         $extset_data = array();
         $link_data = self::parse_links($spot_data['body']);
-        if ($link_data !== FALSE) {
+        if (($link_data !== FALSE) && ($link_data != $spot_data['url'])) {
             $extset_data['link'] = $link_data;
         }
-        if (count($extset_data) > 0 ) {
+        if (count($extset_data) > 0) {
             urd_extsetinfo::add_ext_setdata($db, $spotid, $extset_data, USERSETTYPE_SPOT, ESI_NOT_COMMITTED);
         }
     }
@@ -498,7 +530,7 @@ class urd_spots
             return '';
         }
         $sig = explode('.', $addr[0]);
-        $pubkey = SpotParser::unspecialString($sig[0]);
+        $pubkey = SpotParser::unspecial_string($sig[0]);
 
         $spotterid = self::calculate_spotter_id($pubkey);
 
@@ -507,11 +539,10 @@ class urd_spots
 
     public static function get_spot_by_messageid(DatabaseConnection $db, $message_id)
     {
-        $db->escape($message_id, TRUE);
-        $sql = "\"spotid\" FROM spots WHERE \"messageid\" LIKE $message_id";
-        $res = $db->select_query($sql, 1);
+        $sql = '"spotid" FROM spots WHERE "messageid"=?';
+        $res = $db->select_query($sql, 1, array($message_id));
         if (!isset($res[0]['spotid'])) {
-            throw new exception ('Spot not found');
+            throw new exception ('Spot not found ' . $message_id);
         }
 
         return $res[0]['spotid'];
@@ -520,8 +551,8 @@ class urd_spots
     public static function load_spot_comments(DatabaseConnection $db, URD_NNTP $nzb, action $item, $expire)
     {
         assert(is_numeric($expire));
-        $sql = 'COUNT(*) AS "cnt" FROM spot_comments WHERE "spotid" = \'\'';
-        $res = $db->select_query($sql);
+        $sql = 'COUNT(*) AS "cnt" FROM spot_comments WHERE "spotid"=? OR "spotid"=?';
+        $res = $db->select_query($sql, array('', '0'));
         if (!isset($res[0]['cnt'])) {
             $status = QUEUE_FINISHED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spot comments');
@@ -529,69 +560,89 @@ class urd_spots
             return NO_ERROR;
         }
         $time_a = microtime(TRUE);
-        $expire_timestamp = time() - ($expire * 24 * 3600);
         $totalcount = $res[0]['cnt'];
         write_log("Getting $totalcount spot comments", LOG_NOTICE);
         $cnt = 0;
         $limit = 100;
         $spotSigning = new SpotSigning(extension_loaded('openssl'));
         $nzb->reconnect();
+        $blacklist_url = get_config($db, 'spots_blacklist', '');
+        $spots_blacklist = array();
+        if ($blacklist_url != '') {
+            $spots_blacklist = load_blacklist($db, NULL, blacklist::ACTIVE, TRUE);
+        }
+        $expire_timestamp = time() - ($expire * 24 * 3600);
+        static $cols = array('spotid', 'from', 'comment', 'userid', 'stamp');
+
         while (TRUE) {
-            $sql = '* FROM spot_comments WHERE "spotid" = \'\' ';
-            $res = $db->select_query($sql, $limit);
+            $sql = '"id", "message_id", "spotid" FROM spot_comments WHERE "spotid"=? OR "spotid"=?';
+            $res = $db->select_query($sql, $limit, array('', '0'));
             if (!is_array($res)) {
                 break;
             }
-            $ids = '';
+            $ids = array();
 
+            $ratings = array();
             foreach ($res as $row) {
+                $this_id = $row['id'];
+                $msg_id = $row['message_id'];
                 try {
-                    $msg_id = $row['message_id'];
-                    $id = $row['id'];
-                    //                        $header = $nzb->get_header('<' . $msg_id . '>');
-                    $header = $nzb->get_header( $msg_id);
-                    $comment = self::parse_spot_comment($header);
-                    if (!isset($comment['references']) || !isset($comment['from']) || !isset($comment['date']) || !isset($comment['user-key'])) {
-                        throw new exception('Invalid spot comment');
+                    $cnt++;
+                    $header = $nzb->get_header($msg_id);
+                    $comment = self::parse_spot_comment($header, $spots_blacklist);
+                    if (!isset($comment['references'], $comment['from'], $comment['date'], $comment['user-key'])) {
+                        throw new exception('Invalid spot comment ' . $msg_id);
                     }
-                    $ref_msg_id = $comment['references'];
-                    $spotid = self::get_spot_by_messageid($db, $ref_msg_id);
-                    $from = utf8_encode($comment['from']);
                     $date = $comment['date'];
                     if ($date < $expire_timestamp) {
-                        throw new exception('Comment too old');
+                        throw new exception('Comment too old: ' . $msg_id);
                     }
                     if ($comment['lines'] > 100) {
-                        throw new exception('Comment too long');
+                        throw new exception('Comment too long: ' . $msg_id);
                     }
 
-                    //$body = $nzb->get_article('<' . $msg_id . '>');
-                    $body = $nzb->get_article($msg_id);
-                    $body = $comment['body'] = array_map('utf8_encode', $body);
-                    $body = implode("\n", $body);
-                    $body = $db->compress($body);
-                    $db->escape($spotid, TRUE);
-                    $db->escape($from, TRUE);
-                    $db->escape($body, TRUE);
-                    $comment['verified'] = $spotSigning->verifyComment($comment);
-                    $userid = $comment['userid'] = $spotSigning->calculateUserid($comment['user-key']['modulo']);
-                    if (!$comment['verified']) {
-                        throw new exception('Comment signature invalid');
+                    $ref_msg_id = $comment['references'];
+                    try { 
+                        $spotid = self::get_spot_by_messageid($db, $ref_msg_id);
+                    } catch (exception $e) {
+                        if (trim($row['spotid']) == '0') { // a quirk in postgresql / pdo seems to extend the char(32)  to 32 chars with spaces appended
+                            throw $e;
+                        }
+                        echo_debug(DEBUG_SERVER, 'Spot not found');
+                        $spotid = '1'; // we set it to 1 and after we finish set it to 0 so that comments we may have missed are updated the next run
+                        $from = $body = $userid = ''; 
+                        $date = 0;
                     }
-                    $db->escape($userid, TRUE);
-                    $sql = "UPDATE spot_comments SET \"spotid\" = $spotid, \"comment\" = $body, \"stamp\" = $date, \"from\" = $from, \"userid\"= $userid WHERE \"id\" = $id";
-                    $db->execute_query($sql);
-                    $cnt++;
+                    if ($spotid != '1') { // don't need to get the comment yet, as we haven't the spot 
+                        $body = $nzb->get_article($msg_id);
+                        $body = $comment['body'] = array_map('utf8_encode', $body);
+                        $body = implode("\n", $body);
+                        if (strlen($body) > self::SPOT_COMMENT_SIZE_LIMIT) { 
+                            $body = substr($body, 0, self::SPOT_COMMENT_SIZE_LIMIT); // body can only be 10kB long
+                        }
+                        $body = db_compress($body);
+                        $from = utf8_encode($comment['from']);
+
+                        $comment['verified'] = $spotSigning->verifyComment($comment);
+                        $userid = $comment['userid'] = $spotSigning->calculate_userid($comment['user-key']['modulo']);
+                        if (!$comment['verified']) {
+                            throw new exception('Comment signature invalid for spot ' . $spotid);
+                        }
+                        if ($comment['rating'] > 0 && $comment['rating'] <= 10) {
+                            $ratings[$spotid][] = $comment['rating'];
+                        }
+                    }
+                    $vals = array($spotid, $from, $body, $userid, $date);
+                    $db->update_query('spot_comments', $cols, $vals, '"id"=?', array($this_id));
                 } catch (exception $e) {
-                    $id = $row['id'];
-                    $db->escape($id, TRUE);
-                    $ids .= $id . ',';
-                    write_log($e->getMessage(), LOG_NOTICE);
+                    $ids[] = "$this_id";
+                    if ($e->getCode() != ERR_SPOT_NOT_FOUND) {
+                        write_log($e->getMessage(), LOG_NOTICE);
+                    }
                 }
             }
-            if ($ids != '') {
-                $ids = trim($ids, ', ');
-                $db->delete_query('spot_comments', "\"id\" in ( $ids )");
+            if (count($ids) > 0) {
+                $db->delete_query('spot_comments', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
             }
 
             $time_b = microtime(TRUE);
@@ -601,8 +652,10 @@ class urd_spots
             if ($perc != 0 && $cnt > 0) {
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
-            update_queue_status($db, $item->get_dbid(), NULL, $time_left , $perc, 'Getting spot comments');
+            self::update_spot_comment_ratings($db, $ratings);
+            update_queue_status($db, $item->get_dbid(), NULL, $time_left, $perc, 'Getting spot comments');
         }
+        $db->update_query_2('spot_comments', array('spotid' => 0), '"spotid"=?', array('1'));
         self::update_spots_comment_count($db);
 
         return $cnt;
@@ -611,8 +664,8 @@ class urd_spots
     static function load_spot_reports(DatabaseConnection $db, URD_NNTP $nzb, action $item, $expire)
     {
         assert(is_numeric($expire));
-        $sql = 'COUNT(*) AS "cnt" FROM spot_reports WHERE "reference" = \'\'';
-        $res = $db->select_query($sql);
+        $sql = 'COUNT(*) AS "cnt" FROM spot_reports WHERE "reference"=? OR "spotid"=?';
+        $res = $db->select_query($sql, array('', '0'));
         if (!isset($res[0]['cnt'])) {
             $status = QUEUE_FINISHED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spot reports');
@@ -626,45 +679,45 @@ class urd_spots
         $cnt = 0;
         $limit = 100;
         while (TRUE) {
-            $sql = '* FROM spot_reports WHERE "reference" = \'\' ';
-            $res = $db->select_query($sql, $limit);
+            $sql = '"id", "message_id", "spotid", "reference" FROM spot_reports WHERE "reference"=? OR "spotid"=?';
+            $res = $db->select_query($sql, $limit, array('', '0'));
             if (!is_array($res)) {
                 break;
             }
-            $ids = '';
-
+            $ids = array();
             foreach ($res as $row) {
                 try {
                     $msg_id = $row['message_id'];
                     $id = $row['id'];
-                    //$header = $nzb->get_header('<' . $msg_id . '>');
                     $header = $nzb->get_header($msg_id);
                     $report = self::parse_spot_report($header);
-                    if (!isset($report['reference']) && !isset($report['date'])) {
+                    if (!isset($report['reference'], $report['date'])) {
                         throw new exception('Invalid spot report');
                     }
                     $ref_msg_id = $report['reference'];
-                    $spotid = self::get_spot_by_messageid($db, $ref_msg_id);
+                    try {
+                        $spotid = self::get_spot_by_messageid($db, $ref_msg_id);
+                    } catch (exception $e) {
+                        if ($row['spotid'] == '0') {
+                            throw $e;
+                        }
+                        echo_debug(DEBUG_SERVER, 'Spot not found');
+                        $spotid = 1; // we set it to 1 and after we finish set it to 0 so that reports we may have missed are updated the next run
+                    }
+
                     $date = $report['date'];
                     if ($date < $expire_timestamp) {
-                        throw new exception('Report too old');
+                        throw new exception('Report too old for spot ' . $id);
                     }
-                    $db->escape($ref_msg_id, TRUE);
-                    $db->escape($spotid, TRUE);
-                    $db->escape($date, TRUE);
-                    $sql = "UPDATE spot_reports SET \"reference\" = $ref_msg_id, \"spotid\" = $spotid, \"stamp\"= $date WHERE \"id\" = $id";
-                    $db->execute_query($sql);
+                    $db->update_query_2('spot_reports', array('reference'=>$ref_msg_id, 'spotid'=> $spotid, 'stamp'=>$date), '"id"=?', array($id));
                     $cnt++;
                 } catch (exception $e) {
-                    $id = $row['id'];
-                    $db->escape($id, TRUE);
-                    $ids .= $id . ',';
-                    write_log($e->getMessage(), LOG_NOTICE);
+                    $ids[] = $row['id'];
+                    write_log($e->getMessage(), LOG_INFO);
                 }
             }
-            if ($ids != '') {
-                $ids = trim($ids, ', ');
-                $db->delete_query('spot_reports', "\"id\" in ( $ids )");
+            if (count($ids) > 0) {
+                $db->delete_query('spot_reports', '"id" IN (' . (str_repeat('?,', count($ids) -1)) . '?)', $ids);
             }
 
             $time_b = microtime(TRUE);
@@ -674,9 +727,10 @@ class urd_spots
             if ($perc != 0 && $cnt > 0) {
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
-            update_queue_status($db, $item->get_dbid(), NULL, $time_left , $perc, 'Getting spot reports');
+            update_queue_status($db, $item->get_dbid(), NULL, $time_left, $perc, 'Getting spot reports');
         }
 
+        $db->update_query_2('spot_reports', array('reference'=>'0'), '"spotid"=?', array('1'));
         self::update_spots_report_count($db);
         return $cnt;
     }
@@ -685,8 +739,8 @@ class urd_spots
     {
         echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         // updating count in spots table
-        $subsql = "SELECT COUNT(spot_comments.\"spotid\") FROM spot_comments WHERE spots.\"spotid\" = spot_comments.\"spotid\" GROUP BY spot_comments.\"spotid\"";
-        $sql = "UPDATE spots SET \"comments\" = ( CASE WHEN ( $subsql) IS NULL THEN 0 ELSE ( $subsql ) END ) ";
+        $subsql = 'SELECT COUNT(spot_comments."spotid") FROM spot_comments WHERE spots."spotid" = spot_comments."spotid" GROUP BY spot_comments."spotid"';
+        $sql = "UPDATE spots SET \"comments\" = ( CASE WHEN ( $subsql ) IS NULL THEN 0 ELSE ( $subsql ) END )";
         $db->execute_query($sql);
     }
 
@@ -694,12 +748,12 @@ class urd_spots
     {
         echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         // updating count in spots table
-        $subsql = "SELECT COUNT(spot_reports.\"spotid\") FROM spot_reports WHERE spots.\"spotid\" = spot_reports.\"spotid\" GROUP BY spot_reports.\"spotid\"";
-        $sql = "UPDATE spots SET \"reports\" = ( CASE WHEN ( $subsql) IS NULL THEN 0 ELSE ( $subsql ) END )";
+        $subsql = 'SELECT COUNT(spot_reports."spotid") FROM spot_reports WHERE spots."spotid" = spot_reports."spotid" GROUP BY spot_reports."spotid"';
+        $sql = "UPDATE spots SET \"reports\" = ( CASE WHEN ( $subsql ) IS NULL THEN 0 ELSE ( $subsql ) END )";
         $db->execute_query($sql);
     }
 
-    static function load_spots(DatabaseConnection $db, URD_NNTP $nzb, action $item, array $poster_blacklist)
+    static function load_spots(DatabaseConnection $db, URD_NNTP $nzb, action $item)
     {
         $sql = 'count(*) AS "cnt" FROM spot_messages';
         $res = $db->select_query($sql);
@@ -715,44 +769,51 @@ class urd_spots
         $blacklist_url = get_config($db, 'spots_blacklist', '');
         $spots_blacklist = array();
         if ($blacklist_url != '') {
-            $spots_blacklist = load_blacklist($db);
+            $spots_blacklist = load_blacklist($db, NULL, blacklist::ACTIVE, TRUE);
         }
         $cnt = 0;
+        $max_cat_count = get_config($db, 'spots_max_categories', 0);
         $time_a = microtime(TRUE);
         while (TRUE) {
-            $sql = '* FROM spot_messages';
+            $sql = '"id", "message_id" FROM spot_messages';
             $res = $db->select_query($sql, $limit);
             if (!is_array($res)) {
                 break;
             }
-            $ids = '';
+            $ids = array();
             foreach ($res as $row) {
                 $msg_id = $row['message_id'];
+                $ids[] = $row['id'];
                 try {
                     $header = $nzb->get_header($msg_id);
-                    $spot_data = self::parse_spot_header($header, substr($msg_id, 1, -1), $poster_blacklist, $spots_blacklist);
+                    $spot_data = self::parse_spot_header($header, $msg_id, $spots_blacklist);
                     if ($spot_data != FALSE) {
                         $spot_data['body'] = $nzb->get_article($msg_id);
                         self::verify_spot($spot_data);
                         self::parse_spot_data($spot_data);
+                        if ($max_cat_count > 0 && $spot_data['subcat_count'] > $max_cat_count) {
+                            echo_debug(DEBUG_SERVER, 'Rejected - too many subcats ' . $spot_data['subcat_count'] . " > $max_cat_count");
+                            continue;
+                        }
                         $spot_data['body'] = implode("\n", $spot_data['body']);
+                        if (strlen($spot_data['body']) > (self::SPOT_BODY_SIZE_LIMIT)) { // we skip extremely large spots
+                            echo_debug(DEBUG_SERVER, 'Rejected - spot too large');
+                            continue;
+                        }
                         if (!$spot_data['verified']) {
                             write_log('Signature on spot incorrect', LOG_NOTICE);
                         }
                         $spotid = self::add_spot($db, $spot_data);
                         self::parse_spots_for_extset_data($db, $spot_data, $spotid);
-
                     }
 
                 } catch (exception $e) {
                     write_log($e->getMessage(), LOG_WARNING);
                 }
-                $id = $row['id'];
-                $db->escape($id, TRUE);
-                $ids .= $id . ',';
             }
-            $ids = rtrim($ids, ',');
-            $db->delete_query('spot_messages', "\"id\" in ( $ids )");
+            if (count($ids) > 0) {
+                $db->delete_query('spot_messages', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
+            }
             $cnt += count($res);
             $time_b = microtime(TRUE);
             $status = QUEUE_RUNNING;
@@ -761,7 +822,7 @@ class urd_spots
             if ($perc != 0 && $cnt > 0) {
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
-            update_queue_status($db, $item->get_dbid(), NULL, $time_left , $perc, 'Getting spots');
+            update_queue_status($db, $item->get_dbid(), NULL, $time_left, $perc, 'Getting spots');
         }
 
         return $cnt;

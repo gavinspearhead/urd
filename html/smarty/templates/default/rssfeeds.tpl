@@ -15,27 +15,25 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-04-28 00:55:09 +0200 (zo, 28 apr 2013) $
- * $Rev: 2823 $
+ * $LastChangedDate: 2014-06-28 00:14:27 +0200 (za, 28 jun 2014) $
+ * $Rev: 3127 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: rssfeeds.tpl 2823 2013-04-27 22:55:09Z gavinspearhead@gmail.com $
+ * $Id: rssfeeds.tpl 3127 2014-06-27 22:14:27Z gavinspearhead@gmail.com $
  *}
 {include file="head.tpl" title=$title}
 
-{capture assign=submit}
-<span class="ng_submit">{strip}
-<input type="button" value="{$LN_apply}" class="submit" id="rss_apply" onclick="javascript:rss_feeds_update();"/>&nbsp;
-</span>
+<div id="searchformdiv" class="hidden">
+{strip}
+<h3 class="title">{$LN_feeds_rss|escape}</h3>
 {/strip}
-{/capture}
-
-<br/>
 <div>
-<input type="text" name="search" value="{if $search == ''}&lt;{$LN_search}&gt;{else}{$search|escape:htmlall}{/if}" onfocus="if (this.value=='&lt;{$LN_search}&gt;') this.value='';" id="newsearch" size="30" onkeypress="javascript:submit_enter(event, load_rss_feeds);"/>
+<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30" onkeypress="javascript:submit_enter(event, load_rss_feeds);"/>
+<div class="cleartop3"> 
 {urd_checkbox value="$search_all" name="search_all" id="search_all" data="$LN_feeds_hide_empty"}
+</div>
 &nbsp;
 <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_rss_feeds();"/>
-<div class="floatright submit_button_right">{$submit}</div>
+</div>
 </div>
 
 <div class="innerwaitingdiv" id="waitingdiv">
@@ -46,10 +44,10 @@
 
 <div id="rss_feeds_div"></div>
 
-<p>&nbsp;</p>
 <script type="text/javascript">
 $(document).ready(function() {
     load_rss_feeds();
+    $('#searchbar').html( $('#searchformdiv').html());
 });
 </script>
 

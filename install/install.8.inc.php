@@ -25,20 +25,6 @@
 if (!defined('ORIGINAL_PAGE')) { die('This file cannot be accessed directly.'); }
 
 
-if(!function_exists('echo_debug')) { function echo_debug(){}; }
-if(!function_exists('echo_debug_function')) { function echo_debug_function(){}; }
-if(!function_exists('echo_debug_file')) { function echo_debug_file(){}; }
-if(!function_exists('write_log')) { function write_log(){}; }
-
-
-function get_session($val, $default='') 
-{
-    if (isset($_SESSION[$val])) { 
-        return ($_SESSION[$val]); 
-    } else {
-        return $default;
-    }
-}
 $connection_types = array (
     'off', 
     'ssl', 
@@ -47,31 +33,25 @@ $connection_types = array (
 
 
 // Finish up
-$hostname = $_REQUEST['hostname'];
-$port = $_REQUEST['port'];
-$connection = $_REQUEST['connection'];
-$username = $_REQUEST['username'];
-$password = $_REQUEST['password'];
-$server_id = $_REQUEST['server_id'];
-$encryption_key = $_REQUEST['encryption_key'];
+$hostname       = get_request('hostname');
+$port           = get_request('port');
+$connection     = get_request('connection');
+$username       = get_request('username');
+$password       = get_request('password');
+$server_id      = get_request('server_id');
 
 // Store in session:
-$_SESSION['hostname'] = $hostname;
-$_SESSION['port'] = $port;
+$_SESSION['hostname']   = $hostname;
+$_SESSION['port']       = $port;
 $_SESSION['connection'] = $connection;
-$_SESSION['username'] = $username;
-$_SESSION['password'] = $password;
-$_SESSION['server_id'] = $server_id;
-
-
-require_once '../functions/db.class.php';
-require_once '../functions/usenet_functions.php';
-
+$_SESSION['username']   = $username;
+$_SESSION['password']   = $password;
+$_SESSION['server_id']  = $server_id;
 
 // This SHOULD work now:
 $OUT .= '<tr><td class="install2">Connecting to db using stored settings</td>';
 try{
-	$db = connect_db();
+	$db = connect_db(FALSE);
 	$rv_cdb = TRUE;
 } catch (exception $e) {
 	$rv_cdb = FALSE;
@@ -82,30 +62,34 @@ if ($rv_cdb == FALSE) {
     $OUT .= ShowHelp($error);
 }
 
-
 $OUT .= '<tr><td class="install2">Hostname valid:</td>';
 $OUT .= GenRetVal($hostname != '', $rv_hn);
-if (!$rv_hn) { $OUT .= ShowHelp('Please enter the correct name (typically similar likenews.ISP.com)'); }
+if (!$rv_hn) {
+    $OUT .= ShowHelp('Please enter the correct name (typically similar likenews.ISP.com)'); 
+}
 
 $OUT .= '<tr><td class="install2">Port number valid:</td>';
 $OUT .= GenRetVal(is_numeric($port) && $port <= 65535 && $port > 0, $rv_pt);
-if (!$rv_pt) { $OUT .= ShowHelp('Please enter a valid port number (119 is the default usenet port; 563 for secure usenet)'); }
+if (!$rv_pt) {
+    $OUT .= ShowHelp('Please enter a valid port number (119 is the default usenet port; 563 for secure usenet)'); 
+}
 
 $OUT .= '<tr><td class="install2">Connection type valid:</td>';
 $OUT .= GenRetVal(in_array(strtolower($connection), $connection_types), $rv_conn);
-if (!$rv_conn) { $OUT .= ShowHelp('Please select one of "Off", "SSL" or "TLS"'); }
-
+if (!$rv_conn) { 
+    $OUT .= ShowHelp('Please select one of "Off", "SSL" or "TLS"');
+}
 
 $OUT .= '<tr><td class="install2">Authentication valid:</td>';
 $auth = ($password == '' && $username == '') || ($password != '' && $username != '');
 $OUT .= GenRetVal($auth, $rv_auth);
-if (!$rv_auth) { $OUT .= ShowHelp('Please enter both password and username if authentication is required, otherwise leave both blank.'); }
+if (!$rv_auth) { 
+    $OUT .= ShowHelp('Please enter both password and username if authentication is required, otherwise leave both blank.'); 
+}
 
-
+$authentication = 0;  
 if ($username != '' && $password != '') { 
     $authentication = 1; 
-} else {
-    $authentication = 0;  
 }
 if ($connection == 'off') { 
     $secure_port = 0; 
@@ -127,11 +111,10 @@ if ($rv_hn && $rv_pt && $rv_conn && $rv_auth && $rv_cdb) {
 
         $OUT .= '<tr><td class="install2">Inserting usenet server</td>';
     } else {
-        $rv_server_id = smart_update_usenet_server($db, $server_id, array ('name'=> $name, 'hostname'=>$hostname, 'port'=>$port, 'secure_port'=>$secure_port, 'connection'=> $connection, 'authentication'=>$authentication, 'username'=>$username, 'password'=>$password, 'priority'=>DEFAULT_USENET_SERVER_PRIORITY, 'compressed_headers'=>FALSE, 'posting'=>FALSE));
+        $rv_server_id = smart_update_usenet_server($db, $server_id, array ('hostname'=>$hostname, 'port'=>$port, 'secure_port'=>$secure_port, 'connection'=> $connection, 'authentication'=>$authentication, 'username'=>$username, 'password'=>$password, 'priority'=>DEFAULT_USENET_SERVER_PRIORITY, 'compressed_headers'=>FALSE, 'posting'=>FALSE));
         set_config($db, 'preferred_server', $server_id);
         $OUT .= '<tr><td class="install2">Updating usenet server</td>';
     }
-    
 }
 
 if ($rv_hn && $rv_pt && $rv_conn && $rv_auth && $rv_cdb) {
@@ -140,7 +123,7 @@ if ($rv_hn && $rv_pt && $rv_conn && $rv_auth && $rv_cdb) {
     $OUT .= '<tr><td class="install2">Finishing installation by generating .installed file</td>';
     try{
         // Doesn't really need to be a try/catch; touch returns true or false when failed.
-        $rv_cif = touch('../.installed');
+        $rv_cif = @touch('../.installed');
         file_put_contents('../.installed', 'URD ' . urd_version::get_version() . "\n" . date ('c') . "\n");
     } catch (exception $e) {
         $rv_cif = FALSE;

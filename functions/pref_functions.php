@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-14 01:20:27 +0200 (za, 14 jun 2014) $
+ * $Rev: 3094 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: pref_functions.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: pref_functions.php 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -29,16 +29,14 @@ if (!defined('ORIGINAL_PAGE')) {
 $pathprf = realpath(dirname(__FILE__));
 
 require_once "$pathprf/periods.php";
-require_once "$pathprf/defines.php";
 require_once "$pathprf/error_codes.php";
-require_once "$pathprf/functions.php";
 
 class user_levels
 {
-    const CONFIG_LEVEL_ALWAYS = 0;
-    const CONFIG_LEVEL_BASIC = 10;
-    const CONFIG_LEVEL_ADVANCED = 50;
-    const CONFIG_LEVEL_MASTER = 100;
+    const CONFIG_LEVEL_ALWAYS       = 0;
+    const CONFIG_LEVEL_BASIC        = 10;
+    const CONFIG_LEVEL_ADVANCED     = 50;
+    const CONFIG_LEVEL_MASTER       = 100;
 
     public static function get_user_levels()
     {
@@ -121,12 +119,42 @@ class pref_text extends pref_basic
     public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
         assert(is_numeric($sz));
-        parent::__construct($lvl, $tx, $nm, $p, $err,  $js, $tr_i, $tr_c);
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->size = $sz;
         $this->value = $v;
     }
     public function get_type() {return 'text';}
 };
+
+class pref_email extends pref_basic
+{
+    public $size; //size of the text field
+    public $value; // value of input
+    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    {
+        assert(is_numeric($sz));
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
+        $this->size = $sz;
+        $this->value = $v;
+    }
+    public function get_type() {return 'email';}
+};
+
+
+class pref_custom_text extends pref_basic
+{
+    public $size; //size of the text field
+    public $value; // value of input
+    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    {
+        assert(is_numeric($sz));
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
+        $this->size = $sz;
+        $this->value = $v;
+    }
+    public function get_type() {return 'custom_text';}
+};
+
 
 class pref_numeric_noformat extends pref_basic
 {
@@ -135,7 +163,7 @@ class pref_numeric_noformat extends pref_basic
     public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
         assert(is_numeric($sz));
-        parent::__construct($lvl, $tx, $nm, $p, $err,  $js, $tr_i, $tr_c);
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->size = $sz;
         $this->value = $v;
     }
@@ -149,9 +177,9 @@ class pref_numeric extends pref_basic
     public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
         assert(is_numeric($sz));
-        parent::__construct($lvl, $tx, $nm, $p, $err,  $js, $tr_i, $tr_c);
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->size = $sz;
-        list ($v, $s) = format_size($v, 'h', '');
+        list ($v, $s) = format_size($v, 'h', '', 1024, 0);
         $this->value = "$v$s";
     }
     public function get_type() {return 'text';}
@@ -162,7 +190,7 @@ class pref_button extends pref_basic
     public $value; // value of input
     public function __construct($lvl, $tx, $nm, $p, $err, $v,  $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        parent::__construct($lvl, $tx, $nm, $p, $err,  $js, $tr_i, $tr_c);
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->value = $v;
     }
     public function get_type() {return 'button';}
@@ -191,7 +219,7 @@ class pref_password extends pref_basic
     public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
         assert(is_numeric($sz));
-        parent::__construct($lvl, $tx, $nm, $p, $err,  $js, $tr_i, $tr_c);
+        parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->size = $sz;
         $this->value = $v;
     }
@@ -210,7 +238,11 @@ class pref_textarea extends pref_basic
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->rows = $rw;
         $this->cols = $cl;
-        $this->value = $v;
+	$this->value = '';
+	if ($v != '') { 
+		$this->value = utf8_decode(@implode("\n", $v));
+	} 
+		
     }
     public function get_type() {return 'textarea';}
 };
@@ -294,7 +326,7 @@ function verify_email_address($email)
     if (verify_email($email)) {
         return '';
     } else {
-        return make_error_msg($LN['error_invalidemail'], $LN['error_error'] . ':'  );
+        return make_error_msg($LN['error_invalidemail'], $LN['error_error'] . ':');
     }
 }
 
@@ -350,11 +382,11 @@ function verify_url($text)
         if ($text == '') {
             $msg = $LN['error_notleftblank'];
         } else {
-            $msg = $LN['error_invalidvalue'] .  "'<i>$text</i>'<br/> " . $LN['error_urlstart'];
+            $msg = $LN['error_invalidvalue'] . "'<i>$text</i>'<br/> " . $LN['error_urlstart'];
         }
         $text = htmlspecialchars($text);
 
-        return make_error_msg($msg,  $LN['error_error'] . ':' );
+        return make_error_msg($msg,  $LN['error_error'] . ':');
     }
 }
 
@@ -398,15 +430,15 @@ function verify_read_only_path(DatabaseConnection $db, &$path)
 
     $orig_path = $path;
     if (strpos($path, '..') !== FALSE) {
-        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
     if ($path == '') {
-        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
     add_dir_separator($path);
     clearstatcache(); // we want to be sure, so cache values are flushed.
     if ((!is_dir($path) || !is_readable($path))) {
-        return make_error_msg($LN['error_dirnotwritable'] . " '<i>$orig_path</i>'",  $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_dirnotwritable'] . " '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
 
     return '';
@@ -419,15 +451,15 @@ function verify_path(DatabaseConnection $db, &$path)
 
     $orig_path = $path;
     if (strpos($path, '..') !== FALSE) {
-        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
     if ($path == '') {
-        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
     add_dir_separator($path);
     clearstatcache(); // we want to be sure, so cache values are flushed.
     if ((!is_dir($path) || !is_writable($path))) {
-        return make_error_msg($LN['error_dirnotwritable'] . " '<i>$orig_path</i>'",  $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_dirnotwritable'] . " '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
 
     return '';
@@ -438,26 +470,26 @@ function verify_dlpath(DatabaseConnection $db, &$path)
     $orig_path = $path;
     global $LN;
     if (strpos($path, '..') !== FALSE) {
-        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
     if ($path == '') {
-        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invaliddir'] . ": '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
-    $path = realpath($path);
+    $path = my_realpath($path);
     add_dir_separator($path);
 
     clearstatcache(); // we want to be sure, so cache values are flushed.
 
-    if (!is_dir($path) || !is_writable($path)) {
+    if (!file_exists($path)) {
         $rv = @mkdir($path, 0775, TRUE);
-        set_group($db, $path);
         if ($rv === FALSE) {
-            return make_error_msg($LN['error_notmakedir']. " '<i>$orig_path</i>'",  $LN['error_error'] . ':' );
+            return make_error_msg($LN['error_notmakedir']. " '<i>$orig_path</i>'", $LN['error_error'] . ':');
         }
-    }
+        set_group($db, $path);
+    } 
     clearstatcache(); // we want to be sure, so cache values are flushed.
     if ((!is_dir($path) || !is_writable($path))) {
-        return make_error_msg($LN['error_dirnotwritable'] . " '<i>$orig_path</i>'",  $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_dirnotwritable'] . " '<i>$orig_path</i>'", $LN['error_error'] . ':');
     }
 
     $rand = 'urd_test_file' . mt_rand(10000,99999);
@@ -465,19 +497,19 @@ function verify_dlpath(DatabaseConnection $db, &$path)
     foreach ($paths as $p) {
         if ((!is_dir($p) || !is_writable($p))) {
             $rv = create_dir($p, 0775, TRUE);
-            set_group($db, $p);
             if ($rv === FALSE) {
-                return make_error_msg($LN['error_notmakedir'] . " '<i>$p</i>'",  $LN['error_error'] . ':' );
+                return make_error_msg($LN['error_notmakedir'] . " '<i>$p</i>'", $LN['error_error'] . ':');
             }
+            set_group($db, $p);
             clearstatcache(); // we want to be sure, so cache values are flushed.
             if ((!is_dir($p) || !is_writable($p))) {
-                return make_error_msg($LN['error_dirnotwritable'] . " '<i>$p</i>'",  $LN['error_error'] . ':' );
+                return make_error_msg($LN['error_dirnotwritable'] . " '<i>$p</i>'", $LN['error_error'] . ':');
             }
             // try creating a file just to be sure
         }
         $rv = touch ($p . $rand);
         if ($rv === FALSE) {
-            return make_error_msg($LN['error_dirnotwritable'] . " '<i>$p</i>'<br/>" . $LN['error_notestfile'],  $LN['error_error'] . ':' );
+            return make_error_msg($LN['error_dirnotwritable'] . " '<i>$p</i>'<br/>" . $LN['error_notestfile'], $LN['error_error'] . ':');
         }
         unlink($p . $rand);
     }
@@ -491,7 +523,7 @@ function verify_array($val, array $arr)
     if (in_array($val, $arr)) {
         return '';
     } else {
-        return make_error_msg($LN['error_invalidvalue'] , $LN['error_error'] . ':'  );
+        return make_error_msg($LN['error_invalidvalue'], $LN['error_error'] . ':');
     }
 }
 
@@ -504,7 +536,7 @@ function verify_sort($text, array $valids)
     } else {
         $text = htmlspecialchars($text);
 
-        return make_error_msg($LN['error_invalidvalue'] . " '<i>$text</i>'",  $LN['error_error'] . ':' );
+        return make_error_msg($LN['error_invalidvalue'] . " '<i>$text</i>'", $LN['error_error'] . ':');
     }
 }
 
@@ -519,31 +551,29 @@ function verify_numeric($val, $min=NULL, $max=NULL, $base=1024, $default_mul=NUL
         $val = htmlspecialchars($val);
         $rv =  $LN['error_invalidvalue'] . " ($val)<br/>";
 
-        return make_error_msg($rv, $LN['error_error'] . ':' );
+        return make_error_msg($rv, $LN['error_error'] . ':');
     }
     if (is_numeric($val) &&
-        (($min === NULL) || ($val >= $min)) &&
-        (($max === NULL) || ($val <= $max))) {
-            return '';
-        } else {
-            $val = htmlspecialchars($val);
-            $rv =  $LN['error_invalidvalue'] . " ($val)<br/>";
-            if ($min !== NULL) {
-                $rv .= $LN['error_mustbemore'] . " $min ";
-            }
-            if ($max !== NULL) {
-                $rv .= $LN['error_mustbeless'] . " $max ";
-            }
-
-            return make_error_msg($rv, $LN['error_error'] . ':' );
+            (($min === NULL) || ($val >= $min)) &&
+            (($max === NULL) || ($val <= $max))) {
+        return '';
+    } else {
+        $val = htmlspecialchars($val);
+        $rv =  $LN['error_invalidvalue'] . " ($val)<br/>";
+        if ($min !== NULL) {
+            $rv .= $LN['error_mustbemore'] . " $min ";
         }
+        if ($max !== NULL) {
+            $rv .= $LN['error_mustbeless'] . " $max ";
+        }
+
+        return make_error_msg($rv, $LN['error_error'] . ':');
+    }
 }
 
 function clean_area($text)
 {
-    $text = str_replace('\r', "\r", $text);
-    $text = str_replace('\n', "\n", $text);
-    $text = str_replace("\r", '', $text);
+    $text = str_replace(array('\r', '\n'), array('', "\n"), $text);
     $terms = explode("\n", $text);
     $terms_new = array();
     foreach ($terms as $line) {
@@ -551,12 +581,13 @@ function clean_area($text)
             $terms_new[] = $line;
         }
     }
-    $text = implode('\r\n', $terms_new);
+    
+    $text = serialize($terms_new);
 
     return $text;
 }
 
-function set_and_test_pref_text_area ($name, $userid, $clean_area=FALSE)
+function set_and_test_pref_text_area($name, $userid, $clean_area=FALSE)
 {
     global $db;
     assert(is_numeric($userid));
@@ -793,7 +824,7 @@ function set_and_test_pref_numeric($name, $userid, $min=NULL, $max=NULL, $base=1
             $val = htmlspecialchars($val);
             $rv =  $LN['error_invalidvalue'] . " ($val)<br/>";
 
-            return make_error_msg($rv, $LN['error_error'] . ':' );
+            return make_error_msg($rv, $LN['error_error'] . ':');
         }
         $rv = verify_numeric($val, $min, $max, $base, '');
         if ($rv == '') {
@@ -868,10 +899,10 @@ function verify_script(DatabaseConnection $db, $path, $name)
     global $LN;
     $fn = $path . $name;
     if (preg_match('/^[A-Za-z0-9_\-.+]*$/', $name) != 1) {
-        return make_error_msg($LN['error_invalidfilename'] . ': ' . htmlentities($name),  $LN['error_error'] . ':');
+        return make_error_msg($LN['error_invalidfilename'] . ': ' . htmlentities($name), $LN['error_error'] . ':');
     }
     if (!file_exists($fn) || !is_executable($fn)) {
-        return make_error_msg($LN['error_filenotexec'] . ': ' . htmlentities($name),  $LN['error_error'] . ':');
+        return make_error_msg($LN['error_filenotexec'] . ': ' . htmlentities($name), $LN['error_error'] . ':');
     } else {
         return '';
     }

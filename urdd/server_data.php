@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-05-29 01:03:02 +0200 (do, 29 mei 2014) $
+ * $Rev: 3058 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: server_data.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: server_data.php 3058 2014-05-28 23:03:02Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
@@ -46,6 +46,28 @@ class server_data { // lots of cleaning up to do
     const QUEUE_TOP= 1;
     const QUEUE_BOTTOM = 2;
     const CONNECT_CHECK_TIME = 60;
+
+    public function __construct($queue_size, $nntp_threads, $total_threads, $db_intensive_threads)
+    {
+        assert(is_numeric($queue_size) && is_numeric($nntp_threads) && is_numeric($total_threads) && is_numeric($db_intensive_threads));
+        $this->threads = new thread_list();
+        $this->servers = new usenet_servers();
+        $this->queue = new queue($queue_size);
+        $this->schedule = new schedule();
+        $this->nntp_enabled = FALSE;
+        $this->check_nntp_connections = FALSE;
+        if ($total_threads < $nntp_threads) {
+            $total_threads = $nntp_threads ++; // the default is we have always one slot available for other things
+        }
+        $this->free_nntp_slots = $this->max_total_nntp_threads = (int) $nntp_threads;
+        $this->free_total_slots = $this->max_total_threads = (int) $total_threads;
+        $this->free_db_intensive_slots = $this->max_db_intensive_threads = (int) $db_intensive_threads;
+        $this->conn_check_time = (int) 0;
+    }
+    public function __destruct()
+    {
+        /* nothing yet */
+    }
 
     private function add_slot()
     {
@@ -100,23 +122,7 @@ class server_data { // lots of cleaning up to do
         echo_debug("{$this->max_total_nntp_threads} {$this->free_nntp_slots} {$this->max_total_threads} {$this->free_total_slots} {$this->max_db_intensive_threads} {$this->free_db_intensive_slots}", DEBUG_SERVER);
         $this->servers->print_size();
     }
-    public function __construct($queue_size, $nntp_threads, $total_threads, $db_intensive_threads)
-    {
-        assert(is_numeric($queue_size) && is_numeric($nntp_threads) && is_numeric($total_threads) && is_numeric($db_intensive_threads));
-        $this->threads = new thread_list();
-        $this->servers = new usenet_servers();
-        $this->queue = new queue($queue_size);
-        $this->schedule = new schedule();
-        $this->nntp_enabled = FALSE;
-        $this->check_nntp_connections = FALSE;
-        if ($total_threads < $nntp_threads) {
-            $total_threads = $nntp_threads + 1; // the default is we have always one slot available for other things
-        }
-        $this->free_nntp_slots = $this->max_total_nntp_threads = (int) $nntp_threads;
-        $this->free_total_slots = $this->max_total_threads = (int) $total_threads;
-        $this->free_db_intensive_slots = $this->max_db_intensive_threads = (int) $db_intensive_threads;
-        $this->conn_check_time = (int) 0;
-    }
+
     public function check_conn_time()
     {
         if (($this->conn_check_time > 0) && (time() > $this->conn_check_time)) {
@@ -135,10 +141,6 @@ class server_data { // lots of cleaning up to do
         $sd['free_db_intensive_slots'] = $this->free_db_intensive_slots;
 
         return $sd;
-    }
-    public function __destruct()
-    {
-         /* nothing yet */
     }
     public function has_nntp_task()
     {
@@ -179,10 +181,11 @@ class server_data { // lots of cleaning up to do
         $action = $job->get_action();
         $rec = $job->get_recurrence();
         if ($rec > 0) {
-            $new_action = new action(NULL, NULL, NULL, NULL);
+            $new_action = new action(NULL, NULL, NULL);
             $new_action->copy($action);
             $time = $job->get_time();
-            $new_job = new job($new_action, $time + $rec, $rec);
+            $new_time = strtotime("+ $rec seconds", $time); 
+            $new_job = new job($new_action, $new_time, $rec);
             $this->add_schedule($db, $new_job);
         }
     }
@@ -216,7 +219,7 @@ class server_data { // lots of cleaning up to do
     public function recreate_command(DatabaseConnection $db, action $item, $cmd, $pause=FALSE, $reset_tried_servers=FALSE)
     {
         assert(is_bool($pause) && is_bool($reset_tried_servers));
-        $new_item = new action(NULL, NULL, NULL, NULL);
+        $new_item = new action(NULL, NULL, NULL);
         $new_item->copy($item);
         $new_item->set_command($cmd);
         if ($reset_tried_servers === TRUE) {
@@ -256,7 +259,6 @@ class server_data { // lots of cleaning up to do
         if (!$this->threads->has_equal($item)) {
             // this is the last running one
             // diminish amount of threads on server
-            //$status = QUEUE_CANCELLED;
 
             $this->servers->dec_free_slots($server_id);
             $now = time();
@@ -284,7 +286,7 @@ class server_data { // lots of cleaning up to do
                     echo_debug('Requeueing paused', DEBUG_SERVER);
                     $new_id = $this->recreate_download_command($db, $item, TRUE, TRUE);
                     update_dlinfo_status($db, DOWNLOAD_PAUSED, $item->get_args());
-                    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, $new_id, $item->get_username(), $item->get_userid(), TRUE, $item->get_priority());
+                    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, $new_id, $item->get_userid(), TRUE, $item->get_priority());
                     $job = new job($item_unpause, $now + get_timeout($item) * 60, NULL); //try again in 60 secs
                     $this->schedule->add($db, $job);
                 } else {
@@ -306,7 +308,6 @@ class server_data { // lots of cleaning up to do
         if (!$this->threads->has_equal($item)) {
             // this is the last running one
             // diminish amount of threads on server
-            //$status = QUEUE_CANCELLED;
 
             $this->servers->dec_free_slots($server_id);
             $now = time();
@@ -320,7 +321,7 @@ class server_data { // lots of cleaning up to do
                 echo_debug('Requeueing paused', DEBUG_SERVER);
                 $new_id = $this->recreate_post_command($db, $item, TRUE, TRUE); //xxx
                 update_postinfo_status($db, POST_PAUSED, $item->get_args());
-                $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, $new_id, $item->get_username(), $item->get_userid(), TRUE, $item->get_priority());
+                $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, $new_id, $item->get_userid(), TRUE, $item->get_priority());
                 $job = new job($item_unpause, $now + get_timeout($item) * 60, NULL); //try again in 60 secs
                 $this->schedule->add ($db, $job);
             }
@@ -333,7 +334,7 @@ class server_data { // lots of cleaning up to do
         assert(is_numeric($server_id));
         $this->servers->dec_free_slots($server_id);
         $now = time();
-        if ($this->conn_check_time == 0 ||$this->conn_check_time < $now) {// set the connection retry timeout if not set
+        if ($this->conn_check_time == 0 || $this->conn_check_time < $now) {// set the connection retry timeout if not set
             $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
         }
         if ($this->servers->unused_servers_available($item->get_all_failed_servers()) !== FALSE) {// we can try other servers
@@ -341,7 +342,7 @@ class server_data { // lots of cleaning up to do
         } else {// all servers tried, queue it paused
             $item->pause(TRUE, user_status::SUPER_USERID);
             $this->queue_push($db, $item, FALSE);
-            $item_unpause = new action(urdd_protocol::COMMAND_CONTINUE, $item->get_id(), $item->get_username(), $item->get_userid(), TRUE, $item->get_priority());
+            $item_unpause = new action(urdd_protocol::COMMAND_CONTINUE, $item->get_id(), $item->get_userid(), TRUE, $item->get_priority());
             $job = new job($item_unpause, $now + get_timeout($item) * 60, NULL); //try again in 60 secs
             $this->schedule->add ($db, $job);
 
@@ -359,9 +360,9 @@ class server_data { // lots of cleaning up to do
         echo_debug('Requeueing paused', DEBUG_SERVER);
         $item->pause(TRUE, user_status::SUPER_USERID);
         $this->queue_push($db, $item, FALSE);
-        $item_unpause = new action(urdd_protocol::COMMAND_CONTINUE, $item->get_id(), $item->get_username(), $item->get_userid(), TRUE, $item->get_priority());
+        $item_unpause = new action(urdd_protocol::COMMAND_CONTINUE, $item->get_id(), $item->get_userid(), TRUE, $item->get_priority());
         $job = new job($item_unpause, $now + get_timeout($item) * 60, NULL); //try again in 60 secs
-        $this->schedule->add ($db, $job);
+        $this->schedule->add($db, $job);
     }
     public function reload_scheduled_jobs(DatabaseConnection $db)
     {
@@ -375,9 +376,8 @@ class server_data { // lots of cleaning up to do
             $command = $sched['command'];
             $c = explode(' ', $command, 2);
             $cmd = $c[0];
-            $arg = (isset($c[1]))? $c[1] : '';
-            $username = $sched['username'];
-            $userid = get_userid($db, $username);
+            $arg = (isset($c[1])) ? $c[1] : '';
+            $userid = $sched['userid'];
             $stime = $sched['at_time'];
             $repeat = $sched['interval'];
             $id = $sched['id'];
@@ -392,17 +392,17 @@ class server_data { // lots of cleaning up to do
                 }
                 $repeat = NULL;
             }
-            $item = new action ($cmd, $arg, $username, $userid);
+            $item = new action ($cmd, $arg, $userid);
             $this->schedule->add($db, new job($item, $stime, $repeat));
-            $res = $db->delete_query('schedule', "\"id\"=$id");
+            $res = $db->delete_query('schedule', '"id"=?', array($id));
         }
     }
     //usenet_wrappers
-    public function reset_connection_limits()
+    public function reset_connection_limits($server_id)
     {
-        $this->servers->reset_connection_limits();
+        $this->servers->reset_connection_limits($server_id);
     }
-    public function set_update_server ($srv)
+    public function set_update_server($srv)
     {
         assert(is_numeric($srv));
         $this->servers->set_update_server($srv);
@@ -420,7 +420,7 @@ class server_data { // lots of cleaning up to do
     }
     public function load_server(DatabaseConnection$db, $id)
     {
-    echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_numeric($id));
         $s = get_usenet_server($db, $id, FALSE);
         $us = new usenet_server($s['id'], $s['threads'], $s['port'], $s['hostname'], $s['connection'], $s['username'], $s['password'], $s['priority'], $s['posting']);
@@ -459,6 +459,10 @@ class server_data { // lots of cleaning up to do
 
         return $this->servers->get_max_threads($server_id);
     }
+    public function get_max_total_nntp_threads()
+    { 
+        return $this->max_total_nntp_threads;
+    }
     public function find_preferred_server()
     {
         try {
@@ -485,43 +489,57 @@ class server_data { // lots of cleaning up to do
 
         return $this->servers->enable_posting($server_id);
     }
+
     public function disable_posting($server_id)
     {
         assert(is_numeric($server_id));
 
         return $this->servers->disable_posting($server_id);
     }
+
     public function get_priority($server_id)
     {
         assert(is_numeric($server_id));
         return $this->servers->get_priority($server_id);
     }
 
-    public function schedule_enable_server(DatabaseConnection $db, $server_id, $prio, $userid)
+    public function set_server_priority($server_id, $priority)
     {
-        assert(is_numeric($server_id) && is_numeric($userid));
-        $username = get_username($db, $userid);
-        $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "SET SERVER $server_id $prio", $username, $userid, TRUE, DEFAULT_PRIORITY);
-        $job_unpause = new job($item_unpause, time() + 3600, 0);
-        $this->add_schedule($db, $job_unpause);
-
+        assert(is_numeric($server_id) && is_numeric($priority));
+        $this->servers->set_priority($server_id, $priority);
     }
+
+    public function schedule_enable_server(DatabaseConnection $db, $server_id, $userid, $timeout=3600, $priority=DEFAULT_USENET_SERVER_PRIORITY)
+    {
+        assert(is_numeric($server_id) && is_numeric($userid) && is_numeric($timeout) && is_numeric($priority));
+        $item_unpause = new action(urdd_protocol::COMMAND_SET, "SERVER ENABLE $server_id $priority", $userid, TRUE, DEFAULT_PRIORITY);
+        if (!$this->schedule->has_equal($item_unpause)) {
+            $job_unpause = new job($item_unpause, time() + $timeout, 0);
+            $this->add_schedule($db, $job_unpause);
+        }
+    }
+
     public function enable_server($server_id, $prio)
     {
         assert(is_numeric($server_id) && is_numeric($prio));
 
-        return $this->servers->enable_server($server_id, $prio);
+        $this->servers->enable_server($server_id, $prio);
+        $this->queue->reset_temp_failed_server($server_id);
+        $this->reset_connection_limits($server_id);
     }
+
     public function disable_server($server_id)
     {
         assert(is_numeric($server_id));
 
-        return $this->servers->disable_server($server_id);
+        $this->servers->disable_server($server_id);
     }
+
     public function get_servers()
     {
         return $this->servers->get_servers();
     }
+
     public function find_free_slot(array $already_used_servers=array(), $posting)
     {
         return $this->servers->find_free_slot($already_used_servers, $posting);
@@ -547,7 +565,6 @@ class server_data { // lots of cleaning up to do
 
                 $thread->set_status(DOWNLOAD_PAUSED);
                 $item = $thread->get_action();
-                //$cmd = $item->get_command();
                 update_thread_status($db, $item, DOWNLOAD_PAUSED, POST_PAUSED);
                 $item = $thread->get_action(); // delete from the list will be done by the reap function
                 $item->pause($pause, $userid);
@@ -559,12 +576,14 @@ class server_data { // lots of cleaning up to do
             }
         }
     }
+
     public function move(DatabaseConnection $db, $cmd, $arg, $userid, $direction)
     {
         assert(is_numeric($userid));
         $this->queue->move($db, $cmd, $arg, $userid, $direction);
     }
-    public function pause_cmd(DatabaseConnection $db, $cmd, $arg, $do_pause, $userid)// $do_pause == true then pause, else  continue (unpause)
+
+    public function pause_cmd(DatabaseConnection $db, $cmd, $arg, $do_pause, $userid)// $do_pause == true then pause, else continue (unpause)
     {
         assert(is_bool($do_pause) && is_numeric($userid));
         echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -593,11 +612,12 @@ class server_data { // lots of cleaning up to do
                 $this->queue_push($db, $item, FALSE); // if it is paused we simply put it back on the queue
                 $rv = TRUE;
             }
-            pcntl_sigtimedwait(array(SIGCHLD),$dummy, 1,0);
+            pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
         }
 
         return $rv;
     }
+
     public function pause_all(DatabaseConnection$db, $do_pause, $userid)
     {
         assert(is_bool($do_pause) && is_numeric($userid));
@@ -618,7 +638,7 @@ class server_data { // lots of cleaning up to do
                     $this->queue_push($db, $item, FALSE); // and reschedule it
                 }
             }
-            pcntl_sigtimedwait(array(SIGCHLD), $dummy , 1, 0);
+            pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
         }
 
     }
@@ -627,14 +647,14 @@ class server_data { // lots of cleaning up to do
         assert(is_bool($increase_counter));
         echo_debug('Queueing ' . $item->get_command() . ' ' . $item->get_args() . ' ' . $item->get_id(), DEBUG_SERVER);
         switch ($position) {
-        case self::QUEUE_TOP:
-            return $this->queue->push_top($item, $db, $increase_counter);
-            break;
-        case self::QUEUE_BOTTOM:
-            return $this->queue->push($item, $db, $increase_counter, $priority);
-            break;
-        default:
-            throw new exception_queue_failed('Queue position not understood');
+            case self::QUEUE_TOP:
+                return $this->queue->push_top($item, $db, $increase_counter);
+                break;
+            case self::QUEUE_BOTTOM:
+                return $this->queue->push($item, $db, $increase_counter, $priority);
+                break;
+            default:
+                throw new exception_queue_failed('Queue position not understood');
         }
     }
     public function queue_size()
@@ -654,6 +674,7 @@ class server_data { // lots of cleaning up to do
 
         return $this->queue->delete($db, $action_id, $userid, $delete_db);
     }
+
     protected function update_dl_status(DatabaseConnection $db, array $q_ids, $dl_status, $post_status)
     {
         foreach ($q_ids as $qid) {
@@ -766,28 +787,32 @@ class server_data { // lots of cleaning up to do
     {
         return $this->queue->get_queue();
     }
-    protected function get_first_runnable_preview(action $item)
+    protected function get_first_runnable_preview(DatabaseConnection $db, action $item)
     {
         $ready = TRUE;
         if($item->get_preferred_server() == 0 && in_array($item->get_command_code(), array(urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA)) &&
-            $this->free_total_slots > 0 && $this->free_nntp_slots > 0) {
-                // so it must not have a server set yet and it must be a download action and there must be a total slot available
-                $srv = $this->servers->find_free_slot($item->get_all_failed_servers(), FALSE); // find a server with a slot available
-                if ($srv !== FALSE && $srv != 0 && $this->free_total_slots > 0) {
-                    // so there must be a free server, and there must be a slot available to set the preferred server
-                    $item->set_preferred_server($srv); // set the prefered server
-                    echo_debug('Found a server ' . $srv , DEBUG_SERVER);
+                $this->free_total_slots > 0 && $this->free_nntp_slots > 0) {
+            // so it must not have a server set yet and it must be a download action and there must be a total slot available
+            $srv = $this->servers->find_free_slot($item->get_all_failed_servers(), FALSE); // find a server with a slot available
+            if ($srv !== FALSE && $srv != 0 && $this->free_total_slots > 0) {
+                // so there must be a free server, and there must be a slot available to set the preferred server
+                $item->set_preferred_server($srv); // set the prefered server
+                echo_debug('Found a server ' . $srv, DEBUG_SERVER);
+                $ready = TRUE;
+            } else {
+                try {
+                    echo_debug('Preempting...', DEBUG_SERVER);
+                    $srv = $this->preempt($db, $item, $item->get_userid());
                     $ready = TRUE;
-                } else {
+                } catch (exception $e) {
                     $ready = FALSE;
                     echo_debug('Could not find a server', DEBUG_SERVER);
                 }
-        } else {
-            $ready = TRUE;
+            }
         }
 
         if ($ready === TRUE) {
-            echo_debug('Found a preview thread... should always start '. $item->get_preferred_server(), DEBUG_SERVER);
+            echo_debug('Found a preview thread... should always start ' . $item->get_preferred_server(), DEBUG_SERVER);
 
             return $item;
         } else {
@@ -800,12 +825,10 @@ class server_data { // lots of cleaning up to do
         if ($this->free_db_intensive_slots > 0) {
             return $item;
         } else {
-            throw new exception_internal ('Something has gone terribly wrong');
-
-            return FALSE; // something is wrong !!!
+            throw new exception_internal('Something has gone terribly wrong');
         }
     }
-    public function get_first_runnable_on_queue()
+    public function get_first_runnable_on_queue(DatabaseConnection $db)
     { // returns TRUE if the queue is empty, FALSE if no item is runnable, otherwise it returns the runnable item
         try {
             if ($this->queue->is_empty()) {// we have nothing to do
@@ -814,7 +837,7 @@ class server_data { // lots of cleaning up to do
             }
             $item = $this->queue->get_preview_action(); // see if there are any preview tasks queued
             if ($item !== FALSE) { // there is one preview
-                $item = $this->get_first_runnable_preview($item);
+                $item = $this->get_first_runnable_preview($db, $item);
                 if ($item !== FALSE) {
                     return $item;
                 }
@@ -835,7 +858,7 @@ class server_data { // lots of cleaning up to do
             } else {
                 $not_these = array(); // the ones we already tried
                 while (1) {
-                    $item = $this->queue->top(TRUE, $not_these, $this->free_db_intensive_slots > 0 ? TRUE : FALSE); // get an nntp item from the queue or if non found a nonnntp item
+                    $item = $this->queue->top(TRUE, $not_these, $this->free_db_intensive_slots > 0 ? TRUE : FALSE); // get an nntp item from the queue or if non, found a nonnntp item
                     if ($item === FALSE) { // there are no more items that can run
 
                         return TRUE;
@@ -866,7 +889,6 @@ class server_data { // lots of cleaning up to do
                             return $item;
                         }
                     } elseif ($this->servers->has_free_slot($server_id)) { // check if the preferred server is available
-
                         return $item;
                     }
                     $not_these[] = $item->get_id(); // not available lets not try this queued item again through this iteration
@@ -959,9 +981,9 @@ class server_data { // lots of cleaning up to do
             }
             $old_id = $item2->get_id();
             if (($item2->need_nntp() == $item->need_nntp())
-                && !in_array($item2->get_active_server(), $item->get_failed_servers())
-                && !in_array($item2->get_active_server(), $item->get_tried_servers())) { // this one will do
-                    break;
+                    && !in_array($item2->get_active_server(), $item->get_failed_servers())
+                    && !in_array($item2->get_active_server(), $item->get_tried_servers())) { // this one will do
+                break;
             }
             // otherwise we take the last one... this means no nntp threads were in use, but all were occupied by non nntp threads
             // or we run a non nntp thread and no nonnntp are running ;-)
@@ -1012,7 +1034,7 @@ class server_data { // lots of cleaning up to do
         $this->queue_push($db, $item, FALSE, self::QUEUE_BOTTOM, 3); // and reschedule it to the top of the queue, but after previews
 
         urdd_kill($pid, SIGTERM);
-        pcntl_sigtimedwait(array(SIGCHLD),$dummy , 1,0);
+        pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
 
         return TRUE;
     }

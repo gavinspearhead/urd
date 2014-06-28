@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-06-25 18:31:48 +0200 (wo, 25 jun 2014) $
+ * $Rev: 3115 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_admincontrol.tpl 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: ajax_admincontrol.tpl 3115 2014-06-25 16:31:48Z gavinspearhead@gmail.com $
  *}
 
 {if $isconnected == 1}
@@ -32,7 +32,7 @@
 <tr> <td><b>{$LN_control_diskspace}</b>:</td>
 {strip}
 <td>
-{urd_progressbar width=200 complete=$nodisk_perc done=progress_done2 remain=progress_done} 
+{urd_progressbar width=200 complete=$nodisk_perc done=progress_done2 remain=progress_done colour=red background=green } 
 </td>
 {/strip}
 <td {if $disk_perc < 10} class="warning_highlight"{/if}>({$disk_perc}% - {$diskfree})</td>
@@ -48,16 +48,16 @@
 <h4>{$LN_control_threads}</h4>
 {if $threads_info}
 <table class="width80p">
-<tr class='transferhead'>
-<th class="centered">{$LN_id}</th>
-<th class="centered">{$LN_pid}</th>
-<th class="centered">{$LN_username}</th>
-<th class="centered">{$LN_jobs_command}</th>
-<th class="centered">{$LN_config_prog_params}</th>
-<th class="centered">{$LN_server}</th>
-<th class="centered">{$LN_status}</th>
-<th class="centered">{$LN_start_time}</th>
-<th class="centered">{$LN_queue_time}</th>
+<tr>
+<th class="centered head round_left">{$LN_id}</th>
+<th class="centered head">{$LN_pid}</th>
+<th class="centered head">{$LN_username}</th>
+<th class="centered head">{$LN_jobs_command}</th>
+<th class="centered head">{$LN_config_prog_params}</th>
+<th class="centered head">{$LN_server}</th>
+<th class="centered head">{$LN_status}</th>
+<th class="centered head">{$LN_start_time}</th>
+<th class="centered head round_right">{$LN_queue_time}</th>
 </tr>
 
 {foreach $threads_info as $t}
@@ -79,14 +79,14 @@
 <h4>{$LN_control_queue}</h4>
 {if $queue_info}
 <table class="width80p">
-<tr class='transferhead'>
-<th>ID</th>
-<th class="centered">{$LN_username}</th>
-<th class="centered">{$LN_usenet_priority}</th>
-<th class="centered">{$LN_jobs_command}</th>
-<th class="centered">{$LN_config_prog_params}</th>
-<th class="centered">{$LN_status}</th>
-<th class="centered">{$LN_time}</th>
+<tr>
+<th class="centered head round_left">ID</th>
+<th class="centered head">{$LN_username}</th>
+<th class="centered head">{$LN_usenet_priority}</th>
+<th class="centered head">{$LN_jobs_command}</th>
+<th class="centered head">{$LN_config_prog_params}</th>
+<th class="centered head">{$LN_status}</th>
+<th class="centered head round_right">{$LN_time}</th>
 </tr>
 {foreach $queue_info as $q}
 <tr>
@@ -105,13 +105,13 @@
 <h4>{$LN_control_jobs}</h4>
 {if $jobs_info}
 <table class="width80p">
-<tr class='transferhead'>
-<th class="centered">ID</th>
-<th class="centered">{$LN_username}</th>
-<th class="centered">{$LN_jobs_command}</th>
-<th class="centered">{$LN_config_prog_params}</th>
-<th class="centered">{$LN_time}</th>
-<th class="centered">{$LN_recurrence}</th>
+<tr>
+<th class="centered head round_left">ID</th>
+<th class="centered head">{$LN_username}</th>
+<th class="centered head">{$LN_jobs_command}</th>
+<th class="centered head">{$LN_config_prog_params}</th>
+<th class="centered head">{$LN_time}</th>
+<th class="centered head round_right">{$LN_recurrence}</th>
 </tr>
 {foreach $jobs_info as $j}
 <tr>
@@ -129,14 +129,15 @@
 <h4>{$LN_control_servers}</h4>
 {if $servers_info}
 <table class="width80p">
-<tr class='transferhead'>
-<th class="centered">ID</th>
-<th class="centered">{$LN_usenet_hostname}:{$LN_usenet_port}</th>
-<th class="centered">{$LN_usenet_priority}</th>
-<th class="centered">{$LN_usenet_nrofthreads}</th>
-<th class="centered">{$LN_free_threads}</th>
-<th class="centered">{$LN_enabled}</th>
-<th class="centered">{$LN_usenet_posting}</th>
+<tr>
+<th class="centered head round_left">ID</th>
+<th class="centered head">{$LN_usenet_hostname}:{$LN_usenet_port}</th>
+<th class="centered head">{$LN_usenet_priority}</th>
+<th class="centered head">{$LN_usenet_nrofthreads}</th>
+<th class="centered head">{$LN_free_threads}</th>
+<th class="centered head">{$LN_enabled}</th>
+<th class="centered head">{$LN_usenet_posting}</th>
+<th class="centered head round_right">{$LN_usenet_indexing}</th>
 </tr>
 {foreach $servers_info as $s}
 <tr>
@@ -145,8 +146,9 @@
 <td class="right">{$s.priority}</td> 
 <td class="right">{$s.max_threads}</td>
 <td class="right">{$s.free_threads}</td>
-<td>{$s.enabled}</td>
-<td>{$s.posting}</td>
+<td>{if $s.enabled == 'TRUE'}{$LN_on}{else}{$LN_off}{/if}</td>
+<td>{if $s.posting == 'TRUE'}{$LN_on}{else}{$LN_off}{/if}</td>
+<td>{if $s.preferred == 'TRUE'}{$LN_on}{else}{$LN_off}{/if}</td>
 </tr>
 {/foreach}
 </table>
@@ -154,7 +156,7 @@
 
 <p>&nbsp;</p>
 <table>
-<tr class='transferhead'><th colspan="2" class="centered">{$LN_control_threads}</th></tr>
+<tr><th colspan="2" class="head centered round_both">{$LN_control_threads}</th></tr>
 <tr><td>{$LN_dashboard_max_nntp}</td><td class="right">{$servers_totals.total_nntp}</td></tr>
 <tr><td>{$LN_free_nntp_threads}</td><td class="right">{$servers_totals.free_nntp}</td></tr>
 <tr><td>{$LN_dashboard_max_threads}</td><td class="right">{$servers_totals.total_threads}</td></tr>

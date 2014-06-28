@@ -32,11 +32,13 @@
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 <meta name="resource-type" content="document"/>
 
+<script type="text/javascript" src="{$JSDIR}/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
 </head>
 <body>
 <div class="Message hidden attop" id="message_bar"></div>
 <p></p>
+<div id="topcontent">
 <div id="contentout">
 <div id="textcontent">
 <div class="closebutton buttonlike noborder fixedright down5" onclick="javascript:history.go(-1);"></div>
@@ -47,6 +49,7 @@
 <script type="text/javascript">
 start_updatedb();
 </script>
+</div>
 </div>
 </div>
 </body>

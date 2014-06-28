@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showquickdisplay.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showquickdisplay.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -27,8 +27,6 @@ $__auth = 'silent';
 $pathqd = realpath(dirname(__FILE__));
 
 require_once "$pathqd/../functions/ajax_includes.php";
-require_once "$pathqd/../functions/pref_functions.php";
-require_once "$pathqd/../functions/extset_functions.php";
 
 init_smarty('', 0);
 
@@ -119,25 +117,24 @@ function link_to_url($description)
 
 function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binarytype, $binarytypes)
 {
+    assert(is_numeric($userid));
     global $smarty, $LN;
-    $o_setID = $setID;
-    $db->escape($setID, TRUE);
     $sql = '"stamp", "category", "url", "reports", "title", "subcat", "subcata", "subcatb", "subcatc", "subcatd", "size", "spotid", "poster", "tag", "description", ' .
         'spots."spotter_id" AS "spotterid", spot_whitelist."spotter_id" AS "whitelisted" ' .
         'FROM spots LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id") ' .
-        "WHERE \"spotid\" = $setID";
-    $res = $db->select_query($sql, 1);
+        'WHERE "spotid" = ?';
+    $res = $db->select_query($sql, 1, array($setID));
     if (!isset($res[0])) {
         throw new exception($LN['error_spotnotfound'] . ': '.$setID);
     }
     $row = $res[0];
     $show_image = get_pref($db, 'show_image', $userid, FALSE);
-    $description = $db->decompress($row['description']);
+    $description = db_decompress($row['description']);
     $description = htmlentities($description, ENT_IGNORE);
     $description = strip_tags($description);
-    $description = str_replace("\r", '', $description);
-    $description = str_replace("\n", '<br/>', $description);
+    $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
     $description = link_to_url($description);
+
     $ubb = new UbbParse($description);
 
     $description = insert_wbr($ubb->parse());
@@ -150,32 +147,42 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $subcatc = get_subcats($row['category'], $row['subcatc']);
     $subcatd = get_subcats($row['category'], $row['subcatd']);
     $whitelisted = $row['whitelisted'] == NULL ? 0 : 1;
-    $sql = "image_file, image FROM spot_images WHERE \"spotid\" = $setID AND \"fetched\" = 1";
-    $img_res = $db->select_query($sql);
-    $sql = "* FROM spot_comments WHERE \"spotid\" = $setID ORDER BY \"stamp\" ASC";
-    $spotres = $db->select_query($sql);
+    $sql = 'image_file, image FROM spot_images WHERE "spotid"=? AND "fetched"=?';
+    $img_res = $db->select_query($sql, array($setID, 1));
+    $sql = '* FROM spot_comments WHERE "spotid" = ? ORDER BY "stamp" ASC';
+    $spotres = $db->select_query($sql, array($setID));
     $comments = array();
     if (is_array($spotres)) {
         $comments = $spotres;
+        $blacklist_url = get_config($db, 'spots_blacklist', '');
+        $blacklist = array();
+        if ($blacklist_url != '') {
+            $blacklist = load_blacklist($db);
+        }
     }
-    foreach ($comments as &$comment) {
-        $c = $db->decompress($comment['comment']);
+    foreach ($comments as $key => &$comment) {
+        if (isset($blacklist[$comment['userid']])) { 
+            unset($comments[$key]); 
+            continue;
+        }
+        $c = db_decompress($comment['comment']);
         $c = htmlentities(strip_tags($c));
+        $c = link_to_url($c);
         $ubb = new UbbParse($c);
-        $c = strip_tags($ubb->parse($c));
-        $comment['comment'] = insert_wbr(link_to_url($c));
+        $c = $ubb->parse();
+        $c = str_replace("\n", '<br/>', $c);
+        $comment['comment'] = insert_wbr($c);
         $comment['stamp'] = date($LN['dateformat2'] . ' ' . $LN['timeformat2'], $comment['stamp']);
     }
     $url = trim(strip_tags($row['url']));
     /// too quick and dirty --- clean up XXX
-    $image_file = '';
-    $image = '';
+    $image_file = $image = '';
     $image_from_db = 0;
     if (isset($img_res[0])) {
-        if (substr($img_res[0]['image'], 0,10) == 'data:image') {
+        if (substr($img_res[0]['image'], 0, 10) == 'data:image') {
             $image_from_db = 1;
         } elseif (substr($img_res[0]['image'], 0, 9) == 'articles:') {
-            $image_file = get_dlpath($db). IMAGE_CACHE_PATH . $o_setID . '.jpg';
+            $image_file = get_dlpath($db). IMAGE_CACHE_PATH . $setID . '.jpg';
         } else {
             $image = trim(strip_tags($img_res[0]['image']));
         }
@@ -219,11 +226,11 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
 function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 {
     global $smarty, $LN;
+    assert(is_numeric($userid));
     assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
-    $db->escape($setID);
     // First the extended info:
-    $sql = "* FROM extsetdata WHERE \"setID\" = '$setID' AND \"type\" = '$type'";
-    $res = $db->select_query($sql);
+    $sql = '* FROM extsetdata WHERE "setID" = ? AND "type" = ?';
+    $res = $db->select_query($sql, array($setID, $type));
     // Store it in an easy to use array:
     $extsetinfo = array();
     $extsetinfo['binarytype'] = 0;
@@ -237,9 +244,9 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 
     // files by default:
     if ($type == USERSETTYPE_GROUP) {
-        $sql = "* FROM setdata WHERE \"ID\" = '$setID'";
-        $res = $db->select_query($sql, 1);
-        if ($res === FALSE) {
+        $sql = '* FROM setdata WHERE "ID" = ?';
+        $res = $db->select_query($sql, 1, array($setID));
+        if (!is_array($res)) {
             throw new exception($LN['error_setnotfound'] . ': '.$setID);
         }
         $res = $res[0]; // Only 1 row should be returned.
@@ -253,9 +260,9 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         $binaries = $res['binaries'];
         $setname = $res['subject'];
     } elseif ($type == USERSETTYPE_RSS) {
-        $sql = "\"size\", \"rss_id\", \"setname\" FROM rss_sets WHERE \"setid\" = '$setID'";
-        $res = $db->select_query($sql, 1);
-        if ($res === FALSE) {
+        $sql = '"size", "rss_id", "setname" FROM rss_sets WHERE "setid"=?';
+        $res = $db->select_query($sql, 1, array($setID));
+        if (!is_array($res)) {
             throw new exception($LN['error_setnotfound'] . ': '.$setID);
         }
         $size = $res[0]['size'];
@@ -294,16 +301,15 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 
     if ($type == USERSETTYPE_GROUP) {
         $groupname = group_name($db, $groupID);
-        $sql = "* FROM binaries_{$groupID} WHERE \"setID\" = '$setID' ORDER BY \"subject\" ASC";
-        $res = $db->select_query($sql);
-        if ($res === FALSE) {
+        $sql = "* FROM binaries_{$groupID} WHERE \"setID\" = ? ORDER BY \"subject\" ASC";
+        $res = $db->select_query($sql, array($setID));
+        if (!isset($res[0])) {
             throw new exception($LN['error_binariesnotfound']);
         }
         $bin_id = $res[0]['binaryID'];
-        $db->escape($bin_id, TRUE);
-        $sql = "MAX(\"fromname\") AS \"poster\" FROM parts_{$groupID} WHERE \"binaryID\" = $bin_id";
-        $res1 = $db->select_query($sql, 1);
-        if ($res1 !== FALSE) {
+        $sql = "MAX(\"fromname\") AS \"poster\" FROM parts_{$groupID} WHERE \"binaryID\" = ?";
+        $res1 = $db->select_query($sql, 1, array($bin_id));
+        if (isset($res1[0]['poster'])) {
             $poster = $res1[0]['poster'];
         }
     } elseif ($type == USERSETTYPE_RSS) {
@@ -338,7 +344,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
             }
 
             $arr['subject'] = strtolower($arr['subject']);
-            if (strpos($arr['subject'],'.par2') !== FALSE) {
+            if (strpos($arr['subject'], '.par2') !== FALSE) {
                 $par2s++;
             }
         }
@@ -351,9 +357,6 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     $totalsize = $_size . ' ' . $suffix;
 
     $smarty->assign('articlesmax',          $articlesmax);
-    $smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
-    $smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
-    $smarty->assign('USERSETTYPE_SPOT',   	USERSETTYPE_SPOT);
     $smarty->assign('binaries',             $binaries);
     $smarty->assign('groupID',              $groupID);
     $smarty->assign('groupname',            $groupname);
@@ -366,29 +369,26 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     $smarty->display('ajax_showextsetinfo.tpl');
 }
 
-function edit_extsetinfo(DatabaseConnection $db, $setID, $type)
+function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
 {
     global $smarty, $LN;
     assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
     // Get the default name: set subject
     if ($type == USERSETTYPE_GROUP) {
-        $sql = "\"subject\" FROM setdata WHERE \"ID\" = '$setID'";
-        $index = 'subject';
+        $sql = '"subject" AS "setname" FROM setdata WHERE "ID"=?';
     } elseif ($type == USERSETTYPE_RSS) {
-        $sql = "\"setname\" FROM rss_sets WHERE \"setid\" = '$setID'";
-        $index = 'setname';
+        $sql = '"setname" FROM rss_sets WHERE "setid" = ?';
     } elseif ($type == USERSETTYPE_SPOT) {
-        $sql = "\"title\" FROM spots WHERE \"spotid\" = '$setID'";
-        $index = 'title'; // convert to editting spots
+        $sql = '"title" AS "setname" FROM spots WHERE "spotid" = ?';
     }
-    $res = $db->select_query($sql);
+    $res = $db->select_query($sql, array($setid));
     if (!is_array($res)) {
-        throw new exception($LN['error_setnotfound'] . ': '.$setID);
+        throw new exception($LN['error_setnotfound'] . ': '.$setid);
     }
-    $setname = $res[0][$index];
+    $setname = $res[0]['setname'];
 
-    $sql = "* FROM extsetdata WHERE \"setID\" = '$setID' AND \"type\"='$type'";
-    $res = $db->select_query($sql);
+    $sql = '* FROM extsetdata WHERE "setID" = ? AND "type" = ?';
+    $res = $db->select_query($sql, array($setid, $type));
     // Store it in an easy to use array:
     $extsetinfo = array();
     // Set default values:
@@ -406,7 +406,7 @@ function edit_extsetinfo(DatabaseConnection $db, $setID, $type)
     $binarytypes = urd_extsetinfo::get_binary_types();
 
     $smarty->assign('setname',          $setname);        // FYI
-    $smarty->assign('setID',            $setID);        // FYI
+    $smarty->assign('setID',            $setid);        // FYI
     $smarty->assign('srctype',          'edit');         // Edit or just Display?
     $smarty->assign('type',             $type);         //  RSS or group
     $smarty->assign('name',             $extsetinfo['name']); // Name

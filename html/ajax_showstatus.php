@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_showstatus.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_showstatus.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
@@ -49,8 +49,8 @@ init_smarty('', 0);
 if ($type == 'quick' || $type == 'icon') {
     $counter = 0;
     if ($isconnected) {
-        $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status" = \''. QUEUE_RUNNING .'\'' ;
-        $res = $db->select_query($sql);
+        $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status" = ?';
+        $res = $db->select_query($sql, array(QUEUE_RUNNING));
         $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
     }
     $smarty->assign('counter',		$counter);
@@ -71,18 +71,16 @@ if ($type == 'quick' || $type == 'icon') {
     $tasks = array();
     if ($isconnected) {
         // Second: Current jobs.
-        $sql = '"description", max("progress") AS "progress", min("ETA") as "ETA", min("command_id") AS "command_id", count("ID") as "counter" FROM queueinfo WHERE "status" = \''. QUEUE_RUNNING .'\' GROUP BY "description"';
-        $res = $db->select_query($sql);
+        $sql = '"description", max("progress") AS "progress", min("ETA") as "ETA", min("command_id") AS "command_id", count("ID") AS "counter" FROM queueinfo WHERE "status"=? GROUP BY "description"';
+        $res = $db->select_query($sql, array(QUEUE_RUNNING));
         if ($res === FALSE) {
             $res = array();
         }
 
         foreach ($res as $row) {
-            $description = $row['description'];
-            $db->escape($description, TRUE);
             $task = command_description($db, $row['description']);
-            $sql = "min(\"ETA\") AS \"ETA\" FROM queueinfo WHERE \"description\" LIKE $description AND \"ETA\" > 0 ";
-            $res2 = $db->select_query($sql);
+            $sql = 'min("ETA") AS "ETA" FROM queueinfo WHERE "description" LIKE ? AND "ETA" > ? ';
+            $res2 = $db->select_query($sql, array($row['description'], 0));
             $ETA = isset($res2[0]['ETA']) ? $res2[0]['ETA'] : '';
             $row['task'] = $task[0];
             $row['args'] = $task[1];
@@ -109,14 +107,15 @@ if ($type == 'quick' || $type == 'icon') {
             $tasks[$arrayid] = $row;
         }
         $cnt = count($tasks);
-        $sql = "* FROM downloadinfo WHERE \"preview\" = 2 AND hidden = 0";
+        $input_arr = array();
+        $sql = '* FROM downloadinfo WHERE "preview" = 2 AND hidden = 0';
         if (!$isadmin) {
-            $db->escape($userid, TRUE);
-            $sql .= " AND \"userid\" = $userid ";
+            $input_arr[] = $userid;
+            $sql .= ' AND "userid"=? ';
         }
-        $sql .= " ORDER BY \"start_time\" ";
+        $sql .= ' ORDER BY "start_time" DESC';
 
-        $res = $db->select_query($sql);
+        $res = $db->select_query($sql, $input_arr);
         if ($res === FALSE) {
             $res = array();
         }
@@ -161,5 +160,5 @@ $uc->disconnect();
 $smarty->assign('startup_perc',	 $startup_perc);
 $smarty->assign('isconnected',	 $isconnected);
 $smarty->assign('isadmin',	   	 $isadmin);
-$smarty->assign('type',	$type);
+$smarty->assign('type',	         $type);
 $smarty->display('ajax_showstatus.tpl');

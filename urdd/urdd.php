@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-08 18:21:08 +0200 (zo, 08 jun 2014) $
+ * $Rev: 3088 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: urdd.php 3088 2014-06-08 16:21:08Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', 'URDD');
 
@@ -56,6 +56,8 @@ require_once "$pathu/../functions/usenet_functions.php";
 require_once "$pathu/../functions/config_functions.php";
 require_once "$pathu/../functions/user_functions.php";
 require_once "$pathu/../functions/urd_exceptions.php";
+require_once "$pathu/../urdd/spots_functions.php";
+require_once "$pathu/../urdd/group_functions.php";
 require_once "$pathu/urdd_functions.php";
 require_once "$pathu/queue_functions.php";
 require_once "$pathu/show_functions.php";
@@ -106,12 +108,8 @@ function update_user_last_seen_group(DatabaseConnection $db, $group_id)
         return FALSE;
     }
     $now = time();
-    $db->escape($now, TRUE);
-    $db->escape($group_id, TRUE);
     foreach ($res as $row) {
-        $sql = "UPDATE usergroupinfo SET \"last_update_seen\" = $now "
-            . "WHERE \"userid\" = '{$row['ID']}' AND \"groupid\" = $group_id AND \"last_update_seen\" < {$row['last_login']} ";
-        $db->execute_query($sql);
+        $db->update_query_2('usergroupinfo', array('last_update_seen'=>$now), '"userid"=? AND "groupid"=? AND "last_update_seen" < ?', array($row['ID'], $group_id, $row['last_login']));
     }
 
     return TRUE;
@@ -238,14 +236,21 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                 $servers->queue_push($db, $item);
             } elseif ($rc == NNTP_NOT_CONNECTED_ERROR || $rc == NNTP_AUTH_ERROR || $rc == SERVER_INACTIVE || $rc == PIPE_ERROR) {
                 if ($rc == NNTP_AUTH_ERROR || $rc == NNTP_NOT_CONNECTED_ERROR) {
-                    echo_debug('NNTP Authentication failed', DEBUG_SERVER);
+                    if ($rc == NNTP_AUTH_ERROR) {
+                        echo_debug('NNTP Authentication failed', DEBUG_SERVER);
+                    } else {
+                        echo_debug('NNTP Connection failed', DEBUG_SERVER);
+                    }
                     // we need to disbale the server
                     write_log ('Disabling server: ' . $server_id, LOG_WARNING);
-                    $prio = $servers->get_priority($server_id);
+                    $priority = $servers->get_priority($server_id); 
                     $servers->disable_server($server_id);
-                    $servers->schedule_enable_server($db, $server_id, $prio, $item->get_userid());
-                }
-                if ($rc == SERVER_INACTIVE) {
+                    $timeout = 300; // 5 minutes
+                    if ($rc == NNTP_AUTH_ERROR) { 
+                        $timeout = 3600; // one hour
+                    }
+                    $servers->schedule_enable_server($db, $server_id, $item->get_userid(), $timeout, $priority);
+                } elseif ($rc == SERVER_INACTIVE) {
                     $item->set_active_server(0);
                     $item->set_preferred_server(0);
                     $server_id = 0;
@@ -328,7 +333,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                     } elseif (compare_command($cmd, urdd_protocol::COMMAND_POST_ACTION)) {
                         complete_post($db, $servers, $item, $status);
                     } elseif (compare_command($cmd, urdd_protocol::COMMAND_POST)) {
-                        queue_post($db, $servers,  $item->get_args(), $item->get_userid(), DEFAULT_PRIORITY);
+                        queue_post($db, $servers, $item->get_args(), $item->get_userid(), DEFAULT_PRIORITY);
                     } elseif (compare_command($cmd, urdd_protocol::COMMAND_UPDATE)) {
                         queue_gensets($db, $servers, array($item->get_args()), $item->get_userid(), DEFAULT_PRIORITY - 1);
                     } elseif (compare_command($cmd, urdd_protocol::COMMAND_GENSETS)) {
@@ -378,10 +383,9 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
 
 function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_data &$servers)
 {
-//  echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     reap_children($par_db, $servers);
 
-    $item = $servers->get_first_runnable_on_queue();
+    $item = $servers->get_first_runnable_on_queue($par_db);
     if ($item === FALSE || $item === TRUE) { // FALSE : no thread can run; TRUE: queue empty
 
         return $item;
@@ -524,30 +528,9 @@ function check_schedule(DatabaseConnection $db, conn_list &$conn_list, server_da
     }
 }
 
-function update_download_userid(DatabaseConnection $db)
-{
-    $sql = "\"ID\", \"username\" FROM downloadinfo WHERE \"userid\" = 0";
-    $res = $db->select_query($sql);
-    if ($res === FALSE) { 
-        $res = array();
-    }
-    $cnt = count($res);
-    write_log("Converting old downloadinfo database to new format, altering $cnt downloads", LOG_NOTICE);
-    foreach ($res as $row) {
-        $id = $row['ID'];
-        $userid = get_userid($db, $row['username']);
-        $sql = "UPDATE downloadinfo SET \"userid\" = $userid WHERE \"ID\" = $id ";
-        $db->execute_query($sql);
-    }
-}
-
 function reset_download_status(DatabaseConnection $db)
 {
-    $status = DOWNLOAD_QUEUED;
-    $db->escape($status, TRUE);
-    $statuses = "'". DOWNLOAD_READY . "','" . DOWNLOAD_ACTIVE . "','" . DOWNLOAD_QUEUED ."'";
-    $sql = "UPDATE downloadinfo SET \"status\" = $status WHERE \"status\" IN ($statuses)";
-    $db->execute_query($sql);
+    $db->update_query_2('downloadinfo', array('status'=>DOWNLOAD_QUEUED), '"status" IN (?,?,?)', array(DOWNLOAD_READY, DOWNLOAD_ACTIVE, DOWNLOAD_QUEUED));
 }
 
 function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_data &$servers)
@@ -556,7 +539,6 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
     global $config;
     $conn_list = new conn_list(get_config($db, 'urdd_timeout', socket::DEFAULT_SOCKET_TIMEOUT));
     $restart = $config['urdd_restart'];
-    update_download_userid($db);
     reset_download_status($db);
     
     restore_old_queue($db, $servers, $conn_list, $restart);
@@ -578,7 +560,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
         $conn_list->close_timedout();
         nzb_poller::poll_nzb_dir($db, $servers); // see if there are nzb files in any of the spool directors
         check_schedule($db, $conn_list, $servers); // check if there are scheduled jobs to run
-        $servers->check_conn_time(); // see if we need to time-out a connection
+      //  $servers->check_conn_time(); 
         $queue_ready = check_queue($db, $conn_list, $servers);
         if ($queue_ready === TRUE) {
             $timeout = $conn_list->first_timeout();
@@ -627,12 +609,10 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     try {
         $rstatus = QUEUE_RUNNING;
-        $query = "\"description\", \"ID\", \"username\", \"userid\", \"restart\", \"priority\", \"status\" FROM queueinfo WHERE \"status\" LIKE '$rstatus' ";
-        $res_running = $db->select_query($query);
-        $qstatus = QUEUE_QUEUED;
-        $pstatus = QUEUE_PAUSED;
-        $query = "\"description\", \"ID\", \"username\", \"userid\", \"status\", \"restart\", \"priority\" FROM queueinfo WHERE (\"status\" LIKE '$pstatus' OR \"status\" LIKE '$qstatus')";
-        $res_queued = $db->select_query($query);
+        $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE ? ';
+        $res_running = $db->select_query($query, array($rstatus));
+        $query = '"description", "ID", "userid", "status", "restart", "priority" FROM queueinfo WHERE ("status" LIKE ? OR "status" LIKE ?)';
+        $res_queued = $db->select_query($query, array(QUEUE_PAUSED, QUEUE_QUEUED));
         if (is_array($res_running)) {
             $response = '';
             foreach ($res_running as $row) {
@@ -644,7 +624,7 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
                     do_command($db, $cmd, $response, $conn_list, NULL, $servers, $userid, $priority, TRUE);
                     $restarted = TRUE;
                 }
-                $res = $db->delete_query('queueinfo', "\"ID\" = {$row['ID']}");
+                $res = $db->delete_query('queueinfo', '"ID"=? ', array($row['ID']));
                 if ($restarted === TRUE) {
                     write_log("Restored '$cmd'", LOG_NOTICE);
                 } else {
@@ -688,7 +668,7 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
                     }
                     $restarted = TRUE;
                 }
-                $res = $db->delete_query('queueinfo', "\"ID\" = '{$row['ID']}'");
+                $res = $db->delete_query('queueinfo', '"ID"=?', array($row['ID']));
                 if ($restarted === TRUE) {
                     write_log("Restored '$cmd'", LOG_NOTICE);
                 } else {
@@ -744,12 +724,12 @@ function set_urdd_userid(DatabaseConnection $db)
         posix_setegid(posix_getgid());
     }
 }
+
 function stupid_php_crap()
 {
     date_default_timezone_set(date_default_timezone_get()); // silly but otherwise we get tons of notices for each time fn call with E_STRICT
     declare(ticks = 1); // we need this for the signals to work properly.... all hail the splendid php documentation :-|
 }
-
 
 function find_server(DatabaseConnection $db, server_data $servers, test_result_list $test_results)
 {
@@ -802,7 +782,6 @@ set_assert(TRUE);
 // disable asserts
 //set_assert(FALSE);
 $is_child = FALSE; // this is the main start up, so we are always the parent
-
 // make PHP verbose
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
@@ -826,7 +805,7 @@ try {
     if ($e->getcode () == COMMANDLINE_ERROR) {
         write_log('Incorrect commandline option: ' . $e->getmessage(), LOG_ERR);
     } else {
-        write_log('Config error? ' . $e->getmessage(), LOG_ERR);
+        write_log('Config error?' . $e->getmessage(), LOG_ERR);
     }
     urdd_exit($e->getcode());
 }
@@ -842,6 +821,11 @@ try {
 }
 
 try {
+    if (isset($config['updatedb']) && $config['updatedb'] === TRUE) {
+        $quiet = TRUE;
+        require($pathu . '/../install/update_db.php');
+    }
+
     $db = connect_db(TRUE);
     $config['urdd_pidfile'] = get_config($db, 'pidpath', '');
     if (!isset($config['urdd_daemonise'])) {
@@ -902,7 +886,8 @@ try {
         }
     }
     set_config($db, 'urdd_startup', '50');
-
+    generate_server_keys($db);
+    generate_user_keys($db);
     if ($config ['find_servers'] === TRUE) {
         find_server($db, $servers, $test_results);
     }
@@ -913,7 +898,7 @@ try {
     set_config($db, 'urdd_startup', '80');
     set_handlers();
 } catch (exception $e) {
-    write_log('An error occured during startup of URD daemon: ' . $e->getmessage(), LOG_CRIT);
+    write_log('An error occured during startup of URD daemon: ' . $e->getMessage(), LOG_ERR);
     echo_debug_trace($e, DEBUG_SERVER);
     urdd_exit($e->getcode());
 }

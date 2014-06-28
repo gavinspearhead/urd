@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-02 23:20:45 +0200 (ma, 02 sep 2013) $
- * $Rev: 2909 $
+ * $LastChangedDate: 2014-05-25 00:49:47 +0200 (zo, 25 mei 2014) $
+ * $Rev: 3051 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_admintasks.php 2909 2013-09-02 21:20:45Z gavinspearhead@gmail.com $
+ * $Id: ajax_admintasks.php 3051 2014-05-24 22:49:47Z gavinspearhead@gmail.com $
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
@@ -73,9 +73,16 @@ if (!in_array($timeval, array_keys($times))) {
     $timeval = 1;
 }
 $qstatus = '';
+$input_arr = array();
 if ($status != '') {
-    $db->escape($status, TRUE);
-    $qstatus = " AND \"status\" = $status";
+    $input_arr[] = $status;
+    $qstatus = ' AND "status" = ?';
+}
+
+$qtime = '';
+if ($timeval > 0) {
+    $input_arr[] = (string) ( time() - ($timeval * 24 * 60 * 60));
+    $qtime = ' AND "lastupdate" >= ?';
 }
 
 if (!in_array($sort, array('description', 'progress', 'ETA', 'status', 'comment', 'lastupdate', 'starttime'))) {
@@ -86,15 +93,10 @@ if (!in_array($sort_dir, array('asc', 'desc'))) {
     $sort_dir = 'desc';
 }
 
-$qtime = '';
-if ($timeval > 0) {
-    $time =(string) ( time() - ($timeval * 24 * 60 * 60));
-    $db->escape($time, TRUE);
-    $qtime = " AND \"lastupdate\" >= $time";
-}
 
 function build_task_skipper($perpage, $offset, $total)
 {
+    assert(is_numeric($perpage) && is_numeric($offset) && is_numeric($total));
     // Normal size, if there are more pages, a 1st and/or last page indicator can be added:
     $size = SKIPPER_SIZE;
 
@@ -123,8 +125,8 @@ function build_task_skipper($perpage, $offset, $total)
 
 
 $perpage = get_maxperpage($db, $userid);
-$sql = "* FROM queueinfo WHERE 1=1 $qtime $qstatus ORDER BY \"$sort\" $sort_dir";
-$res = $db->select_query($sql);
+$sql = "* FROM queueinfo WHERE 1=1 $qstatus $qtime ORDER BY \"$sort\" $sort_dir";
+$res = $db->select_query($sql, $input_arr);
 
 $tasks = array();
 $cnt = 0;

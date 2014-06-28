@@ -14,10 +14,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-07-26 00:54:03 +0200 (vr, 26 jul 2013) $
- * $Rev: 2882 $
+ * $LastChangedDate: 2014-06-14 01:20:27 +0200 (za, 14 jun 2014) $
+ * $Rev: 3094 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: register.tpl 2882 2013-07-25 22:54:03Z gavinspearhead@gmail.com $
+ * $Id: register.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  *}
 {include file="barehead.tpl" title=$title}
 
@@ -48,17 +48,17 @@ $(document).ready(function() {
 
 <tbody id="form">
 <tr><td colspan="2"><h3 class="title">{$LN_reg_form}</h3></td></tr>
-<tr><td>{$LN_username}</td><td><input name="username" type="text" size="40" id="username"/></td></tr>
-<tr><td>{$LN_fullname}</td><td><input name="fullname" type="text" size="40" id="fullname"/></td></tr>
-<tr><td>{$LN_email}</td><td><input name="email" type="text" size="40" id="email"/></td></tr>
-<tr><td valign="top">{$LN_password}</td><td><input name="password1" type="password" size="40" id="pass1"/>
+<tr><td>{$LN_username}</td><td><input name="username" type="text" size="40" id="username" placeholder="Username" required/></td></tr>
+<tr><td>{$LN_fullname}</td><td><input name="fullname" type="text" size="40" id="fullname" placeholder="Full name" required/></td></tr>
+<tr><td>{$LN_email}</td><td><input name="email" type="email" size="40" id="email" placeholder="Email address" required/></td></tr>
+<tr><td valign="top">{$LN_password}</td><td><input name="password1" type="password" size="40" id="pass1" placeholder="Password" required/>
  &nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('pass1');toggle_show_password('pass2');"></div> 
     <span id="pwweak"><br>{$LN_password_weak}</span>
     <span id="pwmedium"><br>{$LN_password_medium}</span>
     <span id="pwstrong"><br>{$LN_password_strong}</span>
 </td></tr>
-<tr><td valign="top">{$LN_password} {$LN_reg_again}</td><td><input name="password2" type="password" size="40" id="pass2"/>
+<tr><td valign="top">{$LN_password} {$LN_reg_again}</td><td><input name="password2" type="password" size="40" id="pass2" placeholder="Password" required/>
     <span id="pwcorrect"><br>{$LN_password_correct}</span>
     <span id="pwincorrect"><br>{$LN_password_incorrect}</span>
 </td></tr>
@@ -68,7 +68,7 @@ $(document).ready(function() {
     </td>
     <td>
     <img src="captcha.php" alt="captcha image"/>
-    <input type="text" name="register_captcha" size="3" maxlength="3" id="captcha"/></td></tr>
+    <input type="text" name="register_captcha" size="3" maxlength="3" id="captcha" required/></td></tr>
 {/if}
 <tr><td></td><td><input type='button' value="{$LN_register}" class="submitsmall floatright" onclick="javascript:submit_registration();"/></td></tr>
 </tbody>

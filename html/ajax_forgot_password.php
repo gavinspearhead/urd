@@ -27,7 +27,7 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $pathfp = realpath(dirname(__FILE__));
 $pathca = realpath($pathfp . '/../functions/');
 session_name('URD_WEB_FORGOTPW' . md5($pathca)); // add the hashed path so we can have more than 1 session to different urds in one browser
-@session_start() ;
+@session_start();
 
 require_once $pathfp . '/../config.php';
 require_once $pathfp . '/../functions/db.class.php';
@@ -43,15 +43,15 @@ $process_name = 'urd_web'; // needed for message format in syslog and logging
 require_once "$pathfp/../functions/urd_log.php";
 require_once "$pathfp/../functions/autoincludes.php";
 require_once "$pathfp/../functions/functions.php";
+require_once "$pathfp/../functions/config_functions.php";
 
 try {
-    $db = connect_db(TRUE, FALSE);  // initialise the database
+    $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
     $msg = $e->getMessage();
     throw new exception("Connection to database failed. $msg\n");
 }
 
-require_once "$pathfp/../functions/config_functions.php";
 require_once "$pathfp/../functions/user_functions.php";
 require_once "$pathfp/../functions/web_functions.php";
 require_once "$pathfp/../functions/exception.php";
@@ -63,10 +63,8 @@ $status = 'show';
 if (isset($_POST['username'])&& $_POST['username'] != '' && isset($_POST['email']) && $_POST['email'] != '' && verify_email($_POST['email'])) {
     $username = get_post('username');
     $email = get_post('email');
-    $db->escape($username, TRUE);
-    $db->escape($email, TRUE);
-    $sql = "\"ID\", \"fullname\", \"name\", \"email\" FROM users WHERE \"email\" = $email AND \"name\" = $username";
-    $res = $db->select_query($sql, 1);
+    $sql = '"ID", "fullname", "name", "email" FROM users WHERE "email" = ? AND "name" = ?';
+    $res = $db->select_query($sql, 1, array($email, $username));
     if ($res !== FALSE) {
         $newpw = generate_password(MIN_PASSWORD_LENGTH);
         $id = $res[0]['ID'];

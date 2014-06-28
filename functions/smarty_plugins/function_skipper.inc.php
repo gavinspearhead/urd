@@ -63,7 +63,7 @@ function smarty_function_urd_skipper($params, &$smarty)
         $previous_page = find_page($pages, $current_page - 1);
         if ($previous_page !== FALSE) {
             $rv .= '<td class="' . $class . '_5"' .
-                'onmouseover="hover_skipper(this, \'ps_hover\');" onmouseout="hover_skipper(this, \'ps_hover\');" onclick="'. $js . '(\'' .
+                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
                 $previous_page['offset'] . '\');">' .
                 ' &lt; ' .
                 '</td>';
@@ -73,7 +73,7 @@ function smarty_function_urd_skipper($params, &$smarty)
     foreach ($pages as $page) {
         if ($page['number'] == 1) {
             $rv .= '<td class="' . $class . '_' . $page['distance'] . '"' .
-                'onmouseover="hover_skipper(this, \'ps_hover\');" onmouseout="hover_skipper(this, \'ps_hover\');" onclick="'. $js . '(\'' .
+                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
                 $page['offset'] . '\');">' .
                 $page['number'] .
                 '</td>';
@@ -86,14 +86,14 @@ function smarty_function_urd_skipper($params, &$smarty)
                 $rv .= '<td class="spacer">&nbsp;</td>';
             }
             $rv .= '<td class="' . $class . '_' . $page['distance'] . '"' .
-                'onmouseover="hover_skipper(this, \'ps_hover\');" onmouseout="hover_skipper(this, \'ps_hover\');" onclick="'. $js . '(\''
+                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\''
                 . $page['offset'] . '\');">'
                 . $page['number'] .
                 '</td>';
 
         } elseif ($page['number'] >= $start_page && $page['number'] <= $stop_page) {
             $rv .= '<td class="' . $class . '_' . $page['distance'] . '"' .
-                'onmouseover="hover_skipper(this, \'ps_hover\');" onmouseout="hover_skipper(this, \'ps_hover\');" onclick="'. $js . '(\'' .
+                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
                 $page['offset'] . '\');">' .
                 $page['number'] . '</td>';
         }
@@ -102,7 +102,7 @@ function smarty_function_urd_skipper($params, &$smarty)
         $next_page = find_page($pages, $current_page + 1);
         if ($next_page !== FALSE) {
             $rv .= '<td class="' . $class . '_5"' .
-                'onmouseover="hover_skipper(this, \'ps_hover\');" onmouseout="hover_skipper(this, \'ps_hover\');" onclick="'. $js . '(\'' .
+                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
                 $next_page['offset'] . '\');">' .
                 ' &gt; ' .
                 '</td>';

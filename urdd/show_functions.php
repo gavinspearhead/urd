@@ -16,33 +16,22 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:50:58 +0200 (di, 03 sep 2013) $
- * $Rev: 2911 $
+ * $LastChangedDate: 2014-06-08 00:30:19 +0200 (zo, 08 jun 2014) $
+ * $Rev: 3087 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: show_functions.php 2911 2013-09-03 21:50:58Z gavinspearhead@gmail.com $
+ * $Id: show_functions.php 3087 2014-06-07 22:30:19Z gavinspearhead@gmail.com $
  */
 
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathsf = realpath(dirname(__FILE__));
-
-require_once "$pathsf/../functions/autoincludes.php";
-require_once "$pathsf/../functions/defines.php";
-require_once "$pathsf/../config.php";
-require_once "$pathsf/../functions/functions.php";
-require_once "$pathsf/urdd_command.php";
-require_once "$pathsf/urdd_protocol.php";
-require_once "$pathsf/urdd_error.php";
-require_once "$pathsf/../functions/urd_log.php";
-
 function show_time($output_type)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     switch (strtolower($output_type)) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<' . '?xml version="1.0" standalone="yes"?' . '><show></show>');
         $xml->addChild('time', date('r'));
         $status = $xml->asXML();
         break;
@@ -62,7 +51,7 @@ function do_show_servers(server_data $server_data, $output_type)
     $servers = $server_data->get_servers();
     switch ($output_type) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
         $xml->addChild('servers');
         break;
     default:
@@ -88,8 +77,8 @@ function do_show_servers(server_data $server_data, $output_type)
             $server->addChild('priority', $prio);
             $server->addChild('max_threads', $maxt);
             $server->addChild('free_threads', $freet);
-            $server->addChild('posting', $s['posting'] ? 'TRUE' : 'FALSE' );
-            $server->addChild('enabled', ($prio != 0) ? 'TRUE' : 'FALSE');
+            $server->addChild('posting', $s['posting'] ? 'TRUE' : 'FALSE');
+            $server->addChild('enabled', $s['enabled'] && ($prio > 0 ||$s['preferred']) ? 'TRUE' : 'FALSE');
             break;
         default:
             $resp .= " #$c. id: $id h:$hostname:$port p:$prio max:$maxt free:$freet $enabled $posting $pref\n";
@@ -197,10 +186,9 @@ function show_uptime($output_type)
     return $status;
 }
 
-function do_show_queue(server_data $servers, $output_type)
+function do_show_queue(DatabaseConnection $db, server_data $servers, $output_type)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $c = 1;
     switch ($output_type) {
     case 'xml':
         $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
@@ -211,15 +199,16 @@ function do_show_queue(server_data $servers, $output_type)
         break;
     }
 
+    $c = 1;
     $actions = $servers->get_queue();
     foreach ($actions as $q) {
         $stat = $q['pause'] ? 'paused' : 'active';
-        $qt = microtime(TRUE) -($q['queue_time']);
+        $qt = microtime(TRUE) - $q['queue_time'];
         switch ($output_type) {
         case 'xml':
             $action = $queue->addChild('action');
             $action->addChild('id', $q['id']);
-            $action->addChild('username', $q['username']);
+            $action->addChild('username', get_username($db, $q['userid']));
             $action->addChild('priority', $q['priority']);
             $action->addChild('command', $q['command']);
             $action->addChild('arguments', $q['args']);
@@ -227,7 +216,8 @@ function do_show_queue(server_data $servers, $output_type)
             $action->addChild('time', $qt);
             break;
         default:
-            $resp .= " #$c. id:{$q['id']} u:{$q['username']} p:{$q['priority']} cmd:{$q['command']} {$q['args']} $stat qt:$qt\n";
+            $username = get_username($db, $q['userid']);
+            $resp .= " #$c. id:{$q['id']} u:{$username} p:{$q['priority']} cmd:{$q['command']} {$q['args']} $stat qt:$qt\n";
             break;
         }
         $c++;
@@ -246,7 +236,7 @@ function do_show_queue(server_data $servers, $output_type)
 function do_show_newsgroups(DatabaseConnection $db, $subscribed, $output_type)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $like = ($subscribed) ? ' AND "active"=\'' . NG_SUBSCRIBED . "'" : '';
+    $like = ($subscribed) ? ' AND "active"=\'' . newsgroup_status::NG_SUBSCRIBED . "'" : '';
 
     $query = "* FROM groups WHERE 1=1 $like ORDER BY \"name\"";
     $res = $db->select_query($query);
@@ -309,7 +299,7 @@ function do_show_feeds(DatabaseConnection $db, $output_type)
 
     switch ($output_type) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?'. '><show></show>');
         $fds = $xml->addChild('rss_feeds');
         break;
     default:
@@ -396,7 +386,7 @@ function do_show_threads(DatabaseConnection $db, server_data $servers, $output_t
     $c = 1;
     switch ($output_type) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
         $thrds = $xml->addChild('threads');
         break;
     default:
@@ -417,7 +407,7 @@ function do_show_threads(DatabaseConnection $db, server_data $servers, $output_t
             $thrd = $thrds->addChild('thread');
             $thrd->addChild('id', $t['id']);
             $thrd->addChild('pid', $t['pid']);
-            $thrd->addChild('username', $t['username']);
+            $thrd->addChild('username', get_username($db, $t['userid']));
             $thrd->addChild('servername', $server_name);
             $thrd->addChild('server', $server);
             $thrd->addChild('command', $t['command']);
@@ -427,8 +417,9 @@ function do_show_threads(DatabaseConnection $db, server_data $servers, $output_t
             $thrd->addChild('starttime', $st);
             break;
         default:
-            $resp .= " #$c.  id:{$t['id']} pid:{$t['pid']} u:{$t['username']} s:{$server_name} ($server)"
-                .  " cmd:{$t['command']} {$t['args']} $stat qt:$qt st:$st\n";
+            $username = get_username($db, $t['userid']);
+            $resp .= " #$c.  id:{$t['id']} pid:{$t['pid']} u:{$username} s:{$server_name} ($server)"
+                . " cmd:{$t['command']} {$t['args']} $stat qt:$qt st:$st\n";
             break;
         }
         $c++;
@@ -445,14 +436,14 @@ function do_show_threads(DatabaseConnection $db, server_data $servers, $output_t
     return $resp;
 }
 
-function do_show_jobs(server_data $servers, $output_type)
+function do_show_jobs(DatabaseConnection $db, server_data $servers, $output_type)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $c = 1;
 
     switch ($output_type) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?'. '><show></show>');
         $js = $xml->addChild('jobs');
         break;
     default:
@@ -472,14 +463,15 @@ function do_show_jobs(server_data $servers, $output_type)
         case 'xml':
             $jb = $js->addChild('job');
             $jb->addChild('id', $j['id']);
-            $jb->addChild('username', $j['username']);
+            $jb->addChild('username', get_username($db, $j['userid']));
             $jb->addChild('command', $j['command']);
             $jb->addChild('arguments', $j['args']);
             $jb->addChild('time', $time);
             $jb->addChild('recurrence', $recur);
             break;
         default:
-            $resp .= " #$c.  @ $time $rec_str{$j['id']} u:{$j['username']} cmd:{$j['command']} {$j['args']}\n";
+            $username = get_username($db, $j['userid']);
+            $resp .= " #$c.  @ $time $rec_str{$j['id']} u:{$username} cmd:{$j['command']} {$j['args']}\n";
             break;
          }
         $c++;
@@ -502,7 +494,7 @@ function do_show_config($output_type)
     $resp = '';
     switch ($output_type) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
         $cfg = $xml->addChild('config');
         break;
     default:
@@ -538,7 +530,7 @@ function do_show_version($output_type)
     $status = urd_version::get_status();
     switch (strtolower($output_type)) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
         $xml->addChild('version', $version);
         $xml->addChild('status', $status);
         $resp = $xml->asXML();
@@ -556,7 +548,7 @@ function do_show_load($output_type)
     $load = sys_getloadavg();
     switch (strtolower($output_type)) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
         $xml->addChild('load_1', $load[0]);
         $xml->addChild('load_5', $load[1]);
         $xml->addChild('load_15', $load[2]);
@@ -579,7 +571,7 @@ function do_show_tests($output_type)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     switch (strtolower($output_type)) {
     case 'xml':
-        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?><show></show>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" standalone="yes"?' . '><show></show>');
         $xml = $test_results->get_all_as_xml($xml);
         $resp = $xml->asXML();
         break;
@@ -596,7 +588,7 @@ function do_show_status(server_data $servers, conn_list $conn_list, $output_type
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     global $start_time;
-    $uptime = time () - $start_time;
+    $uptime = time() - $start_time;
     $sec = $uptime % 60;
     $min = ($uptime / 60) % 60;
     $hrs = ($uptime / 3600) % 24;
@@ -636,8 +628,8 @@ function do_show(array $arg_list, conn_list $conn_list, server_data $servers, Da
         switch (strtolower($arg)) {
         case 'all':
             $resp .= do_show_threads($db, $servers, $output_type);
-            $resp .= do_show_queue($servers, $output_type);
-            $resp .= do_show_jobs($servers, $output_type);
+            $resp .= do_show_queue($db, $servers, $output_type);
+            $resp .= do_show_jobs($db, $servers, $output_type);
             $resp .= do_show_users($conn_list, $output_type);
             $resp .= do_show_servers($servers, $output_type);
             break;
@@ -660,13 +652,13 @@ function do_show(array $arg_list, conn_list $conn_list, server_data $servers, Da
             $resp .= do_show_users($conn_list, $output_type);
             break;
         case 'queue':
-            $resp .= do_show_queue($servers, $output_type);
+            $resp .= do_show_queue($db, $servers, $output_type);
             break;
         case 'threads':
             $resp .= do_show_threads($db,$servers, $output_type);
             break;
         case 'jobs':
-            $resp .= do_show_jobs($servers, $output_type);
+            $resp .= do_show_jobs($db, $servers, $output_type);
             break;
         case 'servers':
             $resp .= do_show_servers($servers, $output_type);

@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-08-04 00:07:36 +0200 (zo, 04 aug 2013) $
- * $Rev: 2885 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_test.php 2885 2013-08-03 22:07:36Z gavinspearhead@gmail.com $
+ * $Id: urdd_test.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
@@ -67,10 +67,8 @@ class test_result_list
             $xml->tests->test->addChild('name', $r->name);
             $xml->tests->test->addChild('result', $r->result ? 'Succeeded':'Failed');
             $xml->tests->test->addChild('message', $r->message);
-
         }
 
         return $xml;
     }
-
 }

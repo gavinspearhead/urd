@@ -15,28 +15,15 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:50:58 +0200 (di, 03 sep 2013) $
- * $Rev: 2911 $
+ * $LastChangedDate: 2014-06-07 14:53:28 +0200 (za, 07 jun 2014) $
+ * $Rev: 3081 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: queue.php 2911 2013-09-03 21:50:58Z gavinspearhead@gmail.com $
+ * $Id: queue.php 3081 2014-06-07 12:53:28Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
-}
-
-$pathq = realpath(dirname(__FILE__));
-require_once "$pathq/../functions/autoincludes.php";
-
-function update_download_position(DatabaseConnection $db, action $item, $position)
-{
-    $command = $item->get_command_code();
-    if ($command == urdd_protocol::COMMAND_DOWNLOAD || $command == urdd_protocol::COMMAND_DOWNLOAD_ACTION) {
-        $id = $item->get_args();
-        $sql = "UPDATE downloadinfo SET \"position\" = '$position' WHERE \"ID\"='$id'";
-        $db->execute_query($sql);
-    }
 }
 
 class queue
@@ -70,7 +57,6 @@ class queue
         $qq = array();
         foreach ($this->qq as $q) {
             $row['id'] = $q->get_id();
-            $row['username'] = $q->get_username();
             $row['userid'] = $q->get_userid();
             $row['priority'] = $q->get_priority();
             $row['command'] = $q->get_command();
@@ -83,24 +69,30 @@ class queue
 
         return $qq;
     }
+    private static function update_download_position(DatabaseConnection $db, action $item, $position)
+    {
+        $command = $item->get_command_code();
+        if ($command == urdd_protocol::COMMAND_DOWNLOAD || $command == urdd_protocol::COMMAND_DOWNLOAD_ACTION) {
+            $id = $item->get_args();
+            $db->update_query_2('downloadinfo', array('position'=>$position), '"ID"=?', array($id));
+        }
+    }
 
     public function update_all_download_position(DatabaseConnection $db)
     {
-        $sql = 'UPDATE downloadinfo SET "position" = \'0\'';
-        $db->execute_query($sql);
+        $db->update_query_2('downloadinfo', array('position'=>0));
         $cnt = 0;
 
         foreach ($this->qq as $q) {
             $cnt++;
-            update_download_position($db, $q, $cnt);
+            self::update_download_position($db, $q, $cnt);
         }
     }
 
     public function move_down(DatabaseConnection $db, $cmd, $arg, $userid)
     {
         assert (is_numeric($userid));
-        $prev = NULL;
-        $next = NULL;
+        $prev = $next = NULL;
         // first find the previous one
         foreach ($this->qq as $k=>&$q) {
             if ($prev !== NULL && $prev->is_equal($cmd, $arg) && !$q->is_equal($cmd, $arg)) {
@@ -216,6 +208,8 @@ class queue
             $rv = $this->move_down($db, $cmd, $arg, $userid);
         } elseif ($direction == self::MOVE_UP) {
             $rv = $this->move_up($db, $cmd, $arg, $userid);
+        } else {
+            assert(FALSE);
         }
         $this->update_all_download_position($db);
     }
@@ -254,7 +248,7 @@ class queue
                 }
             }
         }
-        throw new exception ('Item not found', ERR_ITEM_NOT_FOUND);
+        throw new exception('Item not found', ERR_ITEM_NOT_FOUND);
     }
     public function has_equal(action $a)
     {
@@ -278,7 +272,6 @@ class queue
         }
 
         return $keys;
-
     }
     public function get_ids_cmd($cmd, $arg, $userid)
     {
@@ -333,7 +326,7 @@ class queue
         if (isset($this->qq[$id])) {
             return $this->qq[$id];
         } else {
-            throw new exception ('Queue item not found', ERR_ITEM_NOT_FOUND);
+            throw new exception('Queue item not found', ERR_ITEM_NOT_FOUND);
         }
     }
 
@@ -353,7 +346,7 @@ class queue
 
         foreach ($kk as $k) {
             if (!$this->qq[$k]->match_userid($userid)) {
-                throw new exception ('Not allowed', ERR_ACCESS_DENIED);
+                throw new exception('Not allowed', ERR_ACCESS_DENIED);
             }
             $item = $this->qq[$k];
             unset($this->qq[$k]);
@@ -378,7 +371,6 @@ class queue
 
         return FALSE;
     }
-
 
     public function delete(DatabaseConnection $db, $action_id, $userid, $delete_db = FALSE)
     {
@@ -407,8 +399,7 @@ class queue
         return TRUE;
     }
 
-
-    public function pause(DatabaseConnection $db, $action_id, $do_pause, $userid)// $do_pause == true then pause, else  continue (unpause)
+    public function pause(DatabaseConnection $db, $action_id, $do_pause, $userid)// $do_pause == true then pause, else {  continue (unpause)
     {
         assert(is_bool($do_pause) && is_numeric($action_id) && is_numeric($userid));
         $status = $do_pause ? QUEUE_PAUSED : QUEUE_QUEUED;
@@ -417,7 +408,7 @@ class queue
                 $rv = $q->pause($do_pause, $userid);
                 $cmd = $q->get_command();
                 update_queue_status ($db, $q->get_dbid(), $status, NULL, NULL, NULL, $do_pause);
-                if (compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD) ||compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {
+                if (compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD) || compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {
                     $dlid = $q->get_args();
                     update_dlinfo_status($db, $do_pause ? DOWNLOAD_PAUSED : DOWNLOAD_QUEUED, $dlid);
                 }
@@ -425,11 +416,10 @@ class queue
                 return TRUE;
             }
         }
-        throw new exception ('Item not found', ERR_ITEM_NOT_FOUND);
+        throw new exception('Item not found', ERR_ITEM_NOT_FOUND);
     }
 
-
-    public function pause_cmd(DatabaseConnection $db, $cmd, $arg, $do_pause, $userid)// $do_pause == true then pause, else  continue (unpause)
+    public function pause_cmd(DatabaseConnection $db, $cmd, $arg, $do_pause, $userid)// $do_pause == true then pause, else {  continue (unpause)
     {
         assert(is_bool($do_pause) && is_numeric($userid));
         $cnt = 0;
@@ -440,7 +430,7 @@ class queue
                     $rv = $q->pause($do_pause, $userid);
                     $cnt++;
                     update_queue_status ($db, $q->get_dbid(), $status, NULL, NULL, NULL, $do_pause);
-                    if (compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD) ||compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {
+                    if (compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD) || compare_command($cmd, urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {
                         $dlid = $q->get_args();
                         update_dlinfo_status($db, $do_pause ? DOWNLOAD_PAUSED : DOWNLOAD_QUEUED, $dlid);
                     }
@@ -451,12 +441,11 @@ class queue
             }
         }
         if ($cnt == 0) {
-            throw new exception ('Item not found',ERR_ITEM_NOT_FOUND);
+            throw new exception('Item not found',ERR_ITEM_NOT_FOUND);
         }
     }
 
-
-    public function pause_all(DatabaseConnection $db, $do_pause, $userid)// $do_pause == true then pause, else  continue (unpause)
+    public function pause_all(DatabaseConnection $db, $do_pause, $userid)// $do_pause == true then pause, else {  continue (unpause)
     {
         assert(is_bool($do_pause) && is_numeric($userid));
         $status = $do_pause ? QUEUE_PAUSED : QUEUE_QUEUED;
@@ -475,7 +464,6 @@ class queue
             }
         }
     }
-
 
     protected function add_prio(action $item, DatabaseConnection $db, $increase_counter=TRUE)
     {
@@ -525,7 +513,6 @@ class queue
         return $dbid;
     }
 
-
     public function top($mayhave_nntp=TRUE, array $not_these=array(), $mayhave_db_intensive= TRUE)
     {
         assert(is_bool($mayhave_nntp));
@@ -563,13 +550,12 @@ class queue
         return FALSE;
     }
 
-
     public function set_priority(DatabaseConnection $db, $action_id, $userid, $priority)
     {
         assert (is_numeric($userid));
+
         return $this->set_priorities($db, array($action_id), $userid, $priority);
     }
-
 
     public function set_priorities(DatabaseConnection $db, array $action_ids, $userid, $priority)
     {
@@ -599,4 +585,10 @@ class queue
         return (($p1 == $p2) ? 0 : ($p1 < $p2 ? -1 : 1));
     }
 
+    public function reset_temp_failed_server($server_id)
+    {
+        foreach ($this->qq as $k => $q) {
+            $q->remove_tried_server($server_id);
+        }
+    }
 } //queue

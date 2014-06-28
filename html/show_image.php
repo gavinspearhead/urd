@@ -23,8 +23,6 @@
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
-//error_reporting(0);
-
 $__auth = 'silent';
 $pathstat = realpath(dirname(__FILE__));
 
@@ -35,9 +33,8 @@ if ($spotid == '') {
     throw new exception($LN['error_spotnotfound']);
 }
 
-$db->escape($spotid, TRUE);
-$sql = "image FROM spot_images WHERE spotid = $spotid";
-$res = $db->select_query($sql);
+$sql = '"image" FROM spot_images WHERE "spotid"=?';
+$res = $db->select_query($sql, array($spotid));
 if (!isset($res[0]['image'])) {
     throw new exception($LN['error_spotnotfound']);
 }
@@ -60,4 +57,4 @@ if (substr($image, 0,16) == 'data:image/jpeg;') {
     }
 }
 
-echo 'NOT OK';
+die('NOT OK');

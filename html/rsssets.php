@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-11 00:48:12 +0200 (wo, 11 sep 2013) $
- * $Rev: 2925 $
+ * $LastChangedDate: 2014-06-12 23:24:27 +0200 (do, 12 jun 2014) $
+ * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: rsssets.php 2925 2013-09-10 22:48:12Z gavinspearhead@gmail.com $
+ * $Id: rsssets.php 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  */
 if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
@@ -67,8 +67,10 @@ $saved_searches = $saved_searches->get_all_names($type);
 
 $feed_id = $origfeed_id = get_request('feed_id', '');
 
+$search = html_entity_decode(get_request('search', ''));
+
 $saved_search = get_request('saved_search', '');
-if ($saved_search == '' && $feed_id == '') {
+if ($saved_search == '' && $feed_id == '' && $search == '') {
     $origfeed_id = $feed_id = get_pref($db, 'default_feed', $userid, '');
 }
 
@@ -86,7 +88,7 @@ if (isset($feed_id[9]) && substr_compare($feed_id, 'category_',0, 9) == 0) {
     if (!is_numeric($categoryID)) {
         $categoryID = 0;
     }
-    $feed_id = 0 ;
+    $feed_id = 0;
 } elseif (isset($feed_id[5]) && substr_compare($feed_id, 'feed_',0, 5) == 0) {
     $feed_id = substr($feed_id, 5);
     if (!is_numeric($feed_id)) {
@@ -108,17 +110,33 @@ $minsetsizelimit = nearest($minsetsizelimit / (1024 * 1024), FALSE);
 $maxsetsizelimit = nearest($maxsetsizelimit / (1024 * 1024), TRUE);
 $minagelimit = nearest($minagelimit / (3600 * 24), FALSE);
 $maxagelimit = nearest($maxagelimit / (3600 * 24), TRUE);
-$search = html_entity_decode(get_request('search', ''));
 $orisearch  = utf8_decode($search);
 $offset  = get_request('offset', 0);
-$minage  = get_request('minage', $minagelimit);
-$maxage  = get_request('maxage', $maxagelimit);
+$minage  = get_request('minage', $minagelimit, 'is_numeric');
+$maxage  = get_request('maxage', $maxagelimit, 'is_numeric');
 $flag    = get_request('flag', '');
 $order   = $oriorder   = get_request('order', '');
-$minsetsize = get_request('minsetsize', $minsetsizelimit);
-$maxsetsize = get_request('maxsetsize', $maxsetsizelimit);
-$maxrating  = get_request('maxrating', 10);
-$minrating  = get_request('minrating', 0);
+
+$minsetsize = get_pref($db, 'minsetsize', $userid, NULL);
+if ($minsetsize !== NULL) {
+    $minsetsize /= (1024 * 1024);
+}
+$maxsetsize = get_pref($db, 'maxsetsize', $userid, NULL);
+if ($maxsetsize !== NULL) {
+    $maxsetsize /= (1024 * 1024);
+}
+
+if ($maxsetsize <= 0) { 
+    $maxsetsize = NULL;
+}
+if ($minsetsize <= 0) { 
+    $minsetsize = NULL; 
+}
+
+$minsetsize = get_request('minsetsize', $minsetsize, 'is_numeric');
+$maxsetsize = get_request('maxsetsize', $maxsetsize, 'is_numeric');
+$maxrating  = get_request('maxrating', 10, 'is_numeric');
+$minrating  = get_request('minrating', 0, 'is_numeric');
 $setid      = get_request('setid', '');
 
 $subscribedfeeds = subscribed_feeds_select($db, $feed_id, $categoryID, $categories, $userid);
@@ -137,7 +155,7 @@ $url = get_config($db, 'url');
 $rssurl = $url . "html/rss.php?type=$rsstype&amp;feed_id=$feed_id&amp;categoryID=$categoryID&amp;limit=$rss_limit&amp;minsize=$minsetsize&amp;maxage=$maxage&amp;userid=$userid";
 
 if ($order == '') {
-    $order = map_default_sort($prefs, array('subject'=> 'better_subject',));
+    $order = map_default_sort($prefs, array('subject'=> 'better_subject'));
 }
 
 init_smarty($title, 1, $add_menu);

@@ -15,17 +15,16 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-03 23:54:28 +0200 (di, 03 sep 2013) $
- * $Rev: 2912 $
+ * $LastChangedDate: 2014-06-22 23:53:13 +0200 (zo, 22 jun 2014) $
+ * $Rev: 3113 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: install.3.inc.php 2912 2013-09-03 21:54:28Z gavinspearhead@gmail.com $
+ * $Id: install.3.inc.php 3113 2014-06-22 21:53:13Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) { 
     die('This file cannot be accessed directly.');
 }
-
 
 // Check for database settings: ask account info
 
@@ -41,7 +40,9 @@ $dbrpass = isset($_SESSION['dbrpass']) ? $_SESSION['dbrpass'] : '';
 $dbclear = isset($_SESSION['dbclear']) ? $_SESSION['dbclear'] : '';
 $dbuserclear = isset($_SESSION['dbuserclear']) ? $_SESSION['dbuserclear'] : '';
 $dbengine = isset($_SESSION['dbengine']) ? $_SESSION['dbengine'] : '';
-$keystore_default_path =isset($_SESSION['keystore_path']) ? $_SESSION['keystore_path'] : realpath('../');
+$keystore_default_path = isset($_SESSION['keystore_path']) ? $_SESSION['keystore_path'] : realpath('../');
+$reuse_keystore = isset($_SESSION['reuse_keystore']) ? $_SESSION['reuse_keystore'] : '';
+
 
 // If this is an upgrade, we have a dbconfig.php... use these values instead:
 @include('dbconfig.php');
@@ -55,7 +56,6 @@ if (isset($config['databasetype'])) {
     $dbengine = $config['db_engine'];
 }
 
-
 $dbtype = htmlentities($dbtype);
 $dbname = htmlentities($dbname);
 $dbuser = htmlentities($dbuser);
@@ -64,8 +64,10 @@ $dbhost = htmlentities($dbhost);
 $dbport = htmlentities($dbport);
 $dbengine = htmlentities($dbengine);
 
-$dbclear ? $dbclear = 'CHECKED' : $dbclear = '';
-$dbuserclear ? $dbuserclear = 'CHECKED' : $dbuserclear = '';
+$dbclear = $dbclear ? 'CHECKED' : '';
+$dbuserclear = $dbuserclear ? 'CHECKED' : '';
+$reuse_keystore = $reuse_keystore ? 'CHECKED' : '';
+
 if ($dbhost == '') { 
     $dbhost = 'localhost';
 }
@@ -83,7 +85,6 @@ if (extension_loaded('mysqli')) {
 if (extension_loaded('mysql')) {
     $dbs[] = array ('mysql', 'MySQL');
 }
-
 if (extension_loaded('pdo_pgsql')) {
     $dbs[] = array ('pdo_pgsql', 'Postgresql (PDO)');
 }
@@ -92,14 +93,13 @@ if (extension_loaded('pgsql')) {
     $dbs[] = array ('postgres8', 'Postgres 8');
     $dbs[] = array ('postgres7', 'Postgres 7');
 }
-
 if (extension_loaded('pdo_sqlite')) {
     $dbs[] = array ('pdo_sqlite', 'SQLite (PDO)');
 }
 
 if ($dbs == array()) {
     $OUT .= '<tr><td class="install2">No database driver installed (try sudo apt-get install php5-mysql)</td>';
-	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">'.$refreshpic.'</a></td></tr>';
+	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">' . $refreshpic . '</a></td></tr>';
 } else {
 $OUT .= <<<SELECTDB
 <tr><td class="install2">Select your database:</td><td class="install3">
@@ -108,7 +108,7 @@ SELECTDB;
 foreach($dbs as $l) {
 	$OUT .= '<option ' . (($l[0] == $dbtype) ? 'selected="selected"' : '') . " value=\"{$l[0]}\">{$l[1]}</option>\n";
 } 
-$showdbe = (in_array(strtolower($dbtype) , array('mysql', 'mysqli', 'pdo_mysql'))) ? '': " style=\"display:hidden\" ";
+$showdbe = (in_array(strtolower($dbtype) , array('mysql', 'mysqli', 'pdo_mysql'))) ? '' : " style=\"display:hidden\" ";
 $dbinno = ($dbengine == 'innodb') ? 'selected="selected"' : '';
 $dbmyisam = ($dbengine == 'myisam') ? 'selected="selected"' : '';
 $dbdef = ($dbengine != 'myisam' && $dbengine != 'innodb') ? 'selected="selected"' : '';
@@ -130,9 +130,9 @@ $OUT .= <<<SELECTDB2
 <input type="text" name="dbname" id="dbname" value="$dbname"></td></tr>
 <tr id="dbusername"><td class="install2">Database username:</td><td class="install3">
 <input type="text" name="dbuser" id="dbuser" value="$dbuser"></td></tr>
-<tr id="dbpassword"><td class="install2">Database password:</td><td class="install3">
+<tr id="dbpassword"><td class="install2">Database password (leave blank to generate one):</td><td class="install3">
 <input id="dbpass" type="password" name="dbpass" id="dbpass" value="$dbpass"> <span onclick="javascript:toggle_show_password('dbpass');">$showpasspic</span>
-<br> (<span onclick="javascript:set_random_password('dbpass')">Generate password</span>) </td></tr>
+<br></td></tr>
 <tr><td colspan="2"></td></tr>
 <tr><td colspan="2"></td></tr>
 <tr id="dbmysqlreset"><td></td><td>Instructions to reset password for <a target="_new" href="https://dev.mysql.com/doc/refman/5.0/en/resetting-permissions.html">Mysql</a>.</tr>
@@ -142,23 +142,20 @@ $OUT .= <<<SELECTDB2
 <input type="password" name="dbrpass" id="dbrpass" value="$dbrpass"> <span onclick="javascript:toggle_show_password('dbrpass');">$showpasspic</span>
 </td></tr>
 <tr><td>&nbsp;</td></tr>
-
 <tr><td class="install1">In case you overwrite an existing URD installation:</td></tr>
 <tr><td class="install2">Delete existing database:</td><td class="install3">
 <input type="checkbox" name="dbclear" $dbclear></td></tr>
 <tr><td class="install2">Delete existing database user:</td><td class="install3">
 <input type="checkbox" name="dbuserclear" $dbuserclear></td></tr>
-
+<tr><td colspan="2"><br/></td></tr>
+<tr><td class="install2">Location of the key store for database encryption of passwords</td>
+<td class="install3"><input type="text" name="keystore_path" value="$keystore_default_path" size="60"></td></tr>
+<tr><td colspan="2" class="install1">Setting key for database encryption of passwords</td></tr>
+<tr><td class="install2">Encryption key (leave blank to generate one)</td><td class="install3"><input type="password" name="encryption_key" value="">&nbsp;<span onclick="javascript:toggle_show_password('password');">$showpasspic</span></td></tr></td></tr>
+<tr><td class="install2">Reuse existing keystore:</td><td class="install3">
+<input type="checkbox" name="reuse_keystore" $reuse_keystore></td></tr>
+<tr colspan="3" id="continue_button"><td><a onclick="show_message('Creating database... please wait');LoadPage(4); hide_button('continue_button');">$continuepic</a></td></tr>
 SELECTDB2;
 
-
-$OUT .= '<tr><td colspan="2"><br/></td></tr>';
-$OUT .= '<tr><td colspan="2" class="install1">Location of the key store for database encryption of passwords</td></tr>' . "\n";
-$OUT .= "<td class=\"install3\"><input type=\"text\" name=\"keystore_path\" value=\"$keystore_default_path\"></td></tr></td></tr>";
-$OUT .= '<tr><td colspan="2" class="install1">Setting key for database encryption of passwords</td></tr>' . "\n";
-$OUT .= "<tr><td class=\"install2\">Encryption key (leave blank to generate one)</td><td class=\"install3\"><input type=\"password\" name=\"encryption_key\" value=\"\">&nbsp;<span onclick=\"javascript:toggle_show_password('password');\">$showpasspic</span></td></tr></td></tr>";
-
-
-$OUT .= '<tr colspan="3" id="continue_button"><td><a onclick="show_message(\'Creating database... please wait\');LoadPage(4); hide_button(\'continue_button\');">'.$continuepic.'</a></td></tr>';
 }
 

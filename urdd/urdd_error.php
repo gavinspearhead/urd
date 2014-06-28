@@ -17,10 +17,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-09-04 22:44:19 +0200 (wo, 04 sep 2013) $
- * $Rev: 2919 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: urdd_error.php 2919 2013-09-04 20:44:19Z gavinspearhead@gmail.com $
+ * $Id: urdd_error.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
  */
 
 // This is an include-only file:
@@ -28,15 +28,12 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathue = realpath(dirname(__FILE__));
-
-require_once "$pathue/../functions/urd_log.php";
-require_once "$pathue/../functions/autoincludes.php";
-require_once "$pathue/../functions/defines.php";
-
 function urdd_error_handler($errno, $errstr, $errfile, $errline)
 {
-    switch ($errno) {
+    $current_level = error_reporting();
+    switch ($errno & $current_level) {
+    case 0:  // Don't display anything
+        break;
     case E_PARSE:
         write_log("Parse error on line $errline in file $errfile: $errstr ($errno)", LOG_ERR);
         urdd_exit(INTERNAL_FAILURE);
@@ -56,7 +53,6 @@ function urdd_error_handler($errno, $errstr, $errfile, $errline)
         break;
     case E_NOTICE:
     case E_USER_NOTICE:
-//  case E_STRICT :
         write_log("Notice on line $errline in file $errfile: $errstr ($errno)", LOG_NOTICE);
         break;
     case E_STRICT :
@@ -69,24 +65,19 @@ function urdd_error_handler($errno, $errstr, $errfile, $errline)
     }
 
     /* Don't execute PHP internal error handler */
-
     return TRUE;
 }
 
 
 function urdd_exit($errno)
 {
-  //  echo_debug(trace_str(debug_backtrace()), DEBUG_MAIN);
-   // echo_debug("Exiting with error code $errno", DEBUG_MAIN);
     exit($errno);
 }
-
 
 function sig_handler($signo=0)
 {
     echo_debug_function(DEBUG_SIGNAL, __FUNCTION__);
 }
-
 
 function kill_handler($signo=0)
 {
@@ -96,7 +87,6 @@ function kill_handler($signo=0)
     // shutdown handler will be called now
     urdd_exit(NO_ERROR);
 }
-
 
 function status_shutdown_handler()
 {
@@ -110,7 +100,6 @@ function status_shutdown_handler()
     }
 }
 
-
 function shutdown_handler()
 {
     pcntl_signal(SIGTERM, SIG_IGN, FALSE);
@@ -118,9 +107,9 @@ function shutdown_handler()
     echo_debug_function(DEBUG_SIGNAL, __FUNCTION__);
     global $servers, $is_child, $db, $config;
     if ($is_child) {
-        echo_debug('shutdown handler called as child' , DEBUG_SERVER);
+        echo_debug('shutdown handler called as child', DEBUG_SERVER);
     } else {
-        write_log('shutdown handler called as parent' , LOG_INFO);
+        write_log('shutdown handler called as parent', LOG_INFO);
     }
     try {
         if (!$is_child) {
@@ -135,7 +124,6 @@ function shutdown_handler()
     urdd_exit(NO_ERROR);
 }
 
-
 function hup_handler($signo=0)
 {
     echo_debug_function(DEBUG_SIGNAL, __FUNCTION__);
@@ -148,7 +136,6 @@ function hup_handler($signo=0)
         pcntl_signal(SIGHUP, 'hup_handler', FALSE);
     }
 }
-
 
 function restart_handler($signo=0)
 {
@@ -174,7 +161,6 @@ function restart_handler($signo=0)
         }
     }
 }
-
 
 function set_handlers()
 {

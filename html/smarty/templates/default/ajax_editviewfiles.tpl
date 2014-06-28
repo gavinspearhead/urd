@@ -16,10 +16,10 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2013-04-22 19:50:11 +0200 (ma, 22 apr 2013) $
- * $Rev: 2818 $
+ * $LastChangedDate: 2014-06-15 00:41:23 +0200 (zo, 15 jun 2014) $
+ * $Rev: 3095 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_editviewfiles.tpl 2818 2013-04-22 17:50:11Z gavinspearhead@gmail.com $
+ * $Id: ajax_editviewfiles.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
@@ -33,13 +33,13 @@
 <td>
 <input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
 <input type="hidden" value="{$filename|escape:htmlall}" name="oldfilename" id="oldfilename_editfile"/>
-<input type="text" value="{$filename|escape:htmlall}" name="newfilename" id="newfilename_editfile" size="{$textboxsize}"/>
+<input type="text" value="{$filename|escape:htmlall}" name="newfilename" id="newfilename_editfile" required placeholder="{$LN_filename}" size="{$textboxsize}"/>
 </td>
 </tr>
 <tr>
 <td>{$LN_rights}:
 </td>
-<td><input type="text" value="{$rights|escape:htmlall}" id="rights_editfile" name="rights"/>
+<td><input type="text" value="{$rights|escape:htmlall}" id="rights_editfile" required name="rights"/>
 </td>
 </tr>
 <tr>
