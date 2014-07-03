@@ -3917,7 +3917,7 @@ function load_spots(options)
             $('#poster').val(poster);
         }
         if (options.subcat != null) {
-            subcats = '&' + options.subcat + '=1';
+            data [ options.subcat ] = "1";
         }
     }
     if (add_rows == 0) {
@@ -3937,6 +3937,7 @@ function load_spots(options)
     data['flag'] = flag;
     data['order'] = order;
     close_subcat_selector();
+    hide_overlayed_content();
     $.ajax({
         type: 'get',
         url: url,

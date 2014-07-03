@@ -102,9 +102,9 @@
 <table>
 <tr>
 <td>{$LN_setsize}:</td>
-<td><input type="text" id="minsetsize"  size="6" value="{$minsetsize|escape:htmlall}"/></td> 
+<td><input type="text" id="minsetsize" name="minsetsize" size="6" value="{$minsetsize|escape:htmlall}"/></td> 
 <td><div id="setsize" style="width:100px;"></div></td>
-<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize|escape:htmlall}"/></td>
+<td><input type="text" id="maxsetsize" name="maxsetsize" size="6" value="{$maxsetsize|escape:htmlall}"/></td>
 <td>{$LN_age}:</td>
 <td><input type="text" id="minage" name="minage" size="6" value="{$minage|escape:htmlall}"/></td> 
 <td><div id="setage" style="width:100px;"></div></td>

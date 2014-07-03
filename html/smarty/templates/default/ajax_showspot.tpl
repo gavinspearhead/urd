@@ -44,18 +44,18 @@
 {foreach $subcata as $k=>$cat}<tr class="comment"><td class="nowrap bold">{$k}:</td>
 <td>
 {foreach $cat as $val}
-<span  class="buttonlike" onclick="javascript:load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>
+<span class="buttonlike" onclick="javascript:load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>
 {if not $val@last};{/if} 
 {/foreach}
 </td></tr>
 {foreach $subcatd as $k=>$cat}<tr class="comment"><td class="nowrap bold buttonlike">{$k}:</td><td> 
-{foreach $cat as $val}<span  class="buttonlike" onclick="javascript: load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>{if not $val@last};{/if} {/foreach}</td></tr>
+{foreach $cat as $val}<span  class="buttonlike" onclick="javascript:load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>{if not $val@last};{/if} {/foreach}</td></tr>
 {/foreach}
 {foreach $subcatb as $k=>$cat}<tr class="comment"><td class="nowrap bold buttonlike">{$k}:</td><td>
-{foreach $cat as $val}<span  class="buttonlike" onclick="javascript: load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>{if not $val@last};{/if} {/foreach} </td></tr>
+{foreach $cat as $val}<span  class="buttonlike" onclick="javascript:load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>{if not $val@last};{/if} {/foreach} </td></tr>
 {/foreach}
 {foreach $subcatc as $k=>$cat}<tr class="comment"><td class="nowrap bold buttonlike">{$k}:</td><td>
-{foreach $cat as $val}<span  class="buttonlike" onclick="javascript: load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>{if not $val@last};{/if} {/foreach}</td></tr>
+{foreach $cat as $val}<span  class="buttonlike" onclick="javascript:load_sets({ 'spot_cat':'{$val.1|escape:javascript}', 'subcat':'subcat_{$val.1|escape:javascript}_{$val.2|escape:javascript}_{$val.3|escape:javascript}' });">{$val.0}</span>{if not $val@last};{/if} {/foreach}</td></tr>
 {/foreach}
 {/foreach}
 
