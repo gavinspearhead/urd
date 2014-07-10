@@ -158,6 +158,7 @@ function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
         urdd_protocol::COMMAND_OPTIMISE            => 'do_optimise',
         urdd_protocol::COMMAND_PARSE_NZB           => 'do_parse_nzb',
         urdd_protocol::COMMAND_POST                => 'do_prepare_post',
+        urdd_protocol::COMMAND_POST_SPOT           => 'do_post_spot',
         urdd_protocol::COMMAND_POST_ACTION         => 'do_post_batch',
         urdd_protocol::COMMAND_POST_MESSAGE        => 'do_post_message',
         urdd_protocol::COMMAND_PURGE               => 'do_purge',
@@ -242,14 +243,16 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                         echo_debug('NNTP Connection failed', DEBUG_SERVER);
                     }
                     // we need to disbale the server
-                    write_log ('Disabling server: ' . $server_id, LOG_WARNING);
-                    $priority = $servers->get_priority($server_id); 
-                    $servers->disable_server($server_id);
-                    $timeout = 300; // 5 minutes
+                    $timeout = get_config($db, 'connection_timeout', SERVER_CONNECTION_TIMEOUT); // 5 minutes
                     if ($rc == NNTP_AUTH_ERROR) { 
                         $timeout = 3600; // one hour
                     }
-                    $servers->schedule_enable_server($db, $server_id, $item->get_userid(), $timeout, $priority);
+                    if ($timeout > 0) {
+                        write_log ('Disabling server: ' . $server_id, LOG_WARNING);
+                        $priority = $servers->get_priority($server_id); 
+                        $servers->disable_server($server_id);
+                        $servers->schedule_enable_server($db, $server_id, $item->get_userid(), $timeout, $priority);
+                    }
                 } elseif ($rc == SERVER_INACTIVE) {
                     $item->set_active_server(0);
                     $item->set_preferred_server(0);
@@ -509,7 +512,7 @@ function start_child(action $item, conn_list $conn_list, $nntp_enabled)
 
 function check_schedule(DatabaseConnection $db, conn_list &$conn_list, server_data &$servers)
 {
-    echo_debug_function(DEBUG_MAIN, __FUNCTION__);
+//    echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     global $config;
     if ($config['scheduler'] !== TRUE) {
         return;

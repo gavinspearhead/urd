@@ -59,15 +59,15 @@
 
 {capture assign=unmark_int_all}{strip}
 {if $killflag}
-<div class="inline iconsizeplus killicon buttonlike" onclick="javascript:whichbutton('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
+<div class="inline iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
 {else}
-<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:whichbutton('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
+<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:whichbutton('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset} ></div>
+<div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset} ></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:whichbutton('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
+<div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
 {/if}
 {/strip}
 {/capture}

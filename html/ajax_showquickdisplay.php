@@ -136,9 +136,9 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $description = link_to_url($description);
 
     $ubb = new UbbParse($description);
-
+	TagHandler::setDeniedTags( Array() );
+	TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
     $description = insert_wbr($ubb->parse());
-
     list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
     $filesize = $_size . ' ' . $suffix;
     $category = $LN[SpotCategories::HeadCat2Desc($row['category'])];

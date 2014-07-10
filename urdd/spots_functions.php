@@ -219,6 +219,10 @@ class urd_spots
         // als de spot verified is, toon dan de userid van deze user
         if ($spot_data['verified']) {
             $spot_data['userid'] = $spotSigning->calculate_userid($spot_data['user-key']['modulo']);
+            echo_debug("verified spot for " . $spot_data['userid'] , DEBUG_SERVER);
+
+        } else {
+            echo_debug("Unverified spot", DEBUG_SERVER);
         }
 
         return $spot_data;
@@ -244,12 +248,14 @@ class urd_spots
             return 0;
         }
 
+        echo_debug("Expire $expire_time days", DEBUG_SERVER);
         // Expire : from days to seconds
         $expire_time *= 24 * 3600;
         // convert to epochtime:
         $time = time();
         $expire = $time - $expire_time;
-        $safety_expire = $time - (24 * 3600);
+        echo_debug("Expire $expire seconds", DEBUG_SERVER);
+        $safety_expire = $time - (24 * 3600); // we always take a day in advance so images or reports etc may not yet have been retrieved
         $type = USERSETTYPE_SPOT;
         $marking_on = sets_marking::MARKING_ON;
         $spam_count = $keep_int = '';
@@ -375,7 +381,7 @@ class urd_spots
         purge_binaries($db, $comments_groupid);
         purge_binaries($db, $reports_groupid);
 
-        return $cnt;
+        return $spots_cnt;
     }
 
     public static function delete_image_cache(DatabaseConnection $db, $all=TRUE, $safety_expire=0)
@@ -571,7 +577,9 @@ class urd_spots
         if ($blacklist_url != '') {
             $spots_blacklist = load_blacklist($db, NULL, blacklist::ACTIVE, TRUE);
         }
+        echo_debug("Expire $expire days", DEBUG_SERVER);
         $expire_timestamp = time() - ($expire * 24 * 3600);
+        echo_debug("Expire $expire_timestamp seconds", DEBUG_SERVER);
         static $cols = array('spotid', 'from', 'comment', 'userid', 'stamp');
 
         while (TRUE) {
@@ -774,6 +782,10 @@ class urd_spots
         $cnt = 0;
         $max_cat_count = get_config($db, 'spots_max_categories', 0);
         $time_a = microtime(TRUE);
+        $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
+        $expire_time = time() - ($expire * 24 * 3600);
+            
+        update_queue_status($db, $item->get_dbid(), NULL, 0, 0, 'Getting spots');
         while (TRUE) {
             $sql = '"id", "message_id" FROM spot_messages';
             $res = $db->select_query($sql, $limit);
@@ -787,12 +799,16 @@ class urd_spots
                 try {
                     $header = $nzb->get_header($msg_id);
                     $spot_data = self::parse_spot_header($header, $msg_id, $spots_blacklist);
-                    if ($spot_data != FALSE) {
+                    if (($spot_data != FALSE) && ($spot_data['date'] > $expire_time)) {
                         $spot_data['body'] = $nzb->get_article($msg_id);
                         self::verify_spot($spot_data);
                         self::parse_spot_data($spot_data);
                         if ($max_cat_count > 0 && $spot_data['subcat_count'] > $max_cat_count) {
                             echo_debug(DEBUG_SERVER, 'Rejected - too many subcats ' . $spot_data['subcat_count'] . " > $max_cat_count");
+                            continue;
+                        }
+                        if (!isset(SpotCategories::$_head_categories[$spot_data['category']])) {
+                            echo_debug(DEBUG_SERVER, 'Rejected - Invalid category');
                             continue;
                         }
                         $spot_data['body'] = implode("\n", $spot_data['body']);
@@ -806,7 +822,6 @@ class urd_spots
                         $spotid = self::add_spot($db, $spot_data);
                         self::parse_spots_for_extset_data($db, $spot_data, $spotid);
                     }
-
                 } catch (exception $e) {
                     write_log($e->getMessage(), LOG_WARNING);
                 }

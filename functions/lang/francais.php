@@ -295,6 +295,7 @@ $LN['taskgetspot_images']     = 'R&eacute;ception des images des spots';
 $LN['taskexpirespots']= 'Expiration des spots';
 $LN['taskpurgespots'] = 'Purge des spots';
 $LN['taskpostmessage']= 'Poster un message';
+$LN['taskpostspot']     = 'Posting spot';
 $LN['taskdeleteset']  = 'Suppression de l&#39;ensemble';
 $LN['taskset']          = 'Appliquer la configuration';
 
@@ -724,6 +725,11 @@ $LN['error_pwsimple']       = 'Mot de passe trop simple, utilisez un m&eacute;la
 $LN['error_captcha']        = 'CAPTCHA incorrect';
 $LN['error_nocontent']      = 'Message too short';
 $LN['error_toolong']        = 'Message too long';
+$LN['error_filetoolarge']   = 'File too large';
+$LN['error_nosubcats']      = 'No subcategories selected';
+$LN['error_nzbfilemissing'] = 'NZB file missing';
+$LN['error_invalidcategory'] = 'Invalid category';
+$LN['error_imgfilemissing'] = 'Image file missing';
 
 $LN['error_onlyforgrops'] 	= 'Fonctionne seulement pour les groupes';
 $LN['error_onlyoneset'] 	= 'N&eacute;c&eacute;ssite d&#39;avoir plusieurs ensembles dans le panier';
@@ -1298,6 +1304,7 @@ $LN['transfers_status_par2ed'] = 'Par2 cr&eacute;&eacute;';
 $LN['transfers_status_yyencoded'] = 'Encod&eacute; Yenc';
 $LN['transfers_head_subject']   = 'Sujet';
 $LN['transfers_post']           = 'Envoi';
+$LN['transfers_post_spot']      = 'Post spot';
 $LN['transfers_posts']          = 'Envois';
 $LN['transfers_downloads']      = 'T&eacute;l&eacute;chargements';
 
@@ -1316,7 +1323,7 @@ $LN['buttons_addbutton']    = 'Ajouter une nouvelle option de recherche';
 $LN['buttons_test']         = 'Tester';
 $LN['buttons_nobuttonid']   = 'Aucun ID d&#39;option de recherche saisi';
 $LN['buttons_invalidname']  = 'Nom saisi invalide';
-$LN['buttons_invalidurl']   = 'Adresse de recherche saisie invalide';
+$LN['buttons_invalidurl']   = 'Adresse saisie invalide';
 $LN['buttons_clicktest']    = 'Cliquez pour tester';
 $LN['buttons_buttonexists'] = 'Une option de recherche portant ce nom existe d&eacute;j&agrave;';
 $LN['buttons_buttonnotfound']   = 'Option de recherche introuvable';
@@ -1371,6 +1378,8 @@ $LN['browse_add_setname']   = 'Ajouter un nom d&#39;ensemble';
 $LN['browse_userwhitelisted'] = 'L&#39;utilisateur est dans la liste blanche';
 
 $LN['NZB_created']          = 'Fichier NZB cr&eacute;&eacute;';
+$LN['NZB_file']             = 'Fichier NZB';
+$LN['Image_file']           = 'Fichier image';
 
 
 // Preview

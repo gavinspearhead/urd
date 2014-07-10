@@ -227,7 +227,7 @@ class db_update_mysql extends db_update_abs
             default			: $nullStr = '';
             }
 
-            $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD COLUMN("' . $colName . "\" " . $colType . ' ' . $colSetting . ' ' . $def_setting . ' ' . $nullStr . ' ' . $auto_inc . ')');
+            $this->db->execute_query("ALTER TABLE $tablename ADD COLUMN(\"$colName\" $colType $colSetting $def_setting $nullStr $auto_inc)");
         }
     } 
 
@@ -272,15 +272,14 @@ class db_update_mysql extends db_update_abs
         default			: $nullStr = '';
         }
 
-        $this->db->execute_query('ALTER TABLE ' . $tablename .  " MODIFY COLUMN \"" . $colName . "\" " . $colType . " " . $colSetting . " " . $def_setting . " " . $nullStr . " " . $auto_inc );
-        echo ('ALTER TABLE ' . $tablename .  " MODIFY COLUMN \"" . $colName . "\" " . $colType . " " . $colSetting . " " . $def_setting . " " . $nullStr . " " . $auto_inc );
+        $this->db->execute_query("ALTER TABLE $tablename MODIFY COLUMN \"$colName\" $colType $colSetting $def_setting $nullStr $auto_inc");
     }
 
     /* dropt een kolom (mits db dit ondersteunt) */
     public function dropColumn($colName, $tablename)
     {
         if ($this->columnExists($tablename, $colName)) {
-            $this->db->execute_query('ALTER TABLE ' . $tablename . ' DROP COLUMN ' . $colName);
+            $this->db->execute_query("ALTER TABLE $tablename DROP COLUMN $colName");
         }
     } 
 

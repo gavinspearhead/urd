@@ -80,12 +80,11 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
     $input_arr = array();
     if ($isadmin) {
         // Admins can see any upload
-        $sql_up = ' * FROM postinfo ORDER BY "status" ASC, "id" DESC';
+        $sql_up = '* FROM postinfo ORDER BY "status" ASC, "id" DESC';
     } else {
-        $sql_up = " * FROM postinfo WHERE \"userid\" = ? ORDER BY \"status\" ASC, \"id\" DESC";
+        $sql_up = '* FROM postinfo WHERE "userid" = ? ORDER BY "status" ASC, "id" DESC';
         $input_arr[] = $userid;
     }
-
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST)) {
         $res_up = $db->select_query($sql_up, $input_arr);
         if ($res_up === FALSE) {
@@ -98,6 +97,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
             $group = group_name($db, $row['groupid']);
             $size = $row['size'];
             $status = $row['status'];
+            $nzb = $row['nzb_file'];
             $username = get_username($db, $row['userid']);
             $start_time = $row['start_time'];
             $dest = $row['tmp_dir'];
@@ -173,6 +173,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
             $info->postid = $postid;
             $info->username = $username;
             $info->destination = $dest;
+            $info->nzb = $nzb;
 
             list($_size, $suffix) = format_size($size, 'h', $LN['byte_short'], 1024, 1);
             $info->size = $_size . ' ' . $suffix;

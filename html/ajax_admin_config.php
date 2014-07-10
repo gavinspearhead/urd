@@ -295,6 +295,9 @@ function show_config(DatabaseConnection $db, $userid)
     if (!isset($maxheaders_msg)) {
         $maxheaders_msg = verify_numeric($prefArray_root['maxheaders'], 0);
     }
+    if (!isset($disconnection_timeout_msg)) {
+        $disconnection_timeout_msg = verify_numeric($prefArray_root['disconnection_timeout'], 0);
+    }
     if (!isset($queue_size_msg)) {
         $queue_size_msg = verify_numeric($prefArray_root['queue_size'], 0);
     }
@@ -848,6 +851,8 @@ function show_config(DatabaseConnection $db, $userid)
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_expire_percentage'], 'expire_percentage', $LN['config_expire_percentage_msg'],
             $expire_percentage_msg, $prefArray_root['expire_percentage'], NUMBER_BOX_SIZE);
 
+    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_connection_timeout'], 'connection_timeout', $LN['config_connection_timeout_msg'],
+            $connection_timeout_msg, $prefArray_root['connection_timeout'], NUMBER_BOX_SIZE);
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxheaders'], 'maxheaders', $LN['config_maxheaders_msg'],
             $maxheaders_msg, $prefArray_root['maxheaders'], NUMBER_BOX_SIZE);
     $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_auto_getnfo'], 'auto_getnfo', $LN['config_auto_getnfo_msg'],
@@ -1128,6 +1133,11 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
 
             return $rv;
         case 'maxheaders':
+            $rv = verify_numeric($value, 0);
+            $value = unformat_size($value, 1000);
+
+            return $rv;
+        case 'connection_timeout':
             $rv = verify_numeric($value, 0);
             $value = unformat_size($value, 1000);
 

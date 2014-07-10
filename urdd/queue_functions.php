@@ -116,7 +116,7 @@ function queue_post(DatabaseConnection $db, server_data &$servers, $arg, $userid
     assert(is_numeric($priority) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
 
-        return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_START_POST, $arg, $priority);
+    return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_START_POST, $arg, $priority);
 }
 
 function queue_prepare_post(DatabaseConnection $db, server_data &$servers, $arg, $userid, $priority=DEFAULT_PRIORITY)
@@ -125,6 +125,14 @@ function queue_prepare_post(DatabaseConnection $db, server_data &$servers, $arg,
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
 
     return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_POST, $arg, $priority, TRUE, TRUE);
+}
+
+function queue_post_spot(DatabaseConnection $db, server_data &$servers, $arg, $userid, $priority=DEFAULT_PRIORITY)
+{
+    assert(is_numeric($priority) && is_numeric($userid) );
+    echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+
+    return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_POST_SPOT, $arg, $priority, TRUE, TRUE);
 }
 
 function queue_post_message(DatabaseConnection $db, server_data &$servers, $arg, $userid, $priority=DEFAULT_PRIORITY)

@@ -137,7 +137,6 @@ class ubbparse
         if (!$namedparams) {
             $namedparams = (strpos($paramstr, '='));
         }
-
         /* if we were supposed to get named params, parse them into an array */
         if ($namedparams) {
             /* First split all strings on spaces -- not 100% correct
@@ -152,6 +151,7 @@ class ubbparse
                     $params[] = $tmp[0];
                 }
             }
+        } else {
             $params = explode(',', $paramstr);
         }
 
@@ -209,9 +209,7 @@ class ubbparse
      */
     public function nonemptycontent($content)
     {
-        return !( empty($content['tagname']) &&
-             empty($content['params']) &&
-             empty($content['content']) );
+        return !( empty($content['tagname']) && empty($content['params']) && empty($content['content']));
     }
 
     /**
@@ -246,7 +244,7 @@ class ubbparse
                     $contents[$curcnt]['content'] .= '[/' . $endtag . ']';
                 }
 
-            } elseif ($this->startofubbtag()) { // is anders ****
+            } elseif ($this->startofubbtag()) {
                 $tmptag = $this->fetchopeningtag();
 
                 /* To properly process this tag, it should not be null */
@@ -277,11 +275,9 @@ class ubbparse
             } else {
                 $contents[$curcnt]['content'] .= $ch;
             }
-
         }
 
         /* and return the result set */
-
         return $contents;
     }
 
@@ -293,7 +289,8 @@ class ubbparse
         $output = array('');
         $bodycount = 0;
 
-        for ($i = 0; $i < sizeof($parseresult); $i++) {
+		$parseResultCount = sizeof($parseresult);
+        for ($i = 0; $i < $parseResultCount; $i++) {
             /* save the current allowedchildren */
             $saveallowedchildren = $allowedchildren;
 

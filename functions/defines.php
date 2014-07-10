@@ -24,13 +24,15 @@
 
 // username for the superuser
 
-define ('DB_VERSION',               60);
+define ('DB_VERSION',               65);
 
 define ('URDD_DOWNLOAD_LOCKFILE',   '.urdd_lock');
 define ('URDD_PORT',                11666);
 
 define ('MIN_PHP_VERSION',          '5.3.0');
 define ('RECOMMENDED_PHP_VERSION',  '5.4.29');
+
+define ('SERVER_CONNECTION_TIMEOUT', 300);
 
 // Error codes
 define('NO_ERROR',                  0);
@@ -103,7 +105,7 @@ define('POST_CANCELLED',        25); // post cancelled
 define('POST_STOPPED',          26); // post is terminated, but requeued
 define('POST_SHUTDOWN',         27); // used when process is sent kill term command
 define('POST_RAR_FAILED',       29); // POST could not succeed, rar failed
-define('POST_PAR_FAILED',       30); // POST could not succeed,  par2 failed
+define('POST_PAR_FAILED',       30); // POST could not succeed, par2 failed
 define('POST_YYENCODE_FAILED',  31); // POST could not succeed, yyencode faild
 define('POST_FAILED',           32); // posting to the server failed
 define('POST_ERROR',            255); // an error occurred
@@ -140,7 +142,6 @@ class file_extensions
     public static $archives = array (self::RAR_EXT, self::ACE_EXT, self::ZIP_EXT, self::ARJ_EXT, self::ZR7_EXT);
 }
 
-
 define ('DEFAULT_PER_PAGE', 50);
 
 define ('MIN_PASSWORD_LENGTH', 8);
@@ -154,12 +155,10 @@ class batch_size
     const PV_BATCH_SIZE   = 4;
 }
 
-
 define ('MAX_PREVIEW_SIZE', 2 * 1024 * 1024); // in MB
 define ('MAX_NNTP_THREADS', 8);
 define ('MAX_THREADS', 10);
 define ('MAX_DB_INTENSIVE_THREADS', 1);
-
 
 define ('TEXT_BOX_SIZE', 40);
 define ('NUMBER_BOX_SIZE', 5);
@@ -190,10 +189,8 @@ class rssfeed_status {
     const RSS_UNSUBSCRIBED = 0;
 }
 
-
 define ('VERSION_CHECK_URL',    'http://www.urdland.com/checkversion.php');
 define ('DOWNLOAD_URL',         'http://www.urdland.com/');
-
 
 class update_types
 {
@@ -230,7 +227,6 @@ define ('MAGPIE_CACHE_PATH', '.cache/magpie/');
 define ('IMAGE_CACHE_PATH',  '.cache/image/');
 define ('FILELIST_CACHE_PATH',  '.cache/filelists/');
 
-
 $yes = array ('1', 'TRUE', 'ON', 'YES');
 $no  = array ('0', 'FALSE', 'OFF', 'NO');
 
@@ -244,7 +240,6 @@ $log_str = array (
     LOG_ALERT =>    'ALERT',
     LOG_EMERG =>    'EMERGENCY'
 );
-
 
 define ('DEFAULT_USENET_SERVER_PRIORITY', 10);
 define ('DISABLED_USENET_SERVER_PRIORITY', 0);
@@ -283,7 +278,6 @@ define('ESI_NOT_COMMITTED', 0);
 define('ESI_COMMITTED',     1);
 
 define('URDD_SCRIPT_EXT', 'urdd_sh');
-
 
 define ('MAX_EXPIRE_TIME',              365);
 define ('DEFAULT_EXPIRE_TIME',          5);

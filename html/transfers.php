@@ -34,6 +34,7 @@ $add_menu = array (
     array(
         new menu_item2('getnzb', 'transfers_importnzb', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('post', 'transfers_post', urd_modules::URD_CLASS_POST, '', 'command'),
+        new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST |urd_modules::URD_CLASS_SPOTS, '', 'command'),
         new menu_item2('continueall', 'transfers_continueall', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('pauseall', 'transfers_pauseall', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('cleandb', 'transfers_clearcompleted', urd_modules::URD_CLASS_GENERIC, '', 'command'),

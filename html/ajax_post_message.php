@@ -36,16 +36,6 @@ if (substr($groupid, 0, 6) == 'group_') {
     $groupid = substr($groupid, 6);
 }
 
-function generate_hash($prefix, $infix)
-{
-    do {
-        $unique_str = generate_password(15);
-        $messageid = '<' . $prefix . '.' . $infix . '.' . $unique_str . '@spot.net>';
-        $hash = sha1($messageid);
-    } while (substr($hash, 0, 4) == '0000');
-    return $messageid;
-}
-
 function prepare_message(DatabaseConnection $db, $userid, $messageid, &$header_data)
 {
     $server_privatekey = get_config($db, 'privatekey');

@@ -620,4 +620,11 @@ class urdd_client
 
         return ($code == 201) ? TRUE : FALSE;
     }
+     public function post_spot($id)
+    {
+        list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_POST_SPOT) . " $id");
+
+        return ($code == 201) ? TRUE : FALSE;
+    }
+
 }

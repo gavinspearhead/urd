@@ -258,7 +258,7 @@ class URD_NNTP
         echo_debug('Estimated header count 1: ' . gmp_strval(gmp_sub($last, $first)), DEBUG_MAIN);
         try {
             $art = gmp_init($this->nntp->select_next_article());
-            echo_debug('art: ' . gmp_strval($art), DEBUG_MAIN);
+            echo_debug('next art: ' . gmp_strval($art), DEBUG_MAIN);
             if (gmp_cmp($art, $first) > 0) {
                 $first = $art;
                 echo_debug('new first 1: ' . gmp_strval($first), DEBUG_MAIN);
@@ -273,6 +273,7 @@ class URD_NNTP
         $now = time();
         $this->get_overview_format();
         $msg = $this->nntp->get_fast_overview(gmp_strval($first), gmp_strval(gmp_add($first, 10)));
+        echo_debug("Expire $expire days", DEBUG_SERVER);
         if (count($msg) > 0) {
             $parsed_msg = explode("\t", $msg[0]);
             $first_date = strtotime($parsed_msg[ $this->xover_date ]);
@@ -335,12 +336,11 @@ class URD_NNTP
         }
         echo_debug('Using blacklist:', DEBUG_NNTP);
         echo_debug_var($poster_blacklist, DEBUG_NNTP);
-        $groupid = $groupArr['ID'];
+        $this->groupID = $groupid = $groupArr['ID'];
         $parse_spots = $groupArr['parse_spots'];
         $parse_spots_comments = $groupArr['parse_spots_comments'];
         $parse_spots_reports = $groupArr['parse_spots_reports'];
         $get_extsetdata = $groupArr['parse_extsetdata'];
-        $this->groupID = $groupid;
         // Start > stop ?
         if (gmp_cmp($orig_start, $orig_stop) > 0) {
             write_log('Odd values: ' . gmp_strval($orig_start) . ', ', gmp_strval($orig_stop), LOG_NOTICE);
@@ -369,7 +369,18 @@ class URD_NNTP
             // Get the batch of messages and store them in $msgs
             try {
                 echo_debug('Getting headers ' . gmp_strval($start) . ' - ' . gmp_strval($stop), DEBUG_MAIN);
-                $msgs = $this->nntp->get_fast_overview(gmp_strval($start), gmp_strval($stop));
+                try {
+                    $msgs = $this->nntp->get_fast_overview(gmp_strval($start), gmp_strval($stop));
+                } catch (exception $e) {
+                    // we try a quick reconnect if it times out... for timouts happen
+
+                    if ($e->getcode() == NNTP_NOT_CONNECTED_ERROR) {
+                        $this->reconnect();
+                        $msgs = $this->nntp->get_fast_overview(gmp_strval($start), gmp_strval($stop));
+                    } else {
+                        throw $e;
+                    }
+                }
             } catch (exception $e) {
                 $this->disconnect();
                 write_log('Cannot get messages:', LOG_WARNING);
@@ -396,16 +407,16 @@ class URD_NNTP
             $s = gmp_strval($start);
 
             if ($update_last_updated === TRUE) {
-                $query = "UPDATE groups SET \"last_record\" = $GREATEST('$ostop', \"last_record\"), \"first_record\" = '$s', \"mid_record\"= '$ostart' WHERE \"ID\" = ?"; // /lazy last_record need only the first time
+                $query = "UPDATE groups SET \"last_record\" = $GREATEST('$ostop', \"last_record\"), \"first_record\" = '$s', \"mid_record\"= '$ostart' WHERE \"ID\"=?"; // /lazy last_record need only the first time
                 $res = $this->db->execute_query($query, array($groupid));
             } else {
-                $res = $this->db->update_query_2('groups', array('first_record'=>$s, 'mid_record'=> 0), '"ID"=?', array($groupid));
+                $res = $this->db->update_query_2('groups', array('first_record' => $s, 'mid_record' => 0), '"ID"=?', array($groupid));
             }
 
             // Determine download speed & ETA
             $stoptime = microtime(TRUE);
             $timeneeded = $stoptime - $starttime;
-            $arts_processed = gmp_sub($stop, $start);
+            $arts_processed = gmp_add(gmp_sub($stop, $start), 1); // need to add one because the borders are inclusive
             echo_debug('Downloaded ' . gmp_strval($arts_processed) . ' articles in ' . $timeneeded . 's and ' . $bytes . ' bytes', DEBUG_MAIN);
 
             $d1 = gmp_sub($orig_stop, gmp_add($start, $done));
@@ -421,14 +432,14 @@ class URD_NNTP
 
         // Update group table with update time:
         $o = gmp_strval($orig_stop);
-        $query = "UPDATE groups SET \"last_updated\" = '" . time() . "' , \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\" = ?";
+        $query = "UPDATE groups SET \"last_updated\" = '" . time() . "' , \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
         $res = $this->db->execute_query($query, array($groupid));
 
         return $total_counter;
     }
 
     public function update_newsgroup(array $groupArr, action $item)
-    {// todo add 3rd record identifier...; first update gets min(begin, lowmark) to midmark; 2nd gets higmark to end
+    {
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         $first = $last = gmp_init(0);
         $dbid = $item->get_dbid();
@@ -439,7 +450,6 @@ class URD_NNTP
         $total_max = gmp_init(get_config($this->db, 'total_max_articles'));
         $compressed_headers = $groupArr['compressed_headers'];
         echo_debug('Total max: ' . gmp_strval($total_max), DEBUG_MAIN);
-        // convert to epoctime:
         try {
             update_queue_status ($this->db, $dbid, NULL, NULL, 0, 'Finding first valid article');
 
@@ -472,8 +482,12 @@ class URD_NNTP
                 throw new exception("Could't select group $group_name", ERR_GROUP_NOT_FOUND);
             }
             $expire = $groupArr['expire'];
-
+            if ($groupArr['parse_spots'] || $groupArr['parse_spots_reports'] || $groupArr['parse_spots_comments']) {
+                $expire = get_config($this->db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
+            }
+            echo_debug("Expire $expire days", DEBUG_SERVER);
             $mindate = time() - ($expire * 24 * 3600);
+            echo_debug("Expire $mindate seconds", DEBUG_SERVER);
             $m1 = gmp_init($groupArr['first_record']);
             $m2 = gmp_init($groupArr['mid_record']);
             $m3 = gmp_init($groupArr['last_record']);
@@ -531,15 +545,15 @@ class URD_NNTP
             $f1 = gmp_strval($first);
             $l1 = gmp_strval($last);
             if ($continue_old === FALSE) {
-                $this->db->update_query('groups', array('last_updated', 'mid_record', 'first_record', 'last_record'), array(time(), $f1, $f1, $l1), '"ID" = ?', array($groupid));
+                $this->db->update_query('groups', array('last_updated', 'mid_record', 'first_record', 'last_record'), array(time(), $f1, $f1, $l1), '"ID"=?', array($groupid));
             }
 
-            return TRUE;
+            return NO_ERROR;
         } catch (exception $e) {
             write_log('Error while updating ' . $groupArr['name'] . ': ' . $e->getMessage() . ' (' . $e->getCode(). ') ', LOG_ERR);
             if ($e->getCode() !== NNTP_NOT_CONNECTED_ERROR) {
                 echo_debug_trace($e, DEBUG_NNTP);
-                update_queue_status ($this->db, $dbid, QUEUE_FAILED, 0, NULL, $e->getMessage());
+                update_queue_status($this->db, $dbid, QUEUE_FAILED, 0, NULL, $e->getMessage());
             }
 
             return $e->getCode();
@@ -641,7 +655,12 @@ Array
             if (!isset($msg[$this->xover_subject], $msg[$this->xover_bytes], $msg[$this->xover_messageid], $msg[$this->xover_date], $msg[$this->xover_from])) {
                 continue;
             }
-
+            $date = strtotime($msg[$this->xover_date]);
+            if ($date < $mindate && $date > 0) {
+                ++$cnt;
+              //  echo_debug("too old: " . $msg[$this->xover_date], DEBUG_SERVER);
+                continue;
+            }
             $messageID = $msg[$this->xover_messageid];
             $messageID = trim($messageID, "<> \n\t\r");
             $subject   = $msg[$this->xover_subject];
@@ -653,13 +672,6 @@ Array
             } elseif ($parse_spots_comments) {
                 $spot_comments[] = array($messageID);
             } else {
-                $date = strtotime($msg[$this->xover_date]);
-
-                if ($date < $mindate && $date > 0) {
-                    ++$cnt;
-                    //var_dump("too old:", $msg);
-                    continue;
-                }
                 $bytes = $msg[$this->xover_bytes];
                 if ($bytes <= 0 || $date <= 0) {
                     //var_dump("invalid bytes or invalid date:", $msg);

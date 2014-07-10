@@ -61,14 +61,14 @@
 <div class="floatright">
 <input type="hidden" name="feed_id" value="{$feed_id|escape}"/>
 {if $killflag}
-<div class="floatleft iconsizeplus killicon buttonlike" onclick="javascript:whichbutton('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
+<div class="floatleft iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
 {else}
-<div class="floatleft iconsizeplus deleteicon buttonlike" onclick="javascript:whichbutton('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
+<div class="floatleft iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
 {/if}
 {if $isadmin}
-<div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:whichbutton('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+<div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
 {/if}
-<div class="floatleft iconsizeplus sadicon buttonlike" onclick="javascript:whichbutton('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
+<div class="floatleft iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
 {/strip}{/capture}
 
 {$up="<img src='$IMGDIR/small_up.png' alt=''>"}{$down="<img src='$IMGDIR/small_down.png' alt=''>"}

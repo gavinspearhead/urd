@@ -29,6 +29,7 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathdbc = realpath(dirname(__FILE__));
 
+require_once "$pathdbc/file_functions.php";
 require_once "$pathdbc/db/urd_db_structure.php";
 require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
 require_once "$pathdbc/libs/adodb/adodb.inc.php";
@@ -326,7 +327,6 @@ abstract class DatabaseConnection
         $val_str = rtrim($val_str, ', ');
 
         $sql = "INSERT INTO $table ($col_str) VALUES ($val_str)";
-//        $p_sql = $this->DB->prepare($sql);
         try {
             $this->execute_query($sql, array_values($values));
             if ($get_last_ID) {
@@ -356,14 +356,12 @@ abstract class DatabaseConnection
 
         foreach ($values as $col => $val) {
             $col_str .= "\"$col\", ";
-            $vals [] = $val;
+            $vals[] = $val;
         }
         $col_str = rtrim($col_str, ', ');
-
-        $val_str = str_repeat('?,', count($col) - 1) . '?';
+        $val_str = str_repeat('?,', count($values) - 1) . '?';
 
         $sql = "INSERT INTO $table ($col_str) VALUES ($val_str)";
-//        $p_sql = $this->DB->prepare($sql);
         try {
             $this->execute_query($sql, array_values($vals));
             if ($get_last_ID) {

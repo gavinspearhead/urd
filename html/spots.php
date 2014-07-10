@@ -59,6 +59,10 @@ if ($isadmin) {
     );
 }
 
+if (urd_user_rights::is_poster($db, $userid)) {
+    $add_menu['actions'][] =new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST |urd_modules::URD_CLASS_SPOTS, '', 'command');
+}
+
 $add_menu['actions'][] = new menu_item2 ('add_search', 'add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
 $add_menu['actions'][] = new menu_item2 ('delete_search', 'delete_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
 
@@ -188,7 +192,6 @@ $smarty->assign('minsetsizelimit',	$minsetsizelimit);
 $smarty->assign('saved_searches',	$saved_searches);
 $smarty->assign('_saved_search',	$saved_search);
 $smarty->assign('USERSETTYPE',		USERSETTYPE_SPOT);
-
 $smarty->assign('rssurl',		$rssurl);
 $smarty->assign('categories',	$subscribed_categories);
 $smarty->assign('subcats',	    $subcats);

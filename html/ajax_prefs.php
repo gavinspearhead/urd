@@ -240,7 +240,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
             return verify_array($value, array_keys(get_index_page_array(urd_user_rights::is_admin($db, $userid), urd_modules::get_urd_module_config(get_config($db, 'modules')))));
         case 'hidden_files_list':
             $value = clean_area($value);
-
+            
             return verify_text_area($value);
         case 'search_terms':
             $value = clean_area($value);
@@ -322,12 +322,12 @@ function set_preferences(DatabaseConnection $db, $userid, $name, $value, $type)
         case 'select':
             $rv = verify_text_field($db, $userid, $name, $value);
             if ($rv != '') {
-                throw new exception($rv['msg']);
+                throw new exception($rv['msg'] . " $name => $value");
             }
             set_pref($db, $name, $value, $userid);
             break;
         default:
-            throw new exception ($LN['error_invalidvalue']);
+            throw new exception ($LN['error_invalidvalue']. " $name => $value $type");
             break;
     }
 }

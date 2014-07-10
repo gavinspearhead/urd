@@ -29,16 +29,16 @@
 <tr>
 {if $show_download neq 0}
 <td class="nowrap vcenter">
-<div class="floatleft buttonlike basketbuttonsize noborder downloadbutton" {urd_popup type="small" text=$LN_browse_download } onclick="javascript:whichbutton('urddownload', event);"/></div>
+<div class="floatleft buttonlike basketbuttonsize noborder downloadbutton" {urd_popup type="small" text=$LN_browse_download } onclick="javascript:which_button('urddownload', event);"/></div>
 {/if}
 {if $show_makenzb neq 0}
-<div class="floatleft buttonlike basketbuttonsize noborder getnzbbutton" {urd_popup type="small" text=$LN_browse_savenzb } onclick="javascript:whichbutton('getnzb', event);" /></div>
+<div class="floatleft buttonlike basketbuttonsize noborder getnzbbutton" {urd_popup type="small" text=$LN_browse_savenzb } onclick="javascript:which_button('getnzb', event);" /></div>
 {/if}
 {if $show_merge}
-<div class="floatleft buttonlike basketbuttonsize noborder mergebutton" {urd_popup type="small" text=$LN_browse_mergesets } onclick="javascript:whichbutton('mergesets', event);"/></div>
+<div class="floatleft buttonlike basketbuttonsize noborder mergebutton" {urd_popup type="small" text=$LN_browse_mergesets } onclick="javascript:which_button('mergesets', event);"/></div>
 {/if}
 
-<div class="floatleft buttonlike basketbuttonsize noborder clearbutton" {urd_popup type="small" text=$LN_browse_emptylist } onclick="javascript:whichbutton('clearbasket', event);"/></div>
+<div class="floatleft buttonlike basketbuttonsize noborder clearbutton" {urd_popup type="small" text=$LN_browse_emptylist } onclick="javascript:which_button('clearbasket', event);"/></div>
 {if $show_download neq 0}
 <td class="vcenter"><div class="floatleft">
 {$LN_browse_schedule_at}:&nbsp;<input name="timestamp" id="timestamp" type="text" value="{$download_delay|escape}" size="20" onclick="javascript:show_calendar();" onkeyup="javascript:hide_popup('calendardiv', 'calendar');" onchange="javascript:update_basket_display(1);"/></div></td>

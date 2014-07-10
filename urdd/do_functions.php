@@ -180,7 +180,7 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
         $partnumber = $arr2['partnumber'];
         $messageID = str_replace('&', '&amp;', $messageID);
         $size = $arr2['size'];
-        $str .= "\t\t<segment bytes=\"$size\" number=\"".round($partnumber)."\">$messageID</segment>\n";
+        $str .= "\t\t<segment bytes=\"$size\" number=\"" . round($partnumber) . "\">$messageID</segment>\n";
     }
     update_batch($db, $res2, DOWNLOAD_COMPLETE);
     $str .= "\t</segments>\n";
@@ -192,7 +192,7 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
 function do_make_nzb(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $odlid = $dlid = $item->get_args();
+    $dlid = $item->get_args();
     if (check_dl_lock($db, $dlid) === FALSE) { // if db still locked
         echo_debug('Dl still locked, sleeping', DEBUG_SERVER); // todo needs fixing
 
@@ -241,7 +241,7 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     $size = 0;
     $str = '<' . '?' . 'xml version="1.0" encoding="us-ascii"' . '?' . '>' . "\n"; // screws up syntax highlighting... hence the wacky sequence of < and ? and ? and > ... DO NOT CHANGE!
     $str .= '<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">'. "\n";
-    $str .= '<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">' . "\n"; /// Note this URL is dead!
+    $str .= '<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">' . "\n"; // Note this URL is dead!
     $str .= '<!-- Created by ' . urd_version::get_urd_name() . ' ' . urd_version::get_version() . ' : http://www.urdland.com : The web-based usenet resource downloader. -->' . "\n";
     $size += fwrite($file, $str);
     try {
@@ -468,7 +468,7 @@ function update_headers(DatabaseConnection $db, &$nzb, array &$groupArr, action 
 
         return GROUP_NOT_FOUND;
     }
-    if ($rv !== TRUE) {
+    if ($rv !== NO_ERROR) {
         $nzb->disconnect();
 
         return NNTP_NOT_CONNECTED_ERROR;
@@ -516,7 +516,7 @@ function do_update(DatabaseConnection $db, action $item)
         update_postcount($db, $groupArr['ID']);
         update_queue_status($db, $item->get_dbid(), $status, 0, 100);
     } catch (exception $e) {
-        write_log('Update failed '. $e->getMessage(), LOG_WARNING);
+        write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         if ($e->getcode() == ERR_NNTP_AUTH_FAILED) {
             $status = QUEUE_FAILED;
             $comment = $e->getMessage();
@@ -2042,38 +2042,19 @@ function do_post_message(DatabaseConnection $db, action $item)
     }
     $userid = $item->get_userid();
     try {
-        $sql = " * FROM post_messages WHERE \"id\" = ? AND \"userid\" = ?";
+        $sql = '* FROM post_messages WHERE "id"=? AND "userid"=?';
         $res = $db->select_query($sql, 1, array($msg_id, $userid));
         if (!isset($res[0]['id'])) {
             throw new exception('Message not found: '. $msg_id, ERR_MESSAGE_NOT_FOUND);
         }
-        $useragent = urd_version::get_urd_name() . ' ' . urd_version::get_version();
         $row = $res[0];
         $message = $row['message'];
         $groupid = $row['groupid'];
-        $group_name = group_name($db, $groupid);
         $subject = $row['subject'];
         $poster_id = $row['poster_id'];
         $poster_name = $row['poster_name'];
         $poster_headers = unserialize($row['headers']);
-        $header = array(
-            'from'          => "From: $poster_name <$poster_id>",
-            'newsgroups'    => "Newsgroups: $group_name",
-            'subject'       => "Subject: $subject" ,
-            'user-agent'    => "User-Agent: $useragent",
-        );
-        if (is_array($poster_headers)) {
-            foreach ($poster_headers as $k=>$h) {
-                $header[ $k ] = "$k: $h";
-            }
-        }
-        $header = implode("\r\n", $header) . "\r\n\r\n";
-        $server_id = $item->get_preferred_server();
-        $nntp = connect_nntp($db, $server_id);
-        $nntp->select_group($groupid, $code);
-        $article = wordwrap($message, 70, "\r\n", FALSE);
-        $nntp->post_article(array($header, $article));
-        $nntp->disconnect();
+        post_message( $db, $item, $poster_headers, $message, $groupid, $subject, $poster_id, $poster_name);
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete');
     } catch (exception $e) {

@@ -1854,8 +1854,7 @@ input.passwordcorrect
 {
   height: 12px;
   background-color: #5b5b5b;
-  border-left: 0px ;
-  border-right: 0px;
+  border: 0;
   border-radius: 6px;
   z-index: 1000;
 }
@@ -1878,7 +1877,6 @@ input.passwordcorrect
 }
 
 .red {
-    background: #a42a1a;
     background: #b31f0b;
     background: -moz-linear-gradient(top, #b31f0b 0%, #96180a 70%, #801408 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b31f0b), color-stop(70%,#96180a), color-stop(100%,#801408));
@@ -1891,7 +1889,6 @@ input.passwordcorrect
 
 .orange {
   background: #f2b63c;
-  border-color: #f0ad24 #eba310 #c5880d;
   background-image: -webkit-linear-gradient(top, #f8da9c, #f5c462 70%, #f2b63c);
   background-image: -moz-linear-gradient(top, #f8da9c, #f5c462 70%, #f2b63c);
   background-image: -o-linear-gradient(top, #f8da9c, #f5c462 70%, #f2b63c);
@@ -1900,7 +1897,6 @@ input.passwordcorrect
 
 .blue {
   background: #5aaadb;
-  border-color: #459fd6 #3094d2 #277db2;
   background-image: -webkit-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
   background-image: -moz-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
   background-image: -o-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);

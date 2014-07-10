@@ -35,7 +35,7 @@
 {html_options options=$groups selected=$groupid}
 </select>
 </td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_subjectext2}>{$LN_post_subject}:</td><td><input type="text" name="subject" id="subject"class="width300" value="{$subject|escape:htmlall}" required placeholder="{$LN_post_subject}"/></td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_subjectext2}>{$LN_post_subject}:</td><td><input type="text" name="subject" id="subject" class="width300" value="{$subject|escape:htmlall}" required placeholder="{$LN_post_subject}"/></td></tr>
 <tr><td {urd_popup type="small" text=$LN_post_posternameext}>{$LN_post_postername}:</td><td><input type="text" name="postername" id="postername"value="{$poster_name|escape:htmlall}" class="width300" required placeholder="{$LN_post_postername}"/></td></tr>
 <tr><td {urd_popup type="small" text=$LN_post_posteremailext}>{$LN_post_posteremail}:</td><td><input type="email" name="posteremail" id="posteremail" value="{$poster_email|escape:htmlall}" class="width300" required placeholder="{$LN_post_posteremail}"/></td></tr>
 {if $type == 'comment'} 
@@ -44,7 +44,7 @@
 {html_options options=$ratings selected=$groupid}
 </select>
 {/if}
-<tr><td {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300"  placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea>
+<tr><td {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" class="submit" onclick="javascript:post_message();"/></td></tr>
 

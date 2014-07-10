@@ -57,12 +57,14 @@ if ($postid === NULL || !is_numeric($postid)) {
     $delete_files = 0;
     $subject = '';
     $group = '';
+    $group_nzb = '';
     $dir = '';
     $postid = '';
     $start_time = $download_delay;
 } else {
     $row = get_post_info($db, $userid, $postid);
     $group = $row['groupid'];
+    $group_nzb = $row['groupid_nzb'];
     $subject = $row['subject'];
     $poster_email = $row['poster_id'];
     $poster_name = $row['poster_name'];
@@ -88,12 +90,22 @@ try {
     $groups = array();
 }
 
+$default_nzb_group = get_config($db, 'ftd_group', '');
+$default_nzb_group_id = get_all_group_by_name($db, $default_nzb_group);
+if (! isset($groups [ $default_nzb_group_id ])) {
+    $default_nzb_group = array( 'group_id' => $default_nzb_group_id , 'group_name'=>$default_nzb_group);
+} else {
+    $default_nzb_group = NULL;
+}
+
 natsort($groups);
 
 init_smarty('', 0);
 $smarty->assign('postid',      	    $postid);
 $smarty->assign('groups',    	    $groups);
 $smarty->assign('group',    	    $group);
+$smarty->assign('group_nzb',    	$group_nzb);
+$smarty->assign('default_nzb_group',$default_nzb_group);
 $smarty->assign('dirs',    	        $dirs);
 $smarty->assign('readonly',         $readonly?1:0);
 $smarty->assign('dir',    	        $dir);

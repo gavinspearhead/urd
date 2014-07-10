@@ -75,7 +75,6 @@ class NNTP_Client extends Base_NNTP_Client
     /**
      * Information summary about the currently selected group.
      *
-     * @var array
      */
     private $_selectedGroupSummary;
     private $_overviewFormatCache;

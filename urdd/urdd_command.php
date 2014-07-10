@@ -824,6 +824,12 @@ class commands_list
 
         return URDD_NOERROR;
     }
+    public static function command_post_spot(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
+    {
+        $response = queue_post_spot($db, $servers, $args, $userid, $priority);
+
+        return URDD_NOERROR;
+    }
 
     public static function command_parse_nzb(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
     {
@@ -992,8 +998,9 @@ $commands_list->register_command( new command('PARSE_NZB', 'command_parse_nzb',T
 $commands_list->register_command( new command('PASS', 'command_pass',FALSE, FALSE, urdd_protocol::COMMAND_PASS, FALSE, 'PASS [hash:]password', 'Enter a password, optionally as sha256 hash', '%s', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('PAUSE', 'command_pause',TRUE, FALSE, urdd_protocol::COMMAND_PAUSE, FALSE, 'PAUSE ID|ALL', 'Pause action ID or all actions', '%s', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('POST', 'command_post',TRUE, FALSE, urdd_protocol::COMMAND_POST, FALSE, 'POST ID', 'Post the files identified by ID in the postinfo table', '%s %s', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_POST, 'P'));
-$commands_list->register_command( new command('POST_MESSAGE', 'command_post_message',TRUE, FALSE, urdd_protocol::COMMAND_POST_MESSAGE, TRUE, 'POST_MESSAGE MESSAGE_ID', 'Post a text message to the group', '%n', FALSE, FALSE, TRUE, urd_modules::URD_CLASS_POST, ''));
 $commands_list->register_command( new command('POST_ACTION', 'command_post_action',TRUE, FALSE, urdd_protocol::COMMAND_POST_ACTION, TRUE, 'POST_ACTION', 'No operation (internal use)', '', FALSE, FALSE, TRUE, urd_modules::URD_CLASS_POST, 'P'));
+$commands_list->register_command( new command('POST_MESSAGE', 'command_post_message',TRUE, FALSE, urdd_protocol::COMMAND_POST_MESSAGE, TRUE, 'POST_MESSAGE MESSAGE_ID', 'Post a text message to the group', '%n', FALSE, FALSE, TRUE, urd_modules::URD_CLASS_POST, ''));
+$commands_list->register_command( new command('POST_SPOT', 'command_post_spot',TRUE, FALSE, urdd_protocol::COMMAND_POST_SPOT, TRUE, 'POST ID', 'Post the spot info identified by ID in the spot_postinfo table', '%s %s', FALSE, FALSE, TRUE, urd_modules::URD_CLASS_POST, 'P'));
 $commands_list->register_command( new command('PREEMPT', 'command_preempt',TRUE, FALSE, urdd_protocol::COMMAND_PREEMPT, FALSE, 'PREEMPT ID1 ID2', 'Start the process with ID1 and push process with ID2 back on the queue', '%n %n', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('PRIORITY', 'command_priority',TRUE, FALSE, urdd_protocol::COMMAND_PRIORITY, FALSE, 'PRIORITY ID PRIORITY', 'Set the priority of a process with ID1 to priority PRIORITY', '%n %n', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('PURGE', 'command_purge',TRUE, TRUE, urdd_protocol::COMMAND_PURGE, FALSE, 'PURGE ID|ALL', 'Remove all articles from a group ID or from all groups', '%n|%s', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GROUPS, ''));

@@ -28,12 +28,12 @@ if (!defined('ORIGINAL_PAGE')) {
  * @version 1.2
  * @author Stig Bakken <ssb@php.net>
  * @author Chuck Hagenbuch <chuck@horde.org>
- * @author Spearhead
+ * @author Gavin Spearhead
  */
 class socket
 {
 // timeout in seconds that a socket will timeout
-    const DEFAULT_SOCKET_TIMEOUT =  30;
+    const DEFAULT_SOCKET_TIMEOUT = 60;
     const NET_SOCKET_READ  = 1;
     const NET_SOCKET_WRITE = 2;
     const NET_SOCKET_ERROR = 4;
@@ -91,7 +91,6 @@ class socket
         } catch (exception $e) {
             $this->fp = NULL;
         }
-
     }
 
     public function get_fp()
@@ -104,7 +103,6 @@ class socket
             throw new exception('Not connected');
         }
     }
-
 
     /**
      * Connect to the specified port. If called when the socket is
@@ -303,7 +301,6 @@ class socket
             return FALSE;
         }
         if ($this->timeout === NULL) {  // if no timeout set, we assume we can read
-
             return TRUE;
         }
         $null = NULL;

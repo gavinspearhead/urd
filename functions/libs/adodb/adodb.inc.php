@@ -1334,7 +1334,6 @@ if (!defined('_ADODB_LAYER')) {
 		$savec = $ADODB_COUNTRECS;
 		$ADODB_COUNTRECS = false;
 
-
 		if ($secs2cache != 0) $rs = $this->CacheExecute($secs2cache,$sql,$inputarr);
 		else $rs = $this->Execute($sql,$inputarr);
 

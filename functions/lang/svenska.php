@@ -294,6 +294,7 @@ $LN['taskgetspot_images']     = 'Getting spots images';
 $LN['taskexpirespots']  = 'Raderar utg&aring;ngna spots';
 $LN['taskpurgespots']   = 'T&ouml;mmer spots';
 $LN['taskpostmessage']  = 'Postar ett meddelande';
+$LN['taskpostspot']     = 'Posting spot';
 $LN['taskdeleteset']    = 'Raderar set';
 $LN['taskset']          = 'Setting configuration';
 
@@ -777,6 +778,9 @@ $LN['error_diskfull']           = 'Otillr&auml;ckligt diskutrymme f&ouml;rv&auml
 $LN['error_invalidsetid']       = 'Ogiltigt set-ID angivet';
 $LN['error_couldnotsendmail']   = 'Could not send message';
 $LN['error_filetoolarge']       = 'Filen &auml;r f&ouml;r stor f&ouml;r att laddas ned';
+$LN['error_nosubcats']      = 'No subcategories selected';
+$LN['error_nzbfilemissing'] = 'NZB file missing';
+$LN['error_imgfilemissing'] = 'Image file missing';
 $LN['error_preview_size_exceeded']      = 'Filen &auml;r f&ouml;r stor f&ouml;r att f&ouml;rhandsgranskas';
 $LN['error_post_not_found']     = 'Postningen hittades inte';
 $LN['error_pwresetnomail']      = 'L&ouml;senord nollst&auml;llt, men epost kunde inte skickas';
@@ -789,6 +793,7 @@ $LN['error_invalidrarsize'] = 'Felaktig storlek p&aring; rar-filer';
 $LN['error_namenotfound']   = 'Postarens namn saknas';
 $LN['error_searchnamenotfound']     = 'Name not found';
 $LN['error_nowrite']                = 'Kunde inte skriva till fil';
+$LN['error_invalidcategory'] = 'Invalid category';
 
 $LN['error_noserversfound']         = 'No servers found';
 $LN['error_nouploadsfound']         = 'No uploads found';
@@ -1180,6 +1185,7 @@ $LN['users_allow_update']   = 'Allow updating databases';
 
 $LN['error_nocontent']      = 'Message too short';
 $LN['error_toolong']        = 'Message too long';
+$LN['error_filetoolarge']   = 'File too large';
 $LN['error_noadmin']        = 'Inga administrat&ouml;rs-r&auml;attigheter';
 $LN['error_accessdenied']   = '&Aring;tkomst nekad';
 $LN['error_invalidfullname']    = 'Ogiltigt fullst&auml;ndigt namn';
@@ -1276,6 +1282,7 @@ $LN['transfers_status_par2ed']      = 'Par2 skapad';
 $LN['transfers_status_yyencoded']   = 'Yenc-kodad';
 $LN['transfers_head_subject']       = '&Auml;mne';
 $LN['transfers_posts']      = 'Uppladdningar';
+$LN['transfers_post_spot']      = 'Post spot';
 $LN['transfers_post']       = 'Ladda upp';
 $LN['transfers_downloads']  = 'Nedladdningar';
 
@@ -1291,7 +1298,7 @@ $LN['buttons_addbutton']    = 'L&auml;gg till en ny knapp';
 $LN['buttons_test']         = 'Testa';
 $LN['buttons_nobuttonid']   = 'Inget knapp-ID angivet';
 $LN['buttons_invalidname']  = 'Ogiltigt namn angivet';
-$LN['buttons_invalidurl']   = 'Ogiltig s&ouml;k-URL angiven';
+$LN['buttons_invalidurl']   = 'Ogiltig URL angiven';
 $LN['buttons_clicktest']    = 'Klicka f&ouml;r att testa';
 $LN['buttons_buttonexists'] = 'Det finns redan en knapp med det h&auml;r namnet';
 $LN['buttons_buttonnotfound']   = 'Knappen hittades inte';
@@ -1344,6 +1351,8 @@ $LN['browse_add_setname']   = 'Add setname';
 $LN['browse_userwhitelisted'] = 'User is on the whitelist';
 
 $LN['NZB_created']          = 'NZB-fil skapad';
+$LN['NZB_file']             = 'NZB-fil';
+$LN['image_file']           = 'Bild-fil';
 
 // Preview
 $LN['preview_autodisp']     = 'Filen/filerna ska visas automatiskt.';

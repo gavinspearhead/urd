@@ -70,6 +70,7 @@ class urdd_protocol
     const COMMAND_PASS = 17;
     const COMMAND_PAUSE = 18;
     const COMMAND_POST = 58;
+    const COMMAND_POST_SPOT = 73;
     const COMMAND_POST_ACTION = 59;
     const COMMAND_POST_MESSAGE = 61;
     const COMMAND_PREEMPT = 29;
@@ -93,7 +94,7 @@ class urdd_protocol
     const COMMAND_UPDATE = 28;
     const COMMAND_UPDATE_RSS = 49;
     const COMMAND_USER = 36;
-    const COMMAND_WHOAMI = 73; // always keep this the highest number !!
+    const COMMAND_WHOAMI = 74; // always keep this the highest number !!
 
     private static $responses = array (
         // single line responses

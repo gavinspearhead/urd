@@ -221,9 +221,7 @@ class urd_index
     {
         $db_update->addIndex($this->index_name, $this->type, $table_name, $this->columns);
     }
-
 }
-
 
 class urd_db_structure {
     static function create_db_structure(db_update_abs $db_update, $engine)
@@ -510,15 +508,42 @@ class urd_db_structure {
         $t->add_index(new urd_index('merge_prim', 'PRIMARY', array('new_setid', 'old_setid', 'type')));
         $t->drop_column('tmp');
         $urd_db->add($t);
+        
+        $t = new urd_table('spot_postinfo', 'id', 'utf8');
+        $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
+        $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('category', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subcat', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subcats', 'TEXT', '', TRUE, '', ''));
+        $t->add_column(new urd_column('nzb_file', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('image_file', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('image_width', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('image_height', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('tag', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('description', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('url', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('stat_id', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('start_time', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
+        $t->add_index(new urd_index('posti_prim', 'PRIMARY', array('id')));
+        $urd_db->add($t);
 
         $t = new urd_table('postinfo', 'id', 'utf8');
         $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
         $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('groupid', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('groupid_nzb', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('src_dir', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('tmp_dir', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('nzb_file', 'TEXT', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('image_file', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('subject', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('recovery_par', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('filesize_rar', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
@@ -539,6 +564,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('articleid', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('rarfile', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('rar_idx', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_index(new urd_index('postf_prim', 'PRIMARY', array('id')));
         $t->add_index(new urd_index('idx_post_id', '', array('postid')));

@@ -375,6 +375,10 @@ function command_description(DatabaseConnection $db, $task_)
             $task[0] = $LN['taskpostmessage'];
             $task[3] = '';
             break;
+        case urdd_protocol::COMMAND_POST_SPOT:
+            $task[0] = $LN['taskpostspot'];
+            $task[3] = '';
+            break;
         case urdd_protocol::COMMAND_POST_ACTION:
         case urdd_protocol::COMMAND_START_POST:
         case urdd_protocol::COMMAND_POST:
@@ -2004,7 +2008,6 @@ function detect_language()
     return $lang;
 }
 
-
 function verify_time($time1, $time2, $name)
 {
     global $LN;
@@ -2035,3 +2038,78 @@ function verify_expire($expire, $name)
     }
 }
 
+function file_upload_error_message($error_code)
+{ // xxx fix language shit
+    switch ($error_code) {
+        case UPLOAD_ERR_INI_SIZE:
+            return 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
+        case UPLOAD_ERR_FORM_SIZE:
+            return 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form';
+        case UPLOAD_ERR_PARTIAL:
+            return 'The uploaded file was only partially uploaded';
+        case UPLOAD_ERR_NO_FILE:
+            return 'No file was uploaded';
+        case UPLOAD_ERR_NO_TMP_DIR:
+            return 'Missing a temporary folder';
+        case UPLOAD_ERR_CANT_WRITE:
+            return 'Failed to write file to disk';
+        case UPLOAD_ERR_EXTENSION:
+            return 'File upload stopped by extension';
+        default:
+            return 'Unknown upload error';
+    }
+}
+
+function get_uploaded_files() 
+{
+    if (isset($_FILES['error']) && $_FILES['error'] != 0) {
+        throw new exception ('error!?');
+    }
+
+    //challenge::verify_challenge_noreload($_REQUEST['challenge']);
+
+    if (empty($_FILES)) {
+        throw new exception (file_upload_error_message(UPLOAD_ERR_INI_SIZE));
+    }
+    if ($_FILES['upfile']['error'] !== UPLOAD_ERR_OK) {
+        throw new exception (file_upload_error_message($_FILES['upfile']['error']));
+    }
+
+    $filename = $_FILES['upfile']['tmp_name'];
+    $orig_filename = $_FILES['upfile']['name'];
+    if (!file_exists($filename))  {
+        throw new exception (file_upload_error_message(UPLOAD_ERR_NO_FILE));
+    }
+
+    return array( $filename, $orig_filename);
+}
+
+function generate_hash($prefix, $infix=FALSE)
+    // we need to move this actually to the js code
+{
+    if ($infix !== FALSE) { 
+        $prefix .= '.' . $infix;
+    }
+    do {
+        $unique_str = generate_password(15);
+        $messageid = '<' . $prefix . '.' . $unique_str . '@spot.net>';
+        $hash = sha1($messageid);
+    } while (substr($hash, 0, 4) !== '0000');
+    return $messageid;
+}
+
+function get_smileys($dir, $full= FALSE)
+{
+    $smileys = array();
+    $_smileys = glob($dir. DIRECTORY_SEPARATOR . '/smileys/' . '*.gif');
+    foreach($_smileys as $smiley) {
+        $s = basename($smiley, '.gif');
+        if (!$full) {
+            $smileys [$s] = $s;
+        } else {
+            $smileys [$s] = $smiley;
+        }
+
+    }
+    return $smileys;
+}

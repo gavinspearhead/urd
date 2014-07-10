@@ -47,9 +47,9 @@ class TagHandler
                 'allowedchildren' => array(NULL),
                 'handler' => array('TagHandler', 'handle_italic') ),
             'img' =>
-            array('closetags' => array('img'),
-                'allowedchildren' => array(NULL),
-                'handler' => array('TagHandler', 'handle_empty') )
+            array('closetags' => array(NULL),
+                'allowedchildren' => array(''),
+                'handler' => array('TagHandler', 'handle_img') )
             ),
             'q'	=>
             array('quote' =>
@@ -106,7 +106,10 @@ class TagHandler
     {
         return TagHandler::$deniedtags;
     }
-
+    static function setadditionalinfo($tagname, $name, $value) 
+    {
+			TagHandler::$tagconfig[$tagname[0]][$tagname][$name] = $value;
+		}
     /*
      * Processes an tag (when allowed)
      */
@@ -115,8 +118,10 @@ class TagHandler
         if (array_search($tagname, TagHandler::$deniedtags) !== FALSE) {
             return NULL;
         }
-
-        return call_user_func(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'], $params, $contents);
+        if (isset(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'])) {
+				return call_user_func_array(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'],
+							array($params, $contents));
+        }
     }
 
     /* Returns an empty append/prepend, used for deprecated tags */
@@ -168,19 +173,18 @@ class TagHandler
         $content = '';
         # are only specific images allowed?
         if (isset(TagHandler::$tagconfig['i']['img']['allowedimgs'])) {
-            if (!isset(TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]])) {
+            if (!isset($params['params'][0]) ||!isset(TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]])) {
                 return TagHandler::handle_empty($params, $contents);
             } else {
                 $origAppend = $contents;
-                $content = TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]];
-                if (substr($content, 0, 7) != 'http://' && substr($content, 0, 8) != 'https://') {
-                    return TagHandler::handle_empty($params, $contents);
-                }
+                $img_name = $params['params'][0];
+                $content = TagHandler::$tagconfig['i']['img']['allowedimgs'][$img_name];
             }
         }
-        return array('prepend' => '<span class="buttonlike" onclick="javascript:jump(\'' . $content . '\', true );">XXX' . $content . 'YYY</span>',
-            'content' => $origAppend,
-            'append' => '');
+        return Array('prepend' => '<img src="' . $content . '">',
+							 'content' => $origAppend,
+							 'append' => '');
+
     }
 
     /* handle the noubb tag */

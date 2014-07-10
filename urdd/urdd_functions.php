@@ -234,7 +234,7 @@ function set_permissions(DatabaseConnection $db, $dir)
         }
 
     } else {
-        write_log('Cannot set permission; incorrect value "' .$perm. '"' , LOG_NOTICE);
+        write_log('Cannot set permission; incorrect value "' . $perm . '"' , LOG_NOTICE);
 
         return;
     }
@@ -242,7 +242,7 @@ function set_permissions(DatabaseConnection $db, $dir)
 
 function move_file_to_nzb(DatabaseConnection $db, $dlid, $filename, $dlpath, $basename, $ext, $userid)
 {
-    assert($filename != '' && is_numeric($userid) && is_numeric($dlid));
+    assert($filename != '' && is_numeric($userid) && (is_numeric($dlid)|| is_null($dlid)));
 
     $username = get_username($db, $userid);
     $from = $filename;
@@ -272,7 +272,9 @@ function move_file_to_nzb(DatabaseConnection $db, $dlid, $filename, $dlpath, $ba
     if ($rv === FALSE) {
         write_log("Could not move directory $to", LOG_ERR);
     } else {
-        set_download_destination($db, $dlid, $to);
+        if (!is_null($dlid)) {
+            set_download_destination($db, $dlid, $to);
+        }
     }
 
     return $to;

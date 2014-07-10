@@ -29,6 +29,7 @@
 {if $readonly == 1}{$readonlystr=' readonly="readonly" '}{$disabledstr=' disabled="disabled" '}{else}{$readonlystr=''}{$disabledstr=''}{/if}
 <br/>
 <table class="hmid">
+
 <tr><td>{$LN_post_directory}:</td><td>
 <select name="directory" id="directory" {urd_popup type="small" text=$LN_post_directoryext} class="width300" {$disabledstr} required>
 {$cnt=0}
@@ -42,9 +43,19 @@
 
 </td></tr>
 <tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup}:</td><td><select name="newsgroup" id="groupid" class="width300" {$disabledstr}>
-    <option value="" {if !isset($id) || $id == ''}selected="selected"{/if}>{$LN_select}</option>
+    <option value="" {if !isset($group) || $group == ''}selected="selected"{/if}>{$LN_select}</option>
 {foreach $groups as $id=>$name}
     <option value="{$id}" {if $id == $group}selected="selected"{/if}>{$name}</option>
+{/foreach}
+</select></td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup} NZB:</td><td><select name="newsgroup_nzb" id="groupid_nzb" class="width300" {$disabledstr}>
+    <option value="" {if (!isset($group_nzb) || $group_nzb == '') && $default_nzb_group === NULL}selected="selected"{/if}>{$LN_select}</option>
+    {if $default_nzb_group !== NULL} 
+    <option value="{$default_nzb_group.group_id}" {if !isset($group_nzb) || $group_nzb == $default_nzb_group.group_id || $group_nzb == ''}selected="selected"{/if}>{$default_nzb_group.group_name}</option>
+    {/if}
+
+{foreach $groups as $id=>$name}
+    <option value="{$id}" {if $id == $group_nzb}selected="selected"{/if}>{$name}</option>
 {/foreach}
 </select></td></tr>
 <tr><td {urd_popup type="small" text=$LN_post_subjectext} >{$LN_post_subject}:</td><td><input type="text" name="subject" id="subject" class="width300" value="{$subject|escape}" {$readonlystr} required/></td></tr>

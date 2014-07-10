@@ -299,6 +299,8 @@ $LN['taskmergesets']	= 'Sets verbinden';
 $LN['taskfindservers']  = 'Server Autokonfig';
 $LN['taskdeleteset']    = 'Set l&ouml;schen';
 $LN['taskset']          = 'Setting configuration';
+$LN['taskpostspot']     = 'Posting spot';
+$LN['taskpostmessage']  = 'Posting message';
 
 $LN['eta']			    = 'ETA';
 $LN['inuse']			= 'ist in Benutzung';
@@ -720,6 +722,11 @@ $LN['error_pwsimple']		= 'Passwort zu einfag, use a mix of upper and lower case 
 $LN['error_captcha']        = 'CAPTCHA falsch';
 $LN['error_nocontent']      = 'Message too short';
 $LN['error_toolong']        = 'Message too long';
+$LN['error_filetoolarge']   = 'File too large';
+$LN['error_nosubcats']      = 'No subcategories selected';
+$LN['error_nzbfilemissing'] = 'NZB file missing';
+$LN['error_invalidcategory'] = 'Invalid Category';
+$LN['error_imgfilemissing'] = 'Image file missing';
 
 $LN['error_onlyforgrops'] 	= 'Only works for groups';
 $LN['error_onlyoneset'] 	= 'Requires more than one set to be in the basket';
@@ -1278,6 +1285,7 @@ $LN['transfers_deletefiles']	= 'L&ouml;sche Dateien';
 $LN['transfers_subdl']          = 'Untertitel laden';
 $LN['transfers_badrarinfo']     = 'Die rar Log ansehe';
 $LN['transfers_post']           = 'Hochladen';
+$LN['transfers_post_spot']      = 'Post spot';
 $LN['transfers_badparinfo']     = 'Die par2 Log ansehen';
 
 $LN['transfers_status_rarred']  = 'Gerart';
@@ -1296,7 +1304,7 @@ $LN['buttons_edit']		= '&Auml;ndern';
 $LN['buttons_test']		= 'Test';
 $LN['buttons_nobuttonid']	= 'No Suchfunktionen ID given';
 $LN['buttons_invalidname']	= 'Ung&uuml;ltige Name angegeben';
-$LN['buttons_invalidurl']	= 'Ung&uuml;ltige Such-URL angegeben';
+$LN['buttons_invalidurl']	= 'Ung&uuml;ltige URL angegeben';
 $LN['buttons_clicktest']	= 'Anklicken zum pr&uuml;fen';
 $LN['buttons_buttonexists']	= 'Es gibt schon eine Such-URL mit diese Name';
 $LN['buttons_buttonnotfound']	= 'Es gibt keine Such-URL mit diese Name';
@@ -1345,6 +1353,8 @@ $LN['browse_toggleint']		= 'Interesant umschalten';
 $LN['browse_schedule_at']	= 'Starte um';
 $LN['browse_invalid_timestamp'] = 'Ung&uuml;ltige Zeitangabe';
 $LN['NZB_created']		    = 'NZB Datei geschaffen';
+$LN['NZB_file']		        = 'NZB Datei';
+$LN['Image_file']           = 'Bild Datei';
 $LN['browse_mergesets']		= 'Sets verschmelzen';
 $LN['browse_userwhitelisted'] = 'User is on the whitelist';
 

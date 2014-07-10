@@ -44,11 +44,11 @@
 {$stat=$infoarray[0]->status|replace:' ':'_'}
 <tbody>
 <tr class="transferstatus"><td colspan="{if $isadmin neq 0}7{else}6{/if}">{$status}</td>
-		<td>
+    <td>
         <div class="black floatright iconsize noborder buttonlike">
 		<div id="{$stat}post" class="floatright iconsize blackbg {if $post_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" onclick="javascript:fold_transfer('{$stat}', 'post');">        </div>
         </div>
-		</td>
+    </td>
 </tr>
 </tbody>
 
@@ -60,27 +60,30 @@
 {capture name=opts assign="options"}
 {strip}
 <div class="floatright">
+{if $a->nzb != ''}
+<div class="inline iconsizeplus downicon buttonlike" onclick="javascript:jump('getfile.php?file={$a->nzb}');" {urd_popup type="small" text=$LN_browse_savenzb }></div>
+{/if}
 {if $a->status == "rarfailed" && $a->directory != ''}
 <div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badrarinfo } alt="" onclick="javascript:show_contents('{$a->destination}/rar.log', 0);"></div><
 {/if}
 {if $a->status == "par2failed" && $a->directory != ''}
 <div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badparinfo } alt="" onclick="javascript:show_contents('{$a->destination}/par2.log', 0);"></div>
 {/if}
-<div class="inline iconsizeplus editicon buttonlike" onclick="show_edit_post('{$a->postid}');"></div>
+<div class="inline iconsizeplus editicon buttonlike" onclick="javascript:show_edit_post('{$a->postid}');"></div>
 {if ($a->status == "paused" OR $a->status == "ready") AND $urdd_online}
-<div class="inline iconsizeplus playicon buttonlike" onclick="post_edit('start','{$a->postid}')" {urd_popup type="small" text=$LN_transfers_linkstart }></div>
+<div class="inline iconsizeplus playicon buttonlike" onclick="javascript:post_edit('start','{$a->postid}')" {urd_popup type="small" text=$LN_transfers_linkstart }></div>
 {/if}
 
 {if ($a->status == "active" OR $a->status == "queued") AND $urdd_online}
-<div class="inline iconsizeplus pauseicon buttonlike" onclick="post_edit('pause','{$a->postid}')" {urd_popup type="small" text=$LN_pause }></div>
+<div class="inline iconsizeplus pauseicon buttonlike" onclick="javascript:post_edit('pause','{$a->postid}')" {urd_popup type="small" text=$LN_pause }></div>
 {/if}
 
 {if ($a->status == "queued" OR $a->status == "paused" OR $a->status == "active" OR $a->status == "ready") AND $urdd_online}
-<div class="inline iconsizeplus killicon buttonlike" onclick="post_edit('cancel','{$a->postid}')" {urd_popup type="small" text=$LN_cancel }></div>
+<div class="inline iconsizeplus killicon buttonlike" onclick="javascript:post_edit('cancel','{$a->postid}')" {urd_popup type="small" text=$LN_cancel }></div>
 {/if}
 
 {if $urdd_online}
-<div class="inline iconsizeplus deleteicon buttonlike" onclick="post_edit('delete','{$a->postid}')" {urd_popup type="small" text=$LN_delete }></div>
+<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:post_edit('delete','{$a->postid}')" {urd_popup type="small" text=$LN_delete }></div>
 {/if}
 </div>
 {/strip}

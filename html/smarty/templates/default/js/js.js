@@ -220,6 +220,8 @@ function do_command(command, name, message)
         show_uploadnzb();
     } else if (command == 'post') {
         show_post();
+    } else if (command == 'post_spot') {
+        show_post_spot();
     } else if (command == 'cleandb') {
         control_action('cleandb');
     } else if (command == 'cleanall') {
@@ -1458,7 +1460,7 @@ function transfer_edit(cmd, dlid)
     }) . done ( function (html) { update_message_reload_transfers(html); } );
 }
 
-function whichbutton(buttonval, e)
+function which_button(buttonval, e)
 {
     var rightclick = false;
     if (!e) {
@@ -2260,6 +2262,7 @@ function create_post()
         delete_files: delete_files,
         recovery: recovery,
         groupid: $('#groupid>option:selected').val(),
+        groupid_nzb: $('#groupid_nzb>option:selected').val(),
         directory: $('#directory>option:selected').val(),
         postid: postid,
         filesize: filesize,
@@ -2840,7 +2843,7 @@ function do_keypress_viewfiles(e)
 function collapse_select(name, par)
 {
     var orig_size = $('#' + name + '_orig_size').val();
-    var sel = $('#' + name + '_select');
+    var sel = $('#' + name);
     var size;
     if (par == 'size') {
         size = parseInt(sel.attr('size'));
@@ -5014,16 +5017,16 @@ function update_setting(id, type, optionals)
     var option, value;
 
     if (type == 'select') {
-        option = $('#' + id + '_select').attr('name');
-        value = $('#' + id + '_select' + '>option:selected').val();
+        option = $('#' + id).attr('name');
+        value = $('#' + id + '>option:selected').val();
     } else if (type == 'period') {
         if (update_setting_timeout !== null && update_id == id) {
             clearTimeout(update_setting_timeout);
             update_id = null;
             update_setting_timeout = null;
         }
-        option = $('#' + id + '_select').attr('name');
-        value = $('#' + id + '_select' + ' :selected').val();
+        option = $('#' + id ).attr('name');
+        value = $('#' + id + ' :selected').val();
         data['time1'] = $('#' + optionals.time1).val();
         data['time2'] = $('#' + optionals.time1).val();
 
@@ -5046,8 +5049,8 @@ function update_setting(id, type, optionals)
             update_setting_timeout = null;
             update_id = null;
         }
-        option = $('#' + id + '_select').attr('name');
-        value = $('#' + id + '_select').val().join(':');
+        option = $('#' + id).attr('name');
+        value = $('#' + id).val().join(':');
         timeout = 1000;
     } else {
         option = $('#' + id).attr('name');
@@ -5336,7 +5339,7 @@ function reset_prefs(msg)
 function change_stylesheet(id)
 {
     var cssdir = $('#cssdir').val();
-    var stylesheet= $('#' + id + '_select' ).val();
+    var stylesheet= $('#' + id).val();
     stylesheet = cssdir + '/' + stylesheet + '/' + stylesheet + '.css';
     $('#urd_css').attr('href', stylesheet);
 } 
@@ -5780,4 +5783,212 @@ function update_ng_time(type,  group_id)
     } else {
         send_data();
     }
+}
+
+function show_post_spot()
+{
+    var url = "ajax_post_spot.php";
+        
+    $.ajax({
+        type: 'get',
+        url: url,
+        cache: false,
+        data: {
+            cmd: 'show'
+         }
+    }).done(function(html) {
+        if (html.substr(0, 7) != ':error:') {
+            show_overlayed_content_1(html, 'popup700x400');
+            change_spotsubcats();
+            $('#progress_image').hide();
+            $('#progress_nzb').hide();
+        } else {
+            set_message('message_bar', html.substr(7), 5000);
+        }
+    });
+
+}
+
+function change_spotsubcats()
+{
+    var url = "ajax_post_spot.php";
+        
+    $.ajax({
+        type: 'get',
+        url: url,
+        cache: false,
+        data: {
+            cmd: 'category_info',
+            category: $('#category>option:selected').val() 
+         }
+    }).done(function(html) {
+        if (html.substr(0, 7) != ':error:') {
+         $('#subcats').html(html);
+         var height = 500, width = 700;
+         $('#overlay_content').css( {
+                width: width,
+                height: height,
+                marginTop: (-Math.floor(height / 2)),
+                marginLeft: (- Math.floor(width / 2)),
+                'top': '50%',
+                'left': '50%'
+            });
+        } else {
+            set_message('message_bar', html.substr(7), 5000);
+        }
+    });
+}
+
+function progressHandlingFunction(e, id)
+{
+    if(e.lengthComputable){
+        $(id).attr({value:e.loaded,max:e.total});
+    }
+}
+
+function upload_file(id, type, post_id, fn)
+{
+    var fd = new FormData;
+    var challenge = get_value_from_id('challenge', '');
+    var file = $('#' + id)[0].files[0];
+    if (file == undefined) {
+        fn(-1);
+        return false;
+    }
+    fd.append('challenge', challenge);
+    fd.append('cmd', 'upload_file');
+    fd.append('type', type);
+    fd.append('post_id', post_id);
+    fd.append('upfile', file);
+    $('#progress_' + type).show();
+    $.ajax({
+        url: 'ajax_post_spot.php',  //Server script to process data
+        type: 'POST',
+        xhr: function() {  // Custom XMLHttpRequest
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // Check if upload property exists
+                myXhr.upload.addEventListener('progress', function(e) { progressHandlingFunction(e, '#progress_' + type)}, false); // For handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+     //   beforeSend: beforeSendHandler,
+     //   success: completeHandler,
+     //   error: errorHandler,
+        // Form data
+        data: fd,
+        //Options to tell jQuery not to process data or worry about content-type.
+        cache: false,
+        contentType: false,
+        processData: false
+    }).done(function(html) {
+        var x = jQuery.parseJSON(html);
+        if (x.error != 0) {
+           set_message('message_bar', x.error, 5000);
+           fn(-1);
+        } else {
+           fn(1);
+       }
+    });
+}
+
+function post_spot()
+{
+    var url = "ajax_post_spot.php";
+    var cat = $('#category>option:selected').val();
+    var subject = $('#subject').val();
+    var tag = $('#tag').val();
+    var weburl = $('#weburl').val();
+    var description = $('#description').val();
+    var subcats = {};
+    $('select[name="subcats_select"] > option:selected').each(function () {
+        subcats [ $(this).val() ] = $(this).val();
+    });
+    // upload nzb
+    // upload image
+    var nzb = $('#nzbfile').val();
+    var img = $('#imagefile').val();
+    $.ajax({
+        type: 'post',
+        url: url,
+        cache: false,
+        data: {
+            cmd: 'post',
+            category: cat,
+            subject : subject,
+            tag : tag,
+            url : weburl,
+            description : description,
+            subcats: subcats,
+            nzb_file : nzb,
+            image_file : img
+         }
+    }).done(function(html) {
+        var x = jQuery.parseJSON(html);
+        if (x.error == 0) {
+            var rv1 = 0;
+            var rv2 = 0;
+            upload_file('nzbfile', 'nzb', x.post_id, function(rv) { rv1 = rv; });
+            upload_file('imagefile', 'image', x.post_id, function(rv) { rv2 = rv; });
+            var counter = 0;
+            var test_f = function() {
+                if (rv1 < 0 || rv2 < 0 || counter > 120) {
+                    cancel_post(x.post_id);
+                } else if (rv1 > 0 && rv2 > 0) {
+                    start_post(x.post_id);
+                    hide_overlayed_content();
+            // close popup which we won't do because we have to fill in the stuff over and over again.
+                } else {
+                    counter++;
+                    setTimeout(test_f, 500);
+                }
+            }
+            setTimeout(test_f, 500);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
+    });
+}
+
+function cancel_post(post_id)
+{
+    var url = "ajax_post_spot.php";
+    $.ajax({
+        type: 'post',
+        url: url,
+        cache: false,
+        data: {
+        cmd: 'start_post',
+        postid: post_id,
+        }
+    }).done(function(html) {
+        var r = jQuery.parseJSON(html);
+        if (r.error != 0) {
+            set_message('message_bar', r.error, 5000);
+        }
+    });
+}
+
+function start_post(post_id)
+{
+    var url = "ajax_post_spot.php";
+    $.ajax({
+        type: 'post',
+        url: url,
+        cache: false,
+        data: {
+        cmd: 'start_post',
+        postid: post_id,
+        }
+    }).done(function(html) {
+        var r = jQuery.parseJSON(html);
+        if (r.error != 0) {
+            set_message('message_bar', r.error, 5000);
+        }
+    });
+}
+
+function add_text(text, elem)
+{
+    elem.val( elem.val() + text);
 }

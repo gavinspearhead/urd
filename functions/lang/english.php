@@ -289,6 +289,7 @@ $LN['taskgetwhitelist'] = 'Getting whitelist';
 $LN['taskexpirespots']  = 'Expiring spots';
 $LN['taskpurgespots']   = 'Purging spots';
 $LN['taskpostmessage']  = 'Posting message';
+$LN['taskpostspot']     = 'Posting spot';
 $LN['taskdeleteset']    = 'Removing set';
 $LN['taskset']          = 'Setting configuration';
 
@@ -612,6 +613,8 @@ $LN['config_max_login_count']	= 'Maximum failed login attempts';
 $LN['config_max_login_count_msg']	= 'Maximum number of times an failed login may appear before the account gets locked';
 $LN['config_maxheaders']	    = 'Maximum headers per batch';
 $LN['config_maxheaders_msg']	= 'The maximum number of headers that are fetched in one batch';
+$LN['config_connection_timeout']	    = 'Server connection time out';
+$LN['config_connection_timeout_msg']	= 'Time the server is not used when the connection times out (0 to disable - use with care as this may overflow the server)';
 $LN['config_group_filter']      = 'Newsgroup filter';
 $LN['config_group_filter_msg']  = 'Filter for the newsgroups that will be included (use comma to separate items)';
 $LN['config_extset_group']      = 'Newsgroup for extsetdata';
@@ -733,7 +736,6 @@ $LN['error_pwusername']     = 'Password looks too much like the username';
 $LN['error_pwlength']       = 'Password too short; at least ' . MIN_PASSWORD_LENGTH . ' characters required';
 $LN['error_pwsimple']       = 'Password too simple, use a mix of upper and lower case characters, numbers and other characters';
 $LN['error_captcha']        = 'CAPTCHA incorrect';
-
 $LN['error_invalidfeedid']  = 'Invalid feed ID';
 $LN['error_feednotfound']   = 'Feed not found';
 $LN['error_feedexists']     = 'An RSS feed with that name already exists';
@@ -741,7 +743,6 @@ $LN['error_encryptedrar']   = 'Encrypted rar file';
 $LN['error_usercancel']     = 'Cancelled by user';
 $LN['error_onlyforgrops'] 	= 'Only works for groups';
 $LN['error_onlyoneset'] 	= 'Requires more than one set to be in the basket';
-
 $LN['error_linknotfound'] 	= 'Link not found';
 $LN['error_nzbfailed'] 	    = 'Importing NZB file failed';
 $LN['error_downloadnotfound'] 	= 'Download not found';
@@ -752,7 +753,7 @@ $LN['error_userexists']         = 'User already exists';
 $LN['error_acctexpired']        = 'Account expired';
 $LN['error_notleftblank']       = 'May not be left blank';
 $LN['error_invalidvalue']       = 'Invalid value';
-$LN['error_urlstart']           = 'The url needs to start with http:// and end with a /';
+$LN['error_urlstart']           = 'The url needs to start with http:// or https:// and end with a /';
 $LN['error_error']              = 'Error';
 $LN['error_invaliddir']         = 'Invalid directory';
 $LN['error_notmakedir']         = 'Could not create directory';
@@ -852,7 +853,7 @@ $LN['error_notanumber']     = 'Not a number';
 $LN['error_cannotchmod']    = 'Changing access rights not permitted';
 $LN['error_cannotchgrp']    = 'Changing group is not permitted';
 $LN['error_groupnotfound']  = 'Group does not exist';
-$LN['error_subjectnofound'] = 'Subject missing';
+$LN['error_subjectnofound'] = 'Subject missing'; /// xxx typo 
 $LN['error_posternotfound'] = 'Poster email missing';
 $LN['error_invalidrecsize'] = 'Invalid recovery size';
 $LN['error_invalidrarsize'] = 'Invalid rar file size';
@@ -862,8 +863,13 @@ $LN['error_spotnotfound']       = 'Spot not found';
 $LN['error_setnotfound']        = 'Set not found';
 $LN['error_binariesnotfound']   = 'Could not find binaries';
 $LN['error_invalidimage']       = 'Not a valid image';
-$LN['error_nocontent']      = 'Message too short';
-$LN['error_toolong']        = 'Message too long';
+$LN['error_nocontent']       = 'Message too short';
+$LN['error_toolong']         = 'Message too long';
+$LN['error_filetoolarge']    = 'File too large';
+$LN['error_nosubcats']       = 'No subcategories selected';
+$LN['error_nzbfilemissing']  = 'NZB file missing';
+$LN['error_imgfilemissing']  = 'Image file missing';
+$LN['error_invalidcategory'] = 'Invalid category';
 
 
 // Admin pages:
@@ -1241,7 +1247,7 @@ $LN['transfers_clearcompleted'] = 'Clear completed';
 $LN['transfers_pauseall']       = 'Pause all';
 $LN['transfers_continueall']    = 'Continue all';
 $LN['transfers_nzblocation']    = 'Remote NZB file location';
-$LN['transfers_nzblocationext'] = 'This can be a URL (starting with http://) or a local file location (e.g. /tmp/file.nzb';
+$LN['transfers_nzblocationext'] = 'This can be a URL (starting with http://) or a local file location (e.g. /tmp/file.nzb)';
 $LN['transfers_nzbupload']      = 'Upload a local NZB file';
 $LN['transfers_nzbuploadext']   = 'In case the NZB file is on your local computer, you can upload it to the URD server';
 $LN['transfers_uploadnzb']      = 'Upload an NZB file';
@@ -1294,6 +1300,7 @@ $LN['transfers_status_yyencoded'] = 'Yenc encoded';
 $LN['transfers_head_subject']   = 'Subject';
 $LN['transfers_posts']          = 'Uploads';
 $LN['transfers_post']           = 'Upload';
+$LN['transfers_post_spot']      = 'Post spot';
 $LN['transfers_downloads']      = 'Downloads';
 
 // Fatal error
@@ -1308,7 +1315,7 @@ $LN['buttons_addbutton']    = 'Add a new search option';
 $LN['buttons_test']         = 'Test';
 $LN['buttons_nobuttonid']   = 'No search option ID given';
 $LN['buttons_invalidname']  = 'Invalid name given';
-$LN['buttons_invalidurl']   = 'Invalid search URL provided';
+$LN['buttons_invalidurl']   = 'Invalid URL provided';
 $LN['buttons_clicktest']    = 'Click to test';
 $LN['buttons_buttonexists'] = 'A search option with that name already exists';
 $LN['buttons_buttonnotfound']   = 'Search option not found';
@@ -1360,6 +1367,8 @@ $LN['browse_invalid_timestamp'] = 'Invalid timestamp';
 $LN['browse_userwhitelisted']   = 'User is on the whitelist';
 
 $LN['NZB_created']          = 'NZB file created';
+$LN['NZB_file']             = 'NZB file';
+$LN['image_file']           = 'Image file';
 
 
 // Preview

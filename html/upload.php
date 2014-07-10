@@ -29,46 +29,8 @@ require_once "$pathupl/../functions/html_includes.php";
 // This is basically a simple wrapper that transforms a file upload to a local file,
 // which is then processed as usual in parsenzb.php
 
-if (isset($_FILES['error']) && $_FILES['error'] != 0) {
-    die_html('error!?');
-}
-
 verify_access($db, urd_modules::URD_CLASS_USENZB|urd_modules::URD_CLASS_DOWNLOAD, FALSE, '', $userid, FALSE);
 
-//challenge::verify_challenge_noreload($_REQUEST['challenge']);
+list($_REQUEST['upload'], $_REQUEST['upload_orig_filename']) = get_uploaded_files();
 
-if (empty($_FILES)) {
-    die_html(file_upload_error_message(UPLOAD_ERR_INI_SIZE));
-}
-if ($_FILES['upfile']['error'] !== UPLOAD_ERR_OK) {
-    die_html(file_upload_error_message($_FILES['upfile']['error']));
-}
-
-$filename = $_FILES['upfile']['tmp_name'];
-$orig_filename = $_FILES['upfile']['name'];
-
-function file_upload_error_message($error_code)
-{ // xxx fix language shit
-    switch ($error_code) {
-        case UPLOAD_ERR_INI_SIZE:
-            return 'The uploaded file exceeds the upload_max_filesize directive in php.ini';
-        case UPLOAD_ERR_FORM_SIZE:
-            return 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form';
-        case UPLOAD_ERR_PARTIAL:
-            return 'The uploaded file was only partially uploaded';
-        case UPLOAD_ERR_NO_FILE:
-            return 'No file was uploaded';
-        case UPLOAD_ERR_NO_TMP_DIR:
-            return 'Missing a temporary folder';
-        case UPLOAD_ERR_CANT_WRITE:
-            return 'Failed to write file to disk';
-        case UPLOAD_ERR_EXTENSION:
-            return 'File upload stopped by extension';
-        default:
-            return 'Unknown upload error';
-    }
-}
-
-$_REQUEST['upload'] = $filename;
-$_REQUEST['upload_orig_filename'] = $orig_filename;
 require 'parsenzb.php';

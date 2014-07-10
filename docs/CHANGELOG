@@ -1,3 +1,11 @@
+1.12
+- Added option to post spots
+- Save the NZB file of uploaded content
+- Fixed bug in saving some settings
+- Fixed issue on some browsers (Opera, and Safari) not able to use the basket buttons
+- Updated smarty to 3.1.19
+
+
 1.11.0
 - Use spotter IDs blacklist also for comments
 - Added option to post comments on spots

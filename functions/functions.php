@@ -949,7 +949,6 @@ function group_category(DatabaseConnection $db, $groupid, $userid)
     return $res[0]['name'];
 }
 
-
 function group_name(DatabaseConnection $db, $groupid)
 {
     global $LN;
@@ -1388,31 +1387,48 @@ function get_active_feeds(DatabaseConnection $db)
 
     return $feeds;
 }
-function get_all_group_by_id(DatabaseConnection $db, $id)
+
+function get_all_group_by_id(DatabaseConnection $db, $groupid)
 {
     global $LN;
-    assert(is_numeric($id));
-    $res = $db->select_query('"name" FROM groups WHERE "ID" = ?', 1, array($id));
+    assert(is_numeric($groupid));
+    $res = $db->select_query('"name" FROM groups WHERE "ID"=?', 1, array($groupid));
 
     if (!isset($res[0]['name'])) {
-        throw new exception($LN['error_groupnotfound'] . ": $id", ERR_GROUP_NOT_FOUND);
+        throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
     }
 
     return strtolower($res[0]['name']);
 }
 
-function get_group_by_id(DatabaseConnection $db, $id)
+function get_group_by_id(DatabaseConnection $db, $groupid)
 {
     global $LN;
-    assert(is_numeric($id));
-    $res = $db->select_query('"name" FROM groups WHERE "active" = ? AND "ID" = ?', 1, array(newsgroup_status::NG_SUBSCRIBED, $id));
+    assert(is_numeric($groupid));
+    $res = $db->select_query('"name" FROM groups WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
 
     if (!isset($res[0]['name'])) {
-        throw new exception($LN['error_groupnotfound'] . ": $id", ERR_GROUP_NOT_FOUND);
+        throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
     }
 
     return strtolower($res[0]['name']);
 }
+
+function get_all_group_by_name(DatabaseConnection $db, $name)
+{
+    global $LN;
+    assert(is_string($name));
+
+    $search_type = $db->get_pattern_search_command('LIKE');
+    $res = $db->select_query("\"ID\" FROM groups WHERE \"name\" $search_type ?", 1, array($name));
+
+    if (!isset($res[0]['ID'])) {
+        throw new exception($LN['error_groupnotfound']. ": $name", ERR_GROUP_NOT_FOUND);
+    }
+
+    return $res[0]['ID'];
+}
+
 
 function get_group_by_name(DatabaseConnection $db, $name)
 {

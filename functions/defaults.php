@@ -238,6 +238,7 @@ function get_default_config()
     $prefArray_root['compress_nzb']             = 0;
     $prefArray_root['nice_value']               = 0;
     $prefArray_root['maxheaders']               = MAX_HEADERS; // total amount of headers gotten in one update batch
+    $prefArray_root['connection_timeout']       = SERVER_CONNECTION_TIMEOUT; // total amount of headers gotten in one update batch
     $prefArray_root['replacement_str']          = '_';
     $prefArray_root['maxexpire']                = MAX_EXPIRE_TIME;
     $prefArray_root['group_filter']             = URD_NNTP::GROUP_FILTER;

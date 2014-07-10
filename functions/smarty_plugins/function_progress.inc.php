@@ -31,7 +31,6 @@ function smarty_function_urd_progress($params, &$smarty)
     $classes = isset($params['classes']) ? $params['classes'] : '';
     $complete = isset($params['complete']) ? $params['complete'] : 100; // percentage
     $complete = max(min($complete, 100), 0);
-
     $width_done = round($width * $complete / 100);
     $width_remain = $width - $width_done;
 
@@ -44,7 +43,7 @@ function smarty_function_urd_progress($params, &$smarty)
 
     $random_id = mt_rand();
 
-    $style = "<div style=\"display:inline; float:left;\"><div class=\"progressbar $background $classes\" style=\"width:{$width}px\">";
+    $style = "<div style=\"display:inline; float:left; left:5px;\"><div class=\"progressbar $background $classes\" style=\"width:{$width}px\">";
     $style .= "<span class=\"{$colour}\" style=\"width:$complete%;\">";
     $style .= "</span></div></div><div class=\"progress_text\">";
     if ($text != '') {

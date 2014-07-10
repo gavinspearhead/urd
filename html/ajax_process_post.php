@@ -31,7 +31,7 @@ $pathpn = realpath(dirname(__FILE__));
 require_once "$pathpn/../functions/ajax_includes.php";
 
 if (!urd_user_rights::is_poster($db, $userid)) {
-    throw new exception($LN['error_accessdenied'] . "$userid");
+    throw new exception($LN['error_accessdenied'] . " $userid");
 }
 
 verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid, TRUE);
@@ -44,6 +44,10 @@ function get_post_vals(DatabaseConnection $db, $userid, &$timestamp)
     $groupID = get_post('groupid', '');
     if ($groupID == '' || !is_numeric($groupID) || !group_exists($db, $groupID)) {
         throw new exception ($LN['error_groupnotfound'] . " $groupID");
+    }
+    $groupID_nzb = get_post('groupid_nzb', '');
+    if ($groupID_nzb == '' || !is_numeric($groupID_nzb) || !group_exists($db, $groupID_nzb)) {
+        throw new exception ($LN['error_groupnotfound'] . " $groupID_nzb");
     }
 
     $src_dir = my_realpath(get_post('directory', ''));
@@ -99,6 +103,7 @@ function get_post_vals(DatabaseConnection $db, $userid, &$timestamp)
     $vals = array(
         'userid' => (int) $userid,
         'groupid' => (int) $groupID,
+        'groupid_nzb' => (int) $groupID_nzb,
         'src_dir' => $src_dir,
         'tmp_dir' => $tmp_dir,
         'subject' => $subject,
@@ -110,35 +115,17 @@ function get_post_vals(DatabaseConnection $db, $userid, &$timestamp)
         'status' => $status,
         'start_time' => $now,
         'size' => "$size",
+        'nzb_file' => '',
         'stat_id' => 0,
         'file_count' => 0,
     );
-
     return $vals;
 }
 
 function add_post_to_db(DatabaseConnection $db, $userid, &$timestamp)
 {
-    $cols = array(
-        'userid',
-        'groupid',
-        'src_dir',
-        'tmp_dir',
-        'subject',
-        'poster_id',
-        'poster_name',
-        'recovery_par',
-        'filesize_rar',
-        'delete_files',
-        'status',
-        'start_time',
-        'size',
-        'stat_id',
-        'file_count'
-    );
-
     $vals = get_post_vals($db, $userid, $timestamp);
-    $id = $db->insert_query('postinfo', $cols, $vals, TRUE);
+    $id = $db->insert_query_2('postinfo', $vals, TRUE);
     $stat_id = add_stat_data($db, stat_actions::POST, 0, $userid);
     set_stat_id($db, $id, $stat_id, TRUE);
 
@@ -147,9 +134,8 @@ function add_post_to_db(DatabaseConnection $db, $userid, &$timestamp)
 
 function update_post_db(DatabaseConnection $db, $userid, $postid, &$timestamp)
 {
-    $cols = array('userid', 'groupid', 'src_dir', 'tmp_dir', 'subject', 'poster_id', 'poster_name', 'recovery_par', 'filesize_rar', 'delete_files', 'status', 'start_time', 'size', 'stat_id');
     $vals = get_post_vals($db, $userid, $timestamp);
-    $db->update_query('postinfo', $cols, $vals, '"id" =?', array($postid));
+    $db->update_query_2('postinfo', $vals, '"id" =?', array($postid));
 }
 
 $rprefs = load_config($db);

@@ -80,7 +80,7 @@ class spotparser
         if (empty($xml->Image->Segment)) {
             $img = (string) $xml->Image;
             $tpl_spot['image'] = '';
-            if (substr($img, 0, 7) == 'http://' || substr($img, 0, 8) == 'https://' ||  substr($img, 0, 10) == 'data:image') {
+            if (substr($img, 0, 7) == 'http://' || substr($img, 0, 8) == 'https://' || substr($img, 0, 10) == 'data:image') {
                 $tpl_spot['image'] = $img;
             }
         } else {
@@ -143,7 +143,7 @@ class spotparser
 
     private static function fix_padding($strInput)
     {
-       return $strInput . str_repeat('=', (4 - (strlen($strInput) %4 )) %4);
+       return $strInput . str_repeat('=', (4 - (strlen($strInput) % 4 )) % 4);
     }
 
     public static function unspecial_string($strInput)

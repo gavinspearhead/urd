@@ -179,7 +179,7 @@ class thread_list
                 return $t->get_pid();
             }
         }
-        throw new exception ('Thread not found', ERR_THREAD_NOT_FOUND);
+        throw new exception ("Thread not found (pid: $action_id)", ERR_THREAD_NOT_FOUND);
     }
     public function get_pid_cmd($cmd, $arg)
     {

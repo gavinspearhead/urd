@@ -127,7 +127,7 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 {if $b_type eq "textarea"}{strip}
     {$name=$block->id}
     <input type="hidden" id="{$name}_orig_size" value="{$block->rows}"/>
-    <textarea name="{$block->name}" id="{$name}_select" rows="2" cols="{$block->cols}" {$block->javascript}
+    <textarea name="{$block->name}" id="{$name}" rows="2" cols="{$block->cols}" {$block->javascript}
     onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"
     >{$block->value|escape:htmlall} 
     </textarea>{/strip}
@@ -137,8 +137,8 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 {if $b_type eq "select"}
 {$opts=$block->options}
 {$js=$block->javascript|escape:javascript}
-<select name="{$block->name}" id="{$block->id}_select" 
-onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}' {if $js!=''},  { 'fn':'{$js}' } {/if});">
+<select name="{$block->name}" id="{$block->id}" 
+onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}' {if $js!=''}, { 'fn':'{$js}' } {/if});">
 {foreach $opts as $k => $q}
 <option value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
 {/foreach}
@@ -150,7 +150,7 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 {if $b_type eq "multiselect"}
     {$name=$block->id}
     <input type="hidden" id="{$name}_orig_size" value="{$block->size}"/>
-    <select name="{$block->name}" id="{$name}_select" size="2" multiple="multiple" {$block->javascript} 
+    <select name="{$block->name}" id="{$name}" size="2" multiple="multiple" {$block->javascript} 
     onchange="javascript:update_setting('{$name|escape:javascript}', '{$b_type|escape:javascript}');"
     >
     {$opts=$block->options_triple}
@@ -163,20 +163,20 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 {/if}
 {if $b_type eq "period"}
     {$name=$block->id}
-    <select name="{$block->period_name}" size="1" id="{$block->period_name}_select" class="update" {$block->javascript}
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}_select' {/if} } );"
+    <select name="{$block->period_name}" size="1" id="{$block->period_name}" class="update" {$block->javascript}
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} } );"
     >
     {html_options values=$block->period_keys output=$block->period_texts selected=$block->period_selected } 
     </select> @
     <input type="text" id="{$block->time1_name}" name="{$block->time1_name}" id="{$block->time1_name}"  {if $block->time1_value ge 0}value="{$block->time1_value}"{/if} class="time" 
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}_select' {/if} }  );"
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} }  );"
     />:
     <input type="text" id="{$block->time2_name}" name="{$block->time2_name}" id="{$block->time2_name}" {if $block->time2_value !== ''}value="{$block->time2_value|string_format:"%02d"}"{/if} class="time" 
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}_select' {/if} }  );"
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} }  );"
     />
     {if $block->extra_name neq ""}
-    <select name="{$block->extra_name}" size="1", id="{$block->extra_name}_select"
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}_select' {/if} } );" >
+    <select name="{$block->extra_name}" size="1", id="{$block->extra_name}"
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} } );" >
         {html_options options=$block->extra_options selected=$block->extra_selected }
     </select>
     {/if}
