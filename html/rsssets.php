@@ -161,6 +161,7 @@ if ($order == '') {
 init_smarty($title, 1, $add_menu);
 
 list($size, $suffix) = format_size($totbin, 'h', '', 1000);
+
 $smarty->assign('rssurl',		$rssurl);
 $smarty->assign('total_articles', $size . $suffix);
 $smarty->assign('search',       $orisearch);

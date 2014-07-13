@@ -513,7 +513,7 @@ class server_data { // lots of cleaning up to do
     {
         assert(is_numeric($server_id) && is_numeric($userid) && is_numeric($timeout) && is_numeric($priority));
         $item_unpause = new action(urdd_protocol::COMMAND_SET, "SERVER ENABLE $server_id $priority", $userid, TRUE, DEFAULT_PRIORITY);
-        echo_debug("Scheduling 'SERVER ENABLE $server_id $priority' at " . time() + $timeout, DEBUG_SERVER);
+        echo_debug("Scheduling 'SERVER ENABLE $server_id $priority' at " . date('r', time() + $timeout), DEBUG_SERVER);
         if (!$this->schedule->has_equal($item_unpause)) {
             $job_unpause = new job($item_unpause, time() + $timeout, 0);
             $this->add_schedule($db, $job_unpause);
@@ -1052,7 +1052,6 @@ class server_data { // lots of cleaning up to do
         $this->free_nntp_slots = $this->max_total_nntp_threads;
         $this->free_total_slots = $this->max_total_threads;
         $this->free_db_intensive_slots = $this->max_db_intensive_threads;
-
         $this->servers->restore_server_settings();
     }
 

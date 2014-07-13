@@ -1824,3 +1824,22 @@ background: #888888;
   background-image: -o-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
   background-image: linear-gradient(to bottom, #aed5ed, #7bbbe2 70%, #5aaadb);
 }
+
+
+#sidebar_button
+{
+    position: fixed;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    color: black;
+    border-radius: 0 5px 5px 0;
+    border: #FFFFFF 1px solid;
+    display:none;
+}
+
+#contentleft
+{
+    border-right: solid 1px #FFFFFF;
+}
+
+

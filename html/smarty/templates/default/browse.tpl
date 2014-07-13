@@ -31,8 +31,7 @@
 {/foreach}
 </div>
 
-<div id="advanced_search_button" class="floatleft iconsize dynimgplus buttonlike" onclick="javascript:fold_adv_search('advanced_search_button', 'advanced_search');" {urd_popup type="small" text=$LN_advanced_search }>
-</div>&nbsp;
+</div-->&nbsp;
 	&nbsp;
 	<input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
@@ -71,48 +70,6 @@
 
 <div id="minibasketdiv" class="hidden"></div>
 
-<div class="advanced_search hidden" id="advanced_search">
-<table>
-<tr>
-<td>{$LN_setsize}:</td>
-<td><input type="text" id="minsetsize"  size="6" value="{$minsetsize|escape:htmlall}"/></td> 
-<td><div id="setsize" style="width:100px;"></div></td>
-<td><input type="text" id="maxsetsize" size="6" value="{$maxsetsize|escape:htmlall}"/></td>
-<td>{$LN_age}:</td>
-<td><input type="text" id="minage" name="minage" size="6" value="{$minage|escape:htmlall}"/></td> 
-<td><div id="setage" style="width:100px;"></div></td>
-<td><input type="text" id="maxage" name="maxage" size="6" value="{$maxage|escape:htmlall}"/></td>
-</tr>
-<tr>
-<td>{$LN_rating}:</td>
-<td><input type="text" id="minrating" name="minrating" size="6" value="{$minrating|escape:htmlall}"/></td> 
-<td><div id="setrating" style="width:100px;"></div></td>
-<td><input type="text" id="maxrating" name="maxrating" size="6" value="{$maxrating|escape:htmlall}"/></td>
-<td>{$LN_complete}:</td>
-<td><input type="text" id="mincomplete" name="mincomplete" size="6" value="{$mincomplete|escape:htmlall}"/></td> 
-<td><div id="setcomplete" style="width:100px;"></div></td>
-<td><input type="text" id="maxcomplete" name="maxcomplete" size="6" value="{$maxcomplete|escape:htmlall}"/></td>
-</tr>
-
-<tr>
-<td></td>
-<td>
-<select name="flag" class="search" id="flag">
-    <option {if $flag == ''} selected="selected" {/if} value="">{$LN_browse_allsets}</option>
-    <option {if $flag == 'interesting'} selected="selected" {/if} value="interesting">{$LN_browse_interesting}</option>
-    <option {if $flag == 'read'} selected="selected" {/if} value="read">{$LN_browse_downloaded}</option>
-{if $show_makenzb neq 0}
-<option {if $flag == 'nzb'} selected="selected" {/if} value="nzb">{$LN_browse_nzb}</option>
-{/if}
-<option {if $flag == 'kill'} selected="selected" {/if} value="kill">{$LN_browse_killed}</option>
-</select>&nbsp;
-</td>
-<td colspan="5"></td>
-<td><input type="button" value="{$LN_reset}" class="submitsmall" onclick='javascript:clear_form("searchform");'/></td>
-</tr>
-
-</table>
-</div>
 </form>
 {/capture}
 
@@ -158,25 +115,40 @@
 
 <div id="setsdiv" class="hidden">
 </div>
+<input type="hidden" id="minsetsizelimit" value="{$minsetsizelimit}"/>
+<input type="hidden" id="maxsetsizelimit" value="{$maxsetsizelimit}"/>
+<input type="hidden" id="minratinglimit" value="{$minratinglimit}"/>
+<input type="hidden" id="maxratinglimit" value="{$maxratinglimit}"/>
+<input type="hidden" id="minagelimit" value="{$minagelimit}"/>
+<input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
+<input type="hidden" id="mincompletelimit" value="{$mincompletelimit}"/>
+<input type="hidden" id="maxcompletelimit" value="{$maxcompletelimit}"/>
 
 <script type="text/javascript">
 $(document).ready(function() {
-   init_slider({$minsetsizelimit}, {$maxsetsizelimit}, "#setsize", "#minsetsize", "#maxsetsize");
-   init_slider({$minagelimit}, {$maxagelimit}, "#setage", "#minage", "#maxage");
-   init_slider({$minratinglimit}, {$maxratinglimit}, "#setrating", "#minrating", "#maxrating");
-   init_slider({$mincompletelimit}, {$maxcompletelimit}, "#setcomplete", "#mincomplete", "#maxcomplete");
+   load_side_bar(function() {
+      load_sets( {
+          'offset':'0'
+           {if $groupID != ''}      , 'next':'{$groupID}' {/if}
+           {if $minsetsize != ''}   , 'minsetsize': '{$minsetsize|escape:javascript}' {/if}
+           {if $maxsetsize != ''}   , 'maxsetsize': '{$maxsetsize|escape:javascript}' {/if}
+           {if $minage != ''}       , 'minage': '{$minage|escape:javascript}' {/if}
+           {if $maxage != ''}       , 'maxage': '{$maxage|escape:javascript}' {/if}
+           {if $minrating != ''}    , 'minrating': '{$minrating|escape:javascript}' {/if}
+           {if $maxrating != ''}    , 'maxrating': '{$maxrating|escape:javascript}' {/if}
+           {if $mincomplete != ''}  , 'mincomplete': '{$mincomplete|escape:javascript}' {/if}
+           {if $maxcomplete != ''}  , 'maxcomplete': '{$maxcomplete|escape:javascript}' {/if}
+           {if $setid == ''}        , 'setid': '' {/if}
+           {if $flag != ''}         , 'flag': '{$flag|escape:javascript}' {/if}
+           }
+        );
 
-    {if $groupID != ''}
-        load_sets( { 'next':'{$groupID}' } );
-    {else}
-        load_sets();
-    {/if}
-
-    set_scroll_handler('#contentout', load_sets);
-    {* Load basket: *}
-    update_basket_display();
-    $('#searchbar').html( $('#searchformdiv').html());
-    $('#searchformdiv').html('');
+        set_scroll_handler('#contentout', load_sets);
+        {* Load basket: *}
+        update_basket_display();
+        $('#searchbar').html( $('#searchformdiv').html());
+        $('#searchformdiv').html('');
+    });
 });
 </script>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>

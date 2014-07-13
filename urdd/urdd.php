@@ -341,7 +341,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                         queue_gensets($db, $servers, array($item->get_args()), $item->get_userid(), DEFAULT_PRIORITY - 1);
                     } elseif (compare_command($cmd, urdd_protocol::COMMAND_GENSETS)) {
                         if (get_config($db, 'auto_expire') == 1 && !$item->is_paused()) {
-                            queue_purge_expire($db, urdd_protocol::COMMAND_EXPIRE, array($item->get_args()), $item->get_userid(), $servers, DEFAULT_PRIORITY);
+                            queue_purge_expire($db, urdd_protocol::COMMAND_EXPIRE, array($item->get_args()), $item->get_userid(), $servers, DEFAULT_PRIORITY + 2);
                         }
                         if (get_config($db, 'auto_getnfo') == 1 && !$item->is_paused()) {
                             queue_getnfo($db, $servers, $item->get_userid(), DEFAULT_PRIORITY);

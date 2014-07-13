@@ -721,22 +721,33 @@ div.sets_inner
 
 #contentout
 {
-    _overflow-y: auto;
     height:100%; 
+    float:left;
+}
+
+#sbdiv
+{
+    float: left;
 }
 
 .status_light
 {
   height: 12px;
-  width:12px;
+  width: 12px;
   border-radius: 6px;
   margin-left: 4px;
 }
 .progress_text
 {
-    position:relative;
+    position: relative;
     top: 0; 
     right: 0; 
     display:inline
 }
 
+#contentleft
+{
+    float:left; 
+    margin-top:22px;
+    padding-left: 3px;
+}

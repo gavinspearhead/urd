@@ -1,11 +1,13 @@
 
 </div>
+</div>
 
 <script type="text/javascript">
 $(document).ready( function() { 
     init();
     update_quick_status();
     update_disk_status();
+    show_sidebar(false);
     $('#message_bar').click(function() { hide_message('message_bar', 0); } );  
     $('#scrollmenuright').click(function(e) { scroll_menu_right(e); } );
     $('#scrollmenuleft').click(function(e) { scroll_menu_left(e); } );

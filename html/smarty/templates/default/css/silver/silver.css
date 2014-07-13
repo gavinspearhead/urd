@@ -1832,8 +1832,7 @@ background: #cccccc;
     background: -ms-linear-gradient(top, #b31f0b 0%,#96180a 70%,#801408 100%);
     background: linear-gradient(to bottom, #b31f0b 0%,#96180a 70%,#801408 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b31f0b', endColorstr='#801408',GradientType=0 );
-
-  }
+}
 
 .orange {
   background: #f2b63c;
@@ -1852,3 +1851,21 @@ background: #cccccc;
   background-image: -o-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
   background-image: linear-gradient(to bottom, #aed5ed, #7bbbe2 70%, #5aaadb);
 }
+
+#sidebar_button
+{
+    position: fixed;
+    background-color: #a0a0a0;
+    font-weight: bold;
+    color: black;
+    border-radius: 0 5px 5px 0;
+    border: #a0a0a0 1px solid;
+    display:none;
+}
+
+#contentleft
+{
+    border-right: solid 1px #a0a0a0;
+}
+
+

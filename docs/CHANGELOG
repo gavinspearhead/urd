@@ -1,8 +1,13 @@
 1.12
-- Added option to post spots
+- Added posting spots
+- Added option to set the timeout for which a server will not be used after a connection timed out error
+- Added side bar for advanced search, spots category filters, etc
 - Save the NZB file of uploaded content
 - Fixed bug in saving some settings
+- Fixed a bug in not handling the expire settings correctly on loading spots and expiring spots
 - Fixed issue on some browsers (Opera, and Safari) not able to use the basket buttons
+- Fixed a bug in loading the group settings (thanx to Reab4)
+- Fixed a bug in handling the expire date (thanx to Reab4)
 - Updated smarty to 3.1.19
 
 

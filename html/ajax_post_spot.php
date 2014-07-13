@@ -29,7 +29,6 @@ require_once "$pathaet/../functions/ajax_includes.php";
 
 verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid);
 
-
 function add_nzb_to_spot_post(DatabaseConnection $db, $userid, $filename, $orig_filename, $postid)
 {
     global $LN;
@@ -52,7 +51,7 @@ function add_nzb_to_spot_post(DatabaseConnection $db, $userid, $filename, $orig_
     $dlpath = get_dlpath($db) . TMP_PATH;
     do {
         $dlpath = find_unique_name($dlpath, $username . DIRECTORY_SEPARATOR, 'spotpost_nzb_' . $postid);
-    }while (! mkdir($dlpath, 0775, TRUE));
+    } while (! mkdir($dlpath, 0775, TRUE));
     $nzb_file = find_unique_name($dlpath, $orig_filename, '', '.nzb', TRUE);
 
     move_uploaded_file($filename, $nzb_file);
@@ -82,7 +81,6 @@ function add_image_to_spot_post(DatabaseConnection $db, $userid, $filename, $ori
     } while (!mkdir($dlpath, 0775, TRUE));
     $image_file = find_unique_name($dlpath, $orig_filename, '', '.jpg', TRUE);
     move_uploaded_file($filename, $image_file);
-    file_put_contents('/tmp/foo', array($filename, $image_file, $image_width,$image_height) );
     $db->update_query_2('spot_postinfo', array('image_file' => $image_file, 'image_width' => $image_width, 'image_height' => $image_height), '"id"=?', array($postid));
 }
 
@@ -104,7 +102,7 @@ function handle_uploaded_file(DatabaseConnection $db, $userid)
         }
         add_nzb_to_spot_post($db, $userid, $filename, $orig_filename, $postid); 
     } else {
-        throw new exception ('Unknown upload type');
+        throw new exception('Unknown upload type');
     }
 }
 
@@ -158,7 +156,6 @@ function insert_spot_post(DatabaseConnection $db, $userid)
     $poster_name = get_pref($db, 'poster_name', $userid);
     $vals = array(
         'userid' => $userid,
-        'poster_id' => $poster_email,
         'poster_name' => $poster_name,
         'category' => $cat,
         'subcat' => '',
@@ -226,14 +223,15 @@ try {
     switch (strtolower($cmd)) {
         case 'upload_file':
             handle_uploaded_file($db, $userid);
-            die(json_encode(array('error'=>0)));
+            die(json_encode(array('error' => 0)));
             break;
         case 'category_info':
             $cat = get_request('category');
             $adult = urd_user_rights::is_adult($db, $userid);
             $subcats = SpotCategories::get_subcats($cat, $adult);
             $smarty->assign('subcats',    	    $subcats);
-            $smarty->display('ajax_subcats_info.tpl');
+            $content = $smarty->fetch('ajax_subcats_info.tpl');
+            die(json_encode(array('error' => 0, 'content'=>$content)));
             break;
         case 'start_post' :
             start_post_spot($db, $userid);
@@ -244,7 +242,7 @@ try {
         case 'post' :
             // image file and nzbfile
             $post_id = insert_spot_post($db, $userid);
-            die(json_encode(array('error'=>0, 'post_id' => $post_id)));
+            die(json_encode(array('error' => 0, 'post_id' => $post_id)));
             break;
         case 'show':
             init_smarty('', 0);
@@ -272,8 +270,9 @@ try {
             $smarty->assign('poster_email',    	$poster_email);
             $smarty->assign('categories',	    $categories);
 
-            $smarty->display('ajax_post_spot.tpl');
-            die;
+            $content = $smarty->fetch('ajax_post_spot.tpl');
+            die(json_encode(array('error' => 0, 'content'=>$content)));
+            break;
         default:
             throw new exception($LN['error_novalidaction']);
     }

@@ -35,6 +35,7 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
 
+
 $origroupID = $groupID = get_request('groupID', '');
 $minsetsize = get_request('minsetsize', 0, 'is_numeric');
 $maxage  = get_request('maxage', '', 'is_numeric');

@@ -325,7 +325,7 @@ function enable_usenet_server(DatabaseConnection $db, $id, $priority=0)
 function set_priority_usenet_server(DatabaseConnection $db, $id, $priority)
 {
     assert(is_numeric($id) && is_numeric($priority));
-    $db->update_query_2('usenet_servers', array('priority'=>$priority), '"id"=?', array($id));
+    $db->update_query_2('usenet_servers', array('priority' => $priority), '"id"=?', array($id));
 }
 
 function get_priority_usenet_server(DatabaseConnection $db, $id)

@@ -445,44 +445,62 @@ class feed_viewer
     }
 }
 
-$perpage = get_maxperpage($db, $userid);
-$perpage = get_request('perpage', $perpage);
-$only_rows  = get_request('only_rows', 0);
-$adult = urd_user_rights::is_adult($db, $userid);
-$feed_id = get_request('feed_id', 0);
-$search = html_entity_decode(get_request('search', ''));
-$offset  = get_request('offset', 0);
-$maxage  = get_request('maxage', 0);
-$order   = get_request('order', '');
-$flag    = get_request('flag', '');
-$maxage  = get_request('maxage', '');
-$minage  = get_request('minage', '');
-$minsetsize = get_request('minsetsize', '');
-$maxsetsize = get_request('maxsetsize', '');
-$maxrating  = get_request('maxrating', '');
-$minrating  = get_request('minrating', '');
-$setid   = get_request('setid','');
+try {
 
-$sets_viewer = new feed_viewer($db, $userid);
-$sets_viewer->set_search_options($search, $feed_id, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $order);
-list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
-$allsets = $sets_viewer->get_set_data($perpage, $offset);
-$rssurl = $sets_viewer->get_rss_url($perpage);
+    $perpage = get_maxperpage($db, $userid);
+    $perpage = get_request('perpage', $perpage);
+    $only_rows  = get_request('only_rows', 0);
+    $adult = urd_user_rights::is_adult($db, $userid);
+    $feed_id = get_request('feed_id', 0);
+    $search = html_entity_decode(get_request('search', ''));
+    $offset  = get_request('offset', 0);
+    $maxage  = get_request('maxage', 0);
+    $order   = get_request('order', '');
+    $flag    = get_request('flag', '');
+    $maxage  = get_request('maxage', '');
+    $minage  = get_request('minage', '');
+    $minsetsize = get_request('minsetsize', '');
+    $maxsetsize = get_request('maxsetsize', '');
+    $maxrating  = get_request('maxrating', '');
+    $minrating  = get_request('minrating', '');
+    $setid   = get_request('setid','');
 
-init_smarty('', 0);
-$smarty->assign('rssurl',       $rssurl);
-$smarty->assign('sort',         $sets_viewer->get_sort());
-$smarty->assign('killflag',		$sets_viewer->get_killflag());
-$smarty->assign('isadmin',		$isadmin);
-$smarty->assign('feed_id',      $feed_id);
-if (!$only_rows) {
-    $smarty->assign('pages',        $pages);
-    $smarty->assign('lastpage',     $totalpages);
-    $smarty->assign('currentpage',  $activepage);
+    $sets_viewer = new feed_viewer($db, $userid);
+    $sets_viewer->set_search_options($search, $feed_id, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $order);
+    list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
+    $allsets = $sets_viewer->get_set_data($perpage, $offset);
+    $rssurl = $sets_viewer->get_rss_url($perpage);
+
+    init_smarty('', 0);
+    $smarty->assign('rssurl',       $rssurl);
+    $smarty->assign('sort',         $sets_viewer->get_sort());
+    $smarty->assign('killflag',		$sets_viewer->get_killflag());
+    $smarty->assign('isadmin',		$isadmin);
+    $smarty->assign('feed_id',      $feed_id);
+    if (!$only_rows) {
+        $smarty->assign('pages',        $pages);
+        $smarty->assign('lastpage',     $totalpages);
+        $smarty->assign('currentpage',  $activepage);
+    }
+    $smarty->assign('allsets',      $allsets);
+    $smarty->assign('USERSETTYPE_GROUP',    USERSETTYPE_GROUP);
+    $smarty->assign('USERSETTYPE_RSS',      USERSETTYPE_RSS);
+    $smarty->assign('only_rows',    $only_rows);
+
+    $content = $smarty->fetch('ajax_rsssets.tpl');
+
+    die(json_encode(array(
+        'error' => 0,
+        'content' => $content,
+        'minsetsize' => $minsetsize,
+        'maxsetsize' => $maxsetsize,
+        'minage' => $minage,
+        'maxage' => $maxage,
+        'flag' => $flag,
+        'minrating' => $minrating,
+        'maxrating' => $maxrating
+    )));
+
+} catch (exception $e) {
+    die(json_encode(array('error'=> $e->getMessage()))); 
 }
-$smarty->assign('allsets',      $allsets);
-$smarty->assign('USERSETTYPE_GROUP',    USERSETTYPE_GROUP);
-$smarty->assign('USERSETTYPE_RSS',      USERSETTYPE_RSS);
-$smarty->assign('only_rows',    $only_rows);
-
-$smarty->display('ajax_rsssets.tpl');

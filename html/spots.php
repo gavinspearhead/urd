@@ -60,7 +60,7 @@ if ($isadmin) {
 }
 
 if (urd_user_rights::is_poster($db, $userid)) {
-    $add_menu['actions'][] =new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST |urd_modules::URD_CLASS_SPOTS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST |urd_modules::URD_CLASS_SPOTS, '', 'command');
 }
 
 $add_menu['actions'][] = new menu_item2 ('add_search', 'add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
@@ -143,6 +143,7 @@ $maxrating  = get_request('maxrating', 10, 'is_numeric');
 $minrating  = get_request('minrating', 0, 'is_numeric');
 $maxcomplete = get_request('maxcomplete', '', 'is_numeric');
 $mincomplete = get_request('mincomplete', '', 'is_numeric');
+
 
 if ($order == '') {
     $order = map_default_sort($prefs, array('subject' => 'title', 'date' => 'stamp', 'better_subject' => 'title'));

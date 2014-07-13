@@ -282,7 +282,7 @@ define('URDD_SCRIPT_EXT', 'urdd_sh');
 define ('MAX_EXPIRE_TIME',              365);
 define ('DEFAULT_EXPIRE_TIME',          5);
 define ('DEFAULT_SPOTS_EXPIRE_TIME',    365);
-define ('MAX_HEADERS',                  1000);
+define ('MAX_HEADERS',                  20000);
 define ('QUEUE_SIZE',                   20000);
 
 define ('MAX_RECONNECTION_ATTEMPTS_PER_THREAD', 15);

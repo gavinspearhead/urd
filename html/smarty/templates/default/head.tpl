@@ -120,8 +120,12 @@
 
 <div id="quickmenu" class="quickmenuoff"></div>
 <div id="quickwindow" class="quickwindowoff"></div>
+<div id="contentleft">
+<div id="left_content"></div>
+</div>
 <div id="searchbar"></div>
 <div id="topcontent">
 <div id="contentout">
+<div id="sbdiv" onclick="javascript:show_sidebar();"><span id="sidebar_button">></span></div>
 <div id="content" class="down3">
 <input type="hidden" name="urdd_message" id="urdd_message" value="{$offline_message}"/>

@@ -456,15 +456,15 @@ class usenet_servers
 
         return FALSE;
     }
-    public function find_free_slot(array $already_used_servers=array(), $need_posting)
+    public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE)
     {
         $server_id = FALSE;
         $prio = 0;
         foreach ($this->servers as $srv) {
             $srv_prio = $srv->get_priority();
             $id = $srv->get_id();
-            if ($srv->has_free_slot($this->update_server) && $srv->is_enabled() && $srv->get_priority() > 0 &&
-                ($srv_prio < $prio || $server_id === FALSE) && !in_array($id, $already_used_servers)
+            if ($srv->has_free_slot($this->update_server) && $srv->is_enabled() && $srv->get_priority() > 0
+                && ($srv_prio < $prio || $server_id === FALSE) && !in_array($id, $already_used_servers)
                 && ($need_posting === FALSE || $srv->get_posting())) {
                 $server_id = $srv->get_id();
                 $prio = $srv->get_priority();

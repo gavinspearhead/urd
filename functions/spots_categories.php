@@ -572,6 +572,7 @@ class SpotCategories
             );
         }
 
+        uasort($hcats, 'spot_name_cmp');
         return $hcats;
     }
 

@@ -656,7 +656,7 @@ Array
                 continue;
             }
             $date = strtotime($msg[$this->xover_date]);
-            if ($date < $mindate && $date > 0) {
+            if (($date < $mindate && $date > 0) || $date <= 0) {
                 ++$cnt;
               //  echo_debug("too old: " . $msg[$this->xover_date], DEBUG_SERVER);
                 continue;
@@ -673,7 +673,7 @@ Array
                 $spot_comments[] = array($messageID);
             } else {
                 $bytes = $msg[$this->xover_bytes];
-                if ($bytes <= 0 || $date <= 0) {
+                if ($bytes <= 0) {
                     //var_dump("invalid bytes or invalid date:", $msg);
                     continue;
                 }

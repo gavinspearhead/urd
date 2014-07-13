@@ -48,16 +48,16 @@
 </td>
 
 </tr>
-<tr> <td>{$LN_NZB_file}</td><td>
+<tr> <td>{$LN_NZB_file}</td><td colspan="2">
 <input type="text" name="_nzbfile" id="_nzbfile" style="width:150px;"/>
 <input type="file" name="nzbfile" id="nzbfile" style="display:none" onchange="$('#_nzbfile').val($(this).val());"/>
 <input type="button" class="submitsmall" value="{$LN_browse}" onclick="$('#nzbfile').click();"/> <progress id="progress_nzb"></progress>
  </td> </tr>
-<tr> <td>{$LN_image_file}</td><td>
+<tr> <td>{$LN_image_file}</td><td colspan="2">
 <input type="text" name="_imagefile" id="_imagefile" style="width:150px;"/>
 <input type="file" name="imagefile" id="imagefile" style="display:none" onchange="$('#_imagefile').val($(this).val());"/>
 <input type="button" class="submitsmall" value="{$LN_browse}" onclick="$('#imagefile').click();"/> <progress id="progress_image"></progress>
- </td> </tr>
+</td> </tr>
 </table>
 <table>
 <tr id="subcats"></tr>

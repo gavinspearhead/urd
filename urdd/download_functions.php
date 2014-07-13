@@ -426,7 +426,6 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
 
                 return;
             } elseif ($failed > 0) {
-                
                 $item->add_failed_servers($item->get_preferred_server()); // do not try this server again
 
                 // check if there is a server we haven't tried yet

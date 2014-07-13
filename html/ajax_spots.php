@@ -477,55 +477,73 @@ class spot_viewer
     }
 }
 
-list($subcats, $not_subcats) = get_subcats_requests();
-$categoryID = get_request('categoryID', '');
-$search     = html_entity_decode(trim(get_request('search', '')));
-$adult      = urd_user_rights::is_adult($db, $userid);
-$poster     = get_request('poster', '');
-$maxage     = get_request('maxage', '');
-$minage     = get_request('minage', '');
-$spotid     = get_request('spotid', '');
-$flag       = get_request('flag', '');
-$minsetsize = get_request('minsetsize', NULL);
-$maxsetsize = get_request('maxsetsize', NULL);
-$order      = get_request('order', '');
-$maxrating  = get_request('maxrating', '');
-$minrating  = get_request('minrating', '');
-$perpage    = get_maxperpage($db, $userid);
-$perpage    = get_request('perpage', $perpage);
-$only_rows  = get_request('only_rows', 0);
-$offset     = get_request('offset', 0);
+try {
+    list($subcats, $not_subcats) = get_subcats_requests();
+    $categoryID = get_request('categoryID', '');
+    $search     = html_entity_decode(trim(get_request('search', '')));
+    $adult      = urd_user_rights::is_adult($db, $userid);
+    $poster     = get_request('poster', '');
+    $maxage     = get_request('maxage', '');
+    $minage     = get_request('minage', '');
+    $spotid     = get_request('spotid', '');
+    $flag       = get_request('flag', '');
+    $minsetsize = get_request('minsetsize', NULL);
+    $maxsetsize = get_request('maxsetsize', NULL);
+    $order      = get_request('order', '');
+    $maxrating  = get_request('maxrating', '');
+    $minrating  = get_request('minrating', '');
+    $perpage    = get_maxperpage($db, $userid);
+    $perpage    = get_request('perpage', $perpage);
+    $only_rows  = get_request('only_rows', 0);
+    $offset     = get_request('offset', 0);
 
-$spots_viewer = new spot_viewer($db, $userid);
-$spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order);
-list($pages, $activepage, $totalpages, $offset) = $spots_viewer->get_page_count($perpage, $offset, $only_rows);
+    $spots_viewer = new spot_viewer($db, $userid);
+    $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order);
+    list($pages, $activepage, $totalpages, $offset) = $spots_viewer->get_page_count($perpage, $offset, $only_rows);
 
-$allsets = $spots_viewer->get_spot_data($perpage, $offset);
-$rssurl = $spots_viewer->get_rss_url($perpage);
+    $allsets = $spots_viewer->get_spot_data($perpage, $offset);
+    $rssurl = $spots_viewer->get_rss_url($perpage);
 
-if ($only_rows && count($allsets) == 0) {
-    throw new exception('No more rows');
+    if ($only_rows && count($allsets) == 0) {
+        throw new exception('No more rows');
+    }
+
+    init_smarty('', 0);
+    $smarty->assign('rssurl',		$rssurl);
+    $smarty->assign('isadmin',		$isadmin);
+    $smarty->assign('sort',         $spots_viewer->get_sort());
+    $smarty->assign('killflag',		$spots_viewer->get_killflag());
+
+    if (!$only_rows) {
+        $smarty->assign('pages',		$pages);
+        $smarty->assign('lastpage',		$totalpages);
+        $smarty->assign('currentpage',	$activepage);
+    }
+
+    $smarty->assign('only_rows',        $only_rows);
+    $smarty->assign('categoryID',	    $categoryID);
+    $smarty->assign('allsets',		    $allsets);
+    $smarty->assign('show_subcats',     get_pref($db, 'show_subcats', $userid, 0));
+    $smarty->assign('show_comments',    get_config($db, 'download_spots_comments', 0));
+    $smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
+    $smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
+    $smarty->assign('USERSETTYPE_SPOT',   	USERSETTYPE_SPOT);
+
+    $content = $smarty->fetch('ajax_spots.tpl');
+
+    die(json_encode(array(
+        'error' => 0,
+        'content' => $content,
+        'minsetsize' => $minsetsize,
+        'maxsetsize' => $maxsetsize,
+        'poster' => $poster,
+        'minage' => $minage,
+        'maxage' => $maxage,
+        'flag' => $flag,
+        'minrating' => $minrating,
+        'maxrating' => $maxrating
+    )));
+
+} catch (exception $e) {
+    die(json_encode(array('error'=> $e->getMessage()))); 
 }
-
-init_smarty('', 0);
-$smarty->assign('rssurl',		$rssurl);
-$smarty->assign('isadmin',		$isadmin);
-$smarty->assign('sort',         $spots_viewer->get_sort());
-$smarty->assign('killflag',		$spots_viewer->get_killflag());
-
-if (!$only_rows) {
-    $smarty->assign('pages',		$pages);
-    $smarty->assign('lastpage',		$totalpages);
-    $smarty->assign('currentpage',	$activepage);
-}
-
-$smarty->assign('only_rows',        $only_rows);
-$smarty->assign('categoryID',	    $categoryID);
-$smarty->assign('allsets',		    $allsets);
-$smarty->assign('show_subcats',     get_pref($db, 'show_subcats', $userid, 0));
-$smarty->assign('show_comments',    get_config($db, 'download_spots_comments', 0));
-$smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
-$smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
-$smarty->assign('USERSETTYPE_SPOT',   	USERSETTYPE_SPOT);
-
-$smarty->display('ajax_spots.tpl');

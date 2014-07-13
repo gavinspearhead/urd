@@ -286,7 +286,6 @@ function create_spot_data($db, array $spot_db_data, $userid, $nzb_segments, $ima
     $tag = $spot_db_data['tag'];
     $subject = $spot_db_data['subject'];
     $poster_name = $spot_db_data['poster_name'];
-    $poster_email = $spot_db_data['poster_id'];
     $user_signature = $spot_signing->signMessage($user_privatekey, $messageid);
 		/*
 		 * Create the spotnet from header part accrdoing to the following structure:

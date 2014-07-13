@@ -85,7 +85,8 @@ class action
         $this->preview = FALSE;
         $this->active_server = (int) 0;
         $this->preferred_server = (int) 0;
-        $this->temp_fail_servers = $this->perm_fail_servers = array();
+        $this->temp_fail_servers = array();
+        $this->perm_fail_servers = array();
         $this->db_intensive = (bool) get_command_db_intensive($cmd);
     }
     public function set_command($cmd)

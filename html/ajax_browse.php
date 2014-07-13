@@ -490,45 +490,65 @@ class group_viewer
     }
 }
 
-$search = html_entity_decode(trim(get_request('search', '')));
-$offset  = get_request('offset', 0);
+try {
 
-$order   = get_request('order', '');
-$flag    = get_request('flag', '');
-$maxage  = get_request('maxage', '');
-$minage  = get_request('minage', '');
-$minsetsize = get_request('minsetsize', NULL);
-$maxsetsize = get_request('maxsetsize', NULL);
-$groupID = get_request('groupID', 0);
+    $search = html_entity_decode(trim(get_request('search', '')));
+    $offset  = get_request('offset', 0);
 
-$maxrating  = get_request('maxrating', '');
-$minrating  = get_request('minrating', '');
-$maxcomplete = get_request('maxcomplete', '');
-$mincomplete = get_request('mincomplete', '');
+    $order   = get_request('order', '');
+    $flag    = get_request('flag', '');
+    $maxage  = get_request('maxage', '');
+    $minage  = get_request('minage', '');
+    $minsetsize = get_request('minsetsize', NULL);
+    $maxsetsize = get_request('maxsetsize', NULL);
+    $groupID = get_request('groupID', 0);
 
-$setid = get_request('setid', '');
-$perpage = get_maxperpage($db, $userid);
-$perpage = get_request('perpage', $perpage);
-$only_rows  = get_request('only_rows', 0);
-$sets_viewer = new group_viewer($db, $userid);
-$sets_viewer->set_search_options($search, $groupID, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $mincomplete, $maxcomplete, $order);
-list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
-$allsets = $sets_viewer->get_set_data($perpage, $offset);
-$rssurl = $sets_viewer->get_rss_url($perpage);
+    $maxrating  = get_request('maxrating', '');
+    $minrating  = get_request('minrating', '');
+    $maxcomplete = get_request('maxcomplete', '');
+    $mincomplete = get_request('mincomplete', '');
 
-init_smarty('', 0);
-$smarty->assign('rssurl',		        $rssurl);
-$smarty->assign('sort',                 $sets_viewer->get_sort());
-$smarty->assign('killflag',		        $sets_viewer->get_killflag());
-$smarty->assign('isadmin',		        $isadmin);
-if (!$only_rows) {
-    $smarty->assign('pages',		    $pages);
-    $smarty->assign('lastpage',		    $totalpages);
-    $smarty->assign('currentpage',	    $activepage);
+    $setid = get_request('setid', '');
+    $perpage = get_maxperpage($db, $userid);
+    $perpage = get_request('perpage', $perpage);
+    $only_rows  = get_request('only_rows', 0);
+    $sets_viewer = new group_viewer($db, $userid);
+    $sets_viewer->set_search_options($search, $groupID, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $mincomplete, $maxcomplete, $order);
+    list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
+    $allsets = $sets_viewer->get_set_data($perpage, $offset);
+    $rssurl = $sets_viewer->get_rss_url($perpage);
+
+    init_smarty('', 0);
+    $smarty->assign('rssurl',		        $rssurl);
+    $smarty->assign('sort',                 $sets_viewer->get_sort());
+    $smarty->assign('killflag',		        $sets_viewer->get_killflag());
+    $smarty->assign('isadmin',		        $isadmin);
+    if (!$only_rows) {
+        $smarty->assign('pages',		    $pages);
+        $smarty->assign('lastpage',		    $totalpages);
+        $smarty->assign('currentpage',	    $activepage);
+    }
+    $smarty->assign('allsets',		        $allsets);
+    $smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
+    $smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
+    $smarty->assign('only_rows',            $only_rows);
+
+    $content = $smarty->fetch('ajax_browse.tpl');
+
+    die(json_encode(array(
+        'error' => 0,
+        'content' => $content,
+        'minsetsize' => $minsetsize,
+        'maxsetsize' => $maxsetsize,
+        'minage' => $minage,
+        'maxage' => $maxage,
+        'flag' => $flag,
+        'minrating' => $minrating,
+        'maxrating' => $maxrating,
+        'mincomplete' => $mincomplete,
+        'maxcomplete' => $maxcomplete
+    )));
+
+} catch (exception $e) {
+    die(json_encode(array('error'=> $e->getMessage()))); 
 }
-$smarty->assign('allsets',		        $allsets);
-$smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
-$smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
-$smarty->assign('only_rows',            $only_rows);
-
-$smarty->display('ajax_browse.tpl');

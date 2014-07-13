@@ -2096,7 +2096,7 @@ function set_all_groups(DatabaseConnection $db, array $settings, $userid)
     $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'], $userid);
     foreach ($settings as $set) {
         $groupid = group_by_name($db, $set['groupname']);
-        $uc->subscribe($groupid, $set['expire'], $set['minsetsize'], (isset($set['maxsetsize']) ? $set['minsetsize'] : 0), (isset($set['adult']) ? $set['adult'] : 0));
+        $uc->subscribe($groupid, $set['expire'], $set['minsetsize'], (isset($set['maxsetsize']) ? $set['maxsetsize'] : 0), (isset($set['adult']) ? $set['adult'] : 0));
         $refresh_time = $set['refresh_time'];
         $refresh_period = $set['refresh_period'];
         if ($refresh_period > 0) {

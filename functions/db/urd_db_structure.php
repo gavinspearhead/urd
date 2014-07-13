@@ -512,7 +512,6 @@ class urd_db_structure {
         $t = new urd_table('spot_postinfo', 'id', 'utf8');
         $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
         $t->add_column(new urd_column('userid', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-        $t->add_column(new urd_column('poster_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('category', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('subcat', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
@@ -531,6 +530,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('start_time', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_index(new urd_index('posti_prim', 'PRIMARY', array('id')));
+        $t->drop_column('poster_id');
         $urd_db->add($t);
 
         $t = new urd_table('postinfo', 'id', 'utf8');
