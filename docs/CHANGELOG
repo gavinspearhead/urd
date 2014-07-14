@@ -2,6 +2,7 @@
 - Added posting spots
 - Added option to set the timeout for which a server will not be used after a connection timed out error
 - Added side bar for advanced search, spots category filters, etc
+- Added viewing icons in spots and spot comments
 - Save the NZB file of uploaded content
 - Fixed bug in saving some settings
 - Fixed a bug in not handling the expire settings correctly on loading spots and expiring spots

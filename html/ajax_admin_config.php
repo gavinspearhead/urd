@@ -295,8 +295,8 @@ function show_config(DatabaseConnection $db, $userid)
     if (!isset($maxheaders_msg)) {
         $maxheaders_msg = verify_numeric($prefArray_root['maxheaders'], 0);
     }
-    if (!isset($disconnection_timeout_msg)) {
-        $disconnection_timeout_msg = verify_numeric($prefArray_root['disconnection_timeout'], 0);
+    if (!isset($connection_timeout_msg)) {
+        $connection_timeout_msg = verify_numeric($prefArray_root['connection_timeout'], 0);
     }
     if (!isset($queue_size_msg)) {
         $queue_size_msg = verify_numeric($prefArray_root['queue_size'], 0);

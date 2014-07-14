@@ -435,8 +435,6 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     $expire = $time - $expire;
     $do_expire_incomplete = $expire_incomplete = get_config($db, 'expire_incomplete');
     $expire_percentage = get_config($db, 'expire_percentage');
-    $expire_incomplete *= 24 * 3600;
-    $expire_incomplete = $time - $expire_incomplete;
     $marking_on = sets_marking::MARKING_ON;
     $prefs = load_config($db);
     $keep_int = '';
@@ -464,9 +462,11 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     // first clean all the sets we want to remove
     $Qcomplete = '';
     if ($do_expire_incomplete != 0 && $expire_percentage > 0 && $expire_percentage < 100) {
-        $Qcomplete = "OR (\"articlesmax\" != 0 AND floor(\"binaries\" * 100 / $GREATEST(1, \"articlesmax\")) < '$expire_percentage' AND \"date\" < '$expire_incomplete' )";
+        $expire_incomplete *= 24 * 3600;
+        $expire_incomplete = $time - $expire_incomplete;
+        $Qcomplete = "OR (\"articlesmax\" != 0 AND floor((\"binaries\" * 100) / $GREATEST(1, \"articlesmax\")) < '$expire_percentage' AND \"date\" < '$expire_incomplete' )";
     }
-    $res = $db->delete_query('setdata', " \"groupID\" = ? AND (\"date\" < ? $Qcomplete) $keep_int", array_merge(array($groupID), $input_arr));
+    $res = $db->delete_query('setdata', "\"groupID\" = ? AND (\"date\" < ? $Qcomplete) $keep_int", array_merge(array($groupID), $input_arr));
     update_queue_status ($db, $dbid, NULL, 0, 30);
 
     $res = $db->delete_query('usersetinfo', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type" = ?', array($type));
