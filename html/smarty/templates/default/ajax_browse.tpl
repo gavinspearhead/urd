@@ -87,7 +87,7 @@
 <tr>
 <th class="head round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
-<th id="browsesubjecttd" class="head buttonlike" onclick="javascript:change_sort_order('better_subject');">{$LN_browse_subject} {$title_sort}</th>
+<th id="browsesubjecttd" class="head buttonlike" onclick="javascript:change_sort_order('better_subject', 'asc');">{$LN_browse_subject} {$title_sort}</th>
 <th class="fixwidth2a nowrap buttonlike head right" onclick="javascript:change_sort_order('date', 'desc');">{$LN_browse_age} {$stamp_sort}</th>
 <th class="fixwidth3 nowrap buttonlike head right" onclick="javascript:change_sort_order('size', 'desc');">{$LN_size} {$size_sort}</th>
 <th class="fixwidth1 buttonlike head" onclick="javascript:change_sort_order('complete', 'desc');">{$LN_browse_percent} {*$complete_sort*}</th>

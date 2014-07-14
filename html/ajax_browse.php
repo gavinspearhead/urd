@@ -39,14 +39,14 @@ $adult = urd_user_rights::is_adult($db, $userid);
 class group_viewer
 {
     private static $sort_orders = array (
-            '',
-            'complete',
-            'subject',
-            'date',
-            'size',
-            'better_subject',
-            'rating'
-            );
+        '',
+        'complete',
+        'subject',
+        'date',
+        'size',
+        'better_subject',
+        'rating'
+    );
 
     private $Qsearch = '';
     private $Qsize = '';
@@ -194,7 +194,7 @@ class group_viewer
             $thisset['added'] = (is_array($_SESSION['setdata']) && in_setdata($arr['ID'], 'group', $_SESSION['setdata'])) ? 1 : 0;
             $thisset['nzb'] = $arr['nzbcreated'];
             $thisset['read'] = $arr['alreadyread'];
-            $thisset['subject'] = $arr['subject'];
+            $thisset['subject'] = $arr['better_subject'];
             $thisset['rating'] = '';
             if ($arr['rating'] != 0) {
                 $thisset['rating'] = round_rating(sprintf('%.1f', $arr['rating']));
@@ -257,15 +257,14 @@ class group_viewer
         if (!in_array(strtolower($orderfield), self::$sort_orders)) {
             $order = $def_sort;
         }
-        if (!empty($order)) {
-            if ($order == 'rating') {
+        if ($order == 'rating') {
                 $order = 'extsetdata3.value IS NULL, CAST(extsetdata3."value" AS decimal(5, 2))';
-            }
+        }
+        if (!empty($order)) {
             $this->Qorder = $order;
         } else {
             $this->Qorder = $def_sort;
         }
-
     }
 
     public function get_rss_url($perpage)
@@ -285,8 +284,8 @@ class group_viewer
             $rss_maxsetsize = get_maxsetsize_group($this->db, $this->groupID, $this->userID, $maxsetsize);
             $rss_groupid = $this->groupID;
         }
-        if ($rss_maxsetsize == 0) { $rss_maxsetsize = '';}
-        if ($rss_minsetsize == 0) { $rss_minsetsize = '';}
+        if ($rss_maxsetsize == 0) { $rss_maxsetsize = ''; }
+        if ($rss_minsetsize == 0) { $rss_minsetsize = ''; }
         $rssurl = $url . "html/rss.php?type=$type&amp;groupID={$rss_groupid}&amp;categoryID={$this->categoryID}&amp;limit=$rss_limit&amp;minsize={$rss_minsetsize}&amp;" .
             "maxsize={$rss_maxsetsize}&amp;maxage={$this->maxage}{$this->rss_flag}&amp;userid={$this->userID}&amp;search=" . urlencode($this->search);
 

@@ -368,7 +368,8 @@ function add_set_data(DatabaseConnection $db, $groupID, $setID_filter)
             $set_array = new TableSetData;
             $set_array->setID = $arr['setID'];
             $set_array->groupID =  $groupID;
-            $set_array->subject = $arr['subject'];  // 1st hit determines the subject, correct.
+            $name = preg_replace('/(\byEnc\b)|(\breq:)|(\bwww\.[\w\.]*\b)|(\bhttp:\/\/[\w\.]*\b)|([=><#])/i', '', $arr['subject']);
+            $set_array->subject = $name;  // 1st hit determines the subject, correct.
             // If the subject name is "Some Random Movie [1/104]", then:
             $set_array->articlesmax = get_set_size($arr['subject']);   // This is '104'
             $set_array->binaries =  $arr['bins'];           // And this is the number of files belonging to the set. (hopefully 104).
@@ -440,7 +441,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     $keep_int = '';
     $input_arr = array($expire);
     if ($prefs['keep_interesting']) {
-        $keep_int = " AND \"setID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\" = ? AND \"statusint\" = ?) ";
+        $keep_int = " AND \"setID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\"=? AND \"statusint\"=?) ";
         $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
     }
 
@@ -457,7 +458,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
 
     $keep_int = '';
     if ($prefs['keep_interesting']) {
-        $keep_int = " AND \"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\" = ? AND \"statusint\" = ?) ";
+        $keep_int = " AND \"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\"=? AND \"statusint\"=?) ";
     }
     // first clean all the sets we want to remove
     $Qcomplete = '';
@@ -466,14 +467,14 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
         $expire_incomplete = $time - $expire_incomplete;
         $Qcomplete = "OR (\"articlesmax\" != 0 AND floor((\"binaries\" * 100) / $GREATEST(1, \"articlesmax\")) < '$expire_percentage' AND \"date\" < '$expire_incomplete' )";
     }
-    $res = $db->delete_query('setdata', "\"groupID\" = ? AND (\"date\" < ? $Qcomplete) $keep_int", array_merge(array($groupID), $input_arr));
+    $res = $db->delete_query('setdata', "\"groupID\"=? AND (\"date\"<? $Qcomplete) $keep_int", array_merge(array($groupID), $input_arr));
     update_queue_status ($db, $dbid, NULL, 0, 30);
 
-    $res = $db->delete_query('usersetinfo', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type" = ?', array($type));
+    $res = $db->delete_query('usersetinfo', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type"=?', array($type));
 
     update_queue_status ($db, $dbid, NULL, 0, 40);
     // note that this will also remove data about sets that hasn't been received yet, but typically, expire runs after an update, so all data should be in.
-    $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type" = ?', array($type));
+    $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type"=?', array($type));
 
     update_queue_status ($db, $dbid, NULL, 0, 50);
     // see above
@@ -484,11 +485,11 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     $keep_int = '';
     $input_arr = array($groupID);
     if ($prefs['keep_interesting']) {
-        $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type" = ? AND "statusint" = ?) ';
+        $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
         $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
     }
 
-    $res = $db->delete_query("binaries_$groupID", "\"setID\" NOT IN (SELECT \"ID\" FROM setdata WHERE \"groupID\" = ?) $keep_int", $input_arr);
+    $res = $db->delete_query("binaries_$groupID", "\"setID\" NOT IN (SELECT \"ID\" FROM setdata WHERE \"groupID\"=?) $keep_int", $input_arr);
 
     update_queue_status ($db, $dbid, NULL, 0, 80);
 
@@ -496,10 +497,10 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     $input_arr = array($expire);
     if ($prefs['keep_interesting']) {
         $keep_int = " AND \"binaryID\" NOT IN (SELECT \"binaryID\" FROM usersetinfo JOIN binaries_$groupID AS bin ON bin.\"setID\" = usersetinfo.\"setID\" "
-            . ' WHERE "type" = ? AND "statusint" = ?) ';
+            . ' WHERE "type"=?AND "statusint"=?) ';
         $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
     }
-    $res = $db->delete_query("parts_$groupID", "\"binaryID\" NOT IN (SELECT \"binaryID\" FROM binaries_$groupID) OR \"date\" < ? $keep_int", $input_arr);
+    $res = $db->delete_query("parts_$groupID", "\"binaryID\" NOT IN (SELECT \"binaryID\" FROM binaries_$groupID) OR \"date\"<? $keep_int", $input_arr);
 
     echo_debug("Deleted {$cnt} binaries", DEBUG_DATABASE);
     update_queue_status ($db, $dbid, NULL, 0, 95);
