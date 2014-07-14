@@ -190,7 +190,7 @@
 {/if}
 </tr>
 {foreachelse}
-<tr><td colspan="12" class="centered highlight textback">{$LN_error_nofeedsfound}</td></tr>
+<tr><td colspan="12" class="centered highlight even bold">{$LN_error_nofeedsfound}</td></tr>
 {/foreach}
 </table>
 </form>

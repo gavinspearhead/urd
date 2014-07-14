@@ -247,7 +247,7 @@ function get_default_config()
     $prefArray_root['urdd_startup']             = 0;
     $prefArray_root['max_login_count']          = 0;
     $prefArray_root['clickjack']                = 1; // click jack prevention
-    $prefArray_root['need_challenge']           = 1; // click jack prevention
+    $prefArray_root['need_challenge']           = 0; 
     $prefArray_root['period_cdb']               = 0;
     $prefArray_root['time1_cdb']                = 0;
     $prefArray_root['time2_cdb']                = 0;

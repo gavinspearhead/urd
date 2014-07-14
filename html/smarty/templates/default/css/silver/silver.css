@@ -68,13 +68,26 @@ div.light
 
 .even
 {
+  background: #bbbbbb;
+  border-color: #bbbbbb #969696 #959595;
+  background-image: -webkit-linear-gradient(top, #bbbbbb, #9f9f9f 70%, #959595);
+  background-image: -moz-linear-gradient(top, #bbbbbb, #9f9f9f 70%, #959595);
+  background-image: -o-linear-gradient(top, #bbbbbb, #9f9f9f 70%, #959595);
+  background-image: linear-gradient(to bottom, #bbbbbb, #9f9f9f 70%, #959595);
+
     color: black;
-    background: #494949 url('../../img/silver/rowbg.png') repeat-x;
 }
 .interesting
 {
-    color: black;
-    background: #999999 url('../../img/silver/interestingbg.png') repeat-x;
+  background: #6A6A6A;
+  border-color: #6A6A6A #656565 #5C5C5C;
+  background-image: -webkit-linear-gradient(top, #6A6A6A, #656565 70%, #5C5C5C);
+  background-image: -moz-linear-gradient(top, #6A6A6A, #656565 70%, #5C5C5C);
+  background-image: -o-linear-gradient(top, #6A6A6A, #656565 70%, #5C5C5C);
+  background-image: linear-gradient(to bottom, #6A6A6A, #656565 70%, #5C5C5C);
+
+
+    color: white;
 }
 .markedread
 {
@@ -224,7 +237,7 @@ table.files
 
 .highlight
 {
-    color: #dd0000;
+    color: #9f0000;
 }
 
 .highlight_spam
@@ -260,10 +273,14 @@ table.files
 }
 .highlight2
 {
-    color: #eeeeee;
-    background-color: #777777;
-    background-image: url('../../img/silver/darkbg.png');
+  background: #8f8f8f;
+  border-color: #8f8f8f #6f6f6f #5f5f5f;
+  background-image: -webkit-linear-gradient(top, #8f8f8f, #6f6f6f 70%, #5f5f5f);
+  background-image: -moz-linear-gradient(top, #8f8f8f, #6f6f6f 70%, #5f5f5f);
+  background-image: -o-linear-gradient(top, #8f8f8f, #6f6f6f 70%, #5f5f5f);
+  background-image: linear-gradient(to bottom, #8f8f8f, #6f6f6f 70%, #5f5f5f);
 }
+
 .setinfo
 {
     color: white;
@@ -317,9 +334,10 @@ div.setinfo
     margin: 0;
     padding: 0;
 }
-input
+input, select, textarea
 {
     font-size: 8pt;
+    border-radius: 5px;
 }
 
 .submit
@@ -681,15 +699,6 @@ table.browsetoptable
     position: absolute;
 }
 
-div.closequickwindow
-{
-    position: relative;
-    top: 0px;
-    right: 10px;
-    background-image: url('../../img/silver/darkbg.png');
-    text-align: right;
-    z-index: 1000;
-}
 
 .statusminimized
 {
@@ -716,12 +725,6 @@ div.closequickwindow
     padding-left: 10px;
     background-image: url('../../img/silver/windowbg_largest.png');
     background-repeat: no-repeat;
-}
-.textback
-{
-    font-weight: bold;
-    background-image: url('../../img/silver/rowbg.png');
-    background-color: #c0c0c0;
 }
 .previewcontent
 {
@@ -1430,7 +1433,12 @@ div.bottom {
 #pulldown_menu 
 {
     width: 100%;
-    background: url('../../img/silver/button_light.png') repeat #2b2b2b;
+     background: #6a6a6a;
+  border-color: #6a6a6a #424242 #333333;
+  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     z-index: 1000;
     position: fixed;
     padding-left: 10px;
@@ -1455,7 +1463,12 @@ div.bottom {
     width: 40px;
     height: 22px;
     float: left;
-    background: url('../../img/silver/button_light.png') repeat #2b2b2b;
+     background: #6a6a6a;
+  border-color: #6a6a6a #424242 #333333;
+  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     position: relative; 
     list-style-type:none; 
 }
@@ -1464,7 +1477,12 @@ div.bottom {
 {
     width: 20px;
     float: left;
-    background: url('../../img/silver/button_light.png') repeat #2b2b2b;
+     background: #6a6a6a;
+  border-color: #6a6a6a #424242 #333333;
+  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     position: relative; 
     list-style-type: none; 
     border-right: 1px solid #1b1b1b;
@@ -1491,11 +1509,24 @@ div.bottom {
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
-    background: url('../../img/silver/button_light.png') repeat #2b2b2b;
+     background: #6a6a6a;
+  border-color: #6a6a6a #424242 #333333;
+  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
+
 }
 
 .pulldown ul li.commando {
-    background: url('../../img/silver/button_light_sel.png') repeat #2b2b2b;
+    background: #7f7f7f;
+  border-color: #7f7f7f #686868 #151515;
+  background-image: -webkit-linear-gradient(top, #7f7f7f, #686868 50%, #151515);
+  background-image: -moz-linear-gradient(top, #7f7f7f, #686868 50%, #151515);
+  background-image: -o-linear-gradient(top, #7f7f7f, #686868 50%, #151515);
+  background-image: linear-gradient(to bottom, #7f7f7f, #686868 50%, #151515);
+
+
 }
 
 .pulldown ul ul {
@@ -1524,7 +1555,14 @@ div.bottom {
 
 .pulldown ul li:hover ul li.plain
 {
-    background: url('../../img/silver/button_dark_exp.png') repeat #2b2b2b;
+      background: #7F7F7F;
+  border-color: #7F7F7F #686868 #333333;
+  background-image: -webkit-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+  background-image: -moz-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+  background-image: -o-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+  background-image: linear-gradient(to bottom, #7F7F7F, #686868 50%, #333333);
+
+
     height: 22px;
     width: 250px;
     z-index: 2000;
@@ -1536,7 +1574,13 @@ div.bottom {
 .pulldown ul li:hover ul li.plain:hover,
 .pulldown ul li:hover ul li.activity:hover
 {
-    background: url('../../img/silver/button_light_sel.png') repeat #2b2b2b;
+    background: #5B5B5B;
+  border-color: #5B5B5B #3F3F3F #151515;
+  background-image: -webkit-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
+  background-image: -moz-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
+  background-image: -o-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
+  background-image: linear-gradient(to bottom, #5B5B5B, #3F3F3F 50%, #151515);
+
     height: 22px;
     overflow: hidden;
     list-style-type:none; 
@@ -1544,7 +1588,14 @@ div.bottom {
 
 .pulldown ul li:hover ul li.activity
 {
-    background: url('../../img/silver/button_dark_exp.png') repeat #2b2b2b;
+      background: #7F7F7F;
+  border-color: #7F7F7F #686868 #333333;
+  background-image: -webkit-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+  background-image: -moz-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+  background-image: -o-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+  background-image: linear-gradient(to bottom, #7F7F7F, #686868 50%, #333333);
+
+
     height: 22px;
     width: 450px;
     z-index: 2000;
@@ -1649,7 +1700,12 @@ div.bottom {
 
 #scrollmenuleft
 {
-    background: url('../../img/silver/button_light.png') repeat #2b2b2b;
+     background: #6a6a6a;
+  border-color: #6a6a6a #424242 #333333;
+  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     z-index: 100000;
     position: absolute;
     left: 0px;
@@ -1661,7 +1717,12 @@ div.bottom {
 }
 #scrollmenuright
 {
-    background: url('../../img/silver/button_light.png') repeat #2b2b2b;
+     background: #6a6a6a;
+  border-color: #6a6a6a #424242 #333333;
+  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     z-index: 100000;
     position: absolute;
     right: 0px;

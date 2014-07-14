@@ -44,7 +44,7 @@
 <td>{$log.msg|escape:htmlall}</td>
 </tr>
 {foreachelse}
-<tr><td colspan="4" class="centered highlight textback">{$LN_error_nologsfound}</td></tr>
+<tr><td colspan="4" class="centered highlight even bold">{$LN_error_nologsfound}</td></tr>
 {/foreach}
 </table>
 </div>

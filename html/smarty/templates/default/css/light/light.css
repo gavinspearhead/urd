@@ -344,9 +344,10 @@ div.setinfo
     padding: 0;
 }
 
-input
+input,select, textarea
 {
     font-size: 8pt;
+    border-radius: 5px;
 }
 
 .submit
@@ -701,14 +702,6 @@ table.browsetoptable
     position: absolute;
 }
 
-div.closequickwindow
-{
-    position: relative;
-    top: 0px;
-    right: 10px;
-    text-align: right;
-    z-index: 1000;
-}
 
 #logindiv
 {
@@ -723,11 +716,6 @@ div.closequickwindow
     padding-left: 10px;
     border: 2px solid #498BF4;
     background: white;
-}
-.textback
-{
-    font-weight: bold;
-    border: 0px solid #040000;
 }
 #controlcontent
 {

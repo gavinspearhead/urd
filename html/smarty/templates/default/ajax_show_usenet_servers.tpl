@@ -93,7 +93,7 @@
 </td>
 </tr>
 {foreachelse}
-<tr><td colspan="9" class="centered highlight textback">{$LN_error_noserversfound}</td></tr>
+<tr><td colspan="9" class="centered highlight even bold">{$LN_error_noserversfound}</td></tr>
 {/foreach}
 </table>
 <div><br/></div>

@@ -250,7 +250,7 @@
 </tr>
 {foreachelse} 
 {if $only_rows == 0}
-<tr><td colspan="{if $show_comments > 0}10{else}9{/if}" class="centered highlight textback">{$LN_error_nosetsfound}</td></tr>
+<tr><td colspan="{if $show_comments > 0}10{else}9{/if}" class="centered highlight even bold">{$LN_error_nosetsfound}</td></tr>
 {/if}
 {/foreach}
 {* Last bit: *}

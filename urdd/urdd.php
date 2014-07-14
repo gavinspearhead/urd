@@ -830,6 +830,8 @@ try {
     }
 
     $db = connect_db(TRUE);
+    check_deprecated_db();
+
     $config['urdd_pidfile'] = get_config($db, 'pidpath', '');
     if (!isset($config['urdd_daemonise'])) {
         $config['urdd_daemonise'] = get_config($db, 'urdd_daemonise', FALSE) ? TRUE : FALSE;
@@ -905,6 +907,7 @@ try {
     echo_debug_trace($e, DEBUG_SERVER);
     urdd_exit($e->getcode());
 }
+
 
 try {
     $listen_sock = new urdd_sockets();

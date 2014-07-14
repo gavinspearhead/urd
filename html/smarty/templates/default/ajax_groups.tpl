@@ -191,7 +191,7 @@
 {/if}
 </tr>
 {foreachelse}
-<tr><td colspan="11" class="centered highlight textback">{$LN_error_nogroupsfound}</td></tr>
+<tr><td colspan="11" class="centered highlight even bold">{$LN_error_nogroupsfound}</td></tr>
 {/foreach}
 </table>
 </form>

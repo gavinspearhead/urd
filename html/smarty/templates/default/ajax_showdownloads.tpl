@@ -135,7 +135,7 @@
 {if isset($infoarray_download['cksfvfailed'])}{display_status status=$LN_transfers_status_cksfvfailed infoarray=$infoarray_download['cksfvfailed']}{/if}
 {if isset($infoarray_download['dlfailed'])}{display_status status=$LN_transfers_status_dlfailed infoarray=$infoarray_download['dlfailed']}{/if}
 {if empty($infoarray_download)}
-<tr><td colspan="8" class="centered highlight textback">{$LN_error_nodownloadsfound}</td></tr>
+<tr><td colspan="8" class="centered highlight even bold">{$LN_error_nodownloadsfound}</td></tr>
 
 {/if}
 

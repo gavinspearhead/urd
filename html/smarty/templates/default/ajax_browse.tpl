@@ -186,7 +186,7 @@
 </tr>
 {foreachelse} 
 {if $only_rows == 0}
-<tr><td colspan="8" class="centered highlight textback">{$LN_error_nosetsfound}</td></tr>
+<tr><td colspan="8" class="centered highlight even bold">{$LN_error_nosetsfound}</td></tr>
 {/if}
 {/foreach}
 {* Last bit: *}

@@ -359,7 +359,7 @@ function add_set_data(DatabaseConnection $db, $groupID, $setID_filter)
     // Now re-create it.
     $db->escape($groupID, FALSE);
     $sql = '"setID", count("binaryID") AS bins, MIN("subject") AS subject, MIN("date") AS date, SUM("bytes") AS totalsize ' .
-        "FROM \"binaries_$groupID\" WHERE binaries_$groupID.\"setID\" = ? GROUP BY \"setID\"";
+        "FROM \"binaries_$groupID\" WHERE binaries_$groupID.\"setID\"=? GROUP BY \"setID\"";
     $res1 = $db->select_query($sql, array($setID_filter));
     $set_list = array();
     // To minimise memory requirements, we update setdata per set, instead of all at the end:
@@ -367,7 +367,7 @@ function add_set_data(DatabaseConnection $db, $groupID, $setID_filter)
         foreach ($res1 as $arr) {
             $set_array = new TableSetData;
             $set_array->setID = $arr['setID'];
-            $set_array->groupID =  $groupID;
+            $set_array->groupID = $groupID;
             $name = preg_replace('/(\byEnc\b)|(\breq:)|(\bwww\.[\w\.]*\b)|(\bhttp:\/\/[\w\.]*\b)|([=><#])/i', '', $arr['subject']);
             $set_array->subject = $name;  // 1st hit determines the subject, correct.
             // If the subject name is "Some Random Movie [1/104]", then:

@@ -85,7 +85,7 @@
 </tr>
 {foreachelse}
 {if $only_rows == 0}
-<tr><td colspan="9" class="centered highlight textback">{$LN_error_nousersfound}</td></tr>
+<tr><td colspan="9" class="centered highlight even bold">{$LN_error_nousersfound}</td></tr>
 {/if}
 {/foreach}
 </table>

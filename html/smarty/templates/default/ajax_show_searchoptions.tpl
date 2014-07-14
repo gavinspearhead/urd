@@ -45,7 +45,7 @@
 </td>
 </tr>
 {foreachelse}
-<tr><td colspan="8" class="centered highlight textback">{$LN_error_nosearchoptionsfound}</td></tr>
+<tr><td colspan="8" class="centered highlight even bold">{$LN_error_nosearchoptionsfound}</td></tr>
 {/foreach}
 </table>
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape}"/>

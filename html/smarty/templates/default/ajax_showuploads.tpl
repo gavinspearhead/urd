@@ -123,7 +123,7 @@
 {if isset($infoarray_upload['par2failed'])}{display_status status=$LN_transfers_status_par2failed infoarray=$infoarray_upload['par2failed']}{/if}
 {if isset($infoarray_upload['yyencodefailed'])}{display_status status=$LN_transfers_status_yyencodefailed infoarray=$infoarray_upload['yyencodefailed']}{/if}
 {if empty($infoarray_upload)}
-<tr><td colspan="8" class="centered highlight textback">{$LN_error_nouploadsfound}</td></tr>
+<tr><td colspan="8" class="centered highlight even bold">{$LN_error_nouploadsfound}</td></tr>
 {/if}
 
 <tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td></tr>

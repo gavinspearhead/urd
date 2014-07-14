@@ -91,7 +91,7 @@
 {/if}
 </tr>
 {foreachelse}
-<tr><td colspan="8" class="centered highlight textback">{$LN_error_notasksfound}</td></tr>
+<tr><td colspan="8" class="centered highlight even bold">{$LN_error_notasksfound}</td></tr>
 {/foreach}
 </table>
 {$bottomskipper}

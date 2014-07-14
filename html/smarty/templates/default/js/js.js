@@ -6108,7 +6108,7 @@ function show_sidebar(display)
         $('#sidebar_button').text('>>');
     } else {
         $('#contentleft').css('margin-left', '0px');
-        $('#contentleft').css('min-height',Math.round($(window).height() - 22));
+        $('#contentleft').css('min-height', Math.round($(window).height() - 22));
         $('#contentleft').outerWidth(side_bar_width);
         $('#topcontent').css('left', side_bar_width);
         $('#searchbar').css('left', side_bar_width);
@@ -6116,12 +6116,12 @@ function show_sidebar(display)
         sidebar = 1;
         $('#sidebar_button').text('<<');
     }
-    $('#sbdiv').css('padding-top', (Math.round($(window).height() - 45 - 22) / 2));
-    $('#sidebar_button').height(45);
-    $('#sidebar_button').css('padding-top', 25);
+    $('#sbdiv').css('padding-top', (Math.round($(window).height() - 50 - 22) / 2));
+    $('#sidebar_button').css('padding-top', 17);
+    $('#sidebar_button').innerHeight(50);
 
-    $('#content').css('display','none');
-    $('#content').css('display','block');
+    $('#content').css('display', 'none');
+    $('#content').css('display', 'block');
     // don't know why we need it ... but... 
     $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });
     update_widths('browsesubjecttd');
@@ -6134,6 +6134,7 @@ function init_browse_sliders()
     init_slider(0, $('#maxagelimit').val(), "#setrating", "#minrating", "#maxrating");
     init_slider(0, $('#maxcompletelimit').val(), "#setcomplete", "#mincomplete", "#maxcomplete");
 }
+
 function init_spot_sliders()
 {
     init_slider(0, $('#maxsetsizelimit').val(), "#setsize", "#minsetsize", "#maxsetsize");
@@ -6168,7 +6169,9 @@ function load_side_bar(fn)
                 $('#reset_button').click(function() {
                     clear_form("sidebar_contents");
                     clear_form("searchform");
-                    init_spot_sliders();});
+                    init_spot_sliders();
+                });
+                show_sidebar(false);
                 fn();
             }
         });
@@ -6187,7 +6190,9 @@ function load_side_bar(fn)
                 $('#reset_button').click(function() {
                     clear_form("sidebar_contents");
                     clear_form("searchform");
-                    init_browse_sliders();});
+                    init_browse_sliders();
+                });
+                show_sidebar(false);
                 fn();
             }
         });
@@ -6206,7 +6211,9 @@ function load_side_bar(fn)
                 $('#reset_button').click(function() {
                     clear_form("sidebar_contents");
                     clear_form("searchform");
-                    init_rss_sliders();});
+                    init_rss_sliders();
+                });
+                show_sidebar(false);
                 fn();
             }
         });

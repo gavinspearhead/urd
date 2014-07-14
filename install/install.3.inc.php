@@ -80,18 +80,18 @@ if (extension_loaded('pdo_mysql')) {
     $dbs[] = array ('pdo_mysql', 'Mysql (PDO)');
 }
 if (extension_loaded('mysqli')) {
-    $dbs[] = array ('mysqli', 'MySQL Improved');
+    $dbs[] = array ('mysqli', 'MySQL Improved (deprecated');
 }
 if (extension_loaded('mysql')) {
-    $dbs[] = array ('mysql', 'MySQL');
+    $dbs[] = array ('mysql', 'MySQL (deprecated');
 }
 if (extension_loaded('pdo_pgsql')) {
     $dbs[] = array ('pdo_pgsql', 'Postgresql (PDO)');
 }
 if (extension_loaded('pgsql')) {
-    $dbs[] = array ('postgres9', 'Postgres 9');
-    $dbs[] = array ('postgres8', 'Postgres 8');
-    $dbs[] = array ('postgres7', 'Postgres 7');
+    $dbs[] = array ('postgres9', 'Postgres 9 (deprecated)');
+    $dbs[] = array ('postgres8', 'Postgres 8 (deprecated');
+    $dbs[] = array ('postgres7', 'Postgres 7 (deprecated');
 }
 if (extension_loaded('pdo_sqlite')) {
     $dbs[] = array ('pdo_sqlite', 'SQLite (PDO)');

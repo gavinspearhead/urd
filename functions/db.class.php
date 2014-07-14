@@ -63,10 +63,10 @@ function connect_db($check_db=TRUE)
             $db = new DatabaseConnection_mysql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
                     $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
-        case 'pdo_pgsql':
         case 'postgres9':
         case 'postgres8':
         case 'postgres7':
+        case 'pdo_pgsql':
             $db = new DatabaseConnection_psql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
                     $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;

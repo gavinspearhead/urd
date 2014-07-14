@@ -120,7 +120,7 @@
 
 <div id="quickmenu" class="quickmenuoff"></div>
 <div id="quickwindow" class="quickwindowoff"></div>
-<div id="contentleft">
+<div id="contentleft" class="even">
 <div id="left_content"></div>
 </div>
 <div id="searchbar"></div>

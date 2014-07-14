@@ -68,14 +68,22 @@ div.light
 
 .even
 {
-    color : #ffffff;
-    background-color: #0a0000;
-    background-image: url('../../img/classic/rowbg.png');
-    background-repeat: repeat-x;
+  background: #4f0000;
+  border-color: #4f0000 #410000 #320000;
+  background-image: -webkit-linear-gradient(top, #4f0000, #410000 30%, #320000);
+  background-image: -moz-linear-gradient(top, #4f0000, #410000 30%, #320000);
+  background-image: -o-linear-gradient(top, #4f0000, #410000 30%, #320000);
+  background-image: linear-gradient(to bottom, #4f0000, #410000 30%, #320000);
 }
 .interesting
 {
-    background-image: url('../../img/classic/interestingbg.png');
+    background: #ba0000;
+  border-color: #ba0000 #410000 #6e0000;
+  background-image: -webkit-linear-gradient(top, #ba0000, #ab0000 30%, #6e0000);
+  background-image: -moz-linear-gradient(top, #ba0000, #ab0000 30%, #6e0000);
+  background-image: -o-linear-gradient(top, #ba0000, #ab0000 30%, #6e0000);
+  background-image: linear-gradient(to bottom, #ba0000, #ab0000 30%, #6e0000);
+
 }
 .markedread
 {
@@ -257,7 +265,12 @@ table.files, table.tasks
 }
 .highlight2
 {
-    background-image: url('../../img/classic/darkbg.png');
+  background: #260000;
+  border-color: #260000 #130000 #010000;
+  background-image: -webkit-linear-gradient(top, #260000, #130000 70%, #010000);
+  background-image: -moz-linear-gradient(top, #260000, #130000 70%, #010000);
+  background-image: -o-linear-gradient(top, #260000, #130000 70%, #010000);
+  background-image: linear-gradient(to bottom, #260000, #130000 70%, #010000);
 }
 
 .setinfo
@@ -316,9 +329,11 @@ div.setinfo
     margin: 0 0 0 0;
     padding: 0 0 0 0;
 }
-input
+
+input, select, textarea
 {
     font-size: 8pt;
+    border-radius: 5px;
 }
 
 .submit
@@ -665,15 +680,6 @@ table.browsetoptable
 {
     position: absolute;
 }
-div.closequickwindow
-{
-    position: relative;
-    right: 10px;
-    background-image: url('../../img/classic/darkbg.png');
-    text-align: right;
-    z-index: 1000;
-}
-
 #logindiv
 {
     position: absolute;
@@ -688,10 +694,6 @@ div.closequickwindow
     background-repeat: no-repeat;
 }
 
-.textback
-{
-    background-image: url('../../img/classic/rowbg.png');
-}
 
 #textcontent
 {
@@ -1401,7 +1403,12 @@ div.bottom {
 {
     width: 100%;
     height: 22px;
-    background: url('../../img/classic/button_light.png') repeat #1B0000;
+    background: #690000;
+    border-color: #690000 #4d0000 #230000;
+    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
     z-index: 1000;
     position: fixed;
     padding-left: 10px;
@@ -1434,7 +1441,12 @@ div.bottom {
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
-    background: url('../../img/classic/button_light.png') repeat #1B0000;
+    background: #690000;
+    border-color: #690000 #4d0000 #230000;
+    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
 }
 
 .pulldown ul li.smalllogo 
@@ -1444,7 +1456,12 @@ div.bottom {
     height: 22px;
     position:relative; 
     list-style-type:none;
-    background: url('../../img/classic/button_light.png') repeat #1B0000;
+    background: #690000;
+    border-color: #690000 #4d0000 #230000;
+    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
 }
 
 .pulldown ul li.smalllogo 
@@ -1453,7 +1470,12 @@ div.bottom {
 }
 
 .pulldown ul li.commando {
-    background: url('../../img/classic/button_light_sel.png') repeat #1B0000;
+    background: #970000;
+    border-color: #970000 #610000 #320000;
+    background-image: -webkit-linear-gradient(top, #970000, #610000 50%, #320000);
+    background-image: -moz-linear-gradient(top, #970000, #610000 50%, #320000);
+    background-image: -o-linear-gradient(top, #970000, #610000 50%, #320000);
+    background-image: linear-gradient(to bottom, #970000, #610000 50%, #320000);
 }
 
 .pulldown ul ul {
@@ -1481,7 +1503,12 @@ div.bottom {
  
 .pulldown ul li:hover ul li.plain
 {
-    background: url('../../img/classic/button_dark_exp.png') repeat #1B0000;
+    background: #3f0000;
+    border-color: #3f0000 #2D0000 #040000;
+    background-image: -webkit-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
+    background-image: -moz-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
+    background-image: -o-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
+    background-image: linear-gradient(to bottom, #3f0000, #2D0000 50%, #040000);
     width: 250px;
     height: 22px;
     z-index: 2000;
@@ -1490,7 +1517,12 @@ div.bottom {
 
 .pulldown ul li:hover ul li.activity
 {
-    background: url('../../img/classic/button_dark_exp.png') repeat #1B0000;
+    background: #3f0000;
+    border-color: #3f0000 #2D0000 #040000;
+    background-image: -webkit-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
+    background-image: -moz-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
+    background-image: -o-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
+    background-image: linear-gradient(to bottom, #3f0000, #2D0000 50%, #040000);
     width: 450px;
     height: 22px;
     z-index: 2000;
@@ -1500,7 +1532,12 @@ div.bottom {
 .pulldown ul li:hover ul li.plain:hover,
 .pulldown ul li:hover ul li.activity:hover
 {
-    background: url('../../img/classic/button_light_sel.png') repeat #1B0000;
+    background: #970000;
+    border-color: #970000 #610000 #320000;
+    background-image: -webkit-linear-gradient(top, #970000, #610000 50%, #320000);
+    background-image: -moz-linear-gradient(top, #970000, #610000 50%, #320000);
+    background-image: -o-linear-gradient(top, #970000, #610000 50%, #320000);
+    background-image: linear-gradient(to bottom, #970000, #610000 50%, #320000);
     overflow: hidden;
     height: 22px;
 }
@@ -1604,7 +1641,12 @@ div.bottom {
 
 #scrollmenuleft
 {
-    background: url('../../img/classic/button_light.png') repeat #150000;
+    background: #690000;
+    border-color: #690000 #4d0000 #230000;
+    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
     z-index: 10000;
     position: absolute;
     left: 0;
@@ -1616,7 +1658,12 @@ div.bottom {
 
 #scrollmenuright
 {
-    background: url('../../img/classic/button_light.png') repeat #150000;
+    background: #690000;
+    border-color: #690000 #4d0000 #230000;
+    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
     z-index: 10000;
     position: absolute;
     right: 0;
@@ -1685,7 +1732,12 @@ td.subcat
 {
     width: 20px;
     float: left;
-    background: url('../../img/classic/button_light.png') repeat #150000;
+    background: #690000;
+    border-color: #690000 #4d0000 #230000;
+    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
+    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
     position:relative; 
     list-style-type:none; 
     border-right: 1px solid #000044;
