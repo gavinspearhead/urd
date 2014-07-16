@@ -1582,7 +1582,7 @@ function set_message(id, msg, timeout)
     } else {
         $('#' + id).removeClass('hidden');
         $('#message_content').html(msg);
-        $('#message_icon').click(function() {show_alert(msg);} );
+        $('#message_icon').click(function() { console.log(msg) ; show_alert(msg);} );
         var boxwidth = $(document).width();
         var msgwidth = $('#' + id).width();
         $('#' + id).css('left', Math.round((boxwidth - msgwidth) /2));
@@ -2808,7 +2808,6 @@ function fold_transfer(id, type)
 
 function toggle_group_of_sets(startset, stopset, type)
 {
-    var sets = document.getElementsByName("setdata[]");
     var inrange = false;
     var thissetvalue = null;
     var toggleitems = [];
@@ -2850,43 +2849,6 @@ function toggle_group_of_sets(startset, stopset, type)
         toggle_set(val, type);
 
     });
-
-  /*  for (var i = 0; i < sets.length; i++) {
-        // We want to toggle the last set as well, but definitely not the first one 
-        // (it got toggled when the user clicked it, don't toggle it back)
-
-        // Also, setdata[] stuff always starts with "set_"!
-        thissetvalue = sets[i].id.substr(4);
-
-        // Looping through all sets, we will encounter startset and stopset.
-        // And not necessarily in that order!
-
-        // Mark all sets between (and including) startset and stopset as toggleitems
-        // At the end, de-toggle the startset as that one has already been toggled
-        // before this function was called.
-
-        // We'll allow the start/stop sets to be reversed... robustness pwnz.
-        if (thissetvalue == startset || thissetvalue == stopset) {
-            // We are now either in or out of range:
-            if (inrange === false) {
-                inrange = true;
-            } else {
-                inrange = false;
-            }
-        }
-
-        // If in range, toggle:
-        // If startset, do not toggle (already toggled before):
-        // If stopset, always toggle:
-        if ((inrange === true && thissetvalue !== startset) || thissetvalue === stopset) {
-            toggleitems.push(thissetvalue);
-        }
-    }*/
-
-    // Now do the actual toggling
-  /*  for (var i = 0; i < toggleitems.length; i++) {
-        toggle_set(toggleitems[i], type);
-    }*/
 }
 
 function fold_adv_search(button_id, id)
@@ -2967,7 +2929,7 @@ function submit_upload()
     $('<iframe id="' + iframe_id + '" name="' + iframe_id + '" style="margin-top:200px;">').appendTo('body');
     $('#' + iframe_id).hide();
     if (src_remote != '') {
-        document.getElementById('parseform').target = iframe_id; // the iframe swallows the upload, so the page does not have to reload
+        $('#parseform').attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
         $('#timestamp1').val(get_value_from_id('timestamp'));
         $('#add_setname1').val(get_value_from_id('add_setname'));
         $('#setname1').val(get_value_from_id('setname'));
@@ -2975,7 +2937,7 @@ function submit_upload()
         $('#parseform').submit();
         hide_overlayed_content();
     } else if (src_local != '') {
-        document.getElementById('uploadform').target = iframe_id; // the iframe swallows the upload, so the page does not have to reload
+        $('#uploadform').attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
         $('#add_setname2').val(get_value_from_id('add_setname'));
         $('#dl_dir2').val(get_value_from_id('dl_dir'));
         $('#setname2').val(get_value_from_id('setname'));
@@ -3425,15 +3387,16 @@ function select_tab_setting(tab, session_var, session_val)
             data: { var : session_val, type : session_val } 
         }); 
     }
-    var x = document.getElementsByName('tabs');
-    for (var i = 0; i < x.length; i++) {
-        var content = $('#' + x[i].value + '_tab');
+
+    $('input[name="tabs"]').each( function () {
+        var content = $('#' + $(this).val() + '_tab');
         if (!content.hasClass('hidden')) {
             content.addClass('hidden');
         }
-        $('#' + x[i].value + '_bar_elem').removeClass('tab_selected');
-        $('#' + x[i].value + '_bar').removeClass('tab_selected');
-    }
+        $('#' + $(this).val() + '_bar_elem').removeClass('tab_selected');
+        $('#' + $(this).val() + '_bar').removeClass('tab_selected');
+    });
+
     $('#current_tab').val(tab);
     $('#' + tab + '_tab').removeClass('hidden');
     $('#' + tab + '_bar_elem').addClass('tab_selected');
@@ -3450,11 +3413,10 @@ function select_tab_transfers(tab, session_var, session_val)
             data: { var : session_val, type : session_val } 
         }); 
     }
-    
-    var x = document.getElementsByName('tabs');
-    for (var i = 0; i < x.length; i++) {
-        $('#' + x[i].value + '_bar').removeClass('tab_selected');
-    }
+    $('input[name="tabs"]').each( function () {
+        $('#' + $(this).val() + '_bar').removeClass('tab_selected');
+    });
+
     $('#active_tab').val(tab);
     $('#' + tab + '_bar').addClass('tab_selected');
     update_transfers();
@@ -3462,10 +3424,9 @@ function select_tab_transfers(tab, session_var, session_val)
 
 function select_tab_blacklist(tab)
 {
-    var x = document.getElementsByName('tabs');
-    for (var i = 0; i < x.length; i++) {
-        $('#' + x[i].value + '_bar').removeClass('tab_selected');
-    }
+    $('input[name="tabs"]').each( function () {
+        $('#' + $(this).val() + '_bar').removeClass('tab_selected');
+    });
     $('#active_tab').val(tab);
     $('#' + tab + '_bar').addClass('tab_selected');
     if (tab == 'whitelist') {
@@ -6206,7 +6167,6 @@ function init_rss_sliders()
     init_slider(0, $('#maxratinglimit').val(), "#setrating", "#minrating", "#maxrating");
     init_slider(0, $('#maxagelimit').val(), "#setage", "#minage", "#maxage");
 }
-
 
 function load_side_bar(fn)
 {

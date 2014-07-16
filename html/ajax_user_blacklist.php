@@ -176,9 +176,10 @@ switch ($cmd) {
             export_settings($db, 'spots_whitelist', 'urd_spots_whitelist.xml', (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
         }
     break;
-case 'import_settings_blacklist':
+    case 'import_settings_blacklist':
     if (isset ($_FILES['filename']['tmp_name'])) {
         try {
+
             $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
             $blacklist = $xml->read_spots_blacklist($db);
             clear_all_spots_blacklist($db, (urd_user_rights::is_admin($db, $userid)?NULL:$userid));

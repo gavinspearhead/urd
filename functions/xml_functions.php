@@ -435,18 +435,19 @@ class urd_xml_reader
     {
         global $LN;
         $xml = $this->xml;
-        if (!file_exists($file) && !is_readable($file) || filesize($file) < 10) {
+        if ((!file_exists($file) && !is_readable($file)) || filesize($file) < 10) {
             $this->xml = NULL;
             throw new exception ($LN['error_filenotfound']);
         }
-        if (!$xml->open($file, NULL, LIBXML_NOERROR|LIBXML_NOWARNING)) {
+        $contents = @file_get_contents($file);
+        if ($contents === FALSE) {
             $this->xml = NULL;
             throw new exception ($LN['error_filenotfound']);
         }
-        $this->xml = $xml;
-        $this->arr = $this->xml2assoc($this->xml);
 
+        $this->init_string($contents);
     }
+
     private function xml2assoc(XMLReader $xml)
     {
         if ($this->xml === NULL) {
@@ -487,7 +488,7 @@ class urd_xml_reader
         }
         $errormsg = $php_errormsg;
         if ($old_val !== FALSE) {
-            ini_set ('track_errors', $old_val);
+            ini_set('track_errors', $old_val);
         }
         if ($errormsg != '') {
             throw new exception ('A parse error occurred in XML file');
