@@ -6,10 +6,10 @@ cd /tmp
 add_ver=''
 
 if [ "$1" = "devel" ] ; then
-    git clone 'https://github.com/gavinspearhead/urd.git' 'urd-tmp'
+    svn export http://urd.googlecode.com/svn/trunk/branches/devel 'urd-tmp'
     add_ver="-"`date +"%Y%m%d%H%M%S"`
 else 
-    git clone 'https://github.com/gavinspearhead/urd.git' 'urd-tmp'
+    svn export http://urd.googlecode.com/svn/trunk/trunk 'urd-tmp'
 fi
 
 version=`php -r 'define("ORIGINAL_PAGE", 1); include "urd-tmp/functions/urdversion.php"; echo urd_version::get_version();'`
@@ -25,7 +25,7 @@ tar -c urd-$version/ | gzip -9 > urd-$version.tar.gz
 
 cd -
 
-mv "/tmp/urd-$version.tar.gz" .
+mv /tmp/urd-$version.tar.gz .
 
-#rm -rf /tmp/urd-$version
+rm -rf /tmp/urd-$version
 
