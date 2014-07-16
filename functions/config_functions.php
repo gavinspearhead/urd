@@ -256,7 +256,7 @@ function load_prefs(DatabaseConnection $db, $userid, $force = FALSE)
             return $val;
         }
     }
-    $query = '"userID", "option", "value" FROM preferences WHERE "userID"= ?';
+    $query = '"userID", "option", "value" FROM preferences WHERE "userID"=?';
 
     $res = $db->select_query($query, array($userid));
     if (!is_array($res)) {

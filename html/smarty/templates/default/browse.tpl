@@ -31,8 +31,6 @@
 {/foreach}
 </div>
 
-</div-->&nbsp;
-	&nbsp;
 	<input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} onclick='javascript:select_next("select_groupid",-1);'/>&nbsp;

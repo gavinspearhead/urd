@@ -242,7 +242,7 @@ try {
         case 'post' :
             // image file and nzbfile
             $post_id = insert_spot_post($db, $userid);
-            die(json_encode(array('error' => 0, 'post_id' => $post_id)));
+            die(json_encode(array('error' => 0, 'post_id' => $post_id, 'message'=>$LN['spots_post_started'])));
             break;
         case 'show':
             init_smarty('', 0);
@@ -260,7 +260,11 @@ try {
             uasort($categories, 'spot_name_cmp');
             $poster_email = $prefs['poster_email'];
             $poster_name = $prefs['poster_name'];
-            $content = '';
+            $content = @unserialize($prefs['poster_default_text']);
+            if ($content === FALSE) { $content = ''; }
+            else {
+                $content = @implode("\n", $content);
+            }
             $subject = '';
 
             $smarty->assign('content',    	    $content);

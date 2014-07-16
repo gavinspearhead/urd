@@ -480,6 +480,8 @@ $LN['pref_global_scripts_msg']  = 'De globalt definierade skripten som k&ouml;rs
 
 $LN['pref_poster_email']         = 'Postarens email-adress';
 $LN['pref_poster_name']          = 'Postarens namn';
+$LN['pref_poster_default_text'] = 'Standard message body';
+$LN['pref_poster_default_text_msg'] = 'Standard message body used for posting spots, and comments';
 $LN['poster_name']               = 'Postarens namn';
 $LN['pref_recovery_size']        = 'Andel par2-files, procent';
 $LN['pref_rarfile_size']         = 'Storlek p&aring; RAR-filer';
@@ -1285,6 +1287,7 @@ $LN['transfers_posts']      = 'Uppladdningar';
 $LN['transfers_post_spot']      = 'Post spot';
 $LN['transfers_post']       = 'Ladda upp';
 $LN['transfers_downloads']  = 'Nedladdningar';
+$LN['spots_post_started']       = 'Spot is being posted';
 
 // Fatal error
 $LN['fatal_error_title']    = 'Meddelande';

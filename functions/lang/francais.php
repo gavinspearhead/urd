@@ -517,6 +517,8 @@ $LN['pref_add_setname_msg']   = 'Ajoute le nom de l&#39;ensemble &agrave; la cha
 $LN['poster_name']            = 'Nom du Posteur';
 $LN['pref_poster_email']      = 'Adresse email du Posteur';
 $LN['pref_poster_name']       = 'Nom du Posteur';
+$LN['pref_poster_default_text'] = 'Standard message body';
+$LN['pref_poster_default_text_msg'] = 'Standard message body used for posting spots, and comments';
 $LN['pref_recovery_size']     = 'Pourcentage de fichiers par2';
 $LN['pref_rarfile_size']      = 'Taille des fichiers rar';
 $LN['pref_poster_email_msg']  = 'Adresse email &agrave; utiliser dans les messages post&eacute;s';
@@ -1307,6 +1309,7 @@ $LN['transfers_post']           = 'Envoi';
 $LN['transfers_post_spot']      = 'Post spot';
 $LN['transfers_posts']          = 'Envois';
 $LN['transfers_downloads']      = 'T&eacute;l&eacute;chargements';
+$LN['spots_post_started']       = 'Spot is being posted';
 
 // Fatal error
 $LN['fatal_error_title']    = 'Message';

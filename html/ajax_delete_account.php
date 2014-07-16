@@ -28,7 +28,7 @@ $pathda = realpath(dirname(__FILE__));
 require_once "$pathda/../functions/ajax_includes.php";
 
 if (isset($_POST['delete_account']) && $_POST['delete_account'] == 1) {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     delete_user($db, $userid);
     die_html('OK' . $LN['account_deleted']);
 } else {

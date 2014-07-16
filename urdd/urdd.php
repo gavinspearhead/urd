@@ -281,7 +281,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                     $servers->pause_cmd($db, $item->get_command(), $item->get_args(), TRUE, $item->get_userid());
                     set_download_password($db, $dlid, PASSWORD_PLACE_HOLDER); // we set the password so it won't stop again users should set it in download
                 } else {
-                    write_log('Ok we won\'t do anything with this encrypted download? Okay let\'s cancel it anyway', LOG_WARNING);
+                    write_log('Ok we do nothing with this encrypted download? Okay we cancel it anyway', LOG_WARNING);
                     $servers->delete_cmd($db, $item->get_userid(), $item->get_command(), $item->get_args(), TRUE);
                 }
                 urd_mail::mail_user_download($db, $item->get_args(), $item->get_userid(), DOWNLOAD_CANCELLED_PW); // maybe update text of msg too XXX

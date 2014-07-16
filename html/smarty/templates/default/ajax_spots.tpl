@@ -35,7 +35,6 @@
 {$btpw="<img class=\"binicon\" src=\"$IMGDIR/icon_pw.png\" width=\"16\" height=\"16\"/> "}
 {$btcopyright="<img class=\"binicon\" src=\"$IMGDIR/icon_copy.png\" width=\"16\" height=\"16\"/> "}
 
-
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
 {if count($pages) > 1}
@@ -110,7 +109,6 @@
     <div id="setstable">
     {$tableheader}
 {/if}
-
 
 {* Display the bunch: *}
 {foreach from=$allsets item=set}
@@ -256,6 +254,9 @@
 {* Last bit: *}
 
 {if $only_rows == 0}
+<tr><td colspan="{if $show_comments > 0}9{else}8{/if}" class="feet round_left_bottom">&nbsp;</td>
+<td class="nowrap feet round_right_bottom">{$unmark_int_all}</td>
+</tr>
 
 </table>
 </div>

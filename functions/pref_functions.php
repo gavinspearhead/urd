@@ -238,11 +238,10 @@ class pref_textarea extends pref_basic
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
         $this->rows = $rw;
         $this->cols = $cl;
-	$this->value = '';
-	if ($v != '') { 
-		$this->value = utf8_decode(@implode("\n", $v));
-	} 
-		
+        $this->value = '';
+        if ($v != '') { 
+            $this->value = utf8_decode(@implode("\n", $v));
+        } 
     }
     public function get_type() {return 'textarea';}
 };

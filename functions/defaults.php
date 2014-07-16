@@ -65,6 +65,7 @@ function get_default_prefs()
     $prefArray['download_delay']    = 0; // number of seconds the download gets delayed
     $prefArray['poster_name']       = '';
     $prefArray['poster_email']      = '';
+    $prefArray['poster_default_text'] = '';
     $prefArray['format_dl_dir']     = '';
     $prefArray['add_setname']       = 1;
     $prefArray['show_image']        = 0;
@@ -237,6 +238,7 @@ function get_default_config()
     $prefArray_root['auto_login']               = '';
     $prefArray_root['compress_nzb']             = 0;
     $prefArray_root['connection_timeout']       = SERVER_CONNECTION_TIMEOUT;
+    $prefArray_root['socket_timeout']           = socket::DEFAULT_SOCKET_TIMEOUT;
     $prefArray_root['nice_value']               = 0;
     $prefArray_root['maxheaders']               = MAX_HEADERS; // total amount of headers gotten in one update batch
     $prefArray_root['replacement_str']          = '_';

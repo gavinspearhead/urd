@@ -41,7 +41,7 @@ verify_access($db, urd_modules::URD_CLASS_DOWNLOAD, FALSE, '', $userid, TRUE);
 
 switch (strtolower($cmd)) {
 case 'reparrar':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->unpar_unrar($dlid);
     } catch (exception $e) {
@@ -50,7 +50,7 @@ case 'reparrar':
     break;
 
 case 'start' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     // In case it's paused, continue it:
     try {
         $uc->continue_cmd(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid);
@@ -61,7 +61,7 @@ case 'start' :
     break;
 
 case 'pause' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->pause(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid);  // Cancel it, just in case; we need both as download is on queue only and download action can be queued and running
         $uc->pause(get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid);  // Cancel it, just in case
@@ -71,7 +71,7 @@ case 'pause' :
     break;
 
 case 'cancel' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->cancel(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid);  // Cancel it, just in case; see pauso
         $uc->cancel(get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid);  // Cancel it, just in case
@@ -83,7 +83,7 @@ case 'cancel' :
     break;
 
 case 'delete' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $rv1 = $uc->cancel(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid);  // Cancel it, just in case; see pauso
         $rv2 = $uc->cancel(get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid);  // Cancel it, just in case
@@ -162,7 +162,7 @@ case 'showrename':
 
 case 'rename':
     // Actually rename the download
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $newname = trim(get_post('dlname', ''));
     $newpass = trim(get_post('dlpass', ''));
     $dl_dir = trim(get_post('dl_dir', ''));
@@ -201,7 +201,7 @@ case 'rename':
     break;
 
 case 'move_up':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->move_cmd('UP', get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION), $dlid);
         $uc->move_cmd('UP', get_command(urdd_protocol::COMMAND_DOWNLOAD), $dlid);
@@ -211,7 +211,7 @@ case 'move_up':
     break;
 
 case 'move_down':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->move_cmd('DOWN', get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION), $dlid);
         $uc->move_cmd('DOWN', get_command(urdd_protocol::COMMAND_DOWNLOAD), $dlid);

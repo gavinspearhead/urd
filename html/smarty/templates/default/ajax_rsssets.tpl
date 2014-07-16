@@ -174,12 +174,15 @@
 </tr>
 {foreachelse} 
 {if $only_rows == 0}
-<tr><td colspan="8" class="centered highlight even bold">{$LN_error_nosetsfound}</td></tr>
+<tr><td colspan="7" class="centered highlight even bold">{$LN_error_nosetsfound}</td></tr>
 {/if}
 {/foreach}
 
 {if $only_rows == 0}
 {* Last bit: *}
+<tr><td colspan="6" class="feet round_left_bottom">&nbsp;</td>
+<td class="nowrap feet round_right_bottom">{$unmark_int_all}</td>
+</tr>
 </table>
 
 {$bottomskipper}

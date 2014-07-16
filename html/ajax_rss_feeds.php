@@ -210,7 +210,7 @@ function unsubscribe_feed(DatabaseConnection $db, urdd_client $uc, $feedid)
 if ($cmd == 'export') {
     export_settings($db, 'rssfeeds', 'urd_rss_feedssettings.xml');
 } elseif ($cmd == 'load_settings' && isset ($_FILES['filename']['tmp_name']) && $isadmin) {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
     $feeds = $xml->read_feeds_settings($db);
     if ($feeds != array()) {
@@ -245,7 +245,7 @@ if ($cmd == 'export') {
     }
 } elseif ($cmd == 'toggle_adult') {
     if ($isadmin) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $feed_id = get_post('feed_id');
         $value = get_post('value') == 1? ADULT_ON:ADULT_OFF;
         toggle_adult($db, 'rss', $feed_id, $value);
@@ -254,13 +254,13 @@ if ($cmd == 'export') {
         throw new exception($LN['settings_notfound']);
     }
 } elseif ($cmd == 'toggle_visibility') {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $feed_id = get_post('feed_id');
     $value = get_post('visibility') ? 1 : 0;
     set_userfeedinfo_value($db, $userid, $feed_id, 'visible', $value);
     die_html('OK' . $LN['saved']);
 } elseif ($cmd == 'set_user_value') {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $feed_id = get_post('feed_id');
     $option = get_post('option');
     $value = unformat_size(get_post('value'), 1024, 'm');
@@ -270,7 +270,7 @@ if ($cmd == 'export') {
     set_userfeedinfo_value($db, $userid, $feed_id, $option, $value);
     die_html('OK' . $LN['saved']);
 } elseif ($cmd == 'set_plain_user_value') {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $feed_id = get_post('feed_id');
     $option = get_post('option');
     $value = get_post('value');
@@ -281,7 +281,7 @@ if ($cmd == 'export') {
     die_html('OK' . $LN['saved']);
 } elseif ($cmd == 'set_value') {
     if ($isadmin) {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $feed_id = get_post('feed_id');
     $option = get_post('option');
     $value = unformat_size(get_post('value'), 1024, 'm');
@@ -292,7 +292,7 @@ if ($cmd == 'export') {
     }
 } elseif ($cmd == 'set_plain_value') {
     if ($isadmin) {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $feed_id = get_post('feed_id');
     $option = get_post('option');
     $value = get_post('value');
@@ -306,7 +306,7 @@ if ($cmd == 'export') {
     }
 } elseif ($cmd == 'set_update_time') {
     if ($isadmin) {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $feed_id = get_post('feed_id');
     $time1 = get_post('time1');
     $time2 = get_post('time2');

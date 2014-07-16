@@ -101,7 +101,7 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
     assert(is_numeric($userid));
     global $LN, $smarty, $periods;
     // Actually rename the download
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $newurl = trim(get_post('group_url'));
     $username = trim(get_post('group_username'));
     $time1 = trim(get_post('group_time1'));

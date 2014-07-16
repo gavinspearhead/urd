@@ -57,15 +57,11 @@ function setselectbyid(id, val)
 
 function get_value_from_id(id, def)
 {
-    var val = document.getElementById(id);
-    if (val === null) {
-        if (def === null) {
-            return null;
-        } else {
-            return def;
-        }
+    var val = $('#'+id).val();
+    if (val == undefined) {
+        return def;
     } else {
-        return val.value;
+        return val;
     }
 }
 
@@ -255,11 +251,20 @@ function init()
         // Sanity check, sometimes it misses ups/downs!
         if (mousedown < 0) { mousedown = 0; }
     };
-    var urdd_status = document.getElementById('urdd_status');
-    var msg = get_value_from_id('urdd_message', '');
-    if (urdd_status !== null && urdd_status.value == 0) {            
+    var urdd_status = $('#urdd_status').val();
+    var msg = $('#urdd_message').val();
+    if (urdd_status != undefined && urdd_status == 0) {            
         set_message('message_bar', msg, 5000);
     } 
+    update_quick_status();
+    update_disk_status();
+    $('#message_bar').click(function() { hide_message('message_bar', 0); } );  
+    $('#scrollmenuright').click(function(e) { scroll_menu_right(e); } );
+    $('#scrollmenuleft').click(function(e) { scroll_menu_left(e); } );
+    $('#smalllogo').click(function(e) { jump('index.php'); } );
+    $('#status_item').mouseover(function() { load_activity_status(); } );
+    $('#topcontent').mouseup( function() { set_selected();} );
+    $('#contentout').mouseover( function() { close_quickmenu();} );
 }
 
 function task_action(action, task)
@@ -317,12 +322,12 @@ function control_action(action)
     var challenge = get_value_from_id('challenge', '');
     if (action !== null) {
         $.ajax({
-        type: 'post',
-        url: "ajax_action.php",
-        cache: false,
-        data: {
-            cmd: action,
-            challenge: challenge 
+            type: 'post',
+            url: "ajax_action.php",
+            cache: false,
+            data: {
+                cmd: action,
+                challenge: challenge 
             }
         }).done( function(html) {
            update_message_bar(html);
@@ -358,15 +363,11 @@ function ng_action(action, id)
                 challenge: challenge 
             }
         }).done( function(html) {
-                update_message_bar(html);
+            update_message_bar(html);
         });
     }
 }
 
-function remove_class(item, classname)
-{
-    $(item).removeClass(classname);
-}
 
 function add_class(item, classname)
 {
@@ -375,6 +376,7 @@ function add_class(item, classname)
 
 function set_basket_type(type)
 {
+    var challenge = get_value_from_id('challenge', '');
     $.ajax({
         type: 'post',
         url: "ajax_processbasket.php",
@@ -382,6 +384,7 @@ function set_basket_type(type)
         data: {
             commnd: 'set',
             basket_type: type,
+            challenge: challenge 
         }
     });
 }
@@ -408,6 +411,7 @@ function update_basket_display(basket_type)
     var url = "ajax_processbasket.php";
     var add_setname = get_value_from_id('add_setname', ''); 
     var dlsetname = get_value_from_id('dlsetname', ''); 
+    var challenge = get_value_from_id('challenge', '');
     var save_category = get_value_from_id('save_category', ''); 
     var timestamp = get_value_from_id('timestamp', '');
     var dl_dir = get_value_from_id('dl_dir', '');
@@ -426,7 +430,8 @@ function update_basket_display(basket_type)
             download_delay: timestamp,
             add_setname: add_setname,
             save_category: save_category,
-            dl_dir: dl_dir
+            dl_dir: dl_dir,
+            challenge: challenge 
         }
     }).done(function(content) {
         if (content.substr(0, 7) == ':error:') {
@@ -434,10 +439,10 @@ function update_basket_display(basket_type)
             return;
         }
 
-        if (basket_type != 2) {
+        content = $.trim(content);
+        if (basket_type != 2) { // the normal basket
             $('#basketdiv').html(content);
-            content = $.trim(content);
-            if (document.getElementById('basketbuttondiv') !== null) {
+            if ($('#basketbuttondiv') != undefined) {
                 $('#minibasketdiv').addClass('hidden');
                 if (content === '') {
                     $('#basketbuttondiv').addClass('hidden');
@@ -447,7 +452,7 @@ function update_basket_display(basket_type)
                 }
             }
             $('#minibasketdiv').html('');
-        } else {
+        } else {  // the mini basket
             $('#minibasketdiv').html(content);
             $('#basketdiv').addClass('hidden');
             if (content == '') {
@@ -472,7 +477,7 @@ function update_search_bar_height()
     $('#contentout').height($(window).height() - diff);
 }
 
-var last_clicked_setid;
+var last_clicked_setid = false;
 
 function select_set(setID, type, theevent)
 {
@@ -480,14 +485,15 @@ function select_set(setID, type, theevent)
     // First see if shift was used and we need to toggle a bunch, before we overwrite the last_clicked_setid.
     // We also need to check if there is a valid last_clicked_setid to prevent bogus stuff.
     close_browse_divs();
-    if (theevent.shiftKey && typeof(last_clicked_setid) != 'undefined' ) {
-        toggle_group_of_sets(last_clicked_setid, setID ,type);
+    if (theevent.shiftKey && last_clicked_setid !== false) {
+        toggle_group_of_sets(last_clicked_setid, setID, type);
+        last_clicked_setid = false;
+        document.getSelection().removeAllRanges(); //clean up the selected text
     } else {
         toggle_set(setID, type);
+        last_clicked_setid = setID;
     }
-    last_clicked_setid = setID;
 }
-
 
 function toggle_set(setID, type)
 {
@@ -514,25 +520,26 @@ function toggle_set(setID, type)
     var dl_dir = get_value_from_id('dl_dir', '');
     var add_setname = get_value_from_id('add_setname', '');
     var timestamp = get_value_from_id('timestamp', '');
+    var challenge = get_value_from_id('challenge', '');
 
     var url = "ajax_processbasket.php";
 
     $.ajax({
-            type: 'POST',
-            url: url,
-            cache: false,
-            data: {
-                setID: setID,
-                type: type,
-                command: command,
-                timestamp: timestamp,
-                add_setname: add_setname,
-                dl_dir: dl_dir
-                }
-           }).done(function() {
-            update_basket_display();
+        type: 'POST',
+        url: url,
+        cache: false,
+        data: {
+            setID: setID,
+            type: type,
+            command: command,
+            timestamp: timestamp,
+            add_setname: add_setname,
+            challenge: challenge ,
+            dl_dir: dl_dir
         }
-    );
+   }).done(function() {
+       update_basket_display();
+   });
 }
 
 function set_as_downloaded_sets()
@@ -1259,9 +1266,9 @@ function update_tasks()
 function do_hide_message(id)
 {
     $('#' + id).fadeOut(500, function () {
-            $('#' + id).addClass("hidden");
-            $('#' + id).fadeIn(0);
-    } );
+        $('#' + id).addClass("hidden");
+        $('#' + id).fadeIn(0);
+    });
 }
 
 var message_timeout = null;
@@ -1314,7 +1321,7 @@ function load_quick_status()
 {
     var url = "ajax_showstatus.php";
     $.ajax({ type: 'get', url: url, cache: false, data: { type: 'quick' } }).done( function(html) { $('#status_msg').html(html); }); 
-    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'icon' } }).done( function(html) { $('#smallstatus').html(html); }); 
+    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'icon'  } }).done( function(html) { $('#smallstatus').html(html); }); 
 }
 
 function update_activity_status()
@@ -1444,8 +1451,12 @@ function post_edit(cmd, postid)
         type: 'post',
         url: url,
         cache: false,
-        data: { cmd : cmd, 'postid' : postid, "challenge" : challenge }
-    }) . done ( function (html) { update_message_reload_transfers(html); } );
+        data: { 
+            cmd : cmd, 
+            'postid' : postid, 
+            "challenge" : challenge 
+        }
+    }).done( function (html) { update_message_reload_transfers(html); } );
 }
 
 function transfer_edit(cmd, dlid)
@@ -1456,8 +1467,12 @@ function transfer_edit(cmd, dlid)
         type: 'post',
         url: url,
         cache: false,
-        data: { cmd : cmd, 'dlid' : dlid, "challenge" : challenge }
-    }) . done ( function (html) { update_message_reload_transfers(html); } );
+        data: { 
+            cmd : cmd,
+            'dlid' : dlid,
+            "challenge" : challenge 
+        }
+    }).done( function (html) { update_message_reload_transfers(html); } );
 }
 
 function which_button(buttonval, e)
@@ -1518,7 +1533,8 @@ function process_whichbutton(buttonval, rightclick)
         dlsetname:dlname,
         dl_dir:dl_dir,
         add_setname:add_setname,
-        challenge: challenge};
+        challenge: challenge
+    };
     
     var set_ids = new Array();
     $('input[name="set_ids[]"]').each(function() {
@@ -1588,9 +1604,11 @@ function select_preview(binid, gid)
 {
     var challenge = get_value_from_id('challenge', '');
     var url = "ajax_create_preview.php";
-    var data = { preview_bin_id : binid,
+    var data = { 
+        preview_bin_id : binid,
         preview_group_id : gid,
-        challenge : challenge };
+        challenge : challenge
+    };
     $.ajax({
         type: 'post',
         url: url,
@@ -1630,8 +1648,8 @@ function show_preview(dlid, binary_id, group_id)
             show_contents(file);
         } else {
             setTimeout(function () {
-                var do_reload = document.getElementById('do_reload');
-                if (overlayed_content_visible() && do_reload === null) {
+                var do_reload = $('do_reload');
+                if (overlayed_content_visible() && do_reload == undefined) {
                     show_preview(dlid, binary_id, group_id);
                 }
             }, 1000);
@@ -1682,7 +1700,7 @@ function delete_blacklist(id, msg)
             cache: false,
             data: data
         }).done( function(html) {
-            var x = jQuery.parseJSON(html);
+            var x = $.parseJSON(html);
             if (x.error_code == 0) {
                 if (x.action == 'delete') {
                     $("#item" + id).hide();
@@ -1724,7 +1742,7 @@ function enable_blacklist(id)
         cache: false,
         data: data
     }).done( function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
         if (x.error_code == 0) {
             if (x.action == 'hide') {
                 $("#item" + id).hide();
@@ -1947,7 +1965,10 @@ function show_rename_transfer(dlid)
         type: 'get',
         url: url,
         cache: false,
-        data: { cmd : 'showrename', dlid: dlid }
+        data: { 
+            cmd : 'showrename',
+            dlid: dlid 
+        }
     }).done( function(html) {
         show_overlayed_content_1(html, 'popup700x400');
     });
@@ -1960,7 +1981,10 @@ function edit_group(id)
         type: 'get',
         url: url,
         cache: false,
-        data: { cmd : 'showeditgroup', id: id }
+        data: { 
+            cmd : 'showeditgroup', 
+            id: id
+        }
     }).done( function(html) {
         show_overlayed_content_1(html, 'popup700x400');
         $('#group_name').focus();
@@ -1975,7 +1999,10 @@ function edit_rss(id)
         type: 'get',
         url: url,
         cache: false,
-        data: { cmd : 'showeditrss', id: id }
+        data: { 
+            cmd : 'showeditrss', 
+            id: id 
+        }
     }).done( function(html) {
         show_overlayed_content_1(html, 'popup700x400');
         $('#rss_name').focus();
@@ -2024,7 +2051,8 @@ function update_group()
         group_refresh_period: $('#group_refresh_period>option:selected').val(),
         group_expire: group_expire,
         group_subscribed: group_subscribed,
-        challenge:challenge };
+        challenge:challenge 
+    };
     $.ajax({
         type: 'post',
         url: url,
@@ -2714,7 +2742,10 @@ function remove_rss(id, msg)
             type: 'post',
             url: 'ajax_editrss.php',
             cache: false,
-            data: { cmd: 'delete', challenge: challenge } 
+            data: { 
+                cmd: 'delete', 
+                challenge: challenge 
+            } 
         }).done( function(html) {
             if (html.substr(0, 7) == ':error:') {
                 set_message('message_bar', html.substr(7), 5000);
@@ -2733,7 +2764,10 @@ function confirm_delete_account(id, msg)
             type: 'post',
             url: 'ajax_delete_account.php',
             cache: false,
-            data: { delete_account:1, challenge:challenge } 
+            data: {
+                delete_account:1,
+                challenge:challenge 
+            } 
         }).done( function(html) {
             if (html.substr(0,2) == 'OK') {
                 show_alert(html.substr(2));
@@ -2757,7 +2791,10 @@ function fold_transfer(id, type)
         type: 'get',
         url: url,
         cache: false,
-        data: { var : id, type : type } 
+        data: { 
+            var : id, 
+            type : type 
+        } 
     }); 
     $('#' + id + type).toggleClass('dynimgplus');
     $('#' + id + type).toggleClass('dynimgminus');
@@ -2776,7 +2813,45 @@ function toggle_group_of_sets(startset, stopset, type)
     var thissetvalue = null;
     var toggleitems = [];
 
-    for (var i = 0; i < sets.length; i++) {
+    $("input[name='setdata[]']").each( function() {
+        // We want to toggle the last set as well, but definitely not the first one 
+        // (it got toggled when the user clicked it, don't toggle it back)
+
+        // Also, setdata[] stuff always starts with "set_"!
+
+        thissetvalue = $(this).attr('id').substr(4);
+        // Looping through all sets, we will encounter startset and stopset.
+        // And not necessarily in that order!
+
+        // Mark all sets between (and including) startset and stopset as toggleitems
+        // At the end, de-toggle the startset as that one has already been toggled
+        // before this function was called.
+
+        // We'll allow the start/stop sets to be reversed... robustness pwnz.
+        if (thissetvalue == startset || thissetvalue == stopset) {
+            // We are now either in or out of range:
+            if (inrange === false) {
+                inrange = true;
+            } else {
+                inrange = false;
+            }
+        }
+
+        // If in range, toggle:
+        // If startset, do not toggle (already toggled before):
+        // If stopset, always toggle:
+        if ((inrange === true && thissetvalue !== startset) ||  thissetvalue === stopset) {
+            toggleitems.push(thissetvalue);
+        }
+    });
+
+    // Now do the actual toggling
+    $.each(toggleitems, function(key, val) {
+        toggle_set(val, type);
+
+    });
+
+  /*  for (var i = 0; i < sets.length; i++) {
         // We want to toggle the last set as well, but definitely not the first one 
         // (it got toggled when the user clicked it, don't toggle it back)
 
@@ -2806,12 +2881,12 @@ function toggle_group_of_sets(startset, stopset, type)
         if ((inrange === true && thissetvalue !== startset) || thissetvalue === stopset) {
             toggleitems.push(thissetvalue);
         }
-    }
+    }*/
 
     // Now do the actual toggling
-    for (var i = 0; i < toggleitems.length; i++) {
+  /*  for (var i = 0; i < toggleitems.length; i++) {
         toggle_set(toggleitems[i], type);
-    }
+    }*/
 }
 
 function fold_adv_search(button_id, id)
@@ -2825,10 +2900,10 @@ function fold_adv_search(button_id, id)
 function clear_form(formId, except) 
 { 
     $("#" +formId).find(":input").each(function()  {
-            var type = $(this).prop("type");
-            if (type == 'text' || type == 'select-one' || type == 'textarea') { 
-                $(this).val('');
-            }
+        var type = $(this).prop("type");
+        if (type == 'text' || type == 'select-one' || type == 'textarea') { 
+            $(this).val('');
+        }
     });
 }
 
@@ -2868,12 +2943,12 @@ function collapse_select(name, par)
 function submit_language_login()
 {
     var change = $('#language_change');
-    var curr_language = document.getElementById('curr_language');
+    var curr_language = $('#curr_language').val();
     var myform = $('#urd_login_form');
-    if (lang !== null ) {
+    if (change !== null ) {
         var langval = $('#language_select>option:selected').val();
         change.val(1);
-        if (curr_language === null || curr_language.value != langval) {
+        if (curr_language == undefined || curr_language.value != langval) {
             curr_language.value = langval;
             myform.submit();
         }
@@ -2985,7 +3060,7 @@ function save_file()
     var name = get_value_from_id('filename_editfile');
     var dir = get_value_from_id('directory_editfile');
     var filename_err = get_value_from_id('filename_err');
-    var newfile = document.getElementById('newfile');
+    var newfile = $('#newfile');
     var contents = get_value_from_id('filecontents_editfile');
     var newdir = get_value_from_id('newdir', '0');
     if (dir == '' || contents == '') {
@@ -2995,7 +3070,7 @@ function save_file()
         set_message('message_bar', filename_err, 5000);
         return false;
     }
-    newfile = (newfile === null) ? "0" : "1";
+    newfile = (newfile == undefined) ? "0" : "1";
     var url = "ajax_editviewfiles.php";
     var data = { 
         cmd: 'save_file',
@@ -3106,7 +3181,8 @@ function delete_category()
     if (cat_id == '') {
         return;
     }
-    var data = { cmd : 'delete_category',
+    var data = { 
+        cmd : 'delete_category',
         id : cat_id,
         challenge :challenge
     };
@@ -3191,7 +3267,7 @@ function submit_calendar(none)
     } else { 
         $('#timestamp').val($('#date1').val() + ' ' + $('#time1').val());
     }
-    if (document.getElementById('basketbuttondiv') !== null) {
+    if ($('#basketbuttondiv') != undefined) {
         // we're in the basket so we need to update it to store the values
         update_basket_display(1);
     }
@@ -3213,31 +3289,28 @@ function select_calendar(day)
 
 function clear_checkbox(id)
 {
-    var box = document.getElementById(id);
-    var img = document.getElementById(id + '_img');
+    var box = $('#' + id);
+    var img = $('#' +id + '_img');
     if (box != null && img != null) {
-        box.value = 0;
-        remove_class(img, 'checkbox_on');
-        remove_class(img, 'checkbox_tri');
-        add_class(img, 'checkbox_off');
+        box.val(0);
+        img.removeClass('checkbox_on checkbox_tri');
+        img.addClass('checkbox_off');
     }
 }
 
 function set_checkbox(id, val)
 {
-    var box = document.getElementById(id);
-    var img = document.getElementById(id + '_img');
+    var box = $('#' + id);
+    var img = $('#' +id + '_img');
     if (box != null && img != null) {
-        box.value = val;
-        remove_class(img, 'checkbox_on');
-        remove_class(img, 'checkbox_tri');
-        remove_class(img, 'checkbox_off');
+        box.val(val);
+        img.removeClass('checkbox_on checkbox_tri checkbox_off');
         if (val == 1) {
-            add_class(img, 'checkbox_on');
+            img.addClass('checkbox_on');
         } else if (val == 2) {
-            add_class(img, 'checkbox_tri');
+            img.addClass('checkbox_tri');
         } else {
-            add_class(img, 'checkbox_off');
+            img.addClass('checkbox_off');
         }
     }
 }
@@ -3314,33 +3387,26 @@ function change_checkbox(id, tristate)
 
 function toggle_table(table_id, scope_off, scope_on)
 {
-    var table = document.getElementById(table_id);
-    var rowcount = table.rows.length;
-    var colcount = 0;
     $('#page_tab').val(scope_on);
     if (scope_on == 'admin') {
          $('#button_user').removeClass('tab_selected');
-    } else {
-        $('#button_user').addClass('tab_selected');
-    }
-    if (scope_on == 'admin') {
         $('#button_global').addClass('tab_selected');
     } else {
+        $('#button_user').addClass('tab_selected');
         $('#button_global').removeClass('tab_selected');
     }
-
-    for (var i = 0; i < rowcount; i++) {
-        colcount = table.rows[i].cells.length;
-        for (var j = 0; j < colcount; j++) {
-            if (has_class(table.rows[i].cells[j], scope_off)) {
-                add_class(table.rows[i].cells[j], 'hidden');
+    
+    $('#' + table_id + " tr").each( function() {
+        $(this).children("td, th").each( function() { 
+            if ($(this).hasClass(scope_off)) {
+                $(this).addClass('hidden');
                 $('#page1').val(scope_on);
             }
-            if (has_class(table.rows[i].cells[j], scope_on)) {
-                remove_class(table.rows[i].cells[j], 'hidden');
+            if ($(this).hasClass(scope_on)) {
+                $(this).removeClass('hidden');
             }
-        }
-    }
+        });
+    });
 }
 
 function has_class(item, classname)
@@ -3362,8 +3428,8 @@ function select_tab_setting(tab, session_var, session_val)
     var x = document.getElementsByName('tabs');
     for (var i = 0; i < x.length; i++) {
         var content = $('#' + x[i].value + '_tab');
-        if (!has_class(content, 'hidden')) {
-            add_class(content, 'hidden');
+        if (!content.hasClass('hidden')) {
+            content.addClass('hidden');
         }
         $('#' + x[i].value + '_bar_elem').removeClass('tab_selected');
         $('#' + x[i].value + '_bar').removeClass('tab_selected');
@@ -3537,19 +3603,6 @@ function load_subscriptions(options)
     }
 }
 
-function select_update(selector, value)
-{
-    var group_id = document.getElementById(selector);
-    if (group_id === null) {
-        return; 
-    }
-    for(var index = 0; index < group_id.options.length; index++) {
-        if (group_id.options[index].value == value) {
-            group_id.selectedIndex = index;
-            return;
-        }
-    }
-}
 
 function close_browse_divs()
 {
@@ -3769,14 +3822,19 @@ function update_browse_searches(name)
         type: 'get',
         url: url,
         cache: false,
-        data: { type : type, name : name, cmd : 'get', cat: 0 } 
+        data: { 
+            type : type,
+            name : name,
+            cmd : 'get', 
+            cat: 0 
+        } 
     }).done( function(html) {
         var response = html;
         $('#save_category').val('');
         if (response.substr(0, 2) == 'OK' && response.length > 2) {
             update_search_names(name);
             clear_form("searchform");
-            var sc = jQuery.parseJSON(response.substr(2));
+            var sc = $.parseJSON(response.substr(2));
             $.each(sc, function(key, val) {
                 if (key == 'minsetsize') { setvalbyid('minsetsize', val); }
                 else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
@@ -3821,14 +3879,18 @@ function update_spot_searches(name)
         type: 'get',
         url: url,
         cache: false,
-        data:{ type : type, name : name, cmd : 'get' } 
+        data:{
+            type : type,
+            name : name, 
+            cmd : 'get' 
+        } 
     }).done( function(html) {
         var response = html;
         setvalbyid('save_category', '');
         update_search_names(name);
         if (response.substr(0, 2) == 'OK' && response.length > 2) {
         clear_form("searchform");
-        var sc = jQuery.parseJSON(response.substr(2));
+        var sc = $.parseJSON(response.substr(2));
         var cat;
         clear_all_checkboxes(null); 
         $.each(sc, function(key,val) {
@@ -3978,7 +4040,7 @@ function load_spots(options)
         cache: false,
         data: data 
     }).done( function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
         $('#minrating').val(x.minrating);        
@@ -3998,7 +4060,8 @@ function load_spots(options)
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
-                $('#spots_table>tbody:last').append(x.content);
+                //$('#spots_table>tbody:last').append(x.content);
+                $('#spots_table>tbody tr:eq(-2)').after(x.content);
                 update_widths("browsesubjecttd");
             }
         }
@@ -4109,7 +4172,7 @@ function load_groupsets(options)
         cache: false,
         data: data
     }).done(function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
         init_spot_sliders();
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
@@ -4124,10 +4187,10 @@ function load_groupsets(options)
             show_content_div_2(x.content, 'setsdiv');
             $('#group_id').val(group_id);
             update_rss_url();
-            select_update('select_groupid', group_id);
+            setselectbyid('select_groupid', group_id);
             update_widths("browsesubjecttd");
         } else {
-            $('#sets_table>tbody:last').append(x.content);
+            $('#sets_table>tbody tr:eq(-2)').after(x.content);
             update_widths("browsesubjecttd");
         }
     });
@@ -4285,7 +4348,7 @@ function load_rsssets(options)
         cache: false,
         data: data
     }).done(function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
         init_rss_sliders();
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
@@ -4300,10 +4363,10 @@ function load_rsssets(options)
             $('#waitingdiv').addClass('hidden');
             $('#setsdiv').removeClass('hidden');
             update_rss_url();
-            select_update('select_feedid', feed_id);
+            setselectbyid('select_feedid', feed_id);
             update_widths("browsesubjecttd");
         } else {
-            $('#sets_table > tbody:last').append(x.content);
+            $('#sets_table>tbody tr:eq(-2)').after(x.content);
             update_widths("browsesubjecttd");
         }
     });
@@ -4354,8 +4417,8 @@ function show_alert(msg)
         $('#okbutton').click( function() {
             hide_overlayed_content2();
         });
-        var cancelbutton = document.getElementById('cancelbutton');
-        if (cancelbutton !== null) {
+        var cancelbutton = $('#cancelbutton');
+        if (cancelbutton != undefined ) {
             hide_overlayed_content2();
         }
     });
@@ -4506,11 +4569,11 @@ function load_rss_feeds(options)
     }
     var data = {
         search:search,
-       cmd:cmd,
-       order:order,
-       order_dir:order_dir,
-       offset:page,
-       search_all:search_all
+        cmd:cmd,
+        order:order,
+        order_dir:order_dir,
+        offset:page,
+        search_all:search_all
     };
     if (page_tab != '') {
         data ['page_tab'] = page_tab;
@@ -4590,12 +4653,13 @@ function show_image(file, idx)
         url: url,
         cache: false,
         data: {
-        file: file,
-        preview: preview,
-        idx: idx,
-        width : String(width-110),
-        height: String(height-110),
-        challenge: challenge }
+            file: file,
+            preview: preview,
+            idx: idx,
+            width : String(width-110),
+            height: String(height-110),
+            challenge: challenge 
+        }
     }).done( function(html) {
         if (preview != 0) { 
             $('#textcontent').html(html);
@@ -4710,9 +4774,9 @@ function set_mouse_click()
 function start_quickmenu(str, sid, type, e)
 {
     setTimeout(
-            function () {
+        function () {
             show_quickmenu(str, sid, type, e);
-            }, 200);
+        }, 200);
 }
 
 function do_select_subcat()
@@ -4730,7 +4794,6 @@ function show_subcat_selector()
 {
     var cat = $('#select_catid>option:selected').val();
     var subcat = document.getElementById('subcat_selector_'+cat);
-    var subcats = document.getElementsByTagName('div');
     var sc;
     close_browse_divs();
 
@@ -4749,13 +4812,12 @@ function show_subcat_selector()
         $('#overlay_back3').click(function(e) { close_subcat_selector(); });
         $('#overlay_back3').show();
         $('#subcat_selector_'+cat).show();
-        remove_class(subcat, 'hidden');
+        $('#subcat_selector_'+cat).removeClass('hidden');
     }
 }
 
 function close_subcat_selector()
 {
-    var subcats = document.getElementsByTagName('div');
     var sc;
     $('div').each(function () {
         var id = $(this).attr('id');
@@ -4863,7 +4925,11 @@ function add_poster_blacklist(id)
 {
     var url = 'ajax_action.php';
     var challenge = get_value_from_id('challenge', '');
-    var data = { cmd:'add_poster_blacklist', challenge : challenge, setid: id };
+    var data = { 
+        cmd:'add_poster_blacklist',
+        challenge : challenge,
+        setid: id 
+    };
     var confirmmsg = get_value_from_id('blacklist_confirm_msg', 'Add poster to blacklist?');
     show_confirm(confirmmsg, function() { 
         $.ajax({
@@ -5250,22 +5316,19 @@ function handle_passwords_register(npw_id1, npw_id2, username_id)
             var pw = $('#' + npw_id1);
 
             if (weak_pw <= 5) {
-                pw.removeClass('passwordmedium');
-                pw.removeClass('passwordstrong');
+                pw.removeClass('passwordmedium passwordstrong');
                 pw.addClass('passwordweak');
                 $('#pwweak').show();
                 $('#pwmedium').hide();
                 $('#pwstrong').hide();
             } else if (weak_pw <= 7) {
-                pw.removeClass('passwordweak');
-                pw.removeClass('passwordstrong');
+                pw.removeClass('passwordweak passwordstrong');
                 pw.addClass('passwordmedium');
                 $('#pwweak').hide();
                 $('#pwmedium').show();
                 $('#pwstrong').hide();
             } else if (weak_pw > 7) {
-                pw.removeClass('passwordweak');
-                pw.removeClass('passwordmedium');
+                pw.removeClass('passwordweak passwordmedium');
                 pw.addClass('passwordstrong');
                 $('#pwweak').hide();
                 $('#pwmedium').hide();
@@ -5273,9 +5336,7 @@ function handle_passwords_register(npw_id1, npw_id2, username_id)
             }
         } else if (npw1 == '') {
             var pw = $('#' + npw_id1);
-            pw.removeClass('passwordstrong');
-            pw.removeClass('passwordweak');
-            pw.removeClass('passwordmedium');
+            pw.removeClass('passwordstrong passwordweak passwordmedium');
         }
     }
 
@@ -5317,8 +5378,7 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
             pwd_msg.html($('#pwincorrect').html());
         } else {
             pwd_msg.html('');
-            pwd.removeClass('passwordincorrect');
-            pwd.removeClass('passwordcorrect');
+            pwd.removeClass('passwordincorrect passwordcorrect');
         }
 
         if (npw1 != '') {
@@ -5327,27 +5387,22 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
             var pw_msg = $('#pw_message_' + npw_id1);
 
             if (weak_pw <= 5) {
-                pw.removeClass('passwordmedium');
-                pw.removeClass('passwordstrong');
+                pw.removeClass('passwordmedium passwordstrong');
                 pw.addClass('passwordweak');
                 pw_msg.html($('#pwweak').html());
             } else if (weak_pw <= 7) {
-                pw.removeClass('passwordweak');
-                pw.removeClass('passwordstrong');
+                pw.removeClass('passwordweak passwordstrong');
                 pw.addClass('passwordmedium');
                 pw_msg.html($('#pwmedium').html());
             } else if (weak_pw > 7) {
-                pw.removeClass('passwordweak');
-                pw.removeClass('passwordmedium');
+                pw.removeClass('passwordweak passwordmedium');
                 pw.addClass('passwordstrong');
                 pw_msg.html($('#pwstrong').html());
             }
         } else if (npw1 == '') {
             var pw_msg = $('#pw_message_' + npw_id1);
             var pw = $('#' + npw_id1);
-            pw.removeClass('passwordstrong');
-            pw.removeClass('passwordweak');
-            pw.removeClass('passwordmedium');
+            pw.removeClass('passwordstrong passwordweak passwordmedium');
             pw_msg.html("");
         }
     }
@@ -5363,11 +5418,11 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
             url: url,
             cache: false,
             data: {
-            cmd: 'change_password',
-            oldpass: opw,
-            newpass1: npw1,
-            newpass2: npw2,
-            challenge: challenge
+                cmd: 'change_password',
+                oldpass: opw,
+                newpass1: npw1,
+                newpass2: npw2,
+                challenge: challenge
         }
         }).done( function(html) {
             update_message_bar(html);
@@ -5401,8 +5456,8 @@ function load_prefs()
         url: url,
         cache: false,
         data: {
-        cmd : 'show',
-        current_tab: current_tab
+            cmd : 'show',
+            current_tab: current_tab
         }
     }).done( function(html) {
         show_content_div_2(html, 'settingsdiv');
@@ -5426,8 +5481,8 @@ function reset_prefs(msg)
             url: url,
             cache: false,
             data: {
-            cmd : 'reset',
-            challenge: challenge,
+                cmd : 'reset',
+                challenge: challenge,
             }
         }).done( function(html) {
             if (html.substr(0,2) == "OK") {
@@ -5463,12 +5518,12 @@ function show_logs(options)
         url: url,
         cache: false,
         data: {
-        lines :lines,
-        log_level: level,
-        challenge: challenge,
-        search: search,
-        sort_dir: sort_dir,
-        sort: sort_order
+            lines :lines,
+            log_level: level,
+            challenge: challenge,
+            search: search,
+            sort_dir: sort_dir,
+            sort: sort_order
     }
     }).done( function(html) {
         show_content_div_2(html, 'logdiv');
@@ -5562,13 +5617,13 @@ function submit_registration()
         url: url,
         cache: false,
         data: {
-        username: username,
-        email: email,
-        password1: pass1,
-        password2: pass2,
-        fullname: fullname,
-        register_captcha: captcha,
-        submit_button: 1
+            username: username,
+            email: email,
+            password1: pass1,
+            password2: pass2,
+            fullname: fullname,
+            register_captcha: captcha,
+            submit_button: 1
         }
     }).done( function(html) {
         if (html == "OK") {
@@ -5593,8 +5648,8 @@ function submit_forgot_password()
         url: url,
         cache: false,
         data: {
-        username: username,
-        email: email,
+            username: username,
+            email: email
     }
     }).done( function(html) {
         if (html == "OK") {
@@ -5615,7 +5670,7 @@ function reload_prefs()
 
 function display_timebox(id)
 {
-    if ($('#'+id+'>option:selected').val() == 0) {
+    if ($('#' + id + '>option:selected').val() == 0) {
         $('#timebox1').hide();
         $('#timebox2').hide();
     } else {
@@ -5839,12 +5894,12 @@ function update_ng_time(type,  group_id)
     if (type == 'groups') {
         url = 'ajax_groups.php';
         data = { 
-cmd: 'set_update_time',
-     group_id : group_id,
-     challenge: challenge,
-     time1: $('#time1_' + group_id).val(),
-     time2: $('#time2_' + group_id).val(),
-     period: $('#period_'+ group_id + '>option:selected').val()
+             cmd: 'set_update_time',
+             group_id : group_id,
+             challenge: challenge,
+             time1: $('#time1_' + group_id).val(),
+             time2: $('#time2_' + group_id).val(),
+             period: $('#period_'+ group_id + '>option:selected').val()
         }
     } else {
         url = 'ajax_rss_feeds.php';
@@ -5858,7 +5913,6 @@ cmd: 'set_update_time',
         };
     }
 
-    var challenge = get_value_from_id('challenge', '');
     var timeout = 0;
     if (update_ng_setting_timeout != null && update_ng_id == group_id) {
         clearTimeout(update_ng_setting_timeout);
@@ -5897,10 +5951,10 @@ function show_post_spot()
         url: url,
         cache: false,
         data: {
-        cmd: 'show'
-    }
+            cmd: 'show'
+        }
     }).done(function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.content, 'popup700x400');
             change_spotsubcats();
@@ -5922,11 +5976,11 @@ function change_spotsubcats()
         url: url,
         cache: false,
         data: {
-        cmd: 'category_info',
-        category: $('#category>option:selected').val() 
+            cmd: 'category_info',
+            category: $('#category>option:selected').val() 
         }
         }).done(function(html) {
-            var x = jQuery.parseJSON(html);
+            var x = $.parseJSON(html);
             if (x.error == 0) {
             $('#subcats').html(x.content);
             var height = 500, width = 700;
@@ -5982,7 +6036,7 @@ function upload_file(id, type, post_id, fn)
         contentType: false,
         processData: false
     }).done(function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
             fn(-1);
@@ -6013,18 +6067,19 @@ function post_spot()
         url: url,
         cache: false,
         data: {
-        cmd: 'post',
-        category: cat,
-        subject : subject,
-        tag : tag,
-        url : weburl,
-        description : description,
-        subcats: subcats,
-        nzb_file : nzb,
-        image_file : img
+            cmd: 'post',
+            category: cat,
+            subject : subject,
+            tag : tag,
+            url : weburl,
+            description : description,
+            subcats: subcats,
+            nzb_file : nzb,
+            image_file : img
         }
     }).done(function(html) {
-        var x = jQuery.parseJSON(html);
+        var x = $.parseJSON(html);
+    
         if (x.error == 0) {
             var rv1 = 0;
             var rv2 = 0;
@@ -6037,6 +6092,9 @@ function post_spot()
                 } else if (rv1 > 0 && rv2 > 0) {
                     start_post(x.post_id);
                     hide_overlayed_content();
+                    if (x.message != undefined) {
+                        set_message('message_bar', x.message, 5000);
+                    }
         // close popup which we won't do because we have to fill in the stuff over and over again.
                 } else {
                     counter++;
@@ -6058,11 +6116,11 @@ function cancel_post(post_id)
         url: url,
         cache: false,
         data: {
-        cmd: 'start_post',
-        postid: post_id,
-    }
+            cmd: 'start_post',
+            postid: post_id,
+        }
     }).done(function(html) {
-        var r = jQuery.parseJSON(html);
+        var r = $.parseJSON(html);
         if (r.error != 0) {
             set_message('message_bar', r.error, 5000);
         }
@@ -6077,11 +6135,11 @@ function start_post(post_id)
         url: url,
         cache: false,
         data: {
-        cmd: 'start_post',
-        postid: post_id,
-    }
+            cmd: 'start_post',
+            postid: post_id
+        }
     }).done(function(html) {
-        var r = jQuery.parseJSON(html);
+        var r = $.parseJSON(html);
         if (r.error != 0) {
             set_message('message_bar', r.error, 5000);
         }
@@ -6161,7 +6219,7 @@ function load_side_bar(fn)
             url: url,
             cache: false,
         }).done(function(html) {
-            var r = jQuery.parseJSON(html);
+            var r = $.parseJSON(html);
             if (r.error != 0) {
                 set_message('message_bar', r.error, 5000);
             } else {
@@ -6182,7 +6240,7 @@ function load_side_bar(fn)
             url: url,
             cache: false,
         }).done(function(html) {
-            var r = jQuery.parseJSON(html);
+            var r = $.parseJSON(html);
             if (r.error != 0) {
                 set_message('message_bar', r.error, 5000);
             } else {
@@ -6203,7 +6261,7 @@ function load_side_bar(fn)
             url: url,
             cache: false,
         }).done(function(html) {
-            var r = jQuery.parseJSON(html);
+            var r = $.parseJSON(html);
             if (r.error != 0) {
                 set_message('message_bar', r.error, 5000);
             } else {

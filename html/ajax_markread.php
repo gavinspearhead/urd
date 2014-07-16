@@ -51,7 +51,7 @@ switch (strtolower($cmd)) {
         sets_marking::mark_set($db, $userid, $setid, 'statusint', $type, 1, 255);
         break;
     case 'wipe':
-        challenge::verify_challenge_text($_REQUEST['challenge']);
+        challenge::verify_challenge($_REQUEST['challenge']);
         if ($isadmin) {
             wipe_sets($db, array($setid), $type, $userid);
         }

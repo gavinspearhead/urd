@@ -51,7 +51,7 @@ if (isset($_GET['cmd']) && $_GET['cmd'] == 'export_all') {
 } else {
     // everything else is a post
     $command = strtolower(get_post('cmd'));
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
 }
 
 function update_spots_images(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -693,7 +693,7 @@ function add_whitelist(DatabaseConnection $db, $userid)
 {
     global $LN;
     assert(is_numeric($userid));
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $spotterid = trim(get_post('spotterid', ''));
     $global = get_post('global', FALSE);
     if ($spotterid == '') {
@@ -760,7 +760,7 @@ function delete_whitelist(DatabaseConnection $db, $userid)
     global $LN;
     assert(is_numeric($userid));
     try {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $id = trim(get_post('id', ''));
         $rv = delete_from_whitelist($db, $id);
     } catch (exception $e){
@@ -775,7 +775,7 @@ function delete_blacklist(DatabaseConnection $db, $userid)
     global $LN;
     assert(is_numeric($userid));
     try {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $id = trim(get_post('id', ''));
         $rv = delete_from_blacklist($db, $id);
     } catch (exception $e){
@@ -789,7 +789,7 @@ function enable_blacklist(DatabaseConnection $db, $userid)
     global $LN;
     assert(is_numeric($userid));
     try {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $id = trim(get_post('id', ''));
         enable_from_blacklist($db, $id);
     } catch (exception $e){
@@ -803,7 +803,7 @@ function enable_whitelist(DatabaseConnection $db, $userid)
     global $LN;
     assert(is_numeric($userid));
     try {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $id = trim(get_post('id', ''));
         enable_from_whitelist($db, $id);
     } catch (exception $e){
@@ -817,7 +817,7 @@ function enable_whitelist(DatabaseConnection $db, $userid)
 function add_posterblacklist(DatabaseConnection $db, $userid)
 {
     global $LN;
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $setid = trim(get_post('setid', ''));
     $poster_blacklist = get_config($db, 'poster_blacklist');
     $poster_blacklist = unserialize($poster_blacklist);
@@ -844,7 +844,7 @@ function add_posterblacklist(DatabaseConnection $db, $userid)
 function add_blacklist(DatabaseConnection $db, $userid)
 {
     global $LN;
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $spotterid = trim(get_post('spotterid', ''));
     $global = get_post('global', FALSE) == 'global';
     if ($spotterid == '') {

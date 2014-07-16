@@ -28,7 +28,7 @@
 {foreach $pref_list as $atab}
 {if $atab->length > 0}
 <span id="{$atab->tabname|replace:' ':''}_bar">
-<span id="{$atab->tabname|replace:' ':''}_bar_elem" onclick="javascript:select_tab_setting('{$atab->tabname|escape:javascript|replace:' ':''}')"  class="tab{if ($current_tab == '' and $atab@first) or $current_tab==$atab->tabname} tab_selected{/if}" >{$atab->name}
+<span id="{$atab->tabname|replace:' ':''}_bar_elem" onclick="javascript:select_tab_setting('{$atab->tabname|escape:javascript|replace:' ':''}')" class="tab{if ($current_tab == '' and $atab@first) or $current_tab==$atab->tabname} tab_selected{/if}" >{$atab->name}
 <input type="hidden" name="tabs" value="{$atab->tabname|replace:' ':''}"/>
 </span>
 </span>
@@ -192,7 +192,7 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 {if $length == 0}
 <script type="text/javascript">
 $(document).ready(function() {
-    add_class(document.getElementById('{$pref->tabname|replace:' ':''}_bar'), 'hidden');
+    $('#' + '{$pref->tabname|replace:' ':''}_bar').addClass('hidden');
 }) ;
 </script>
 {/if}
@@ -201,5 +201,3 @@ $(document).ready(function() {
 <div><br/></div>
 <p>&nbsp;</p>
 
-
-{include file="foot.tpl"}

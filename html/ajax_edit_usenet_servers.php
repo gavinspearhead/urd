@@ -104,7 +104,7 @@ switch (strtolower($cmd)) {
 
 case 'import_settings':
     if (isset ($_FILES['filename']['tmp_name'])) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
         $usenet_servers = $xml->read_usenet_servers($db);
         if ($usenet_servers != array()) {
@@ -124,7 +124,7 @@ case 'export_settings':
     export_settings($db, 'usenet_servers', 'urd_usenet_servers_settings.xml');
     break;
 case 'disable_auth':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     smart_update_usenet_server($db, $id, array('authentication'=> 0, 'username'=>'', 'password'=>''));
     $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
@@ -133,7 +133,7 @@ case 'disable_auth':
     }
     break;
 case 'delete_server':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     delete_usenet_server($db, $id);
     $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
@@ -143,7 +143,7 @@ case 'delete_server':
     }
     break;
 case 'disable_posting':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
     if ($uc->is_connected()) {
@@ -154,7 +154,7 @@ case 'disable_posting':
     }
     break;
 case 'enable_posting':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
     if ($uc->is_connected()) {
@@ -166,7 +166,7 @@ case 'enable_posting':
     break;
 
 case 'enable_server':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     $uc = new urdd_client($db, $prefs_root['urdd_host'],$prefs_root['urdd_port'],$userid);
     $prio = DEFAULT_USENET_SERVER_PRIORITY;
@@ -178,7 +178,7 @@ case 'enable_server':
     }
     break;
 case 'disable_server':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
     $prio = DISABLED_USENET_SERVER_PRIORITY;
@@ -190,7 +190,7 @@ case 'disable_server':
     }
     break;
 case 'set_preferred':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     verify_usenet_server_id($db, $id);
     $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
     if ($uc->is_connected()) {
@@ -261,7 +261,7 @@ case 'showeditusenetserver':
     break;
 
 case 'update_usenet_server':
-    challenge::verify_challenge_text($_REQUEST['challenge']);
+    challenge::verify_challenge($_REQUEST['challenge']);
     if (is_numeric($id) || $id == 'new') {
         $error = '';
         $hostname = trim(get_request('hostname'));

@@ -97,7 +97,6 @@
 {/capture}
 {/strip}
 
-
 {if $smarty.foreach.loopies.total > 0}
 <div class="light">
 <table width="100%" class="browsetoptable">

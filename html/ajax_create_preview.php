@@ -27,7 +27,7 @@ $pathajcp = realpath(dirname(__FILE__));
 
 require_once "$pathajcp/../functions/ajax_includes.php";
 
-challenge::verify_challenge_text($_POST['challenge']);
+challenge::verify_challenge($_POST['challenge']);
 $pbin_id = get_post('preview_bin_id');
 $pgroup_id = get_post('preview_group_id');
 $dlid = start_preview($db, $pbin_id, $pgroup_id, $userid);

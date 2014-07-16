@@ -41,7 +41,7 @@ $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 
 switch (strtolower($cmd)) {
 case 'start' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     // In case it's paused, continue it:
     try {
         $uc->continue_cmd(get_command(urdd_protocol::COMMAND_POST) . " $postid");
@@ -52,7 +52,7 @@ case 'start' :
     }
     break;
 case 'pause' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->pause(get_command(urdd_protocol::COMMAND_POST) . " $postid");
         $uc->pause(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
@@ -62,7 +62,7 @@ case 'pause' :
     }
     break;
 case 'cancel' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->cancel(get_command(urdd_protocol::COMMAND_POST) . " $postid");
         $uc->cancel(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
@@ -72,7 +72,7 @@ case 'cancel' :
     }
     break;
 case 'delete' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $uc->cancel(get_command(urdd_protocol::COMMAND_POST) . " $postid");
         $uc->cancel(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");

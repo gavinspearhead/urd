@@ -249,7 +249,7 @@ function set_ng_value(DatabaseConnection $db, $group_id, $option, $value)
 if ($cmd == 'export') {
     export_settings($db, 'newsgroups', 'urd_group_settings.xml');
 } elseif ($cmd == 'load_settings' && isset($_FILES['filename']['tmp_name']) && $isadmin) {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
     $groups = $xml->read_newsgroup_settings($db);
     if ($groups != array()) {
@@ -261,7 +261,7 @@ if ($cmd == 'export') {
     }
 } elseif ($cmd == 'set_value') {
     if ($isadmin) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $group_id = get_post('group_id');
         $option = get_post('option');
 
@@ -273,7 +273,7 @@ if ($cmd == 'export') {
     }
 } elseif ($cmd == 'set_plain_value') {
     if ($isadmin) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $group_id = get_post('group_id');
         $name = get_all_group_by_id($db, $group_id);
         $option = get_post('option');
@@ -288,13 +288,13 @@ if ($cmd == 'export') {
     }
 
 } elseif ($cmd == 'toggle_visibility') {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $group_id = get_post('group_id');
     $value = get_post('visibility') ? 1 : 0;
     set_usergroup_value($db, $userid, $group_id, 'visible', $value);
     die_html('OK' . $LN['saved']);
 } elseif ($cmd == 'set_user_value') {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $group_id = get_post('group_id');
     $option = get_post('option');
     $value = unformat_size(get_post('value'), 1024, 'm');
@@ -304,7 +304,7 @@ if ($cmd == 'export') {
     set_usergroup_value($db, $userid, $group_id, $option, $value);
     die_html('OK' . $LN['saved']);
 } elseif ($cmd == 'set_plain_user_value') {
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $group_id = get_post('group_id');
     $option = get_post('option');
     $value = get_post('value');
@@ -316,7 +316,7 @@ if ($cmd == 'export') {
 
 } elseif ($cmd == 'set_update_time') {
     if ($isadmin) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $group_id = get_post('group_id');
         $time1 = get_post('time1');
         $time2 = get_post('time2');
@@ -344,7 +344,7 @@ if ($cmd == 'export') {
     }
 } elseif ($cmd == 'toggle_adult') {
     if ($isadmin) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $group_id = get_post('group_id');
         $value = get_post('value') == 1? ADULT_ON:ADULT_OFF;
         toggle_adult($db, 'group', $group_id, $value);

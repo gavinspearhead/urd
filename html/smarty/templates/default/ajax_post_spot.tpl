@@ -40,7 +40,7 @@
 <tr> <td>{$LN_browse_subject}</td><td><input type="text" name="subject" id="subject" class="width300" required placeholder="{$LN_browse_subject}"/> </td> </tr>
 <tr> <td>{$LN_spots_tag}</td><td><input type="text" name="tag" id="tag" class="width300" placeholder="{$LN_spots_tag}"/> </td> </tr>
 <tr> <td>{$LN_feeds_url}</td><td><input type="text" name="weburl" id="weburl" class="width300" placeholder="http://"/> </td> </tr>
-<tr> <td>{$LN_tasks_description}</td><td><textarea type="text" name="description" id="description" rows="8" class="width300" required/></textarea> </td> 
+<tr> <td>{$LN_tasks_description}</td><td><textarea type="text" name="description" id="description" rows="8" class="width300" required>{$content}</textarea> </td> 
 <td>
 {foreach $smileys as $smiley}
 <img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" class="button" onclick="javascript: add_text('[img={$smiley|escape:javascript}]', $('#description'));">

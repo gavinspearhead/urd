@@ -29,7 +29,7 @@
 <input type="hidden" id="type" value="{$type|escape:htmlall}"/>
 <input type="hidden" id="reference" value="{$reference|escape:htmlall}"/>
 <table class="hmid">
-<tr {if $type!='group'} class="hidden"{/if} ><td {urd_popup type="small" text=$LN_post_newsgroupext2} >{$LN_post_newsgroup}:</td>
+<tr {if $type!='group'} class="hidden"{/if} ><td {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_post_newsgroup}:</td>
 <td>
 <select name="newsgroup" id="groupid" class="width300">
 {html_options options=$groups selected=$groupid}

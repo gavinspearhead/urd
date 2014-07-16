@@ -495,6 +495,8 @@ $LN['level_master']		= 'Gro&szlig;meister';
 $LN['pref_poster_email']     = 'Poster Email-Adresse';
 $LN['pref_poster_name']      = 'Poster Name';
 $LN['poster_name']           = 'Poster Name';
+$LN['pref_poster_default_text'] = 'Standard message body';
+$LN['pref_poster_default_text_msg'] = 'Standard message body used for posting spots, and comments';
 $LN['pref_recovery_size']    = 'Percentage par2 Dateien';
 $LN['pref_rarfile_size']     = 'Umvang der rar Dateien';
 $LN['pref_poster_email_msg'] = 'The email address to use in the posted messages';
@@ -1294,6 +1296,7 @@ $LN['transfers_status_yyencoded'] = 'Yenc encodiert';
 $LN['transfers_head_subject']   = 'Thema';
 $LN['transfers_posts']          = 'Uploads';
 $LN['transfers_downloads']      = 'Downloads';
+$LN['spots_post_started']       = 'Spot is being posted';
 // Fatal error
 $LN['fatal_error_title']	    = 'Meldung';
 

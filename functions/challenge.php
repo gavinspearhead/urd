@@ -29,7 +29,7 @@ if (!defined('ORIGINAL_PAGE')) {
 class challenge
 {
     const CHALLENGE_LENGTH = 16;
-    const CHALLENGE_TIMEOUT = 86400;
+    const CHALLENGE_TIMEOUT = 86400; // 1 day
     private static $need_challenge = TRUE;
 
     public static function set_need_challenge($val)
@@ -37,14 +37,14 @@ class challenge
         self::$need_challenge = ($val ? TRUE : FALSE);
     }
 
-    public static function verify_challenge_text($c)
+    public static function verify_challenge($c)
     {
         global $LN;
         if (!self::$need_challenge) {
             return;
         }
         if (!isset($_SESSION['challenge']) || $c != $_SESSION['challenge'] || $_SESSION['challenge_timeout'] < time()) {
-            throw new exception($LN['error_invalidchallenge']);
+            throw new exception($LN['error_invalidchallenge'] . ' ' .  ' in session: ' . $_SESSION['challenge'] . ' provided: ' . $c);
         }
     }
 
@@ -54,7 +54,7 @@ class challenge
             return FALSE;
         }
         $now = time();
-        if (!isset ($_SESSION['challenge']) || ($_SESSION['challenge_timeout'] + 3600) < ($now)) { // if the challenge is valid for less than the current time -1 hour
+        if (!isset($_SESSION['challenge']) || ($_SESSION['challenge_timeout'] + 3600) < ($now)) { // if the challenge is valid for less than the current time -1 hour
             $challenge = generate_password(self::CHALLENGE_LENGTH);
             $_SESSION['challenge'] = $challenge;
             $_SESSION['challenge_timeout'] = $now + self::CHALLENGE_TIMEOUT;

@@ -209,11 +209,8 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
 
             return $rv;
         case 'poster_name':
-            return verify_text_opt($value, NULL);
         case 'format_dl_dir':
-            return verify_text_opt($value, NULL);
         case 'poster_email':
-            return verify_text_opt($value, NULL);
         case 'subs_lang':
             return verify_text_opt($value, NULL);
         case 'cancel_crypted_rars':
@@ -239,9 +236,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
         case 'index_page':
             return verify_array($value, array_keys(get_index_page_array(urd_user_rights::is_admin($db, $userid), urd_modules::get_urd_module_config(get_config($db, 'modules')))));
         case 'hidden_files_list':
-            $value = clean_area($value);
-            
-            return verify_text_area($value);
+        case 'poster_default_text':
         case 'search_terms':
             $value = clean_area($value);
 
@@ -518,6 +513,9 @@ function show_preferences(DatabaseConnection $db, $userid)
     if (!isset($subs_lang_msg)) {
         $subs_lang_msg = verify_text_opt('subs_lang', TRUE, NULL);
     }
+    if (!isset($poster_default_text_msg)) {
+        $poster_default_text_msg = verify_text_opt('poster_default_text', TRUE, NULL);
+    }
     if (!isset($poster_name_msg)) {
         $poster_name_msg = verify_text_opt('poster_name', TRUE, NULL);
     }
@@ -650,8 +648,9 @@ function show_preferences(DatabaseConnection $db, $userid)
     }
 
     $posting = array (
-            new pref_email (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email',$LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email'], TEXT_BOX_SIZE),
-            new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name',$LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name'], TEXT_BOX_SIZE),
+            new pref_email (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email', $LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email'], TEXT_BOX_SIZE),
+            new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name', $LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name'], TEXT_BOX_SIZE),
+            new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_default_text'], 'poster_default_text', $LN['pref_poster_default_text_msg'], $poster_default_text_msg, $prefArray['poster_default_text'], 10 , 40),
             new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_recovery_size'], 'recovery_size',$LN['pref_recovery_size_msg'], $recovery_size_msg, $prefArray['recovery_size'], NUMBER_BOX_SIZE),
             new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_rarfile_size'], 'rarfile_size',$LN['pref_rarfile_size_msg'], $rarfile_size_msg, $prefArray['rarfile_size'], NUMBER_BOX_SIZE),
             );
@@ -689,12 +688,12 @@ switch ($cmd) {
         show_preferences($db, $userid);
         break;
     case 'change_password':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         change_password($db, $userid);
         die_html('OK' . $LN['password_changed']);
         break;
     case 'set':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $option = get_post('option');
         $value = get_post('value');
         $type = get_post('type');
@@ -708,13 +707,13 @@ switch ($cmd) {
         }
         break;
     case 'delete':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $option = get_post('option');
         unset_pref($db, "__custom_$option", $userid);
         die_html('OK');
         break;
     case 'load_settings':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
         $settings = $xml->read_user_settings($db);
         reset($settings);
@@ -732,7 +731,7 @@ switch ($cmd) {
         export_settings($db, 'user_settings', "urd_user_settings_$username.xml", $userid);
         break;
     case 'reset':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         reset_pref($db, $userid);
         die_html('OK');
         break;

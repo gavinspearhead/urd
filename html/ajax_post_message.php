@@ -55,7 +55,7 @@ $cmd = get_request('cmd');
 switch (strtolower($cmd)) {
     case 'post' :
         $type = get_request('type', '');
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $uc = new urdd_client($db, get_config($db, 'urdd_host'), get_config($db,'urdd_port'), $userid);
 
         $subject = trim(get_request('subject', ''));
@@ -144,6 +144,13 @@ switch (strtolower($cmd)) {
             $title = $res[0]['title'];
             $subject = "Re: $title";
             $reference = "$messageid";
+            $content = @unserialize($prefs['poster_default_text']);
+            if ($content === FALSE) { 
+                $content = ''; 
+            } else {
+                $content = @implode("\n", $content);
+            }
+
         } else {
             $type = 'group';
             $groupinfo = get_all_active_groups($db);

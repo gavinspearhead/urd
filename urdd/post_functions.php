@@ -370,57 +370,77 @@ function post_message(DatabaseConnection $db, action $item, $poster_headers, $me
 function do_post_spot(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    mt_srand ();
-    $args = $item->get_args();
-    if (!is_numeric($args)) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spot post ID given');
-        update_postinfo_status ($db, POST_ERROR, $postid, NULL);
-        throw new exception ('No post ID given', POST_FAILURE);
-    }
+    try {
+        mt_srand ();
+        $args = $item->get_args();
+        if (!is_numeric($args)) {
+            $status = QUEUE_FAILED;
+            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spot post ID given');
+            update_postinfo_status ($db, POST_ERROR, $postid, NULL);
+            throw new exception ('No post ID given', POST_FAILURE);
+        }
 
-    $postid = $args;
-    $sql = '* FROM spot_postinfo WHERE "id"=?';
-    $res = $db->select_query($sql, 1, array($postid));
-    if (!isset($res[0])) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Invalid spot post ID given');
-        update_postinfo_status ($db, POST_ERROR, $postid, NULL);
-        throw new exception ('Invalid spot post ID given', POST_FAILURE);
-    }
-    $res[0]['description'] = db_decompress($res[0]['description']);
-    $userid = $item->get_userid();
+        $postid = $args;
+        $sql = '* FROM spot_postinfo WHERE "id"=?';
+        $res = $db->select_query($sql, 1, array($postid));
+        if (!isset($res[0])) {
+            $status = QUEUE_FAILED;
+            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Invalid spot post ID given');
+            update_postinfo_status ($db, POST_ERROR, $postid, NULL);
+            throw new exception ('Invalid spot post ID given', POST_FAILURE);
+        }
+        $res[0]['description'] = db_decompress($res[0]['description']);
+        $userid = $item->get_userid();
 
-    $bin_group = get_config($db, 'ftd_group'); // for images and nzbs
-    $spots_group = get_config($db, 'spots_group'); // for the spot itself
+        $bin_group = get_config($db, 'ftd_group'); // for images and nzbs
+        $spots_group = get_config($db, 'spots_group'); // for the spot itself
 
-    $bin_group_id = get_all_group_by_name($db, $bin_group);
-    $spots_group_id = get_all_group_by_name($db, $spots_group);
-    $server_id = $item->get_active_server();
-    if ($server_id == 0) {
-        $server_id = $item->get_preferred_server();
-    }
-    $nntp = connect_nntp($db, $server_id);
-    $nntp->select_group($bin_group_id, $code);
-    $nzb = file_get_contents($res[0]['nzb_file']);
-    if ($nzb === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Invalid nzb');
-        throw new exception('File not found: ' . $nzb);
-    }
-    $image = file_get_contents($res[0]['image_file']);
-    if ($image === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Invalid image');
-        throw new exception('File not found: ' . $image);
-    }
+        $bin_group_id = get_all_group_by_name($db, $bin_group);
+        $spots_group_id = get_all_group_by_name($db, $spots_group);
+        $server_id = $item->get_active_server();
+        if ($server_id == 0) {
+            $server_id = $item->get_preferred_server();
+        }
+        $nntp = connect_nntp($db, $server_id);
+        $nntp->select_group($bin_group_id, $code);
+        $nzb = file_get_contents($res[0]['nzb_file']);
+        if ($nzb === FALSE) {
+            $status = QUEUE_FAILED;
+            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Invalid nzb');
+            throw new exception('File not found: ' . $nzb);
+        }
+        $image = file_get_contents($res[0]['image_file']);
+        if ($image === FALSE) {
+            $status = QUEUE_FAILED;
+            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Invalid image');
+            throw new exception('File not found: ' . $image);
+        }
 
-    $nzb_segments = post_binary_data($db, $res[0]['poster_name'], $res[0]['poster_id'], $bin_group, $nntp, gzdeflate($nzb));
-    $image_segments = post_binary_data($db, $res[0]['poster_name'], $res[0]['poster_id'], $bin_group, $nntp, $image);
-    $poster_headers = create_spot_data($db, $res[0], $userid, $nzb_segments, $image_segments);
-    post_message($db, $item, $poster_headers, $res[0]['description'], $spots_group_id, $res[0]['subject'], $res[0]['poster_id'], $res[0]['poster_name']);
-    $status = POST_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete'); 
+        $nzb_segments = post_binary_data($db, $res[0]['poster_name'], $res[0]['poster_id'], $bin_group, $nntp, gzdeflate($nzb));
+        $image_segments = post_binary_data($db, $res[0]['poster_name'], $res[0]['poster_id'], $bin_group, $nntp, $image);
+        $poster_headers = create_spot_data($db, $res[0], $userid, $nzb_segments, $image_segments);
+        post_message($db, $item, $poster_headers, $res[0]['description'], $spots_group_id, $res[0]['subject'], $res[0]['poster_id'], $res[0]['poster_name']);
+        $status = POST_FINISHED;
+        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete'); 
+    } catch (exception $e) {
+        $comment = $e->getMessage();
+        write_log('Posting spot failed ' . $comment, LOG_WARNING);
+        if ($e->getcode() == ERR_NNTP_AUTH_FAILED) {
+            $status = QUEUE_FAILED;
+            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            $err_code = NNTP_AUTH_ERROR;
+        } elseif ($e->getcode() == ERR_GROUP_NOT_FOUND) {
+            $status = QUEUE_FAILED;
+            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            $err_code = GROUP_NOT_FOUND;
+        } elseif ($e->getcode() == ERR_NO_ACTIVE_SERVER) {
+            $err_code = CONFIG_ERROR;
+        } else {
+            $err_code = NNTP_NOT_CONNECTED_ERROR;
+        }
+        return $err_code;
+    }
+    return NO_ERROR;
 }
 
 function do_prepare_post(DatabaseConnection $db, action $item)
@@ -494,21 +514,21 @@ function get_files_from_db(DatabaseConnection $db, $postid)
     $filenames = array();
     $ids = array();
     try {
-    $db->lock($lock_array);
-    $res = $db->select_query('* FROM post_files WHERE "status"=?', batch_size::POST_BATCH_SIZE, array(POST_READY));
-    if ($res === FALSE) {
-        $db->unlock();
-        return array(); // where done
-    }
+        $db->lock($lock_array);
+        $res = $db->select_query('* FROM post_files WHERE "status"=?', batch_size::POST_BATCH_SIZE, array(POST_READY));
+        if ($res === FALSE) {
+            $db->unlock();
+            return array(); // where done
+        }
 
-    foreach ($res as $row) {
-        $ids[] = $row['id'];
-        $filenames[] = array('id' => $row['id'], 'filename' => $row['filename'], 'rarfile' => $row['rarfile'], 'rar_idx' => $row['rar_idx'], 'file_idx' => $row['file_idx']);
-    }
-    if (count($ids) > 0) {
-        $db->update_query_2('post_files', array('status'=>POST_ACTIVE), '"id" IN (' . str_repeat('?,', count($ids) - 1) . '?)' ,  $ids);
-    }
-    $db->unlock();
+        foreach ($res as $row) {
+            $ids[] = $row['id'];
+            $filenames[] = array('id' => $row['id'], 'filename' => $row['filename'], 'rarfile' => $row['rarfile'], 'rar_idx' => $row['rar_idx'], 'file_idx' => $row['file_idx']);
+        }
+        if (count($ids) > 0) {
+            $db->update_query_2('post_files', array('status'=>POST_ACTIVE), '"id" IN (' . str_repeat('?,', count($ids) - 1) . '?)' ,  $ids);
+        }
+        $db->unlock();
     } catch (exception $e) {
         $db->unlock();
         throw $e;

@@ -1535,7 +1535,7 @@ function get_ln_val($name)
 
 switch ($cmd) {
     case 'reset':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         reset_config($db);
         die_html('OK');
         break;
@@ -1545,7 +1545,7 @@ switch ($cmd) {
         show_config($db, $userid);
         break;
     case 'delete':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $option = get_post('option');
         unset_config($db, "__custom_$option");
         die_html('OK');
@@ -1553,7 +1553,7 @@ switch ($cmd) {
     case 'set':
         $rprefs = load_config($db);
         $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $option = get_post('option');
         if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
         $value = get_post('value');
@@ -1567,7 +1567,7 @@ switch ($cmd) {
         }
         break;
     case 'load_settings':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
         $settings = $xml->read_config($db);
         reset($settings);

@@ -495,6 +495,8 @@ $LN['pref_global_scripts_msg']  = 'The globally defined scripts that are run aft
 
 $LN['pref_poster_email']     = 'Poster email address';
 $LN['pref_poster_name']      = 'Poster name';
+$LN['pref_poster_default_text'] = 'Standard message body';
+$LN['pref_poster_default_text_msg'] = 'Standard message body used for posting spots, and comments';
 $LN['poster_name']           = 'Poster name';
 $LN['pref_recovery_size']    = 'Percentage par2 files';
 $LN['pref_rarfile_size']     = 'Size of rar files';
@@ -1301,6 +1303,7 @@ $LN['transfers_head_subject']   = 'Subject';
 $LN['transfers_posts']          = 'Uploads';
 $LN['transfers_post']           = 'Upload';
 $LN['transfers_post_spot']      = 'Post spot';
+$LN['spots_post_started']       = 'Spot is being posted';
 $LN['transfers_downloads']      = 'Downloads';
 
 // Fatal error

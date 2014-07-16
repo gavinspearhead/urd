@@ -175,7 +175,7 @@ case 'edit':
     die;
     break;
 case 'resetpw':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $newpw = generate_password(MIN_PASSWORD_LENGTH);
     $user_id = $id;
 
@@ -197,7 +197,7 @@ case 'resetpw':
     die_html('OK' . $LN['forgot_sent']);
     break;
 case 'delete':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     delete_user($db, $id);
     die_html('OK');
     break;
@@ -267,7 +267,7 @@ case 'update_setting':
 
 case 'update_user':
     //var_dump($_REQUEST);
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $rights = '';
     $fullname = get_post('fullname', '');
     $username = get_post('username', '');

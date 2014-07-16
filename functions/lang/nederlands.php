@@ -477,6 +477,8 @@ $LN['pref_default_spot_msg']     = 'Standaard spot zoekopdracht die wordt gesele
 $LN['pref_poster_email']         = 'Poster e-mail adres';
 $LN['poster_name']               = 'Poster naam';
 $LN['pref_poster_name']          = 'Poster naam';
+$LN['pref_poster_default_text'] = 'Standaard berichtentekst';
+$LN['pref_poster_default_text_msg'] = 'Standard berichtentekst die gebruikt wordt voor het posten van spots en comments';
 $LN['pref_recovery_size']        = 'Percentage par2 bestanden';
 $LN['pref_rarfile_size']         = 'Grootte van de rar bestanden';
 $LN['pref_poster_email_msg']     = 'Het e-mail adres dat gebruikt wordt in de te posten berichten';
@@ -1273,6 +1275,7 @@ $LN['transfers_posts']              = 'Uploads';
 $LN['transfers_post_spot']          = 'Spot plaatsen';
 $LN['transfers_post']               = 'Uploaden';
 $LN['transfers_downloads']          = 'Downloads';
+$LN['spots_post_started']       = 'Spot wordt geplaatst';
 
 $LN['transfers_linkview']   = 'Bekijk bestanden';
 $LN['transfers_linkstart']  = 'Start';

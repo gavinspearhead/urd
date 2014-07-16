@@ -112,13 +112,13 @@ $(document).ready(function() {
        {else}
            load_sets( {   
                'offset': '0'
+               {if $spotid == ''}       , 'setid':'' {/if}
                {if $minsetsize != ''}   , 'minsetsize': '{$minsetsize|escape:javascript}' {/if}
                {if $maxsetsize != ''}   , 'maxsetsize': '{$maxsetsize|escape:javascript}' {/if}
                {if $minage != ''}       , 'minage': '{$minage|escape:javascript}' {/if}
                {if $maxage != ''}       , 'maxage': '{$maxage|escape:javascript}' {/if}
                {if $minrating != ''}    , 'minrating': '{$minrating|escape:javascript}' {/if}
                {if $maxrating != ''}    , 'maxrating': '{$maxrating|escape:javascript}' {/if}
-               {if $spotid == ''}       , 'setid':'' {/if}
                {if $flag != ''}         , 'flag':'{$flag|escape:javascript}' {/if}
                {if $categoryID !== '' } , 'next':'{$categoryID|escape:javascript}' {/if}
                }

@@ -178,7 +178,7 @@ function update_rss(DatabaseConnection $db, $id, $userid)
 
 switch (strtolower($cmd)) {
 case 'delete' :
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     deleterssfeed($db, $id);
     break;
 case 'showeditrss':
@@ -186,7 +186,7 @@ case 'showeditrss':
     break;
 case 'update_rss':
     // Actually rename the download
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     update_rss($db, $id, $userid);
     break;
 default:

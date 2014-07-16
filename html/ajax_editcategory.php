@@ -35,7 +35,7 @@ $cmd = get_request('cmd', '');
 
 switch ($cmd) {
 case 'delete_category':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $id = get_request('id');
     if (is_numeric($id) && $id > 0) {
         delete_category($db, $id, $userid);
@@ -44,7 +44,7 @@ case 'delete_category':
     }
     break;
 case 'update_category':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $id = get_request('id');
     $name = get_request('name', '');
     if ($name == '') {

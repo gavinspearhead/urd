@@ -467,7 +467,7 @@ case 'save_file':
     if (!$allow_edit) {
         throw new exception($LN['error_filenotallowed']);
     }
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $filename = get_post('filename', '');
     if ($filename == '') {
         throw new exception($LN['error_needfilenames']);
@@ -509,7 +509,7 @@ case 'delete_file':
     if (!$is_admin && !$is_fileeditor) {
         throw new exception($LN['error_filenotallowed']);
     }
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     //delete a single file
     $file = get_post('filename','');
     if ($file == '') {
@@ -527,7 +527,7 @@ case 'delete_dir':
     if (!$is_admin && !$is_fileeditor) {
         throw new exception($LN['error_filenotallowed']);
     }
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     // recursively delete files and dirs
     $subdir = get_post('filename', '');
     if ($subdir == '') {
@@ -558,7 +558,7 @@ case 'zip_dir': // not very neat now....
     if ($rprefs['webdownload'] != 1) {
         throw new exception($LN['error_filenotallowed']);
     }
-    challenge::verify_challenge_text($_GET['challenge']);
+    challenge::verify_challenge($_GET['challenge']);
     $tar_cmd = my_escapeshellcmd (get_config($db,'tar_path'));
     if ($tar_cmd != 'off' && $tar_cmd != '') {
         $subdir = get_request('filename');
@@ -655,7 +655,7 @@ case 'show_rename':
     die;
     break;
 case 'do_rename':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     $name = get_post('oldfilename', '');
     $newname = get_post('newfilename', '');
     $rights = get_post('rights', '');
@@ -695,7 +695,7 @@ case 'do_rename':
     }
     break;
 case 'up_nzb':
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     try {
         $rprefs = load_config($db);
         $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);

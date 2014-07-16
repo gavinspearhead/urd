@@ -35,7 +35,7 @@ if (!urd_user_rights::is_poster($db, $userid)) {
 }
 
 verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid, TRUE);
-challenge::verify_challenge_text($_POST['challenge']);
+challenge::verify_challenge($_POST['challenge']);
 
 function get_post_vals(DatabaseConnection $db, $userid, &$timestamp)
 {

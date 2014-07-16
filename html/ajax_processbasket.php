@@ -45,7 +45,7 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
     $all = get_request('all', 0);
     // remove interesting marking from all sets on page
     if ($whichbutton == 'unmark_int_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
         if ($all) {
             sets_marking::unmark_all($db, $userid, 'statusint', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
@@ -54,18 +54,18 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
         }
 
     } elseif ($whichbutton == 'wipe_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         wipe_sets($db, $_POST['set_ids'], $type, $userid);
     }
     // mark all sets as not deleted on page
     elseif ($whichbutton == 'unmark_kill_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
         sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
     }
     // mark all sets as deleted on page
     elseif ($whichbutton == 'mark_kill_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
         $skip_int = (bool) get_pref($db, 'skip_int', $userid, 0);
         sets_marking::mark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID,  $type, sets_marking::MARKING_ON, TRUE, $skip_int);
@@ -73,7 +73,7 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
 
     /* Create NZB */
     elseif ($whichbutton == 'getnzb' && count($_SESSION['setdata']) > 0) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         try {
             $dlname = create_nzb($db, $userid);
             $message .= $LN['NZB_created'] . ': "' . $dlname. '"';
@@ -84,7 +84,7 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
 
     /* Download via Urdd */
     elseif ($whichbutton == 'urddownload' && count($_SESSION['setdata']) > 0) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         try {
             $dlname = create_new_download($db, $userid);
             $message .= $LN['taskdownload'] . ': "' . $dlname. '"';
@@ -107,7 +107,7 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
             return ($e->getmessage());
         }
     } elseif ($whichbutton == 'mergesets' && count($_SESSION['setdata']) > 0) {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         try {
             merge_sets($db, $userid);
             clear_basket();
@@ -118,7 +118,7 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
 
     /* Clear list? */
     elseif ($whichbutton == 'clearbasket') {
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         clear_basket();
     }
 

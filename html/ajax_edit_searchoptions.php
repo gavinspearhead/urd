@@ -153,7 +153,7 @@ function update_button_info(DatabaseConnection $db, $id)
 {
     global $LN;
 
-    challenge::verify_challenge_text($_POST['challenge']);
+    challenge::verify_challenge($_POST['challenge']);
     if (is_numeric($id)) {
         if (isset($_POST['name']) && trim($_POST['name']) != '') {
             $name = trim($_POST['name']);
@@ -202,13 +202,13 @@ function update_button_info(DatabaseConnection $db, $id)
 
 switch (strtolower($cmd)) {
     case 'import_settings':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         import_settings($db);
         break;
     case 'export_settings':
         export_settings($db, 'buttons', 'urd_search_settings.xml');
     case 'delete_button':
-        challenge::verify_challenge_text($_POST['challenge']);
+        challenge::verify_challenge($_POST['challenge']);
         if (is_numeric($id)) {
             delete_button($db, $id);
         } else {
