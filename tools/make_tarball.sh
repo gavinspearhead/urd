@@ -21,7 +21,7 @@ rm -rf urd-tmp/deb urd-tmp/urd_lang urd-tmp/tools
 
 mv urd-tmp/ urd-$version/
 
-tar -c urd-$version/ | gzip -9 > urd-$version.tar.gz 
+tar -c urd-$version/  --exclude=.gitignore --exclude=.git --exclude=tags --exclude=v*.swp| gzip -9 > urd-$version.tar.gz 
 
 cd -
 
