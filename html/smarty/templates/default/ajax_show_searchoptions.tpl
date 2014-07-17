@@ -47,6 +47,9 @@
 {foreachelse}
 <tr><td colspan="8" class="centered highlight even bold">{$LN_error_nosearchoptionsfound}</td></tr>
 {/foreach}
+{if count($buttons) > 12}
+<tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td>
+{/if}
 </table>
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape}"/>
 <input type="hidden" name="order" id="order" value="{$sort|escape}"/>

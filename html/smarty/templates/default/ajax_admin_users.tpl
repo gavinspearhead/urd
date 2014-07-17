@@ -26,7 +26,6 @@
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
 </div>
 
-
 {$up="<img src='$IMGDIR/small_up.png' alt=''>"}
 {$down="<img src='$IMGDIR/small_down.png' alt=''>"}
 {if $sort == ""}{if $sort_dir=='desc'}{$_sort=$up}{else}{$_sort=$down}{/if}{else}{$_sort=""}{/if}
@@ -85,7 +84,10 @@
 </tr>
 {foreachelse}
 {if $only_rows == 0}
-<tr><td colspan="9" class="centered highlight even bold">{$LN_error_nousersfound}</td></tr>
+<tr><td colspan="10" class="centered highlight even bold">{$LN_error_nousersfound}</td></tr>
 {/if}
 {/foreach}
+{if count($users) > 12}
+<tr><td colspan="10" class="feet round_both_bottom">&nbsp;</td>
+{/if}
 </table>

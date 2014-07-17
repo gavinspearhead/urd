@@ -55,5 +55,8 @@
 {foreachelse}
 <tr><td colspan="5" class="centered highlight even bold">{$LN_error_nojobsfound}</td></tr>
 {/foreach}
+{if count($alljobs) > 12}
+<tr><td colspan="5" class="feet round_both_bottom">&nbsp;</td>
+{/if}
 </table>
 

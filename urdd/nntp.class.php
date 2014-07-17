@@ -251,6 +251,7 @@ class URD_NNTP
                 // try again to get by some newszilla errors
                 return $this->get_content($msg_id, 'get_body');
             }
+            throw $e;
         }
     }
     protected function estimate_headers($first, $last, $expire)

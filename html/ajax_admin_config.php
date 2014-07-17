@@ -610,6 +610,8 @@ function show_config(DatabaseConnection $db, $userid)
             new pref_numeric(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_socket_timeout'], 'socket_timeout', $LN['config_socket_timeout_msg'],
                 $socket_timeout_msg, $prefArray_root['socket_timeout'], NUMBER_BOX_SIZE),
             new pref_numeric(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_connection_timeout'], 'urdd_connection_timeout', $LN['config_urdd_connection_timeout_msg'], $urdd_connection_timeout_msg, $prefArray_root['urdd_connection_timeout'], NUMBER_BOX_SIZE),
+            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_connection_timeout'], 'connection_timeout', $LN['config_connection_timeout_msg'],
+            $connection_timeout_msg, $prefArray_root['connection_timeout'], NUMBER_BOX_SIZE),
             new pref_checkbox(user_levels::CONFIG_LEVEL_MASTER, $LN['config_shaping'], 'shaping', $LN['config_shaping_msg'],
                 $shaping_msg, $prefArray_root['shaping'], "$('#shaping1').toggleClass('hidden'); $('#shaping2').toggleClass('hidden')"),
             new pref_numeric(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxdl'], 'maxdl', $LN['config_maxdl_msg'],
@@ -851,8 +853,6 @@ function show_config(DatabaseConnection $db, $userid)
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_expire_percentage'], 'expire_percentage', $LN['config_expire_percentage_msg'],
             $expire_percentage_msg, $prefArray_root['expire_percentage'], NUMBER_BOX_SIZE);
 
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_connection_timeout'], 'connection_timeout', $LN['config_connection_timeout_msg'],
-            $connection_timeout_msg, $prefArray_root['connection_timeout'], NUMBER_BOX_SIZE);
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxheaders'], 'maxheaders', $LN['config_maxheaders_msg'],
             $maxheaders_msg, $prefArray_root['maxheaders'], NUMBER_BOX_SIZE);
     $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_auto_getnfo'], 'auto_getnfo', $LN['config_auto_getnfo_msg'],

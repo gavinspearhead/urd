@@ -46,6 +46,9 @@
 {foreachelse}
 <tr><td colspan="4" class="centered highlight even bold">{$LN_error_nologsfound}</td></tr>
 {/foreach}
+{if count($logs) > 12}
+<tr><td colspan="4" class="feet round_both_bottom">&nbsp;</td>
+{/if}
 </table>
 </div>
 </div>

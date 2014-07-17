@@ -876,15 +876,16 @@ function show_blacklist(options)
     var status_val = $('#status>option:selected').val();
     var order, direction;
     var add_rows = 0;
-    var which = get_value_from_id('which', '');
-    if (which == '') { which = 'spots_blacklist'; }
     var data = {
-        cmd : 'load_blacklist',
+        cmd: 'load_blacklist',
         search: search,
         'status': status_val,
         which: which,
         offset: offset
     };
+
+    var which = get_value_from_id('which', '');
+    if (which == '') { which = 'spots_blacklist'; }
     if (options != undefined) {
         if (options.which != undefined) {
             data['which'] = options.which;
@@ -919,20 +920,25 @@ function show_blacklist(options)
             add_rows = 1;
             offset = parseInt( $('#last_line').val());
             if (isNaN(offset)) { offset = 0; }
+            console.log(offset);
+            data['offset'] = offset;
             $('#last_line').val(offset + parseInt(per_page));
         }
     }
+    
+    console.log(data);
     $.ajax({
         type: 'get',
         url: url,
         data: data,
         cache: false,
     }).done(function(html) {
+        console.log(html)
         if (add_rows == 0) {
             show_content_div_2(html, 'usersdiv');
             update_search_bar_height();
         } else {
-            $('#black_list_table > tbody:last').append(html);
+            $('#black_list_table>tbody tr:eq(-2)').after(html);
         }
     });
 }
@@ -998,7 +1004,8 @@ function show_files(options)
                 $('#contentout').scrollTop(0);
                 update_search_bar_height();
             } else {
-                $('#files_table > tbody:last').append(html);
+                console.log($('#files_table > tr:eq(-2)').html());
+                $('#files_table>tbody tr:eq(-2)').after(html);
                 update_widths("filenametd");
             }
         }
@@ -4133,7 +4140,9 @@ function load_groupsets(options)
         cache: false,
         data: data
     }).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
+
         init_spot_sliders();
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
@@ -6127,7 +6136,7 @@ function show_sidebar(display)
         $('#sidebar_button').text('>>');
     } else {
         $('#contentleft').css('margin-left', '0px');
-        $('#contentleft').css('min-height', Math.round($(window).height() - 22));
+        $('#contentleft').css('height', Math.round($(window).height() - 22));
         $('#contentleft').outerWidth(side_bar_width);
         $('#topcontent').css('left', side_bar_width);
         $('#searchbar').css('left', side_bar_width);

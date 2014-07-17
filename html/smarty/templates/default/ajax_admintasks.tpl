@@ -93,5 +93,8 @@
 {foreachelse}
 <tr><td colspan="8" class="centered highlight even bold">{$LN_error_notasksfound}</td></tr>
 {/foreach}
+{if count($alltasks) > 12}
+<tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td>
+{/if}
 </table>
 {$bottomskipper}

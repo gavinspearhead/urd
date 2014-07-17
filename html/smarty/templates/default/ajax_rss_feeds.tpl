@@ -192,6 +192,10 @@
 {foreachelse}
 <tr><td colspan="12" class="centered highlight even bold">{$LN_error_nofeedsfound}</td></tr>
 {/foreach}
+{if count($allfeeds) > 12}
+<tr><td colspan="12" class="feet round_both_bottom">&nbsp;</td>
+{/if}
+</tr>
 </table>
 </form>
 </div>

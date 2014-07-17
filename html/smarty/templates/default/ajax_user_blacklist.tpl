@@ -116,6 +116,11 @@
 {/foreach}
 
 {if $only_rows == 0}
+{if count($blacklist) > 12}
+<tr><td colspan="6" class="feet round_both_bottom">&nbsp;</td>
+</tr>
+{/if}
+
     </table>
     {$bottomskipper}
     <br/>

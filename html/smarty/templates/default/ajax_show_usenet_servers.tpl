@@ -95,6 +95,9 @@
 {foreachelse}
 <tr><td colspan="9" class="centered highlight even bold">{$LN_error_noserversfound}</td></tr>
 {/foreach}
+{if count($usenet_servers) > 12}
+<tr><td colspan="9" class="feet round_both_bottom">&nbsp;</td>
+{/if}
 </table>
 <div><br/></div>
 

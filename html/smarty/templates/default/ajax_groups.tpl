@@ -191,8 +191,13 @@
 {/if}
 </tr>
 {foreachelse}
-<tr><td colspan="11" class="centered highlight even bold">{$LN_error_nogroupsfound}</td></tr>
+<tr><td colspan="15" class="centered highlight even bold">{$LN_error_nogroupsfound}</td></tr>
 {/foreach}
+{if count($allgroups) > 12}
+<tr><td colspan="15" class="feet round_both_bottom">&nbsp;</td>
+</tr>
+{/if}
+
 </table>
 </form>
 {$bottomskipper}

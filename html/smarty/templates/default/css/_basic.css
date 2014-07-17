@@ -750,4 +750,6 @@ div.sets_inner
     float:left; 
     margin-top:22px;
     padding-left: 3px;
+    overflow-y:auto;
 }
+

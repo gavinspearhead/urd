@@ -142,6 +142,10 @@
 {/foreach}
 
 {if $only_rows == 0}
+{if count($files) > 12}
+<tr><td colspan="9" class="feet round_both_bottom">&nbsp;</td>
+</tr>
+{/if}
     </table>
     {$bottomskipper}
     <div><br/></div>

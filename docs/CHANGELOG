@@ -13,6 +13,7 @@
 - Fixed issue on some browsers (Opera, and Safari) not able to use the basket buttons
 - Fixed a bug in loading the group settings (thanx to Reab4)
 - Fixed a bug in handling the expire date (thanx to Reab4)
+- Fixed a bug in handling connection timeouts on downloads
 - Cleanup stylesheets and replaced images by css
 - Updated smarty to 3.1.19
 
