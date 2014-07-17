@@ -4723,11 +4723,24 @@ function fold_details(button_id, divid)
         data: { type : 'control' }
     });
 }
+function submit_enter2 (e, id)
+{
+    if (e.which == 13) {
+        console.log(e);
+        $('#' + id).click();
+        e.stopPropagation();
+        return false;
+    } else {
+        return true;
+    }
+}
+
 
 function submit_enter(e, fn, vars)
 {
     if (e.which == 13) {
         fn(vars);
+        e.stopPropagation();
         return false;
     } else {
         return true;

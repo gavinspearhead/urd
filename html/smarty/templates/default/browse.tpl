@@ -47,7 +47,7 @@
     <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick='javascript:select_next("select_groupid",1);'/>&nbsp;
     &nbsp;
 
-<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
+<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
 <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false;" />
 &nbsp;
 &nbsp;

@@ -32,7 +32,7 @@
 $(document).ready(function() {
     show_buttons(); 
     $('#searchbar').html( $('#searchformdiv').html());
-    $('#search').keypress(function(e) { submit_enter(e, show_buttons); });
+    $('#search').keypress(function(e) { return submit_enter(e, show_buttons); });
     $('#searchbutton').click(function(e) { show_buttons(); });
 });
 </script>

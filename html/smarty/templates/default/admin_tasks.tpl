@@ -43,7 +43,7 @@ $(document).ready(function() {
     update_tasks();
     $('#searchbar').html( $('#searchformdiv').html());
     $('#search').click(function() { load_tasks_no_offset(null, null); } );
-    $('#tasksearch').keypress(function() { submit_enter(event, load_tasks_no_offset); } );
+    $('#tasksearch').keypress(function() { return submit_enter(event, load_tasks_no_offset); } );
 });
 </script>
 

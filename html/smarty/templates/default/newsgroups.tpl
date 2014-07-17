@@ -28,7 +28,7 @@
 {/strip}
 
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30" onkeypress="javascript:submit_enter(event, load_groups);"/>
+<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30" onkeypress="javascript:return submit_enter(event, load_groups);"/>
 <div class="cleartop3"> 
 {urd_checkbox value="$search_all" name="search_all" id="search_all" data="$LN_ng_hide_empty" classes=""}
 </div>

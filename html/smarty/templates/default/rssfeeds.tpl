@@ -27,7 +27,7 @@
 <h3 class="title">{$LN_feeds_rss|escape}</h3>
 {/strip}
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30" onkeypress="javascript:submit_enter(event, load_rss_feeds);"/>
+<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30" onkeypress="javascript:return submit_enter(event, load_rss_feeds);"/>
 <div class="cleartop3"> 
 {urd_checkbox value="$search_all" name="search_all" id="search_all" data="$LN_feeds_hide_empty"}
 </div>

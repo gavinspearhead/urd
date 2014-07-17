@@ -23,7 +23,7 @@
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$title}</h3>
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:submit_enter(event, show_users);"/>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:return submit_enter(event, show_users);"/>
 <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_users();"/></div>
 </div>
 

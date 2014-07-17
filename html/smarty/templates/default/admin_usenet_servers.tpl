@@ -28,7 +28,7 @@
 <input type="hidden" name="action" id="action" value=""/></div>
 
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:submit_enter(event, show_usenet_servers);"/>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:return submit_enter(event, show_usenet_servers);"/>
 <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_usenet_servers();"/></div>
 </div>
 

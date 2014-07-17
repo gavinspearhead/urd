@@ -44,7 +44,7 @@
     {/foreach}
 	</select>&thinsp;
     <input type="button" value="&gt;" class="submitsmall" {urd_popup type="small" text=$LN_next } onclick='javascript:select_next("select_feedid",1);' />&nbsp;
-   	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/> &nbsp;
+   	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/> &nbsp;
 	<input type="hidden" value="" name="maxage"/>
     <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"/>
     &nbsp; 
