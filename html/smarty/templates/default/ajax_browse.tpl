@@ -39,7 +39,7 @@
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=set_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10"}
 {else}<br/>
 {/if}
 {/if}
@@ -50,7 +50,7 @@
 {capture assign=bottomskipper}{strip}
 {if $only_rows == 0}
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=set_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10"}
 {else}<br/>
 {/if}
 {/if}

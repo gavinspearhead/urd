@@ -34,7 +34,7 @@
 {capture assign=topskipper}{strip}
 <div class="ng_selector">
 {if $lastpage > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=group_page}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=group_page}
 {/if}
 </div>
 {/strip}
@@ -44,7 +44,7 @@
 {capture assign=bottomskipper}{strip}
 <div class="ng_selector">
 {if $lastpage > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=group_page}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=group_page}
 {/if}
 </div>
 {/strip}

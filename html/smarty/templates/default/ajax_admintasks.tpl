@@ -23,7 +23,7 @@
 
 {capture assign=topskipper}{strip}
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=tasks_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=tasks_offset extra_class="margin10"}
 {else}<br/>
 {/if}
 {/strip}
@@ -32,7 +32,7 @@
 {* Making a 'top' and a 'bottom' skipper: *}
 {capture assign=bottomskipper}{strip}
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=tasks_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=tasks_offset extra_class="margin10"}
 {else}<br/>
 {/if}
 {/strip}

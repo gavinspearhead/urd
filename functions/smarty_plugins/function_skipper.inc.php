@@ -35,15 +35,15 @@ function find_page($pages, $number)
 
 function smarty_function_urd_skipper($params, &$smarty)
 {
-    $rv = '';
+    $rv = array();
     $current_page = isset($params['current']) ? $params['current'] : 0;
     $last_page = isset($params['last']) ? $params['last'] : 0;
     $pages = isset($params['pages']) ? $params['pages'] : 0;
-    $class = isset($params['class']) ? $params['class'] : 'ps';
+    $position = (isset($params['position']) && $params['position'] == 'bottom') ? $params['position'] : 'top';
+    $class = ( $position == 'bottom' )? 'psb' : 'ps';
     $js = isset($params['js']) ? $params['js'] : '';
     $extra_class = isset($params['extra_class']) ? $params['extra_class'] : '';
-
-    $table_class = ($class == 'ps') ? 'pageskip' : 'pageskipbottom';
+    $table_class = ($position != 'bottom') ? 'pageskip' : 'pageskipbottom';
 
     $start_page = $current_page - 10;
     if ($start_page <= 0) {
@@ -57,59 +57,65 @@ function smarty_function_urd_skipper($params, &$smarty)
     if ($start_page < 1) {
         $start_page = 1;
     }
-    $rv .= "<table class=\"$table_class $extra_class\"><tr>";
 
     if (($current_page > 1) ) {
         $previous_page = find_page($pages, $current_page - 1);
         if ($previous_page !== FALSE) {
-            $rv .= '<td class="' . $class . '_5"' .
-                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
-                $previous_page['offset'] . '\');">' .
-                ' &lt; ' .
-                '</td>';
+            $rv[] = array($class . '_5', $previous_page['offset'], ' &lt; ');
         }
     }
 
     foreach ($pages as $page) {
         if ($page['number'] == 1) {
-            $rv .= '<td class="' . $class . '_' . $page['distance'] . '"' .
-                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
-                $page['offset'] . '\');">' .
-                $page['number'] .
-                '</td>';
+            $rv[] = array($class . '_' . $page['distance'], $page['offset'], $page['number']);
 
             if ($start_page > 1) {
-                $rv .= '<td class="spacer">&nbsp;</td>';
+                $rv[] = array();
             }
         } elseif ($page['number'] == $last_page) {
             if ($stop_page < $last_page) {
-                $rv .= '<td class="spacer">&nbsp;</td>';
+                $rv[] = array();
             }
-            $rv .= '<td class="' . $class . '_' . $page['distance'] . '"' .
-                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\''
-                . $page['offset'] . '\');">'
-                . $page['number'] .
-                '</td>';
-
+            $rv[] = array($class . '_' . $page['distance'], $page['offset'], $page['number']);
         } elseif ($page['number'] >= $start_page && $page['number'] <= $stop_page) {
-            $rv .= '<td class="' . $class . '_' . $page['distance'] . '"' .
-                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
-                $page['offset'] . '\');">' .
-                $page['number'] . '</td>';
+            $rv[] = array($class . '_' . $page['distance'], $page['offset'], $page['number']);
         }
     }
     if (($current_page < $last_page) ) {
         $next_page = find_page($pages, $current_page + 1);
         if ($next_page !== FALSE) {
-            $rv .= '<td class="' . $class . '_5"' .
-                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="'. $js . '(\'' .
-                $next_page['offset'] . '\');">' .
-                ' &gt; ' .
+            $rv[] = array($class . '_5' , $next_page['offset'], ' &gt; ');
+        }
+    }
+    
+    $first = TRUE;
+   
+    $html = "<table class=\"$table_class $extra_class\"><tr>";
+
+    foreach($rv as $index => $line) {
+        if ($line == array()) {
+            $html .= '<td class="spacer">&nbsp;</td>';
+            $first = TRUE;
+        } else {
+            $html .= '<td class="' . $line[0];
+            if ($first) {
+                if ($position == 'top') { $html .= ' round_left'; } 
+                else { $html .= ' round_left_bottom'; } 
+                $first = FALSE;
+            }
+            if (!isset($rv[$index + 1]) || $rv[$index + 1] == array() ) { 
+                 if ($position == 'top') { $html .= ' round_right'; } 
+                 else { $html .= ' round_right_bottom'; }
+            }
+            $html .= '" ' .
+                'onmouseover="$(this).toggleClass(\'ps_hover\');" onmouseout="$(this).toggleClass(\'ps_hover\');" onclick="' . $js . '(\'' .
+                $line[1] . '\');">' .
+                $line[2] .
                 '</td>';
         }
     }
 
-    $rv .= '</tr></table>';
+    $html .= '</tr></table>';
 
-    return $rv;
+    return $html;
 }

@@ -4140,8 +4140,8 @@ function load_groupsets(options)
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
+        console.log(x.content);
 
         init_spot_sliders();
         $('#minage').val(x.minage);        

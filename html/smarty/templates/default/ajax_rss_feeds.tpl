@@ -44,7 +44,7 @@
 {capture assign=topskipper}{strip}
 <div class="ng_selector">
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=rss_feeds_page}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=rss_feeds_page}
 {/if}
 </div>
 {/strip}
@@ -54,7 +54,7 @@
 {capture assign=bottomskipper}{strip}
 <div class="ng_selector">
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=rss_feeds_page}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=rss_feeds_page}
 {/if}
 </div>
 {/strip}

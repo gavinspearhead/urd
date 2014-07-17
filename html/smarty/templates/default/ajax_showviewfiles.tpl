@@ -24,7 +24,7 @@
 {* Capture the skipper: *}
 {capture assign=topskipper}
 {if $lastpage neq 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=submit_viewfiles_page extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=submit_viewfiles_page extra_class="margin10"}
 {else}<br/>
 {/if}
 
@@ -32,7 +32,7 @@
 
 {capture assign=bottomskipper}
 {if $lastpage neq 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=submit_viewfiles_page extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=submit_viewfiles_page extra_class="margin10"}
 {else}<br/>
 {/if}
 

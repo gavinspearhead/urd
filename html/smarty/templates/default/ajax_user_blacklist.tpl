@@ -23,7 +23,7 @@
 {capture assign=topskipper}{strip}
 <div class="ng_selector">
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=ps js=blacklist_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=blacklist_offset extra_class="margin10"}
 {/if}
 </div>
 {/strip}
@@ -48,7 +48,7 @@
 {capture assign=bottomskipper}{strip}
 <div class="ng_selector">
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages class=psb js=blacklist_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=blacklist_offset extra_class="margin10"}
 {/if}
 </div>
 {/strip}
