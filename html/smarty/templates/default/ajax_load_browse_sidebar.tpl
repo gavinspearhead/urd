@@ -24,43 +24,46 @@
 
 <div id="sidebar_contents">
 
-<div class="{cycle values="even, highlight2"} center bold">
+<div class="even center bold" id="adv_search_head">
 {$LN_advanced_search}
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_setsize}:<br/>
+<div class="highlight2 menu_head">
+{$LN_setsize}:
+</div>
+<div class="even menu_head down3">
 <div class="inline"><input type="text" id="minsetsize" name="minsetsize" size="4" value=""/>&nbsp;</div>
-<div id="setsize" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setsize" class="inline slider">&nbsp;</div>
 <div class="inline"><input type="text" id="maxsetsize" name="maxsetsize" size="4" value=""/></div>
-<br/>
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_age}:<br/>
+<div class="highlight2 menu_head">
+{$LN_age}:
+</div>
+<div class="even menu_head down3">
 <div class="inline"><input type="text" id="minage" name="minage" size="4" value=""/>&nbsp;</div>
-<div id="setage" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setage" class="inline slider">&nbsp;</div>
 <div class="inline"><input type="text" id="maxage" name="maxage" size="4" value=""/></div>
-<br/>
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_rating}:<br>
+<div class="highlight2 menu_head">
+{$LN_rating}:</div>
+<div class="even menu_head down3">
 <div class="inline"><input type="text" id="minrating" name="minrating" size="4" value=""/>&nbsp;</div>
-<div id="setrating" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setrating" class="inline slider">&nbsp;</div>
 <div class="inline"><input type="text" id="maxrating" name="maxrating" size="4" value=""/></div>
-<br/>
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_complete}:<br/>
+<div class="highlight2 menu_head">
+{$LN_complete}:
+</div>
+<div class="even menu_head down3">
 <div class="inline"><input type="text" id="mincomplete" name="mincomplete" size="4" value=""/>&nbsp;</div>
-<div id="setcomplete" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setcomplete" class="inline slider">&nbsp;</div>
 <div class="inline"><input type="text" id="maxcomplete" name="maxcomplete" size="4" value=""/></div>
-<br/>
 </div>
 
-<div class={cycle values="even, highlight2"}>
+<div class="highlight2 menu_head">
 
 <select name="flag" class="search" id="flag">
     <option value="">{$LN_browse_allsets}</option>
@@ -73,7 +76,8 @@
 </select>&nbsp;<br/>
 </div>
 
-<div class={cycle values="even, highlight2"}>
+<div class="even">
+<br>
 <input type="button" value="{$LN_reset}" id="reset_button" class="submitsmall"/>
 </div>
 

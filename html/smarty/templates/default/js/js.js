@@ -919,21 +919,18 @@ function show_blacklist(options)
             data["perpage"] = per_page;
             add_rows = 1;
             offset = parseInt( $('#last_line').val());
-            if (isNaN(offset)) { offset = 0; }
-            console.log(offset);
+            if (!$.isNumeric(offset)) { offset = 0; }
             data['offset'] = offset;
             $('#last_line').val(offset + parseInt(per_page));
         }
     }
     
-    console.log(data);
     $.ajax({
         type: 'get',
         url: url,
         data: data,
         cache: false,
     }).done(function(html) {
-        console.log(html)
         if (add_rows == 0) {
             show_content_div_2(html, 'usersdiv');
             update_search_bar_height();
@@ -978,7 +975,7 @@ function show_files(options)
             data['only_rows'] = '1';
             data['perpage'] = per_page;
             offset = parseInt($('#last_line').val());
-            if (isNaN(offset)) { offset = 0; }
+            if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset+parseInt(per_page));
             data['offset'] = offset;
         }
@@ -1004,7 +1001,6 @@ function show_files(options)
                 $('#contentout').scrollTop(0);
                 update_search_bar_height();
             } else {
-                console.log($('#files_table > tr:eq(-2)').html());
                 $('#files_table>tbody tr:eq(-2)').after(html);
                 update_widths("filenametd");
             }
@@ -1622,7 +1618,7 @@ function select_preview(binid, gid)
         cache: false,
         data: data
     }).done( function(html) {
-        if (!isNaN(html)) {
+        if ($.isNumeric(html)) {
             blink_status(html, binid, gid);
         } else if (html.substr(0, 7) == ':error:') {
             set_message('message_bar', html.substr(7), 5000);
@@ -3861,6 +3857,7 @@ function update_spot_searches(name)
         var sc = $.parseJSON(response.substr(2));
         var cat;
         clear_all_checkboxes(null); 
+        uncheck_all(val);
         $.each(sc, function(key,val) {
             if (key == 'minsetsize')      { setvalbyid('minsetsize', val); }
             else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
@@ -3869,8 +3866,7 @@ function update_spot_searches(name)
             else if (key == 'category')   { setvalbyid('save_category', val); }
             else if (key == 'poster')     { setvalbyid('poster', val); }
             else if (key == 'flag')       { setselectbyid('flag', val); }
-            else if (key == 'cat')        { cat = val; set_checkbox('checkbox_cat_' + val, 1); uncheck_all(val);}
-            //else if (key == 'cat')        { cat = val; setselectbyid('select_catid', val); }
+            else if (key == 'cat')        { cat = val; set_checkbox('checkbox_cat_' + val, 1);}
             else if (key == 'search')     { setvalbyid('search', val);}
             else if (key == 'subcats') {
                     $.each(val, function (s_key, s_val) { 
@@ -3926,7 +3922,7 @@ function load_spots(options)
             data['perpage'] = per_page;
             add_rows = 1;
             offset = parseInt( $('#last_line').val());
-            if (isNaN(offset)) { offset = 0; }
+            if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
         }
         if (options.minsetsize != null) {
@@ -4061,7 +4057,7 @@ function load_groupsets(options)
             data['only_rows'] = 1;
             data['perpage'] = per_page;
             offset = parseInt( $('#last_line').val());
-            if (isNaN(offset)) { offset = 0; }
+            if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
         }
         if (options.minsetsize != null) {
@@ -4141,9 +4137,7 @@ function load_groupsets(options)
         data: data
     }).done(function(html) {
         var x = $.parseJSON(html);
-        console.log(x.content);
 
-        init_spot_sliders();
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
         $('#minrating').val(x.minrating);        
@@ -4151,6 +4145,7 @@ function load_groupsets(options)
         $('#minsetsize').val(x.minsetsize);        
         $('#maxsetsize').val(x.maxsetsize);        
         $('#flag').val(x.flag);        
+        init_browse_sliders();
         if (add_rows == 0) {
             $('#waitingdiv').addClass('hidden');
             $('#setsdiv').removeClass('hidden');
@@ -4249,7 +4244,7 @@ function load_rsssets(options)
             data['only_rows'] = 1;
             data['perpage'] = per_page;
             offset = parseInt( $('#last_line').val());
-            if (isNaN(offset)) { offset = 0; }
+            if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
         }
         if (options.minsetsize != null) {
@@ -4319,7 +4314,6 @@ function load_rsssets(options)
         data: data
     }).done(function(html) {
         var x = $.parseJSON(html);
-        init_rss_sliders();
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
         $('#minrating').val(x.minrating);        
@@ -4327,6 +4321,7 @@ function load_rsssets(options)
         $('#minsetsize').val(x.minsetsize);        
         $('#maxsetsize').val(x.maxsetsize);        
         $('#flag').val(x.flag);
+        init_rss_sliders();
         if (add_rows == 0) {
             show_content_div_2(x.content, 'setsdiv');
             $('#feed_id').val(feed_id);
@@ -4726,7 +4721,6 @@ function fold_details(button_id, divid)
 function submit_enter2 (e, id)
 {
     if (e.which == 13) {
-        console.log(e);
         $('#' + id).click();
         e.stopPropagation();
         return false;
@@ -4766,7 +4760,7 @@ function do_select_subcat()
 {
     var cat = $('#select_catid>option:selected').val();
 
-    if (!isNaN(parseInt(cat, 10))) {
+    if ($.isNumeric(parseInt(cat, 10))) {
         $('#subcatbutton').removeClass('invisible');
     } else {
         $('#subcatbutton').addClass('invisible');
@@ -5026,17 +5020,21 @@ function start_updatedb()
 
 function init_slider(minv, maxv, slidediv, minbox, maxbox)
 {
+    console.log(minv, maxv, slidediv, minbox, maxbox);
     var minb = minv;
     var maxb = maxv;
-    if (!isNaN($(minbox).val()) && $(minbox).val() !='') { minb = $(minbox).val(); }
-    if (!isNaN($(maxbox).val()) && $(maxbox).val() !='') { maxb = $(maxbox).val(); }
-
+    if ($.isNumeric($(minbox).val())) { minb = $(minbox).val(); }
+    if ($.isNumeric($(maxbox).val())) { maxb = $(maxbox).val(); }
+    // we set the default here -- if the value == "" it is set to 0
+    $(maxbox).val(maxb);
+    $(minbox).val(minb);
+    console.log(minb, maxb, minv, maxv, $(maxbox).val(), $(minbox).val());
     $(function() {
         $(slidediv).slider( {
             range: true,
-            min: minv,
-            max: maxv,
-            values: [ minb, maxb ],
+            min: parseInt(minv),
+            max: parseInt(maxv),
+            values: [ parseInt(minb), parseInt(maxb) ],
             slide: function(event, ui) { 
                 $(minbox).val( ui.values[0] );
                 $(maxbox).val( ui.values[1] );
@@ -6170,17 +6168,17 @@ function show_sidebar(display)
 
 function init_browse_sliders()
 {
+    init_slider(0, $('#maxcompletelimit').val(), "#setcomplete", "#mincomplete", "#maxcomplete");
     init_slider(0, $('#maxsetsizelimit').val(), "#setsize", "#minsetsize", "#maxsetsize");
     init_slider(0, $('#maxagelimit').val(), "#setage", "#minage", "#maxage");
-    init_slider(0, $('#maxagelimit').val(), "#setrating", "#minrating", "#maxrating");
-    init_slider(0, $('#maxcompletelimit').val(), "#setcomplete", "#mincomplete", "#maxcomplete");
+    init_slider(0, $('#maxratinglimit').val(), "#setrating", "#minrating", "#maxrating");
 }
 
 function init_spot_sliders()
 {
     init_slider(0, $('#maxsetsizelimit').val(), "#setsize", "#minsetsize", "#maxsetsize");
-    init_slider(0, $('#maxratinglimit').val(), "#setrating", "#minrating", "#maxrating");
     init_slider(0, $('#maxagelimit').val(), "#setage", "#minage", "#maxage");
+    init_slider(0, $('#maxratinglimit').val(), "#setrating", "#minrating", "#maxrating");
 }
 
 function init_rss_sliders()
@@ -6194,7 +6192,8 @@ function load_side_bar(fn)
 {
     var type = $('#type').val();
     $('#sidebar_button').css('display', 'block');
-    if  (type == 'spots') {
+    console.log(type);
+    if (type == 'spots') {
         var url = "ajax_load_spot_sidebar.php";
         $.ajax({
             type: 'post',
@@ -6223,6 +6222,7 @@ function load_side_bar(fn)
             cache: false,
         }).done(function(html) {
             var r = $.parseJSON(html);
+            console.log(r);
             if (r.error != 0) {
                 set_message('message_bar', r.error, 5000);
             } else {

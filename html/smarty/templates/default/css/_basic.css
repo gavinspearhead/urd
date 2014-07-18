@@ -259,6 +259,11 @@ th
 {
     display: inline;
 }
+.inline_block
+{
+    position: relative;
+    display: inline-block;
+}
 
 .centered_nojs
 {
@@ -391,6 +396,10 @@ td.user, th.user
 {
     margin-top:6px;
 }
+.down10
+{
+    margin-top:10px;
+}
 
 .down100
 {
@@ -400,6 +409,12 @@ td.user, th.user
 .down3
 {
     margin-top:3px;
+}
+
+.up3
+{
+    padding-top: -3px;
+    margin-top: -3px;
 }
 
 .cleartop3
@@ -753,3 +768,19 @@ div.sets_inner
     overflow-y:auto;
 }
 
+#adv_search_head
+{
+    padding-top: 4px;
+    padding-bottom: 5px;
+}
+
+.slider
+{
+    width: 100px;
+}
+
+.menu_head
+{
+    min-height: 22px;
+    padding-top: 2px;
+}

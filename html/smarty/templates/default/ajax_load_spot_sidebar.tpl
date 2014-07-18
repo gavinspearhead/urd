@@ -24,38 +24,43 @@
 
 <div id="sidebar_contents">
 
-<div class="{cycle values='even, highlight2'} center bold">
+<div class="even center bold" id="adv_search_head">
 {$LN_advanced_search}
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_setsize}:<br/>
-<div class="inline"><input type="text" id="minsetsize" name="minsetsize" size="4" value=""/>&nbsp;</div>
-<div id="setsize" style="width:100px;" class="inline">&nbsp;</div>
-<div class="inline"><input type="text" id="maxsetsize" name="maxsetsize" size="4" value=""/></div>
-<br/>
+<div class="highlight2 menu_head">
+{$LN_setsize}:
 </div>
 
-
-<div class={cycle values="even, highlight2"}>
-{$LN_age}:<br/>
-<div class="inline"><input type="text" id="minage" name="minage" size="4" value=""/>&nbsp;</div>
-<div id="setage" style="width:100px;" class="inline">&nbsp;</div>
-<div class="inline"><input type="text" id="maxage" name="maxage" size="4" value=""/></div>
-<br/>
+<div class="even menu_head down3">
+<div class="inline_block"><input type="text" id="minsetsize" name="minsetsize" size="4" value=""/>&nbsp;</div>
+<div id="setsize" class="slider inline_block">&nbsp;</div>
+<div class="inline_block"><input type="text" id="maxsetsize" name="maxsetsize" size="4" value=""/></div>
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_rating}:<br>
-<div class="inline"><input type="text" id="minrating" name="minrating" size="4" value=""/>&nbsp;</div>
-<div id="setrating" style="width:100px;" class="inline">&nbsp;</div>
-<div class="inline"><input type="text" id="maxrating" name="maxrating" size="4" value=""/></div>
-<br/>
+<div class="highlight2 menu_head">
+{$LN_age}:
+</div>
+<div class="even menu_head down3">
+<div class="inline_block"><input type="text" id="minage" name="minage" size="4" value=""/>&nbsp;</div>
+<div id="setage" class="slider inline_block">&nbsp;</div>
+<div class="inline_block"><input type="text" id="maxage" name="maxage" size="4" value=""/></div>
 </div>
 
-<div class={cycle values="even, highlight2"}>
-{$LN_poster_name}:<br/>
-<input type="text" id="poster" name="poster" size="10" value=""/> &nbsp;
+<div class="highlight2 menu_head">
+{$LN_rating}:
+</div>
+<div class="even menu_head down3">
+<div class="inline_block"><input type="text" id="minrating" name="minrating" size="4" value=""/>&nbsp;</div>
+<div id="setrating" class="inline_block slider">&nbsp;</div>
+<div class="inline_block"><input type="text" id="maxrating" name="maxrating" size="4" value=""/></div>
+</div>
+
+<div class="highlight2 menu_head">
+{$LN_poster_name}:
+</div>
+<div class="even menu_head down3">
+<input type="text" id="poster" name="poster" size="10" value="" placeholder="{$LN_poster_name}"/> &nbsp;
 
 <select name="flag" class="search" id="flag">
     <option value="">{$LN_browse_allsets}</option>
@@ -68,14 +73,13 @@
 </select>&nbsp;<br/>
 </div>
 
-
-<div class="{cycle values="even, highlight2"} center bold">{$LN_categories}
+<div class="highlight2 center bold menu_head">{$LN_categories}
 </div>
 
 {foreach $subcat_list as $k1 => $item}
-    <div style="height:22px"; class={cycle values="even, highlight2"}>
+    <div style="height:22px"; class="{cycle values="ever, highlight2"}">
     <span onclick="$('#cat_items_{$k1}').toggleClass('hidden');"> &nbsp;{$item.name} </span>
-        <div class="floatright">
+        <div class="floatleft">
             {urd_checkbox name="cat_{$k1}" id="checkbox_cat_{$k1}" value="" post_js="uncheck_all('{$k1}');load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"}
         </div>
     </div>
@@ -101,7 +105,8 @@
     </div>
 
 {/foreach}
-<div class={cycle values="even, highlight2"}>
+<div class="{cycle values='even, highlight2'}">
+<br>
 <input type="button" value="{$LN_reset}" id="reset_button" class="submitsmall"/>
 </div>
 
