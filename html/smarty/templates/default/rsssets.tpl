@@ -33,7 +33,7 @@
 
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
-    <input type="button" value="&lt;" class="submitsmall" {urd_popup type="small" text=$LN_previous } onclick='javascript:select_next("select_feedid",-1);'/>&thinsp;
+    <input type="button" id="prev_group" value="&lt;" class="submitsmall" {urd_popup type="small" text=$LN_previous }/>&thinsp;
     <select name="feed_id" class="search" id="select_feedid">
     <option value="">{$LN_feeds_allgroups} ({$total_articles})</option>
     {foreach $subscribedfeeds as $item}
@@ -43,25 +43,24 @@
         </option>
     {/foreach}
 	</select>&thinsp;
-    <input type="button" value="&gt;" class="submitsmall" {urd_popup type="small" text=$LN_next } onclick='javascript:select_next("select_feedid",1);' />&nbsp;
-   	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/> &nbsp;
+    <input type="button" id="next_group" value="&gt;" class="submitsmall" {urd_popup type="small" text=$LN_next }/>&nbsp;
+   	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/> &nbsp;
 	<input type="hidden" value="" name="maxage"/>
-    <input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"/>
+    <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
     &nbsp; 
-    
     &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_next type="small"} onclick="javascript:select_next_search('saved_search',-1);"/>
+<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_next type="small"}/>
 <span id="save_search_span">
-<select id="saved_search" onchange="javascript:update_browse_searches();">
+<select id="saved_search" _onchange="javascript:update_browse_searches();">
 <option value=""></option>
 {foreach $saved_searches as $saved_search}
 <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
 </select>
 </span>
-<input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick="javascript:select_next_search('saved_search',1);"/>
+<input type="button" id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
 </span>
 &nbsp;
 <div id="minibasketdiv" class="hidden"></div>
@@ -142,6 +141,14 @@ $(document).ready(function() {
         );
         $('#searchbar').html($('#searchformdiv').html());
         $('#searchformdiv').html('');
+        $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
+        $('#next_group').click( function () { select_next("select_feedid",1); } ) ;
+        $('#prev_group').click( function () { select_next("select_feedid",-1); } ) ;
+        $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
+        $('#next_search').click( function () { select_next_search('saved_search',1); } );
+        $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
+        $('#saved_search').change( function () { update_browse_searches(null); } );
+
     });
 });
 </script>

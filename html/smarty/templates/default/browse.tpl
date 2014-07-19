@@ -30,10 +30,9 @@
 <input type="hidden" id="ng_id_{$item.type}_{$item.id}" value="{$item.shortname|escape:htmlall}"/>
 {/foreach}
 </div>
-
 	<input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
-    <input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} onclick='javascript:select_next("select_groupid",-1);'/>&nbsp;
+    <input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} id="prev_group"/>&nbsp;
 	<select name="groupID" class="search" id="select_groupid">
     <option value="">{$LN_browse_allgroups} ({$total_articles})</option>
     {foreach $subscribedgroups as $item}
@@ -44,26 +43,26 @@
 	{/foreach}
 	</select>&nbsp;
 
-    <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick='javascript:select_next("select_groupid",1);'/>&nbsp;
+    <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} id="next_group"/>&nbsp;
     &nbsp;
 
-<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" onkeypress="javascript:return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false;" />
+<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" _onkeypress="javascript:return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
+<input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 &nbsp;
 &nbsp;
 &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} onclick="javascript:select_next_search('saved_search',-1);"/> 
+<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} _onclick="javascript:select_next_search('saved_search',-1);"/> 
 <span id="save_search_span">
-<select id="saved_search" onchange="javascript:update_browse_searches(null);">
+<select id="saved_search">
 <option value=""></option>
 {foreach $saved_searches as $saved_search}
 <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
 </select>
 </span> 
-<input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} onclick="javascript:select_next_search('saved_search',1);"/>
+<input type="button"  id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} _onclick="javascript:select_next_search('saved_search',1);"/>
 </span> 
 
 <div id="minibasketdiv" class="hidden"></div>
@@ -124,6 +123,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
+
    load_side_bar(function() {
       load_sets( {
           'offset':'0'
@@ -146,6 +146,13 @@ $(document).ready(function() {
         update_basket_display();
         $('#searchbar').html( $('#searchformdiv').html());
         $('#searchformdiv').html('');
+        $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
+        $('#prev_group').click( function () { select_next("select_groupid",-1); } ) ;
+        $('#next_group').click( function () { select_next("select_groupid",1); } ) ;
+        $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
+        $('#next_search').click( function () { select_next_search('saved_search',1); } );
+        $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
+        $('#saved_search').change( function () { update_browse_searches(null); } );
     });
 });
 </script>

@@ -1585,7 +1585,7 @@ function set_message(id, msg, timeout)
     } else {
         $('#' + id).removeClass('hidden');
         $('#message_content').html(msg);
-        $('#message_icon').click(function() { console.log(msg) ; show_alert(msg);} );
+        $('#message_icon').click(function() { show_alert(msg);} );
         var boxwidth = $(document).width();
         var msgwidth = $('#' + id).width();
         $('#' + id).css('left', Math.round((boxwidth - msgwidth) /2));
@@ -1632,9 +1632,9 @@ function show_preview(dlid, binary_id, group_id)
 {
     var url = "ajax_showpreview.php";
     var data = { 
-        dlid : dlid, 
-        binary_id : binary_id,
-        group_id :group_id
+        dlid: dlid, 
+        binary_id: binary_id,
+        group_id: group_id
     };
     $.ajax({
         type: 'post',
@@ -1651,8 +1651,8 @@ function show_preview(dlid, binary_id, group_id)
             show_contents(file);
         } else {
             setTimeout(function () {
-                var do_reload = $('do_reload');
-                if (overlayed_content_visible() && do_reload == undefined) {
+                var do_reload = $('#do_reload');
+                if (overlayed_content_visible() && do_reload.val() == undefined) {
                     show_preview(dlid, binary_id, group_id);
                 }
             }, 1000);
@@ -4378,13 +4378,15 @@ function show_alert(msg)
         cache: false,
         data:{ msg : msg } 
     }).done( function(html) {
-        show_overlayed_content_2(html, 'alertdiv');
+        show_overlayed_content_1(html, 'alertdiv');
+        
         $('#okbutton').click( function() {
-            hide_overlayed_content2();
+            hide_overlayed_content();
         });
+
         var cancelbutton = $('#cancelbutton');
-        if (cancelbutton != undefined ) {
-            hide_overlayed_content2();
+        if (cancelbutton != undefined) {
+            hide_overlayed_content1();
         }
     });
 }
@@ -5020,7 +5022,6 @@ function start_updatedb()
 
 function init_slider(minv, maxv, slidediv, minbox, maxbox)
 {
-    console.log(minv, maxv, slidediv, minbox, maxbox);
     var minb = minv;
     var maxb = maxv;
     if ($.isNumeric($(minbox).val())) { minb = $(minbox).val(); }
@@ -5028,7 +5029,6 @@ function init_slider(minv, maxv, slidediv, minbox, maxbox)
     // we set the default here -- if the value == "" it is set to 0
     $(maxbox).val(maxb);
     $(minbox).val(minb);
-    console.log(minb, maxb, minv, maxv, $(maxbox).val(), $(minbox).val());
     $(function() {
         $(slidediv).slider( {
             range: true,
@@ -5658,8 +5658,8 @@ function display_timebox(id)
         $('#timebox1').show();
         $('#timebox2').show();
     }
-
 }
+
 function subscribe_rss(feedid)
 {
     var challenge = get_value_from_id('challenge', '');
@@ -6192,7 +6192,6 @@ function load_side_bar(fn)
 {
     var type = $('#type').val();
     $('#sidebar_button').css('display', 'block');
-    console.log(type);
     if (type == 'spots') {
         var url = "ajax_load_spot_sidebar.php";
         $.ajax({
@@ -6222,7 +6221,6 @@ function load_side_bar(fn)
             cache: false,
         }).done(function(html) {
             var r = $.parseJSON(html);
-            console.log(r);
             if (r.error != 0) {
                 set_message('message_bar', r.error, 5000);
             } else {
