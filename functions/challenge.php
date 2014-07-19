@@ -43,8 +43,8 @@ class challenge
         if (!self::$need_challenge) {
             return;
         }
-        if (!isset($_SESSION['challenge']) || $c != $_SESSION['challenge'] || $_SESSION['challenge_timeout'] < time()) {
-            throw new exception($LN['error_invalidchallenge'] . ' ' .  ' in session: ' . $_SESSION['challenge'] . ' provided: ' . $c);
+        if (!isset($_SESSION['challenge']) || ($c != $_SESSION['challenge']) || ($_SESSION['challenge_timeout'] < time())) {
+            throw new exception($LN['error_invalidchallenge']);
         }
     }
 
@@ -54,7 +54,7 @@ class challenge
             return FALSE;
         }
         $now = time();
-        if (!isset($_SESSION['challenge']) || ($_SESSION['challenge_timeout'] + 3600) < ($now)) { // if the challenge is valid for less than the current time -1 hour
+        if (!isset($_SESSION['challenge']) || ($_SESSION['challenge_timeout']  < ($now + 3600))) { // if the challenge is valid for less than the current time -1 hour
             $challenge = generate_password(self::CHALLENGE_LENGTH);
             $_SESSION['challenge'] = $challenge;
             $_SESSION['challenge_timeout'] = $now + self::CHALLENGE_TIMEOUT;
