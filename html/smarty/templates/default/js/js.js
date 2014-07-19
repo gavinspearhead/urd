@@ -3857,7 +3857,7 @@ function update_spot_searches(name)
         var sc = $.parseJSON(response.substr(2));
         var cat;
         clear_all_checkboxes(null); 
-        uncheck_all(val);
+        uncheck_all(null);
         $.each(sc, function(key,val) {
             if (key == 'minsetsize')      { setvalbyid('minsetsize', val); }
             else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
