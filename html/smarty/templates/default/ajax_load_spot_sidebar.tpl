@@ -77,7 +77,7 @@
 </div>
 
 {foreach $subcat_list as $k1 => $item}
-    <div style="height:22px"; class="{cycle values="ever, highlight2"}">
+    <div style="height:22px" class="{cycle values="even, highlight2"}">
     <span onclick="$('#cat_items_{$k1}').toggleClass('hidden');"> &nbsp;{$item.name} </span>
         <div class="floatleft">
             {urd_checkbox name="cat_{$k1}" id="checkbox_cat_{$k1}" value="" post_js="uncheck_all('{$k1}');load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"}

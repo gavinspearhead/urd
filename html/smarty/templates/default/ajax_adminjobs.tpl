@@ -21,8 +21,8 @@
  * $Id: ajax_adminjobs.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png width='9' height='6'' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == "command"}{if $sort_dir=='desc'}{$command_sort=$up}{else}{$command_sort=$down}{/if}{else}{$command_sort=""}{/if}
 {if $sort == "username"}{if $sort_dir=='desc'}{$username_sort=$up}{else}{$username_sort=$down}{/if}{else}{$username_sort=""}{/if}
 {if $sort == "at_time"}{if $sort_dir=='desc'}{$at_time_sort=$up}{else}{$at_time_sort=$down}{/if}{else}{$at_time_sort=""}{/if}

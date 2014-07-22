@@ -68,8 +68,8 @@
 {$selector}
 </div>
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == "name"}{if $sort_dir=='desc'}{$name_sort=$up}{else}{$name_sort=$down}{/if}{else}{$name_sort=""}{/if}
 {if $sort == "active"}{if $sort_dir=='desc'}{$active_sort=$up}{else}{$active_sort=$down}{/if}{else}{$active_sort=""}{/if}
 {if $sort == "category"}{if $sort_dir=='desc'}{$category_sort=$up}{else}{$category_sort=$down}{/if}{else}{$category_sort=""}{/if}

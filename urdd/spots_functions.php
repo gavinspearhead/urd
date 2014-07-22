@@ -323,6 +323,10 @@ class urd_spots
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
         }
+
+        $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type"=?', array($type));
+        update_queue_status ($db, $dbid, NULL, 0, 90);
+
         update_queue_status ($db, $dbid, NULL, 0, 90);
         write_log('Deleting '. $cnt . ' spot reports');
         $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));

@@ -21,8 +21,8 @@
  * $Id: ajax_admin_log.tpl 3033 2014-04-27 21:43:02Z gavinspearhead@gmail.com $
  *}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == "date"}{if $sort_dir=='desc'}{$date_sort=$up}{else}{$date_sort=$down}{/if}{else}{$date_sort=""}{/if}
 {if $sort == "time"}{if $sort_dir=='desc'}{$time_sort=$up}{else}{$time_sort=$down}{/if}{else}{$time_sort=""}{/if}
 {if $sort == "level"}{if $sort_dir=='desc'}{$level_sort=$up}{else}{$level_sort=$down}{/if}{else}{$level_sort=""}{/if}

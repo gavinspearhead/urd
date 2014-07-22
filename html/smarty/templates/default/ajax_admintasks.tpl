@@ -38,8 +38,8 @@
 {/strip}
 {/capture}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == "description"}{if $sort_dir=='desc'}{$description_sort=$up}{else}{$description_sort=$down}{/if}{else}{$description_sort=""}{/if}
 {if $sort == "progress"}{if $sort_dir=='desc'}{$progress_sort=$up}{else}{$progress_sort=$down}{/if}{else}{$progress_sort=""}{/if}
 {if $sort == "ETA"}{if $sort_dir=='desc'}{$ETA_sort=$up}{else}{$ETA_sort=$down}{/if}{else}{$ETA_sort=""}{/if}

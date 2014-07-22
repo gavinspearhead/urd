@@ -47,7 +47,7 @@
             <li class="normal" id="status_item">
                 <div id="status_msg" class="nooverflow"></div>
                 <div class="downm8">
-                <ul id="activity_status">
+                <ul id="status_activity">
                     <li class="activity plain pulldown_last_item"></li>
                 </ul>
                 </div>

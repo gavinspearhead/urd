@@ -35,7 +35,7 @@
 <input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"}/>
 <span id="save_search_span">
 <select id="saved_search">
-<option value=""></option>
+<option value="" label="all"></option>
 {foreach $saved_searches as $k1=>$saved_search}
 <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
@@ -138,7 +138,6 @@ $(document).ready(function() {
 </script>
 {/strip}
 
-<input type="button" id="ln_delete_search" value="{$LN_delete_search}" onclick="load_sets( { 'add_rows': '1' } );"/>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage}"/>
 <div>

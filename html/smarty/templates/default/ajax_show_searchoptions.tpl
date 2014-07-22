@@ -21,8 +21,8 @@
  * $Id: ajax_show_searchoptions.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''/>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''/>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''/>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''/>"}
 {if $sort == "name"}{if $sort_dir=='desc'}{$name_sort=$up}{else}{$name_sort=$down}{/if}{else}{$name_sort=""}{/if}
 {if $sort == "search_url"}{if $sort_dir=='desc'}{$search_url_sort=$up}{else}{$search_url_sort=$down}{/if}{else}{$search_url_sort=""}{/if}
 

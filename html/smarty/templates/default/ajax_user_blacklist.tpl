@@ -54,8 +54,8 @@
 {/strip}
 {/capture}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == ""}{if $sort_dir=='desc'}{$_sort=$up}{else}{$_sort=$down}{/if}{else}{$_sort=""}{/if}
 {if $sort == "spotter_id"}{if $sort_dir=='desc'}{$spotter_id_sort=$up}{else}{$spotter_id_sort=$down}{/if}{else}{$spotter_id_sort=""}{/if}
 {if $sort == "source"}{if $sort_dir=='desc'}{$source_sort=$up}{else}{$source_sort=$down}{/if}{else}{$source_sort=""}{/if}

@@ -26,8 +26,8 @@
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
 </div>
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == ""}{if $sort_dir=='desc'}{$_sort=$up}{else}{$_sort=$down}{/if}{else}{$_sort=""}{/if}
 {if $sort == "id"}{if $sort_dir=='desc'}{$id_sort=$up}{else}{$id_sort=$down}{/if}{else}{$id_sort=""}{/if}
 {if $sort == "fullname"}{if $sort_dir=='desc'}{$fullname_sort=$up}{else}{$fullname_sort=$down}{/if}{else}{$fullname_sort=""}{/if}

@@ -38,8 +38,8 @@
 
 {/capture}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort == "name"}{if $sort_dir=='desc'}{$name_sort=$up}{else}{$name_sort=$down}{/if}{else}{$name_sort=""}{/if}
 {if $sort == "type"}{if $sort_dir=='desc'}{$type_sort=$up}{else}{$type_sort=$down}{/if}{else}{$type_sort=""}{/if}
 {if $sort == "mtime"}{if $sort_dir=='desc'}{$mtime_sort=$up}{else}{$mtime_sort=$down}{/if}{else}{$mtime_sort=""}{/if}

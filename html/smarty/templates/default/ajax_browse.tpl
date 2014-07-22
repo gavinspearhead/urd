@@ -74,8 +74,8 @@
 {/strip}
 {/capture}
 
-{$up="<img src='$IMGDIR/small_up.png' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6'  alt=''>"}
 {if $sort.order == "complete"}{if $sort.direction=='desc'}{$complete_sort=$up}{else}{$complete_sort=$down}{/if}{else}{$complete_sort=""}{/if}
 {if $sort.order == "better_subject"}{if $sort.direction=='desc'}{$title_sort=$up}{else}{$title_sort=$down}{/if}{else}{$title_sort=""}{/if}
 {if $sort.order == "date"}{if $sort.direction=='desc'}{$stamp_sort=$up}{else}{$stamp_sort=$down}{/if}{else}{$stamp_sort=""}{/if}
@@ -159,7 +159,6 @@
 {elseif $set.binary_type == 8} {$bintype=$btgame}
 {elseif $set.binary_type == 9} {$bintype=$bttv}
 {/if}
-
 
 {* Ok now it's time to put it all together: *}	
 <tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" 

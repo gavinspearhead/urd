@@ -23,7 +23,7 @@
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 {* Window resize button at top right: *}
-{strip}
+{*strip*}
 
 {if $type == 'icon'}
 {if $isadmin}
@@ -84,7 +84,7 @@
 {else}
     <li class="plain pulldown_last_item">
 {/if}
-<div class="down3 buttonlike" onclick="jump('transfers.php')";>
+<div class="down3 buttonlike" onclick="jump('transfers.php');">
 {$LN_statusidling}!
 </li>
 {else}
@@ -117,10 +117,11 @@
 {/if}
 
 {foreach $previews as $preview}
+
 {if $preview@last}{$add_class="pulldown_last_item"}{else}{$add_class=""}{/if}
 <li class="activity {$add_class}">
 <div class="down3 buttonlike fixedright deleteicon iconsize" onclick="javascript:delete_preview({$preview.dlid});" {urd_popup type="small" text=$LN_delete }></div>
-<div class="down3 buttonlike" onclick="javascript:show_preview({$preview.dlid}, {$preview.binary_id}, {$preview.group_id})";>
+<div class="down3 buttonlike" onclick="javascript:show_preview({$preview.dlid}, {$preview.binary_id}, {$preview.group_id});">
 {$preview.name|truncate:32:"...":TRUE|escape:htmlall} ({$preview.donesize|escape:htmlall} / {$preview.size|escape:htmlall}) - {$preview.status} 
 </div>
 </li>
@@ -128,5 +129,4 @@
 {/foreach}
 {/if}
 {/if}
-{include file="ajax_foot.tpl"}
-{/strip}
+{*/strip*}

@@ -123,7 +123,6 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-
    load_side_bar(function() {
       load_sets( {
           'offset':'0'
@@ -140,20 +139,20 @@ $(document).ready(function() {
            {if $flag != ''}         , 'flag': '{$flag|escape:javascript}' {/if}
            }
         );
-
-        set_scroll_handler('#contentout', load_sets);
-        {* Load basket: *}
-        update_basket_display();
-        $('#searchbar').html( $('#searchformdiv').html());
-        $('#searchformdiv').html('');
-        $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
-        $('#prev_group').click( function () { select_next("select_groupid",-1); } ) ;
-        $('#next_group').click( function () { select_next("select_groupid",1); } ) ;
-        $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
-        $('#next_search').click( function () { select_next_search('saved_search',1); } );
-        $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
-        $('#saved_search').change( function () { update_browse_searches(null); } );
     });
+
+   set_scroll_handler('#contentout', load_sets);
+   {* Load basket: *}
+   update_basket_display();
+   $('#searchbar').html( $('#searchformdiv').html());
+   $('#searchformdiv').html('');
+   $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
+   $('#prev_group').click( function () { select_next("select_groupid",-1); } ) ;
+   $('#next_group').click( function () { select_next("select_groupid",1); } ) ;
+   $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
+   $('#next_search').click( function () { select_next_search('saved_search',1); } );
+   $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
+   $('#saved_search').change( function () { update_browse_searches(null); } );
 });
 </script>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>

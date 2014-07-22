@@ -382,7 +382,7 @@ function set_basket_type(type)
         url: "ajax_processbasket.php",
         cache: false,
         data: {
-            commnd: 'set',
+            command: 'set',
             basket_type: type,
             challenge: challenge 
         }
@@ -396,7 +396,9 @@ function get_basket_type()
         type: 'post',
         url: "ajax_processbasket.php",
         cache: false,
-        data: { command: 'get' }
+        data: {
+            command: 'get' 
+        }
        }).done(function(html) {
            var content = $.parseJSON(html);
            update_basket_display(content.basket_type);
@@ -1318,7 +1320,7 @@ function load_activity_status(force)
     activity_status = new Date().getTime();
 
     var url = "ajax_showstatus.php";
-    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { $('#activity_status').html(html); }); 
+    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { $('#status_activity').html(html); }); 
 
 }
 
@@ -1458,9 +1460,9 @@ function post_edit(cmd, postid)
         url: url,
         cache: false,
         data: { 
-            cmd : cmd, 
-            postid : postid, 
-            challenge : challenge 
+            cmd: cmd, 
+            postid: postid, 
+            challenge: challenge 
         }
     }).done( function (html) { 
         update_message_reload_transfers(html); 
@@ -1476,9 +1478,9 @@ function transfer_edit(cmd, dlid)
         url: url,
         cache: false,
         data: { 
-            cmd : cmd,
-            dlid : dlid,
-            challenge : challenge 
+            cmd: cmd,
+            dlid: dlid,
+            challenge: challenge 
         }
     }).done( function (html) { 
         update_message_reload_transfers(html); 
@@ -1970,7 +1972,7 @@ function show_rename_transfer(dlid)
         url: url,
         cache: false,
         data: { 
-            cmd : 'showrename',
+            cmd: 'showrename',
             dlid: dlid 
         }
     }).done( function(html) {
@@ -1986,7 +1988,7 @@ function edit_group(id)
         url: url,
         cache: false,
         data: { 
-            cmd : 'showeditgroup', 
+            cmd: 'showeditgroup', 
             id: id
         }
     }).done( function(html) {
@@ -2004,7 +2006,7 @@ function edit_rss(id)
         url: url,
         cache: false,
         data: { 
-            cmd : 'showeditrss', 
+            cmd: 'showeditrss', 
             id: id 
         }
     }).done( function(html) {
@@ -2333,7 +2335,7 @@ function rename_transfer()
         dlid: dlid ,
         dlname: dlname,
         dlpass: dlpass,
-        delete: deletef,
+        'delete': deletef,
         unrar: unrar,
         subdl: subdl,
         dl_dir: dl_dir,
@@ -2795,7 +2797,7 @@ function fold_transfer(id, type)
         url: url,
         cache: false,
         data: { 
-            var : id, 
+            'var' : id, 
             type : type 
         } 
     }); 
@@ -3387,7 +3389,10 @@ function select_tab_setting(tab, session_var, session_val)
             type: 'get',
             url: url,
             cache: false,
-            data: { var : session_val, type : session_val } 
+            data: { 
+                'var' : session_val, 
+                type : session_val 
+            } 
         }); 
     }
 
@@ -3413,7 +3418,10 @@ function select_tab_transfers(tab, session_var, session_val)
             type: 'get',
             url: url,
             cache: false,
-            data: { var : session_val, type : session_val } 
+            data: { 
+                'var' : session_val,
+                type : session_val 
+            }
         }); 
     }
     $('input[name="tabs"]').each( function () {
@@ -3658,7 +3666,7 @@ function delete_search()
         type: 'get',
         url: url,
         cache: false,
-        data:{ 
+        data: { 
             type: type, 
             cmd: 'delete',
             name: sname
@@ -3886,7 +3894,6 @@ function update_spot_searches(name)
         });
 }
 
-
 function get_selected_cat()
 {
     for (var i=0; i<4; i++) {
@@ -3913,13 +3920,13 @@ function load_spots(options)
     var cat_id = get_selected_cat();
     var data = get_subcats_from_form('searchform');
     var flag = $('#flag>option:selected').val();
-    var add_rows = 0;
     var per_page = $('#perpage').val();
+    var add_rows = 0;
     if (options != undefined) {
         if (options.add_rows != undefined) {
+            add_rows = 1;
             data['only_rows'] = 1;
             data['perpage'] = per_page;
-            add_rows = 1;
             offset = parseInt( $('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
@@ -3939,7 +3946,7 @@ function load_spots(options)
         if (options.minrating != undefined) {
             minrating = options.minrating;
         }
-        if (options.maxsetsize != undefined) {
+        if (options.maxrating != undefined) {
             maxrating = options.maxrating;
         }
         if (options.order != undefined) {
@@ -4013,12 +4020,12 @@ function load_spots(options)
         $('#poster').val(x.poster);        
         init_spot_sliders();
         if (add_rows == 0) {
+            $('#waitingdiv').addClass('hidden');
+            $('#setsdiv').removeClass('hidden');
             show_content_div_2(x.content, 'setsdiv');
             set_checkbox('checkbox_cat_' + cat_id, 1); 
             uncheck_all(cat_id);
             update_rss_url();
-            $('#waitingdiv').addClass('hidden');
-            $('#setsdiv').removeClass('hidden');
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
@@ -4078,7 +4085,7 @@ function load_groupsets(options)
         if (options.minrating != undefined) {
             minrating = options.minrating;
         }
-        if (options.maxsetsize != undefined) {
+        if (options.maxrating != undefined) {
             maxrating = options.maxrating;
         }
         if (options.order != undefined) {
@@ -4125,8 +4132,8 @@ function load_groupsets(options)
     data['groupID'] = group_id;
     data['offset'] = offset;
     data['setid'] = setid;
-    data['order'] = order;
     data['flag'] = flag;
+    data['order'] = order;
     $.ajax({
         type: 'get',
         url: url,
@@ -4134,7 +4141,6 @@ function load_groupsets(options)
         data: data
     }).done(function(html) {
         var x = $.parseJSON(html);
-
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
         $('#minrating').val(x.minrating);        
@@ -4261,7 +4267,7 @@ function load_rsssets(options)
         if (options.minrating != undefined) {
             minrating = options.minrating;
         }
-        if (options.maxsetsize != undefined) {
+        if (options.maxrating != undefined) {
             maxrating = options.maxrating;
         }
         if (options.order != undefined) {
