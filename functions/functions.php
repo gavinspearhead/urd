@@ -781,7 +781,6 @@ function read_argv()
     return $argv;
 }
 
-
 function update_category(DatabaseConnection $db, $id, $userid, $name)
 {
     assert(is_numeric($userid) && is_numeric($id));
@@ -2778,7 +2777,6 @@ function split_args($args)
 
     return $arg_list;
 }
-
 
 function delete_category(DatabaseConnection $db, $id, $userid)
 {

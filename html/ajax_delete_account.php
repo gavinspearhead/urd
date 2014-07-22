@@ -26,11 +26,14 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $pathda = realpath(dirname(__FILE__));
 
 require_once "$pathda/../functions/ajax_includes.php";
-
-if (isset($_POST['delete_account']) && $_POST['delete_account'] == 1) {
-    challenge::verify_challenge($_POST['challenge']);
-    delete_user($db, $userid);
-    die_html('OK' . $LN['account_deleted']);
-} else {
-    throw new exception($LN['failed']);
+try { 
+    if (isset($_POST['delete_account']) && $_POST['delete_account'] == 1) {
+        challenge::verify_challenge($_POST['challenge']);
+        delete_user($db, $userid);
+        die(json_encode(array('error' => 0, 'message' => $LN['account_deleted'])));
+    } else {
+        throw new exception($LN['failed']);
+    }
+} catch (exception $e) {
+    die(json_encode(array('error' => $e->getMessage())));
 }

@@ -498,7 +498,7 @@ class urd_extsetinfo
             $fieldEmpty = ($value == ''); // Empty field?
 
             // Does info exist?
-            $sql = '* FROM extsetdata WHERE "setID" = ? AND "name" = ? AND "type" = ?';
+            $sql = '* FROM extsetdata WHERE "setID"=? AND "name"=? AND "type"=?';
             $res = $db->select_query($sql, 1, array($setid, $name, $type));
             // Check if the field was empty, and if the stored field exists
 
@@ -517,7 +517,7 @@ class urd_extsetinfo
         }
         // Update setname:
 
-        $sql = "\"setID\" FROM extsetdata WHERE \"setID\" = ? AND \"name\" = ? AND \"type\" = ?";
+        $sql = '"setID" FROM extsetdata WHERE "setID"=? AND "name"=? AND "type"=?';
         $res = $db->select_query($sql, 1, array($setid, 'setname', $type));
         if ($res === FALSE) {
             $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, 'setname', $newsetname, 0, $type));
@@ -748,7 +748,7 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['q'] = $quality;   //
                 $values['t'] = 'Movie';   // type
-                $values['T'] = ':_img_movie:';   //  image placeholder
+               // $values['T'] = ':_img_movie:';   //  image placeholder
                 break;
             case self::SETTYPE_ALBUM:
                 $chars = 'TntyqfgNPC';
@@ -769,7 +769,7 @@ class urd_extsetinfo
                 $values['g'] = $genre;
                 $values['N'] = $note;
                 $values['t'] = 'Album';   // type
-                $values['T'] = ':_img_album:';   //  image placeholder
+              //  $values['T'] = ':_img_album:';   //  image placeholder
                 break;
             case self::SETTYPE_IMAGE:
                 $chars = 'TtnfgxqNPC';
@@ -790,7 +790,7 @@ class urd_extsetinfo
                 $values['N'] = $note;
                 $values['q'] = $quality;
                 $values['t'] = 'Image';   // type
-                $values['T'] = ':_img_image:';   //  image placeholder
+              //  $values['T'] = ':_img_image:';   //  image placeholder
                 break;
             case self::SETTYPE_SOFTWARE:
                 $chars = 'TnotNqxPC';
@@ -809,7 +809,7 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['N'] = $note;
                 $values['t'] = 'Software';   // type
-                $values['T'] = ':_img_software:';   // image placeholder
+             //   $values['T'] = ':_img_software:';   // image placeholder
                 break;
             case self::SETTYPE_TVSERIES:
                 $chars = 'TtnemqaxNyPC';
@@ -835,7 +835,7 @@ class urd_extsetinfo
                 $values['q'] = $quality;
                 $values['x'] = $xxx;   //
                 $values['t'] = 'Series';   // type
-                $values['T'] = ':_img_series:';   //  image placeholder
+              //  $values['T'] = ':_img_series:';   //  image placeholder
                 break;
             case self::SETTYPE_EBOOK:
                 $chars = 'TtnAfqgxyPC';
@@ -861,7 +861,7 @@ class urd_extsetinfo
                 $values['A'] = $author;
                 $values['x'] = $xxx;
                 $values['t'] = 'Ebook';   // type
-                $values['T'] = ':_img_ebook:';   //  image placeholder
+              //  $values['T'] = ':_img_ebook:';   //  image placeholder
                 break;
             case self::SETTYPE_GAME:
                 $chars = 'TnotNqxPC';
@@ -880,7 +880,7 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['N'] = $note;
                 $values['t'] = 'Game';   // type
-                $values['T'] = ':_img_game:';   //  image placeholder
+             //   $values['T'] = ':_img_game:';   //  image placeholder
                 break;
             case self::SETTYPE_DOCUMENTARY:
                 $chars = 'TtnylsmaNqxPC';
@@ -908,7 +908,7 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['q'] = $quality;   //
                 $values['t'] = 'Documentary';   // type
-                $values['T'] = ':_img_documentary:';   //  image placeholder
+             //   $values['T'] = ':_img_documentary:';   //  image placeholder
                 break;
             case self::SETTYPE_TVSHOW:
                 $chars = 'TtnmaxeNyqPC';
@@ -935,7 +935,7 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   // name
                 $values['q'] = $quality;   // name
                 $values['t'] = 'TVShow';   // string
-                $values['T'] = ':_img_tvshow:';   // image placeholder
+            //    $values['T'] = ':_img_tvshow:';   // image placeholder
                 break;
             case self::SETTYPE_UNKNOWN:
             case self::SETTYPE_OTHER:
@@ -947,7 +947,7 @@ class urd_extsetinfo
                 $values['C'] = ($copyright == '1' ? ':_img_copyright:' : '');
                 $values['n'] = GetAV($namevalues, 'name');   // name
                 $values['t'] = 'Unknown';   // type
-                $values['T'] = ':_img_unknown:';   //  image placeholder
+             //   $values['T'] = ':_img_unknown:';   //  image placeholder
                 break;
         }
 
@@ -969,7 +969,7 @@ class urd_extsetinfo
             } else {
                 $value_x = trim($value);
                 // Does info exist?
-                $sql = "* FROM extsetdata WHERE \"setID\" = ? AND \"name\" = ? AND \"type\" = ?";
+                $sql = '* FROM extsetdata WHERE "setID"=? AND "name"=? AND "type"=?';
                 $res = $db->select_query($sql, 1, array($setid, $name, $type));
 
                 // Check if the stored field exists
@@ -998,7 +998,7 @@ class urd_extsetinfo
         foreach ($save as $name => $value) {
             $value_x = trim($value);
             // Does info exist?
-            $sql = "* FROM extsetdata WHERE \"setID\" = ? AND \"name\" = ? AND \"type\" = ?";
+            $sql = '* FROM extsetdata WHERE "setID"=? AND "name"=? AND "type"=?';
             $res = $db->select_query($sql, 1, array($setid, $name, $type));
 
             // Check if the stored field exists

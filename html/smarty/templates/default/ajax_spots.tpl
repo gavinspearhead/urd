@@ -71,13 +71,6 @@
 {/strip}
 {/capture}
 
-{* We need this stuff to remember any the search options *}
-{*<div>
-{foreach from=$allsets item=set}
-<input type="hidden" name="set_ids[]" value="{$set.sid}"/>
-{/foreach}
-</div>*}
-
 {* And display it here and at the bottom: *}
 
 {$up="<img src='$IMGDIR/small_up.png' alt=''>"}{$down="<img src='$IMGDIR/small_down.png' alt=''>"}
@@ -189,7 +182,7 @@
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 
-<td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}"  {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories" }{/if}>
+<td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories" }{/if}>
     <div class="donotoverflowdamnit inline">
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}
@@ -267,7 +260,7 @@
 
 <input type="hidden" id="last_line" value="{$set.number}"/>
 <input type="hidden" id="rss_url" value="{$rssurl|escape:quotes}"/>
-<input type="hidden" id="killflag" value="{$killflag|escape}}"/>
+<input type="hidden" id="killflag" value="{$killflag|escape}"/>
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
 {/if}

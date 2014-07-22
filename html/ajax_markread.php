@@ -28,19 +28,19 @@ $__auth = 'silent';
 $pathmr = realpath(dirname(__FILE__));
 require_once "$pathmr/../functions/ajax_includes.php";
 
-if (!isset( $_GET['setid'], $_GET['cmd'], $_GET['type'])) {
-    throw new exception('Parameter missing');
-}
-
-$setid = get_request('setid');
-$type = get_request('type');
-$cmd = get_request('cmd');
-
-if (!in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT))) {
-    throw new exception($LN['error_invalidvalue']);
-}
 try {
-switch (strtolower($cmd)) {
+    if (!isset( $_REQUEST['setid'], $_REQUEST['cmd'], $_REQUEST['type'])) {
+        throw new exception($LN['error_missingparameter']);
+    }
+
+    $setid = get_request('setid');
+    $type = get_request('type');
+    $cmd = get_request('cmd');
+
+    if (!in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT))) {
+        throw new exception($LN['error_invalidvalue']);
+    }
+    switch (strtolower($cmd)) {
     case 'hide' :
         sets_marking::mark_set($db, $userid, $setid, 'statuskill', $type, 1);
         break;
@@ -59,8 +59,8 @@ switch (strtolower($cmd)) {
     default:
         throw new exception($LN['error_invalidaction']);
         break;
+    }
+    die(json_encode(array('error' => 0)));
+} catch (exception $e) {
+    die(json_encode(array('error' => $e->getMessage())));
 }
-}catch (exception $e) {
-    var_dump($e);
-}
-die_html('OK');

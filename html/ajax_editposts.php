@@ -82,10 +82,10 @@ case 'delete' :
     }
     if ($isadmin) {
         // Admins can delete any download
-        $db->delete_query('postinfo', '"id" = ?', array($postid));
-        $db->delete_query('post_files', '"postid" = ?', array($postid));
+        $db->delete_query('postinfo', '"id"=?', array($postid));
+        $db->delete_query('post_files', '"postid"=?', array($postid));
     } else {
-        $sql = '* FROM postinfo WHERE "userid" = ? AND "id" = ?';
+        $sql = '* FROM postinfo WHERE "userid"=? AND "id"=?';
         $res = $db->select_query($sql, array($userid, $postid));
         if (isset($res[0]['id']) && $res[0]['id'] == $postid) {
             $db->delete_query('postinfo', '"id" = ?', array($postid));
@@ -96,7 +96,6 @@ case 'delete' :
 default:
     throw new exception('Invalid command!');
 }
-
 
 // Success:
 die_html('OK');

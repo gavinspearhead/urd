@@ -135,18 +135,31 @@
 
 {* Remember this is a copy of formatsetname.tpl; included here for performance reasons (beats 100's of includes) (I think) *}
 {capture assign=setdesc}{$set.name|escape:htmlall}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_movie:':$btmovie}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_album:':$btmusic}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_image:':$btimage}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_software:':$btsoftw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_series:':$bttv}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_tvshow:':$bttv}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_documentary:':$btdocu}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_ebook:':$btebook}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_game:':$btgame}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_movie:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_album:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_image:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_software:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_series:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_tvshow:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_documentary:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_ebook:':''}{/capture}
+{capture assign=setdesc}{$setdesc|replace:':_img_game:':''}{/capture}
 {capture assign=setdesc}{$setdesc|replace:':_img_pw:':$btpw}{/capture}
 {capture assign=setdesc}{$setdesc|replace:':_img_copyright:':$btcopyright}{/capture}
 {capture assign=setdesc}{$setdesc|replace:':_img_unknown:':''}{/capture}
+
+{$bintype=''}{$set.binary_type}
+{if $set.binary_type == 1} {$bintype=$btmovie}
+{elseif $set.binary_type == 2} {$bintype=$btmusic}
+{elseif $set.binary_type == 3} {$bintype=$btimage}
+{elseif $set.binary_type == 4} {$bintype=$btsoftw}
+{elseif $set.binary_type == 5} {$bintype=$bttv}
+{elseif $set.binary_type == 6} {$bintype=$btebook}
+{elseif $set.binary_type == 7} {$bintype=$btdocu}
+{elseif $set.binary_type == 8} {$bintype=$btgame}
+{elseif $set.binary_type == 9} {$bintype=$bttv}
+{/if}
+
 
 {* Ok now it's time to put it all together: *}	
 <tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" 
@@ -159,12 +172,11 @@
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
     <td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_GROUP}, event);" id="td_set_{$set.sid}">
-<div class="donotoverflowdamnit">{$setdesc}</div>
+<div class="donotoverflowdamnit">{$bintype} {$setdesc}</div>
 </td>
 {$rating=$set.rating * 10}
 {$imdbpic="ratingicon_$rating"}
 {if $rating == ""}{$imdbpic="followicon"}{/if}
-
 	<td class="fixwidth2a nowrap {if $set.new_set neq 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{$set.size}</td>
 	<td class="fixwidth1"> <div class="{$complete} status_light down2" {urd_popup type="small" text="$completion" }></div></td>

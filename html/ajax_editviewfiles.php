@@ -354,7 +354,6 @@ class file_list
     }
 }
 
-
 $cmd = trim(get_request('cmd', ''));
 $dir = get_request('dir', '');
 
@@ -396,7 +395,6 @@ if ($sort_dir == '') {
     }
 }
 
-
 function die_smarty($msg, $filename='')
 {
     global $smarty, $prefs;
@@ -407,7 +405,6 @@ function die_smarty($msg, $filename='')
     $smarty->display('ajax_editfile.tpl');
     die;
 }
-
 
 $_SESSION['viewfiles']['sort'] = $sort;
 $_SESSION['viewfiles']['sort_dir'] = $sort_dir;

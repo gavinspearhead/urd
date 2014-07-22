@@ -41,7 +41,6 @@ function build_rss_query(DatabaseConnection $db, $userid, $offset, &$retvals = N
     assert(is_numeric($userid));
     $order_options = array ('name', 'feedcount', 'subscribed', 'last_updated', 'expire', 'refresh_time', 'refresh_period', 'minsetsize', 'url', 'visible', 'category', 'adult');
     $order_dirs = array ('desc', 'asc', '');
-    //$minngsize = get_pref($db, 'minngsize', $userid);
     $cnt = count_active_rss($db);
     $perpage = get_maxperpage($db, $userid);
     $search = trim(utf8_decode(get_request('search', '')));
@@ -196,7 +195,6 @@ function subscribe_feed(DatabaseConnection $db, urdd_client $uc, $userid, $feedi
 
     $uc->subscribe_rss($feedid, $expire);
 }
-
 
 function unsubscribe_feed(DatabaseConnection $db, urdd_client $uc, $feedid)
 {

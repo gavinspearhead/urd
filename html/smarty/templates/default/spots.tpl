@@ -27,7 +27,7 @@
 <form id="searchform" method="get">
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
-    <input type="text" id="search" name="search" size="30" placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}" />&nbsp;
+    <input type="text" id="search" name="search" size="30" placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}"/>&nbsp;
 <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 &nbsp;
 

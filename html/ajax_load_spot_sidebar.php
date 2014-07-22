@@ -35,8 +35,8 @@ try {
     init_smarty('', 0);
     $smarty->assign('subcat_list', $subcats);
     $content = $smarty->fetch('ajax_load_spot_sidebar.tpl');
-    die(json_encode(array('error'=>0, 'contents'=> $content)));
+    die(json_encode(array('error' => 0, 'contents' => $content)));
 
 } catch (exception $e) {
-    die(json_encode(array('error'=>$e->getMessage())));
+    die(json_encode(array('error' => $e->getMessage())));
 }

@@ -76,7 +76,7 @@ $qstatus = '';
 $input_arr = array();
 if ($status != '') {
     $input_arr[] = $status;
-    $qstatus = ' AND "status" = ?';
+    $qstatus = ' AND "status"=?';
 }
 
 $qtime = '';
@@ -93,7 +93,6 @@ if (!in_array($sort_dir, array('asc', 'desc'))) {
     $sort_dir = 'desc';
 }
 
-
 function build_task_skipper($perpage, $offset, $total)
 {
     assert(is_numeric($perpage) && is_numeric($offset) && is_numeric($total));
@@ -102,9 +101,9 @@ function build_task_skipper($perpage, $offset, $total)
 
     // First get all the rows:
     $totalpages = ceil($total / $perpage);		// Total number of pages.
-    $activepage = ceil(($offset+1) / $perpage); 	// This is the page we're on. (+1 because 0/100 = page 1)
+    $activepage = ceil(($offset + 1) / $perpage); 	// This is the page we're on. (+1 because 0/100 = page 1)
 
-    $start = max($activepage - floor($size/2), 1);	// We start at 1 unless we're now on page 12, then we show page 2.
+    $start = max($activepage - floor($size / 2), 1);	// We start at 1 unless we're now on page 12, then we show page 2.
     $end = min($start + $size, $totalpages);	// We don't go beyond 'totalpages' ofcourse.
     $start = max($end - $size, 1);			// Re-check $start, in case the pagenumber is near the end
 
@@ -122,7 +121,6 @@ function build_task_skipper($perpage, $offset, $total)
 
     return array($pages, $totalpages, $activepage);
 }
-
 
 $perpage = get_maxperpage($db, $userid);
 $sql = "* FROM queueinfo WHERE 1=1 $qstatus $qtime ORDER BY \"$sort\" $sort_dir";

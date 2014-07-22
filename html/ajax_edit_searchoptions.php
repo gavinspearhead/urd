@@ -170,7 +170,7 @@ function update_button_info(DatabaseConnection $db, $id)
         } else {
             throw new exception($LN['buttons_invalidurl']);
         }
-        $query = " \"id\" FROM searchbuttons WHERE \"id\"= ?";
+        $query = '"id" FROM searchbuttons WHERE "id"=?';
         $res = $db->select_query($query, 1, array($id));
         if ($res !== FALSE) {
             update_button($db, $name, $search_url, $id);
@@ -188,7 +188,7 @@ function update_button_info(DatabaseConnection $db, $id)
         } else {
             throw new exception($LN['buttons_invalidurl']);
         }
-        $query = " \"id\" FROM searchbuttons WHERE \"name\"=?";
+        $query = '"id" FROM searchbuttons WHERE "name"=?';
         $res = $db->select_query($query, array($name));
         if ($res === FALSE) {
             add_button($db, new button($name, $search_url));

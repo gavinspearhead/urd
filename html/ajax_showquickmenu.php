@@ -31,7 +31,7 @@ require_once "$pathqm/../functions/ajax_includes.php";
 $subject = '';
 
 // Process commands:
-if (isset($_GET['type']) && isset($_GET['subject']) && isset($_GET['srctype'])) {
+if (isset($_REQUEST['type']) && isset($_REQUEST['subject']) && isset($_REQUEST['srctype'])) {
     $type = get_request('type');
     $srctype = get_request('srctype');
     $subject = get_request('subject');

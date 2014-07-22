@@ -40,5 +40,5 @@ $add_menu = array (
 );
 
 init_smarty($LN['config_title'], 1, $add_menu);
-$smarty->assign('source', 	    'config');
+$smarty->assign('source', 'config');
 $smarty->display('settings.tpl');

@@ -105,6 +105,7 @@ class group_viewer
             " LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1.\"setID\" = setdata.\"ID\" AND extsetdata1.\"name\" = 'link' AND extsetdata1.\"type\" = '" . USERSETTYPE_GROUP . "') " .
             " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = setdata.\"ID\" AND extsetdata3.\"name\" = 'score' AND extsetdata3.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
             " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = setdata.\"ID\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
+            " LEFT JOIN extsetdata AS extsetdata5 ON (extsetdata5.\"setID\" = setdata.\"ID\" AND extsetdata5.\"name\" = 'binarytype' AND extsetdata5.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
             " WHERE (1=1 {$this->Qnewgroup2} {$this->Qsearch} {$this->Qsize} {$this->Qsetid} {$this->Qgroup} {$this->Qkill} {$this->Qflag} {$this->Qrating}) " .
             " AND (1=1 {$this->Qage} {$this->Qadult} {$this->Qcomplete}) ";
 
@@ -117,7 +118,8 @@ class group_viewer
             '(CASE WHEN usersetinfo."statusint" IS NULL OR usersetinfo."statusint" <> 1 THEN 0 ELSE 1 END) AS interesting,' .
             'usersetinfo."statusnzb" AS "nzbcreated", usersetinfo."statusread" AS "alreadyread", extsetdata2."value" AS "bettername", extsetdata1."value" AS "imdblink", ' .
             '(CASE WHEN extsetdata3."value" IS NULL THEN \'0\' ELSE extsetdata3."value" END) AS "rating", ' .
-            '(CASE WHEN extsetdata2."value" IS NULL THEN setdata."subject" ELSE extsetdata2."value" END) AS "better_subject" ';
+            '(CASE WHEN extsetdata2."value" IS NULL OR extsetdata2."value" = \'\' THEN setdata."subject" ELSE extsetdata2."value" END) AS "better_subject", ' .
+            '(CASE WHEN extsetdata5."value" IS NULL OR extsetdata5."value" = \'\' THEN 0 ELSE extsetdata5."value" END) AS "binary_type" ';
         $sql .=	$this->get_basic_browse_query();
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1 ';
@@ -125,14 +127,13 @@ class group_viewer
             $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL) ';
         }
         $sql .= " ORDER BY {$this->Qorder}";
-         
         return $sql;
     }
     private function get_sets_count($interesting_only)
     {
         global $LN;
         $basic_browse_query = $this->get_basic_browse_query();
-        $sql = "COUNT(setdata.\"ID\") AS cnt " . $basic_browse_query;
+        $sql = 'COUNT(setdata."ID") AS cnt ' . $basic_browse_query;
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }
@@ -222,6 +223,7 @@ class group_viewer
             }
 
             $thisset['complete'] = $complete;
+            $thisset['binary_type'] = $arr['binary_type'];
             $groupID = $arr['groupID'];
             $thisset['new_set'] = 0;
             $last_login = get_session('last_login', 0);
@@ -490,7 +492,6 @@ class group_viewer
 }
 
 try {
-
     $search = html_entity_decode(trim(get_request('search', '')));
     $offset  = get_request('offset', 0);
 

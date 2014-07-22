@@ -77,9 +77,10 @@ class users_c
 
 $cmd = get_request('cmd', FALSE);
 $id = get_request('id', FALSE);
+
 switch ($cmd) {
 case FALSE:
-    throw new exception('No command found');
+    throw new exception($LN['error_invalidaction']);
 case 'export_settings':
     export_settings($db, 'all_user_settings', 'urd_users.xml');
     break;
@@ -110,10 +111,10 @@ case 'import_settings':
     break;
 case 'edit':
     if (is_numeric($id)) {
-        $sql = '* FROM users WHERE "ID" = ?';
+        $sql = '* FROM users WHERE "ID"=?';
         $res = $db->select_query($sql, 1, array($id));
         if ($res === FALSE) {
-            throw new exception('User not found');
+            throw new exception($LN['error_filenotfound']);
         }
         $row = $res[0];
 
@@ -146,7 +147,7 @@ case 'edit':
         $isadmin = user_status::USER_USER;
         $isactive = user_status::USER_ACTIVE;
     } else {
-        throw new exception('ID not found');
+        throw new exception($LN['error_invaliduserid']);
     }
 
     $email_allowed = get_config($db, 'sendmail');
@@ -204,12 +205,12 @@ case 'delete':
 case 'update_setting':
     $id = get_post('id', '');
     if (!is_numeric($id)) {
-        throw new exception('No valid UID');
+        throw new exception($LN['error_invaliduserid']);
     }
     $action = get_post('action', NULL);
     $value = get_post('value', NULL);
     if (!in_array($value, array(0,1))) {
-        throw new exception('No valid value');
+        throw new exception($LN['error_invalidvalue']);
     }
 
     switch ($action) {
@@ -241,7 +242,7 @@ case 'update_setting':
             $sql = '"fullname", "name", "email", "active" FROM users WHERE "ID" = ?';
             $res = $db->select_query($sql, 1, array($id));
             if ($res === FALSE) {
-                throw new exception('User not found');
+                throw new exception($LN['error_nosuchuser']);
             }
             $username = $res[0]['name'];
             $fullname = $res[0]['fullname'];
@@ -260,7 +261,7 @@ case 'update_setting':
         }
         break;
     default:
-        throw new exception('No valid action');
+        throw new exception($LN['error_novalidaction']);
         break;
     }
     break;
@@ -331,7 +332,7 @@ case 'update_user':
             throw new exception($LN['error_userexists']. ' ' . $username);
         }
     } else {
-        throw new exception('Unknown ID');
+        throw new exception($LN['error_invaliduserid']);
     }
     die_html('OK');
     break;
@@ -387,7 +388,7 @@ case 'reload_users':
     $smarty->display('ajax_admin_users.tpl');
     die;
 default:
-    throw new exception ("O-oh - Unknown command $cmd");
+    throw new exception ($LN['error_invalidaction']);
     break;
 }
 

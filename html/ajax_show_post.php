@@ -89,6 +89,7 @@ try {
 } catch (exception $e) {
     $groups = array();
 }
+natsort($groups);
 
 $default_nzb_group = get_config($db, 'ftd_group', '');
 $default_nzb_group_id = get_all_group_by_name($db, $default_nzb_group);
@@ -98,7 +99,6 @@ if (! isset($groups [ $default_nzb_group_id ])) {
     $default_nzb_group = NULL;
 }
 
-natsort($groups);
 
 init_smarty('', 0);
 $smarty->assign('postid',      	    $postid);

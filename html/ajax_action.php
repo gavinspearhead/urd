@@ -35,7 +35,6 @@ class json_return_value {
     }
 }
 
-
 $pathac = realpath(dirname(__FILE__));
 require_once "$pathac/../functions/ajax_includes.php";
 require_once "$pathac/../functions/buttons.php";

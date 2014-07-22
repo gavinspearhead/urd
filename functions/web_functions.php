@@ -1267,7 +1267,6 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
     return $subscribedfeeds;
 }
 
-
 function verify_access(DatabaseConnection $db, $module_bits, $needadmin, $rights, $userid)
 {
     global $LN, $isadmin;

@@ -512,7 +512,7 @@ try {
     $smarty->assign('rssurl',		$rssurl);
     $smarty->assign('isadmin',		$isadmin);
     $smarty->assign('sort',         $spots_viewer->get_sort());
-    $smarty->assign('killflag',		$spots_viewer->get_killflag());
+    $smarty->assign('killflag',		$spots_viewer->get_killflag()?1:0);
 
     if (!$only_rows) {
         $smarty->assign('pages',		$pages);

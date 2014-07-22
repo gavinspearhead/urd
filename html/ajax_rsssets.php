@@ -446,7 +446,6 @@ class feed_viewer
 }
 
 try {
-
     $perpage = get_maxperpage($db, $userid);
     $perpage = get_request('perpage', $perpage);
     $only_rows  = get_request('only_rows', 0);

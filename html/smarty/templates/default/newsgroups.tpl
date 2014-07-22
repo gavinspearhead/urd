@@ -28,11 +28,11 @@
 {/strip}
 
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30" onkeypress="javascript:return submit_enter(event, load_groups);"/>
+<input type="text" name="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" id="newsearch" size="30"/>
 <div class="cleartop3"> 
 {urd_checkbox value="$search_all" name="search_all" id="search_all" data="$LN_ng_hide_empty" classes=""}
 </div>
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:load_groups();"/>
+<input type="button" value="{$LN_search}" class="submitsmall" id="searchbutton"/>
 </div>
 </div>
 <div class="innerwaitingdiv" id="waitingdiv">
@@ -49,6 +49,9 @@
 $(document).ready(function() {
     load_groups();
     $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('');
+    $('#searchbutton').click( function() { load_groups(); } );
+    $('#newsearch').keypress( function(e) { return submit_enter(e, load_groups); } );
 });
 </script>
 

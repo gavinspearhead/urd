@@ -35,145 +35,6 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
 
-function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /* or feedid*/)
-{
-    assert(is_numeric($userid));
-    global $LN;
-    $message = 'OK ';
-   // var_dump($_POST['set_ids']); die;
-    $whichbutton = get_request('whichbutton');
-    $all = get_request('all', 0);
-    // remove interesting marking from all sets on page
-    if ($whichbutton == 'unmark_int_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge($_POST['challenge']);
-        $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
-        if ($all) {
-            sets_marking::unmark_all($db, $userid, 'statusint', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
-        } else {
-            sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statusint', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
-        }
-
-    } elseif ($whichbutton == 'wipe_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge($_POST['challenge']);
-        wipe_sets($db, $_POST['set_ids'], $type, $userid);
-    }
-    // mark all sets as not deleted on page
-    elseif ($whichbutton == 'unmark_kill_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge($_POST['challenge']);
-        $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
-        sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
-    }
-    // mark all sets as deleted on page
-    elseif ($whichbutton == 'mark_kill_all' && isset($_POST['set_ids'])) {
-        challenge::verify_challenge($_POST['challenge']);
-        $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
-        $skip_int = (bool) get_pref($db, 'skip_int', $userid, 0);
-        sets_marking::mark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID,  $type, sets_marking::MARKING_ON, TRUE, $skip_int);
-    }
-
-    /* Create NZB */
-    elseif ($whichbutton == 'getnzb' && count($_SESSION['setdata']) > 0) {
-        challenge::verify_challenge($_POST['challenge']);
-        try {
-            $dlname = create_nzb($db, $userid);
-            $message .= $LN['NZB_created'] . ': "' . $dlname. '"';
-        } catch (exception $e) {
-            return ($e->getmessage());
-        }
-    }
-
-    /* Download via Urdd */
-    elseif ($whichbutton == 'urddownload' && count($_SESSION['setdata']) > 0) {
-        challenge::verify_challenge($_POST['challenge']);
-        try {
-            $dlname = create_new_download($db, $userid);
-            $message .= $LN['taskdownload'] . ': "' . $dlname. '"';
-            clear_basket();
-            // Connect to Urdd:
-        } catch (exception $e) {
-            return ($e->getmessage());
-        }
-    } elseif ($whichbutton == 'checksize' && count($_SESSION['setdata']) > 0) {
-        try {
-            $total_size = get_basket_size($db);
-            $diskspace = get_free_diskspace($db, $userid);
-            if ($diskspace[0] >= (2.5 * $total_size)) {
-                die_html('OK');
-            } else {
-                list($size, $suffix) = format_size($diskspace[0], 'h', $LN['byte_short'], 1024, 1);
-                throw new exception($LN['error_diskfull'] . " ($size $suffix)");
-            }
-        } catch (exception $e) {
-            return ($e->getmessage());
-        }
-    } elseif ($whichbutton == 'mergesets' && count($_SESSION['setdata']) > 0) {
-        challenge::verify_challenge($_POST['challenge']);
-        try {
-            merge_sets($db, $userid);
-            clear_basket();
-        } catch (exception $e) {
-            return ($e->getmessage());
-        }
-    }
-
-    /* Clear list? */
-    elseif ($whichbutton == 'clearbasket') {
-        challenge::verify_challenge($_POST['challenge']);
-        clear_basket();
-    }
-
-    return $message;
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && get_request('whichbutton') != '') { // need to move this elsewhere possibly
-    $type = get_post('type', 'groups');
-    if ($type == 'groups') {
-        $type = USERSETTYPE_GROUP;
-        $group_id = get_post('group'); // temp
-    } elseif ($type == 'spots') {
-        $type = USERSETTYPE_SPOT;
-        $group_id = NULL;
-    } else {
-        $type = USERSETTYPE_RSS;
-        $group_id = get_post('feed'); // temp
-    }
-    $message = process_which_button($db, $userid, $type, $group_id);
-    die_html($message);
-}
-
-$command = get_request('command', '');
-$type = get_request('type', 'none');
-
-switch ($command) {
-    case 'add':
-        $setID = get_setid();
-        add_to_basket($setID, $type);
-        break;
-    case 'del':
-        $setID = get_setid();
-        del_from_basket($setID);
-        break;
-    case 'clear':
-        clear_basket();
-        break;
-    case 'get':
-        die_html((get_session('basket_type', basket_type::SMALL) == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE);
-        break;
-    case 'set':
-        $basket_type = get_request('basket_type', basket_type::SMALL);
-        $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE;
-        break;
-    case 'view':
-        display_basket($db, $userid);
-        break;
-    default:
-        die($LN['error_invalidaction']);
-}
-
-die();
-// We don't get beyond this, only functions:
-
-
 function add_to_basket($setID, $type)
 {
     $download_delay = get_request('timestamp', '');
@@ -373,8 +234,129 @@ function display_basket(DatabaseConnection $db, $userid)
     $smarty->assign('totalsize',        $totalsize);
     $smarty->assign('maxstrlen',        get_pref($db, 'maxsetname', $userid));
     if ($basket_type == basket_type::SMALL) {
-        $smarty->display('ajax_showminibasket.tpl');
+        $contents = $smarty->fetch('ajax_showminibasket.tpl');
     } else {
-        $smarty->display('ajax_showbasket.tpl');
+        $contents = $smarty->fetch('ajax_showbasket.tpl');
     }
+    die(json_encode(array('error'=>0, 'contents'=>$contents)));
+}
+
+function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /* or feedid*/)
+{
+    assert(is_numeric($userid));
+    global $LN;
+    $message = '';
+    $whichbutton = get_request('whichbutton');
+    $all = get_request('all', 0);
+    // remove interesting marking from all sets on page
+    if ($whichbutton == 'unmark_int_all' && isset($_POST['set_ids'])) {
+        challenge::verify_challenge($_POST['challenge']);
+        $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
+        if ($all) {
+            sets_marking::unmark_all($db, $userid, 'statusint', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
+        } else {
+            sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statusint', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
+        }
+    } elseif ($whichbutton == 'wipe_all' && isset($_POST['set_ids'])) {
+        challenge::verify_challenge($_POST['challenge']);
+        wipe_sets($db, $_POST['set_ids'], $type, $userid);
+        $message = $LN['browse_deletedsets'];
+    }
+    // mark all sets as not deleted on page
+    elseif ($whichbutton == 'unmark_kill_all' && isset($_POST['set_ids'])) {
+        challenge::verify_challenge($_POST['challenge']);
+        $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
+        sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
+    }
+    // mark all sets as deleted on page
+    elseif ($whichbutton == 'mark_kill_all' && isset($_POST['set_ids'])) {
+        challenge::verify_challenge($_POST['challenge']);
+        $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
+        $skip_int = (bool) get_pref($db, 'skip_int', $userid, 0);
+        sets_marking::mark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID,  $type, sets_marking::MARKING_ON, TRUE, $skip_int);
+    }
+
+    /* Create NZB */
+    elseif ($whichbutton == 'getnzb' && count($_SESSION['setdata']) > 0) {
+        challenge::verify_challenge($_POST['challenge']);
+        $dlname = create_nzb($db, $userid);
+        $message .= $LN['NZB_created'] . ': "' . $dlname. '"';
+    }
+
+    /* Download via Urdd */
+    elseif ($whichbutton == 'urddownload' && count($_SESSION['setdata']) > 0) {
+        challenge::verify_challenge($_POST['challenge']);
+        $dlname = create_new_download($db, $userid);
+        $message .= $LN['taskdownload'] . ': "' . $dlname. '"';
+        clear_basket();
+        // Connect to Urdd:
+    } elseif ($whichbutton == 'checksize' && count($_SESSION['setdata']) > 0) {
+        $total_size = get_basket_size($db);
+        $diskspace = get_free_diskspace($db, $userid);
+        if ($diskspace[0] < (2.5 * $total_size)) {
+            list($size, $suffix) = format_size($diskspace[0], 'h', $LN['byte_short'], 1024, 1);
+            throw new exception($LN['error_diskfull'] . " ($size $suffix)");
+        }
+    } elseif ($whichbutton == 'mergesets' && count($_SESSION['setdata']) > 0) {
+        challenge::verify_challenge($_POST['challenge']);
+        merge_sets($db, $userid);
+        clear_basket();
+    }
+
+    /* Clear list? */
+    elseif ($whichbutton == 'clearbasket') {
+        challenge::verify_challenge($_POST['challenge']);
+        clear_basket();
+    }
+
+    return $message;
+}
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && get_request('whichbutton') != '') { // need to move this elsewhere possibly
+        $type = get_post('type', 'groups');
+        if ($type == 'groups') {
+            $type = USERSETTYPE_GROUP;
+            $group_id = get_post('group'); // temp
+        } elseif ($type == 'spots') {
+            $type = USERSETTYPE_SPOT;
+            $group_id = NULL;
+        } else {
+            $type = USERSETTYPE_RSS;
+            $group_id = get_post('feed'); // temp
+        }
+        $message = process_which_button($db, $userid, $type, $group_id);
+        die(json_encode(array('error' => 0, 'message' => $message)));
+    }
+
+    $command = get_request('command', '');
+    $type = get_request('type', 'none');
+
+    switch ($command) {
+    case 'add':
+        $setID = get_setid();
+        add_to_basket($setID, $type);
+        break;
+    case 'del':
+        $setID = get_setid();
+        del_from_basket($setID);
+        break;
+    case 'clear':
+        clear_basket();
+        break;
+    case 'get':
+        die(json_encode(array('error' => 0, 'basket_type' => (get_session('basket_type', basket_type::SMALL) == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE)));
+        break;
+    case 'set':
+        $basket_type = get_request('basket_type', basket_type::SMALL);
+        $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE;
+        break;
+    case 'view':
+        display_basket($db, $userid);
+        break;
+    default:
+        throw new exception($LN['error_invalidaction']);
+    }
+} catch (exception $e) {
+    die(json_encode(array('error'=>$e->getMessage())));
 }

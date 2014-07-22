@@ -111,8 +111,7 @@ if (isset($_POST['submit_button'])) {
 
         $active = user_status::USER_PENDING;
         $isadmin = user_status::USER_USER;
-        $query = '"ID" FROM users WHERE "name"=?';
-        $res = $db->select_query($query, 1, array($username));
+        $res = get_userid($db, $username);
         if ($res === FALSE) {
             add_user($db, $username, $fullname, $email, $password1, $isadmin, $active, 'C');
         } else {

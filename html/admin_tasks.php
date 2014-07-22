@@ -39,7 +39,6 @@ $add_menu = array (
     )
 );
 
-$currentstatus = '';
 $_allstatus = array (
     QUEUE_QUEUED,
     QUEUE_FINISHED,
