@@ -398,7 +398,6 @@ function get_basket_type()
         cache: false,
         data: { command: 'get' }
        }).done(function(html) {
-           console.log(html);
            var content = $.parseJSON(html);
            update_basket_display(content.basket_type);
     });
@@ -568,7 +567,6 @@ function reset_sets()
 
 function submit_sort_log(val)
 {
-    console.log(val);
     var orderval = $('#order');
     var orderdir = $('#order_dir');
     if (orderval.val() == val) {
@@ -1560,7 +1558,6 @@ function process_whichbutton(buttonval, rightclick)
         cache: false,
         data: data
     }).done( function (html) {
-        console.log(html, data);
         var content = $.parseJSON(html);
         if (content.error == 0) {
             update_basket_display();
@@ -3918,8 +3915,6 @@ function load_spots(options)
     var flag = $('#flag>option:selected').val();
     var add_rows = 0;
     var per_page = $('#perpage').val();
-    console.log(options.minage);
-    console.log(options.flag);
     if (options != undefined) {
         if (options.add_rows != undefined) {
             data['only_rows'] = 1;
@@ -4026,8 +4021,10 @@ function load_spots(options)
             $('#setsdiv').removeClass('hidden');
             update_widths("browsesubjecttd");
         } else {
-            $('#spots_table>tbody tr:eq(-2)').after(x.content);
-            update_widths("browsesubjecttd");
+            if (x.error == 0) {
+                $('#spots_table>tbody tr:eq(-2)').after(x.content);
+                update_widths("browsesubjecttd");
+            }
         }
     });
 }
@@ -4136,7 +4133,6 @@ function load_groupsets(options)
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
 
         $('#minage').val(x.minage);        
@@ -4156,8 +4152,10 @@ function load_groupsets(options)
             setselectbyid('select_groupid', group_id);
             update_widths("browsesubjecttd");
         } else {
-            $('#sets_table>tbody tr:eq(-2)').after(x.content);
-            update_widths("browsesubjecttd");
+            if (x.error == 0) {
+                $('#sets_table>tbody tr:eq(-2)').after(x.content);
+                update_widths("browsesubjecttd");
+            }
         }
     });
 }
@@ -4332,8 +4330,10 @@ function load_rsssets(options)
             setselectbyid('select_feedid', feed_id);
             update_widths("browsesubjecttd");
         } else {
-            $('#sets_table>tbody tr:eq(-2)').after(x.content);
-            update_widths("browsesubjecttd");
+            if (x.error == 0) {
+                $('#sets_table>tbody tr:eq(-2)').after(x.content);
+                update_widths("browsesubjecttd");
+            }
         }
     });
 }
@@ -5502,14 +5502,12 @@ function show_logs(options)
         sort_order: sort_order,
         sort_dir: sort_dir
     };
-    console.log(sort_order, sort_dir,data);
     $.ajax({
         type: 'post',
         url: url,
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'logdiv');

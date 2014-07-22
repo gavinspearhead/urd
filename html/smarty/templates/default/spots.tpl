@@ -130,7 +130,7 @@ $(document).ready(function() {
    $('#searchbar').html($('#searchformdiv').html());
    $('#searchformdiv').html('');
    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
-   $('#search').keypress( function () { return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
+   $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
    $('#next_search').click( function () { select_next_search('saved_search',1); } );
    $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
    $('#saved_search').change( function () { update_spot_searches(null); } );
@@ -138,6 +138,7 @@ $(document).ready(function() {
 </script>
 {/strip}
 
+<input type="button" id="ln_delete_search" value="{$LN_delete_search}" onclick="load_sets( { 'add_rows': '1' } );"/>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage}"/>
 <div>

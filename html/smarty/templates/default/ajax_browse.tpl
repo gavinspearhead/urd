@@ -148,7 +148,7 @@
 {capture assign=setdesc}{$setdesc|replace:':_img_copyright:':$btcopyright}{/capture}
 {capture assign=setdesc}{$setdesc|replace:':_img_unknown:':''}{/capture}
 
-{$bintype=''}{$set.binary_type}
+{$bintype=''}
 {if $set.binary_type == 1} {$bintype=$btmovie}
 {elseif $set.binary_type == 2} {$bintype=$btmusic}
 {elseif $set.binary_type == 3} {$bintype=$btimage}
