@@ -5186,12 +5186,12 @@ function update_setting(id, type, optionals)
         option = $('#' + id ).attr('name');
         value = $('#' + id + ' :selected').val();
         data['time1'] = $('#' + optionals.time1).val();
-        data['time2'] = $('#' + optionals.time1).val();
+        data['time2'] = $('#' + optionals.time2).val();
 
         if (optionals.extra != null) {
             data['extra'] = $('#' + optionals.extra).val();
         }
-        timeout = 1500;
+        timeout = 1200;
     } else if (type == 'custom_text') {
         option = $('#' + 'custom_' + id + '_name').val();
         if (option == '') return;
@@ -5209,7 +5209,7 @@ function update_setting(id, type, optionals)
         }
         option = $('#' + id).attr('name');
         value = $('#' + id).val().join(':');
-        timeout = 1000;
+        timeout = 800;
     } else {
         option = $('#' + id).attr('name');
         var value = $('#' + id).val();
