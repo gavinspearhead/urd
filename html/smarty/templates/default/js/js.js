@@ -939,7 +939,7 @@ function show_blacklist(options)
             show_content_div_2(html, 'usersdiv');
             update_search_bar_height();
         } else {
-            $('#black_list_table>tbody tr:eq(-2)').after(html);
+            $('#black_list_table>tbody tr').eq(-2).after(html);
         }
     });
 }
@@ -1005,7 +1005,7 @@ function show_files(options)
                 $('#contentout').scrollTop(0);
                 update_search_bar_height();
             } else {
-                $('#files_table>tbody tr:eq(-2)').after(html);
+                $('#files_table>tbody tr').eq(-2).after(html);
                 update_widths("filenametd");
             }
         }
@@ -3575,7 +3575,6 @@ function load_subscriptions(options)
     }
 }
 
-
 function close_browse_divs()
 {
     close_quickmenu();
@@ -3610,11 +3609,13 @@ function update_search_names(name)
         cache: false,
         data: data 
     }).done( function(html) {
-        if (html.substr(0, 5) == 'EMPTY') {
+            console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0 || x.count == 0) {
             $('#save_search_outer').addClass('hidden');
             $('#save_search_span').html('');
         } else {
-            $('#save_search_span').html(html);
+            $('#save_search_span').html(x.contents);
             $('#save_search_outer').removeClass('hidden');
         }
     });
@@ -3636,10 +3637,11 @@ function show_savename()
         cache: false,
         data: data 
     }).done( function(html) {
-            show_overlayed_content_1(html, 'savenamediv');
-            $('#savename_val').focus();
-        }
-    );
+            console.log(html);
+        var x = $.parseJSON(html);
+        show_overlayed_content_1(x.contents, 'savenamediv');
+        $('#savename_val').focus();
+    });
 }
 
 function delete_search_confirm()
@@ -3672,11 +3674,13 @@ function delete_search()
             name: sname
         } 
     }).done( function(html) {
-        if (html.substr(0,2) == 'OK') {
+            console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             update_search_names('');
-            set_message('message_bar', html.substr(2) , 5000);
+            set_message('message_bar', x.message , 5000);
         } else {
-            update_message_bar(html);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -3723,11 +3727,13 @@ function save_browse_search()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html.substr(0,2) == 'OK') {
+            console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             update_search_names(sname);
-            set_message('message_bar', html.substr(2), 5000);
+            set_message('message_bar', x.contents, 5000);
         } else {
-            update_message_bar(html);
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -3739,7 +3745,6 @@ function save_spot_search()
     var url = "ajax_saved_searches.php";
     var search = get_value_from_id('search', '');
     var sname = get_value_from_id('savename_val', '');
-  //  var cat = $('#select_catid>option:selected').val();
     var cat = get_selected_cat();
     var type = get_value_from_id('usersettype', '');
     var flag = $('#flag>option:selected').val();
@@ -3767,11 +3772,13 @@ function save_spot_search()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html.substr(0,2) == 'OK') {
+            console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             update_search_names(sname);
-            set_message('message_bar', html.substr(2), 5000);
+            set_message('message_bar', x.message, 5000);
         } else {
-            update_message_bar(html);
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -3801,33 +3808,36 @@ function update_browse_searches(name)
             cat: 0 
         } 
     }).done( function(html) {
-        var response = html;
+            console.log(html);
+        var x = $.parseJSON(html);
         $('#save_category').val('');
-        if (response.substr(0, 2) == 'OK' && response.length > 2) {
-            update_search_names(name);
-            clear_form("searchform");
-            var sc = $.parseJSON(response.substr(2));
-            $.each(sc, function(key, val) {
-                if (key == 'minsetsize') { setvalbyid('minsetsize', val); }
-                else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
-                else if (key == 'maxage') { setvalbyid('maxage', val); }
-                else if (key == 'minage') { setvalbyid('minage', val); }
-                else if (key == 'maxcomplete') { setvalbyid('maxcomplete', val); }
-                else if (key == 'mincomplete') { setvalbyid('mincomplete', val); }
-                else if (key == 'maxrating') { setvalbyid('maxrating', val); }
-                else if (key == 'minrating') { setvalbyid('minrating', val); }
-                else if (key == 'flag') { setselectbyid('flag', val); }
-                else if (key == 'group') { setselectbyid('select_groupid', val); }
-                else if (key == 'feed') { setselectbyid('select_feedid', val); }
-                else if (key == 'search') { setvalbyid('search', val);}
-                else if (key == 'category') { setvalbyid('save_category', val); }
-            });
-            load_sets({'offset':'0', 'setid':''});
-        } else if (response == 'OK') {
-            clear_form("searchform");
-            load_sets({'offset':'0', 'setid':''});
+        if (x.error == 0) {
+            if (x.count > 0) {
+                update_search_names(name);
+                clear_form("searchform");
+                var sc = x.options;
+                $.each(sc, function(key, val) {
+                    if (key == 'minsetsize') { setvalbyid('minsetsize', val); }
+                    else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
+                    else if (key == 'maxage') { setvalbyid('maxage', val); }
+                    else if (key == 'minage') { setvalbyid('minage', val); }
+                    else if (key == 'maxcomplete') { setvalbyid('maxcomplete', val); }
+                    else if (key == 'mincomplete') { setvalbyid('mincomplete', val); }
+                    else if (key == 'maxrating') { setvalbyid('maxrating', val); }
+                    else if (key == 'minrating') { setvalbyid('minrating', val); }
+                    else if (key == 'flag') { setselectbyid('flag', val); }
+                    else if (key == 'group') { setselectbyid('select_groupid', val); }
+                    else if (key == 'feed') { setselectbyid('select_feedid', val); }
+                    else if (key == 'search') { setvalbyid('search', val);}
+                    else if (key == 'category') { setvalbyid('save_category', val); }
+                });
+                load_sets({'offset':'0', 'setid':''});
+            } else  {
+                clear_form("searchform");
+                load_sets({'offset':'0', 'setid':''});
+            }
         } else {
-            update_message_bar(html);
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -3857,41 +3867,45 @@ function update_spot_searches(name)
             cmd : 'get' 
         } 
     }).done( function(html) {
-        var response = html;
+            console.log(html);
+        var x = $.parseJSON(html);
         setvalbyid('save_category', '');
         update_search_names(name);
-        if (response.substr(0, 2) == 'OK' && response.length > 2) {
-        clear_form("searchform");
-        var sc = $.parseJSON(response.substr(2));
-        var cat;
-        clear_all_checkboxes(null); 
-        uncheck_all(null);
-        $.each(sc, function(key,val) {
-            if (key == 'minsetsize')      { setvalbyid('minsetsize', val); }
-            else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
-            else if (key == 'maxage')     { setvalbyid('maxage', val); }
-            else if (key == 'minage')     { setvalbyid('minage', val); }
-            else if (key == 'category')   { setvalbyid('save_category', val); }
-            else if (key == 'poster')     { setvalbyid('poster', val); }
-            else if (key == 'flag')       { setselectbyid('flag', val); }
-            else if (key == 'cat')        { cat = val; set_checkbox('checkbox_cat_' + val, 1);}
-            else if (key == 'search')     { setvalbyid('search', val);}
-            else if (key == 'subcats') {
-                    $.each(val, function (s_key, s_val) { 
-                        var sc1 = s_key[0];
-                        var sc2 = s_key.substr(1);
-                        set_checkbox('subcat_' + cat + '_' + sc1 + '_' + sc2, s_val);
-                    });
-                }
-            });
-        load_sets( {'offset':'0', 'setid':'' });
-        } else if (response == 'OK') {
+        if (x.error == 0) {
+            if (x.count > 0) {
+
             clear_form("searchform");
-            load_sets({'offset':'0', 'setid':''});
+            var sc = x.options;
+            var cat;
+            clear_all_checkboxes(null); 
+            uncheck_all(null);
+            $.each(sc, function(key,val) {
+                if (key == 'minsetsize')      { setvalbyid('minsetsize', val); }
+                else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
+                else if (key == 'maxage')     { setvalbyid('maxage', val); }
+                else if (key == 'minage')     { setvalbyid('minage', val); }
+                else if (key == 'category')   { setvalbyid('save_category', val); }
+                else if (key == 'poster')     { setvalbyid('poster', val); }
+                else if (key == 'flag')       { setselectbyid('flag', val); }
+                else if (key == 'cat')        { cat = val; set_checkbox('checkbox_cat_' + val, 1);}
+                else if (key == 'search')     { setvalbyid('search', val);}
+                else if (key == 'subcats') {
+                        $.each(val, function (s_key, s_val) { 
+                            var sc1 = s_key[0];
+                            var sc2 = s_key.substr(1);
+                            set_checkbox('subcat_' + cat + '_' + sc1 + '_' + sc2, s_val);
+                        });
+                    }
+                });
+            load_sets( {'offset':'0', 'setid':'' });
+            } else  {
+                clear_form("searchform");
+                load_sets({'offset':'0', 'setid':''});
+            }
         } else {
-            update_message_bar(html);
+            set_message('message_bar', x.error, 5000);
         }
-        });
+    });
 }
 
 function get_selected_cat()
@@ -4009,6 +4023,7 @@ function load_spots(options)
         cache: false,
         data: data 
     }).done( function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
@@ -4029,7 +4044,7 @@ function load_spots(options)
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
-                $('#spots_table>tbody tr:eq(-2)').after(x.content);
+                $('#spots_table>tbody tr').eq(-2).after(x.content);
                 update_widths("browsesubjecttd");
             }
         }
@@ -4159,7 +4174,7 @@ function load_groupsets(options)
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
-                $('#sets_table>tbody tr:eq(-2)').after(x.content);
+                $('#sets_table>tbody tr').eq(-2).after(x.content);
                 update_widths("browsesubjecttd");
             }
         }
@@ -4337,7 +4352,7 @@ function load_rsssets(options)
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
-                $('#sets_table>tbody tr:eq(-2)').after(x.content);
+                $('#sets_table>tbody tr').eq(-2).after(x.content);
                 update_widths("browsesubjecttd");
             }
         }
@@ -5151,9 +5166,16 @@ function delete_setting(name)
         cmd : 'delete',
         challenge : challenge,
         option: name }
-    }).done( function(html) {
-        update_message_bar(html);
-        load_prefs();
+        }).done( function(html) {
+            console.log(html);
+            var x = $.parseJSON(html);
+
+            if (x.error == 0) {
+                set_message('message_bar', x.message, 5000);
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
+            load_prefs();
     });
 }
 
@@ -5225,9 +5247,13 @@ function update_setting(id, type, optionals)
             cache: false,
             data: data
         }).done( function(html) {
-            update_message_bar(html);
-            if (html.substr(0, 2) == "OK") {
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
                 $('#stop_mark_' + id).hide();
+                set_message('message_bar', x.message, 5000);
+            } else  {
+                set_message('message_bar', x.error, 5000);
             }
             if (optionals != null && optionals.fn != null) {
                 eval(optionals.fn);
@@ -5412,7 +5438,13 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
                 challenge: challenge
         }
         }).done( function(html) {
-            update_message_bar(html);
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                set_message('message_bar', x.message, 5000);
+            } else  {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     };
 
@@ -5447,7 +5479,9 @@ function load_prefs()
             current_tab: current_tab
         }
     }).done( function(html) {
-        show_content_div_2(html, 'settingsdiv');
+            console.log(html);
+        var x = $.parseJSON(html);
+        show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
     });
 }
@@ -5472,12 +5506,15 @@ function reset_prefs(msg)
                 challenge: challenge,
             }
         }).done( function(html) {
-            if (html.substr(0,2) == "OK") {
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
                 load_prefs();
+                set_message('message_bar', x.message, 5000);
             } else {
-                show_content_div_2(html, 'settingsdiv');
+                set_message('message_bar', x.error, 5000);
+                show_content_div_2(x.contents, 'settingsdiv');
             }
-            update_message_bar(html);
         });
     });
 }
@@ -5527,9 +5564,9 @@ function show_logs(options)
 function levenshtein(s1, s2) 
 {
     // http://kevin.vanzonneveld.net
-    // +            original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
-    // +            bugfixed by: Onno Marsman
-    // +             revised by: Andrea Giammarchi (http://webreflection.blogspot.com)
+    // +   original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
+    // +   bugfixed by: Onno Marsman
+    // +   revised by: Andrea Giammarchi (http://webreflection.blogspot.com)
     // + reimplemented by: Brett Zamir (http://brett-zamir.me)
     // + reimplemented by: Alexander M Beedie
     // *                example 1: levenshtein('Kevin van Zonneveld', 'Kevin van Sommeveld');
@@ -5643,7 +5680,7 @@ function submit_forgot_password()
         data: {
             username: username,
             email: email
-    }
+        }
     }).done( function(html) {
         if (html == "OK") {
             $("#sent_table").show();
@@ -6050,7 +6087,7 @@ function post_spot()
     var subcats = {};
     $('select[name="subcats_select"] > option:selected').each(function () {
             subcats [ $(this).val() ] = $(this).val();
-            });
+    });
     // upload nzb
     // upload image
     var nzb = $('#nzbfile').val();

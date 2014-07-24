@@ -65,10 +65,10 @@ if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_GROUPS)) {
     $smarty->assign('groupmaxagelimit',	$maxagelimit);
     $smarty->assign('groupminsetsizelimit',	$minsetsizelimit);
     $smarty->assign('groupmaxsetsizelimit',	$maxsetsizelimit);
-    $smarty->assign('groupminratinglimit',0);
-    $smarty->assign('groupmaxratinglimit',10);
-    $smarty->assign('groupmincompletelimit',	0);
-    $smarty->assign('groupmaxcompletelimit',	100);
+    $smarty->assign('groupminratinglimit', 0);
+    $smarty->assign('groupmaxratinglimit', 10);
+    $smarty->assign('groupmincompletelimit', 0);
+    $smarty->assign('groupmaxcompletelimit', 100);
 }
 
 if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_RSS)) {
@@ -88,8 +88,8 @@ if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_RSS)) {
     $smarty->assign('rssmaxagelimit',	    $maxagelimit);
     $smarty->assign('rssminsetsizelimit',	$minsetsizelimit);
     $smarty->assign('rssmaxsetsizelimit',	$maxsetsizelimit);
-    $smarty->assign('rssminratinglimit',0);
-    $smarty->assign('rssmaxratinglimit',10);
+    $smarty->assign('rssminratinglimit', 0);
+    $smarty->assign('rssmaxratinglimit', 10);
 }
 
 if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_SPOTS)) {
@@ -131,8 +131,8 @@ if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_SPOTS)) {
     $smarty->assign('spotmaxsetsize',	    $maxsetsize);
     $smarty->assign('spotmaxsetsizelimit',	$maxsetsizelimit);
     $smarty->assign('spotminsetsizelimit',	$minsetsizelimit);
-    $smarty->assign('spotminratinglimit',0);
-    $smarty->assign('spotmaxratinglimit',10);
+    $smarty->assign('spotminratinglimit', 0);
+    $smarty->assign('spotmaxratinglimit', 10);
 }
 
 $smarty->display('search.tpl');

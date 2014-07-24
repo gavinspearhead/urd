@@ -28,13 +28,6 @@ $pathpr = realpath(dirname(__FILE__));
 require_once "$pathpr/../functions/ajax_includes.php";
 require_once "$pathpr/../functions/pref_functions.php";
 
-$cmd = get_request('cmd', '');
-$name = get_request('name', NULL);
-$type = get_request('type', '');
-if ($cmd == '' || $type == '') {
-    throw new exception($LN['error_missingparameter'] );
-}
-$saved_searches  = new saved_searches($userid);
 
 function get_options()
 {
@@ -63,126 +56,141 @@ function get_options()
 
     return $options;
 }
+try {
+    $cmd = get_request('cmd', '');
+    $name = get_request('name', NULL);
+    $type = get_request('type', '');
 
-$categories = get_categories($db, $userid);
-$category_array[''] = '';
-foreach ($categories as $cat) {
-    $category_array[$cat['id']] = $cat['name'];
-}
-
-switch ($cmd) {
-case 'default':
-    throw new exception($LN['error_novalidaction']);
-    break;
-case 'save':
-    // saves the current selected subcats to a name, category combination
-    if ($name === NULL || !is_string($name) || $name == '') {
-        throw new exception($LN['error_missingparameter']);
+    if ($cmd == '' || $type == '') {
+        throw new exception($LN['error_missingparameter'] );
     }
-    $options = get_options();
-    $category_id = get_request('save_category', '');
+    $saved_searches  = new saved_searches($userid);
 
-    $category = '';
-    if (isset($categories[$category_id]) ) {
-        $category = $categories[$category_id]['name'];
+    $categories = get_categories($db, $userid);
+    $category_array[''] = '';
+    foreach ($categories as $cat) {
+        $category_array[$cat['id']] = $cat['name'];
     }
 
-    list($subcats, $not_subcats) = get_subcats_requests();
+    switch ($cmd) {
+        case 'default':
+            throw new exception($LN['error_novalidaction']);
+            break;
+        case 'save':
+            // saves the current selected subcats to a name, category combination
+            if ($name === NULL || !is_string($name) || $name == '') {
+                throw new exception($LN['error_missingparameter']);
+            }
+            $options = get_options();
+            $category_id = get_request('save_category', '');
 
-    $lists = array();
-    foreach ($subcats as $sc) {
-        $sc_name = $sc[1] . $sc[2];
-        $lists[ $sc_name ] = $sc['value'];
-    }
+            $category = '';
+            if (isset($categories[$category_id]) ) {
+                $category = $categories[$category_id]['name'];
+            }
 
-    foreach ($not_subcats as $sc) {
-        $sc_name = $sc[1] . $sc[2];
-        $lists[ $sc_name ] = $sc['value'];
-    }
+            list($subcats, $not_subcats) = get_subcats_requests();
 
-    $saved_searches->load($db);
-    try {
-        $saved_searches->store($name, $lists, $type, $options, $category);
-        $saved_searches->save($db);
-    } catch (exception $e) {
-        throw new exception($LN['error_nameexists']);
-    }
-    die_html('OK' . $LN['saved'] . ' "' . htmlentities($name) . '"');
-    break;
-case 'get':
-    // gets the subcat values for a given name, category combi
-    if ($name === NULL) {
-        throw new exception($LN['error_missingparameter']);
-    }
-    if ($name == '') {
-        die_html('OK');
-    }
-    $saved_searches->load($db);
-    try {
-        $option = $saved_searches->get_search($name, $type);
-    } catch (exception $e) {
-        throw new exception($LN['error_searchnamenotfound']);
-    }
-    $options = $option['options'];
-    $options['subcats'] = $option['subcats'];
-    $options['category'] = $option['category'];
-    die_html('OK' . json_encode($options));
-    break;
-case 'names':
-    $saved_searches->load($db);
-    $names = array();
-    $current = get_request('current', '');
-    $cat = get_request('cat', '');
-    foreach ($saved_searches->get_names($type) as $k => $v) {
-        $names[$k] = htmlentities(utf8_decode($v));
-    }
-    if (count($names) == 0) {
-        die_html('EMPTY');
-    }
-    init_smarty('', 0);
-    natcasesort($names);
-    $smarty->assign('saved_searches',	$names);
-    $smarty->assign('current',	        htmlentities(utf8_decode($current)));
-    $smarty->assign('usersettype',		$type);
-    $smarty->assign('cat',		        $cat);
-    $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
-    $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
-    $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
+            $lists = array();
+            foreach ($subcats as $sc) {
+                $sc_name = $sc[1] . $sc[2];
+                $lists[ $sc_name ] = $sc['value'];
+            }
 
-    $smarty->display('ajax_spot_search.tpl');
-    break;
-case 'delete':
-    // removes a certain name, category combination
-    if ($name === NULL || !is_string($name) || $name == '') {
-        throw new exception($LN['error_missingparameter']);
-    }
-    $saved_searches->load($db);
-    try {
-        $saved_searches->delete($name, $type);
-        $saved_searches->save($db);
-    } catch (exception $e) {
-        throw new exception($LN['error_searchnamenotfound'] );
-    }
-    die_html('OK' . $LN['deleted']);
-    break;
-case 'show':
-    init_smarty('', 0);
-    $saved_searches->load($db);
-    try {
-        $saved_search = $saved_searches->get_search($name, $type);
-        $category_id = category_by_name($db, $saved_search['category'], $userid);
-    } catch (exception $e) {
-        $saved_search = '';
-        $category_id = '';
-    }
+            foreach ($not_subcats as $sc) {
+                $sc_name = $sc[1] . $sc[2];
+                $lists[ $sc_name ] = $sc['value'];
+            }
 
-    $smarty->assign('usersettype',		$type);
-    $smarty->assign('name',     		$name);
-    $smarty->assign('save_category',	$category_id);
-    $smarty->assign('categories',		$categories);
-    $smarty->assign('categories_count',	count($categories));
-    $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
-    $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
-    $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
-    $smarty->display('ajax_savename.tpl');
+            $saved_searches->load($db);
+            try {
+                $saved_searches->store($name, $lists, $type, $options, $category);
+                $saved_searches->save($db);
+            } catch (exception $e) {
+                throw new exception($LN['error_nameexists']);
+            }
+            die(json_encode(array('error'=>0, 'message'=> $LN['saved'] . ' "' . htmlentities($name) . '"' )));
+            break;
+        case 'get':
+            // gets the subcat values for a given name, category combi
+            if ($name === NULL) {
+                throw new exception($LN['error_missingparameter']);
+            }
+            if ($name == '') {
+                die(json_encode(array('error'=>0, 'count'=> 0)));
+            }
+            $saved_searches->load($db);
+            try {
+                $option = $saved_searches->get_search($name, $type);
+            } catch (exception $e) {
+                throw new exception($LN['error_searchnamenotfound']);
+            }
+            $options = $option['options'];
+            $options['subcats'] = $option['subcats'];
+            $options['category'] = $option['category'];
+            die(json_encode(array('error'=>0, 'options'=> $options, 'count'=> count($option))));
+            break;
+        case 'names':
+            $saved_searches->load($db);
+            $names = array();
+            $current = get_request('current', '');
+            $cat = get_request('cat', '');
+            foreach ($saved_searches->get_names($type) as $k => $v) {
+                $names[$k] = htmlentities(utf8_decode($v));
+            }
+            if (count($names) == 0) {
+                die(json_encode(array('error'=>0, 'count'=>0)));
+            }
+            init_smarty('', 0);
+            natcasesort($names);
+            $smarty->assign('saved_searches',	$names);
+            $smarty->assign('current',	        htmlentities(utf8_decode($current)));
+            $smarty->assign('usersettype',		$type);
+            $smarty->assign('cat',		        $cat);
+            $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
+            $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
+            $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
+
+            $contents = $smarty->fetch('ajax_spot_search.tpl');
+            die(json_encode(array('error'=>0, 'contents' => $contents, 'count'=>count($names)))); 
+            break;
+        case 'delete':
+            // removes a certain name, category combination
+            if ($name === NULL || !is_string($name) || $name == '') {
+                throw new exception($LN['error_missingparameter']);
+            }
+            $saved_searches->load($db);
+            try {
+                $saved_searches->delete($name, $type);
+                $saved_searches->save($db);
+            } catch (exception $e) {
+                throw new exception($LN['error_searchnamenotfound'] );
+            }
+            die(json_encode(array('error'=>0, 'message' => $LN['deleted'] . ' "' . htmlentities($name) . '"' )));
+            break;
+        case 'show':
+            init_smarty('', 0);
+            $saved_searches->load($db);
+            try {
+                $saved_search = $saved_searches->get_search($name, $type);
+                $category_id = category_by_name($db, $saved_search['category'], $userid);
+            } catch (exception $e) {
+                $saved_search = '';
+                $category_id = '';
+            }
+
+            $smarty->assign('usersettype',		$type);
+            $smarty->assign('name',     		$name);
+            $smarty->assign('save_category',	$category_id);
+            $smarty->assign('categories',		$categories);
+            $smarty->assign('categories_count',	count($categories));
+            $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
+            $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
+            $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
+            $contents = $smarty->fetch('ajax_savename.tpl');
+            die(json_encode(array('error'=>0, 'contents' => $contents))); 
+    }
+    die(json_encode(array('error' => 0)));
+} catch (exception $e) {
+    die(json_encode(array('error' => $e->getMessage())));
 }

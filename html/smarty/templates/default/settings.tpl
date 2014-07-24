@@ -27,8 +27,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     load_prefs();
-    }
-);
+});
     
 </script>
 <input type="hidden" id="source" name="source" value="{$source}"/>

@@ -131,8 +131,6 @@ function get_feeds_array(DatabaseConnection $db, $userid)
     return $feeds_array;
 }
 
-$imported = $saved = 0;
-
 function get_sort_array()
 {
     global $LN;
@@ -148,12 +146,6 @@ function get_sort_array()
 
     return $sort_array;
 }
-
-$dlpath = get_dlpath($db);
-$scripts_path = $dlpath . SCRIPTS_PATH;
-
-
-$cmd = get_request('cmd', '');
 
 function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
 {
@@ -679,63 +671,72 @@ function show_preferences(DatabaseConnection $db, $userid)
     $smarty->assign('current_tab',  $current_tab);
     $smarty->assign('level', 		$pref_level);
     $smarty->assign('pref_list', 	$pref_list);
-    $smarty->display('ajax_settings.tpl');
+    return $smarty->fetch('ajax_settings.tpl');
 }
 
-switch ($cmd) {
-    case 'show':
-        init_smarty('', 0);
-        show_preferences($db, $userid);
-        break;
-    case 'change_password':
-        challenge::verify_challenge($_POST['challenge']);
-        change_password($db, $userid);
-        die_html('OK' . $LN['password_changed']);
-        break;
-    case 'set':
-        challenge::verify_challenge($_POST['challenge']);
-        $option = get_post('option');
-        $value = get_post('value');
-        $type = get_post('type');
-        if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
-        config_cache::clear($userid);
-        set_preferences($db, $userid, $option, $value, $type);
-        if ($type == 'custom_text') {
-            die_html('OK' . $LN['saved'] . ': ' . get_ln_val('custom') . " $option ");
-        } else {
-            die_html('OK' . $LN['saved'] . ': ' . get_ln_val($option));
-        }
-        break;
-    case 'delete':
-        challenge::verify_challenge($_POST['challenge']);
-        $option = get_post('option');
-        unset_pref($db, "__custom_$option", $userid);
-        die_html('OK');
-        break;
-    case 'load_settings':
-        challenge::verify_challenge($_POST['challenge']);
-        $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-        $settings = $xml->read_user_settings($db);
-        reset($settings);
-        if ($settings != array()) {
-            clean_pref($db, $userid); // remove all settings for user
-            reset_pref($db, $userid); // restore the default settings
-            set_prefs($db, $userid, current($settings)); // overwrite with loaded settings
-        } else {
-            throw new exception($LN['settings_notfound']);
-        }
-        die_html('OK');
-        break;
-    case 'export_settings':
-        $username = get_username($db, $userid);
-        export_settings($db, 'user_settings', "urd_user_settings_$username.xml", $userid);
-        break;
-    case 'reset':
-        challenge::verify_challenge($_POST['challenge']);
-        reset_pref($db, $userid);
-        die_html('OK');
-        break;
-    default:
-        throw new exception($LN['error_invalidaction'] . ' ' . htmlentities($cmd));
-        break;
+try {
+    $dlpath = get_dlpath($db);
+    $scripts_path = $dlpath . SCRIPTS_PATH;
+
+
+    $cmd = get_request('cmd', '');
+    $message = $contents = '';
+
+    switch ($cmd) {
+        case 'show':
+            init_smarty('', 0);
+            $contents = show_preferences($db, $userid);
+            break;
+        case 'change_password':
+            challenge::verify_challenge($_POST['challenge']);
+            change_password($db, $userid);
+            $message = $LN['password_changed'];
+            break;
+        case 'set':
+            challenge::verify_challenge($_POST['challenge']);
+            $option = get_post('option');
+            $value = get_post('value');
+            $type = get_post('type');
+            if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
+            config_cache::clear($userid);
+            set_preferences($db, $userid, $option, $value, $type);
+            if ($type == 'custom_text') {
+                $message = $LN['saved'] . ': ' . get_ln_val('custom') . " $option ";
+            } else {
+                $message = $LN['saved'] . ': ' . get_ln_val($option);
+            }
+            break;
+        case 'delete':
+            challenge::verify_challenge($_POST['challenge']);
+            $option = get_post('option');
+            unset_pref($db, "__custom_$option", $userid);
+            break;
+        case 'load_settings':
+            challenge::verify_challenge($_POST['challenge']);
+            $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
+            $settings = $xml->read_user_settings($db);
+            reset($settings);
+            if ($settings != array()) {
+                clean_pref($db, $userid); // remove all settings for user
+                reset_pref($db, $userid); // restore the default settings
+                set_prefs($db, $userid, current($settings)); // overwrite with loaded settings
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+        case 'export_settings':
+            $username = get_username($db, $userid);
+            export_settings($db, 'user_settings', "urd_user_settings_$username.xml", $userid);
+            break;
+        case 'reset':
+            challenge::verify_challenge($_POST['challenge']);
+            reset_pref($db, $userid);
+            break;
+        default:
+            throw new exception($LN['error_invalidaction'] . ' ' . htmlentities($cmd));
+            break;
+    }
+    die(json_encode(array('error' => 0, 'message'=>$message, 'contents'=>$contents)));
+} catch (exception $e) {
+    die(json_encode(array('error' => $e->getMessage())));
 }

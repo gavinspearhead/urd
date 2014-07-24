@@ -133,7 +133,7 @@ class group_viewer
     {
         global $LN;
         $basic_browse_query = $this->get_basic_browse_query();
-        $sql = 'COUNT(setdata."ID") AS cnt ' . $basic_browse_query;
+        $sql = 'COUNT(*) AS cnt ' . $basic_browse_query;
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }

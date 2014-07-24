@@ -32,7 +32,6 @@ require_once "$pathaac/../functions/periods.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-$cmd = get_request('cmd', '');
 
 function get_permissions_array()
 {
@@ -914,7 +913,7 @@ function show_config(DatabaseConnection $db, $userid)
     $smarty->assign('current_tab',  $current_tab);
     $smarty->assign('level', 		$pref_level);
     $smarty->assign('pref_list', 	$pref_list);
-    $smarty->display('ajax_settings.tpl');
+    return $smarty->fetch('ajax_settings.tpl');
 }
 
 function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$value)
@@ -1533,22 +1532,23 @@ function get_ln_val($name)
     }
 }
 
+try {
+$cmd = get_request('cmd', '');
+$message = $contents = '';
 switch ($cmd) {
     case 'reset':
         challenge::verify_challenge($_POST['challenge']);
         reset_config($db);
-        die_html('OK');
         break;
 
     case 'show':
         init_smarty('', 0);
-        show_config($db, $userid);
+        $contents = show_config($db, $userid);
         break;
     case 'delete':
         challenge::verify_challenge($_POST['challenge']);
         $option = get_post('option');
         unset_config($db, "__custom_$option");
-        die_html('OK');
         break;
     case 'set':
         $rprefs = load_config($db);
@@ -1561,9 +1561,9 @@ switch ($cmd) {
         set_configuration($db, $uc, $userid, $option, $value, $type);
         config_cache::clear_all();
         if ($type == 'custom_text') {
-            die_html('OK' . $LN['saved'] . ': ' . get_ln_val('custom') . " $option ");
+            $message = $LN['saved'] . ': ' . get_ln_val('custom') . " $option ";
         } else {
-            die_html('OK' . $LN['saved'] . ': ' . get_ln_val($option));
+            $message = $LN['saved'] . ': ' . get_ln_val($option);
         }
         break;
     case 'load_settings':
@@ -1579,12 +1579,15 @@ switch ($cmd) {
         } else {
             throw new exception ($LN['settings_notfound']);
         }
-        die_html('OK');
         break;
     case 'export_settings':
         export_settings($db, 'config', 'urd_config.xml');
         break;
     default:
-        throw new exception("O-oh - Unknown command $cmd!" . implode($_POST, ' '));
+        throw new exception($LN['error_invalidaction'] . implode($_POST, ' '));
         break;
+}
+    die(json_encode(array('error' => 0, 'message'=>$message, 'contents'=>$contents)));
+} catch (exception $e) {
+    die(json_encode(array('error' => $e->getMessage())));
 }

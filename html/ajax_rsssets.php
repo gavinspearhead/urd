@@ -128,7 +128,7 @@ class feed_viewer
     private function get_sets_count($interesting_only)
     {
         $basic_browse_query = $this->get_basic_browse_query();
-            $sql = 'COUNT(rss_sets."id") AS cnt ' . $basic_browse_query;
+            $sql = 'COUNT(*) AS cnt ' . $basic_browse_query;
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }

@@ -92,7 +92,6 @@
 
 <div id="setsdiv" class="hidden">
 </div>
-{strip}
 
 <input type="hidden" id="minsetsizelimit" value="{$minsetsizelimit}"/>
 <input type="hidden" id="maxsetsizelimit" value="{$maxsetsizelimit}"/>
@@ -100,6 +99,13 @@
 <input type="hidden" id="maxratinglimit" value="{$maxratinglimit}"/>
 <input type="hidden" id="minagelimit" value="{$minagelimit}"/>
 <input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
+<input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
+<input type="hidden" id="perpage" value="{$perpage}"/>
+<div>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+</div>
 
 <script type="text/javascript">
 
@@ -120,10 +126,9 @@ $(document).ready(function() {
                {if $maxrating != ''}    , 'maxrating': '{$maxrating|escape:javascript}' {/if}
                {if $flag != ''}         , 'flag':'{$flag|escape:javascript}' {/if}
                {if $categoryID !== '' } , 'next':'{$categoryID|escape:javascript}' {/if}
-               }
-           );
+           } );
        {/if}
-       });
+   });
    set_scroll_handler('#contentout', load_sets);
    {* Load basket: *}
    update_basket_display();
@@ -136,13 +141,5 @@ $(document).ready(function() {
    $('#saved_search').change( function () { update_spot_searches(null); } );
 });
 </script>
-{/strip}
 
-<input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
-<input type="hidden" id="perpage" value="{$perpage}"/>
-<div>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-</div>
 {include file="foot.tpl"}

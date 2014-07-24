@@ -32,6 +32,7 @@ verify_access($db, urd_modules::URD_CLASS_VIEWFILES, FALSE, '', $userid, FALSE);
 
 $allow_edit = get_config($db, 'webeditfile', 0);
 $add_menu = NULL;
+
 if ($allow_edit && urd_user_rights::is_file_editor($db, $userid)) {
     $add_menu = array (
         'actions'=>

@@ -5,15 +5,17 @@
 - Added viewing icons in spots and spot comments
 - Added download NZB button to mini basket
 - Added hide/delete buttons to the bottom of the sets tables
-- Fixed some handling of selecting multiple sets at once
 - Save the NZB file of uploaded content
 - Deprecated database settings not relying on PDO (i.e. mysql, mysqli, postgres[789] - only pdo_mysql, pdo_pgsql and pdo_sqlite are supported)
+- Fixed some handling of selecting multiple sets at once
 - Fixed bug in saving some settings
 - Fixed a bug in not handling the expire settings correctly on loading spots and expiring spots
 - Fixed issue on some browsers (Opera, and Safari) not able to use the basket buttons
 - Fixed a bug in loading the group settings (thanx to Reab4)
 - Fixed a bug in handling the expire date (thanx to Reab4)
 - Fixed a bug in handling connection timeouts on downloads
+- Fixed a bug in setting admin config time values (thanx to Reab4)
+- Fixed a bug not expiring extsetdata when expiring spots
 - Cleanup stylesheets and replaced images by css
 - Updated smarty to 3.1.19
 

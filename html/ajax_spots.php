@@ -113,8 +113,8 @@ class spot_viewer
             '(CASE WHEN usersetinfo."statusread" IS NULL OR usersetinfo."statusread" <> 1 THEN 0 ELSE 1 END) AS "alreadyread", ' .
             '(CASE WHEN usersetinfo."statusnzb" IS NULL OR usersetinfo."statusnzb" <> 1 THEN 0 ELSE 1 END) AS "nzbcreated", ' .
             '(CASE WHEN usersetinfo."statusint" IS NULL OR usersetinfo."statusint" <> 1 THEN 0 ELSE 1 END) AS "interesting", ' .
-            '(CASE WHEN extsetdata4."value" IS NULL THEN \'0\' ELSE extsetdata4."value" END) AS "rating", ' .
-            '(CASE WHEN extsetdata2."value" IS NULL THEN spots."title" ELSE extsetdata2."value" END) AS "better_subject" ';
+            '(CASE WHEN extsetdata4."value" IS NULL THEN \'0\' ELSE extsetdata4."value" END) AS "rating" ';
+//            '(CASE WHEN extsetdata2."value" IS NULL THEN spots."title" ELSE extsetdata2."value" END) AS "better_subject" ';
         $sql .=	$this->get_basic_browse_query();
         if ($interesting_only) {
             $sql1 = $sql . ' AND usersetinfo."statusint" = 1';
@@ -129,7 +129,7 @@ class spot_viewer
     {
         global $LN;
         $basic_browse_query = $this->get_basic_browse_query(TRUE);
-        $sql = 'COUNT(spots."id") AS cnt ' . $basic_browse_query;
+        $sql = 'COUNT(*) AS cnt ' . $basic_browse_query;
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }

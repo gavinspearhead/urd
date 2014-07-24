@@ -1462,7 +1462,7 @@ function get_stats_years(DatabaseConnection $db, $userid, $isadmin)
     if (!$isadmin) {
         assert(is_numeric($userid));
         $input_arr[] = $userid;
-        $quser = 'AND "userid" = ?';
+        $quser = 'AND "userid"=?';
     }
 
     $ystr = $db->get_extract('year', '"timestamp"');

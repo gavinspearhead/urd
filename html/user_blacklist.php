@@ -30,7 +30,6 @@ require_once "$pathaubl/../functions/html_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-
 $perpage = get_maxperpage($db, $userid);
 $offset = 0;
 

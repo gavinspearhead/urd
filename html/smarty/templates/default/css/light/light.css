@@ -170,7 +170,6 @@ td.psb_0, td.ps_0
     background-color: #94B9F4;
     width: 25px;
     text-align: center;
-    _border: thin solid #bbbbbb;
 }
 td.psb_h,td.ps_h
 {
@@ -182,7 +181,6 @@ td.psb_1,td.ps_1
     background-color: #A8C6F4;
     width: 25px;
     text-align: center;
-    _border: thin solid #bbbbbb;
 }
 td.psb_2,td.ps_2
 {
@@ -190,7 +188,6 @@ td.psb_2,td.ps_2
     background-color: #BBD2F4;
     width: 25px;
     text-align: center;
-    _border: thin solid #bbbbbb;
 }
 td.psb_3,td.ps_3
 {
@@ -198,7 +195,6 @@ td.psb_3,td.ps_3
     background-color: #CEDDF4;
     width: 25px;
     text-align: center;
-    _border: thin solid #bbbbbb;
 }
 td.psb_4,td.ps_4
 {
@@ -206,7 +202,6 @@ td.psb_4,td.ps_4
     background-color: #D8E3F4;
     width: 25px;
     text-align: center;
-    _border: thin solid #bbbbbb;
 }
 td.psb_5,td.ps_5
 {
@@ -214,7 +209,6 @@ td.psb_5,td.ps_5
     background-color: #E1E9F4;
     width: 25px;
     text-align: center;
-    _border: thin solid #bbbbbb;
 }
 
 table.preferences
