@@ -1966,6 +1966,9 @@ function match_language($a, $b)
 
 function detect_language()
 {
+    if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        return 'english';
+    }
     $accepted   = parse_language_list($_SERVER['HTTP_ACCEPT_LANGUAGE']);
     $available  = parse_language_list('en, fr, de, sv, nl');
     $matches    = find_language_matches($accepted, $available);

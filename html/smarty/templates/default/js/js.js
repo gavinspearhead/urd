@@ -1321,7 +1321,6 @@ function load_activity_status(force)
 
     var url = "ajax_showstatus.php";
     $.ajax({ type: 'get', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { $('#status_activity').html(html); }); 
-
 }
 
 function load_quick_status()

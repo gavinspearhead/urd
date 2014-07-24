@@ -18,6 +18,7 @@
 - Fixed a bug not expiring extsetdata when expiring spots
 - Cleanup stylesheets and replaced images by css
 - Updated smarty to 3.1.19
+- Updated to jquery 2.1.1 - note IE 6-8 are no longer supported
 
 
 1.11.0
