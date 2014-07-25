@@ -2115,3 +2115,12 @@ function get_smileys($dir, $full= FALSE)
     }
     return $smileys;
 }
+
+function return_result(array $vars) 
+{
+    if (!isset($vars['error'])) { 
+        $vars['error'] = 0;
+    }
+    die(json_encode($vars));
+}
+

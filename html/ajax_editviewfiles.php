@@ -32,25 +32,6 @@ require_once "$pathvf/../functions/ajax_includes.php";
 
 verify_access($db, urd_modules::URD_CLASS_VIEWFILES, FALSE, '', $userid, TRUE);
 
-$title = $LN['urdname'] . ' - ' . $LN['viewfiles_title'];
-
-$rprefs = load_config($db);
-
-$is_admin = urd_user_rights::is_admin($db, $userid);
-$is_fileeditor = urd_user_rights::is_file_editor($db, $userid);
-
-$hiddenfiles = $hiddenfiles_root = array();
-if ($prefs['hiddenfiles']) {
-    $hiddenfiles = get_hiddenfiles(get_pref($db, 'hidden_files_list', $userid));
-}
-if ($rprefs['global_hiddenfiles']) {
-    $hiddenfiles_root = get_hiddenfiles(get_config($db, 'global_hidden_files_list'));
-}
-
-$hiddenfiles = array_merge($hiddenfiles, $hiddenfiles_root);
-
-stored_files::set_cache_dir(get_config($db, 'dlpath') . DIRECTORY_SEPARATOR . FILELIST_CACHE_PATH);
-
 class file_icons
 {
     private $icons;
@@ -103,7 +84,6 @@ class file_icons
     }
 }
 
-$icons = new file_icons();
 
 function normalise_dir(DatabaseConnection $db, $dir, $username, $is_admin)
 {
@@ -353,6 +333,28 @@ class file_list
         return $file_list;
     }
 }
+
+$icons = new file_icons();
+
+$title = $LN['urdname'] . ' - ' . $LN['viewfiles_title'];
+
+$rprefs = load_config($db);
+
+$is_admin = urd_user_rights::is_admin($db, $userid);
+$is_fileeditor = urd_user_rights::is_file_editor($db, $userid);
+
+$hiddenfiles = $hiddenfiles_root = array();
+if ($prefs['hiddenfiles']) {
+    $hiddenfiles = get_hiddenfiles(get_pref($db, 'hidden_files_list', $userid));
+}
+if ($rprefs['global_hiddenfiles']) {
+    $hiddenfiles_root = get_hiddenfiles(get_config($db, 'global_hidden_files_list'));
+}
+
+$hiddenfiles = array_merge($hiddenfiles, $hiddenfiles_root);
+
+stored_files::set_cache_dir(get_config($db, 'dlpath') . DIRECTORY_SEPARATOR . FILELIST_CACHE_PATH);
+
 
 $cmd = trim(get_request('cmd', ''));
 $dir = get_request('dir', '');

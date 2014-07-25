@@ -60,7 +60,7 @@ try {
         throw new exception($LN['error_invalidaction']);
         break;
     }
-    die(json_encode(array('error' => 0)));
+    return_result(array());
 } catch (exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result('error' => $e->getMessage());
 }

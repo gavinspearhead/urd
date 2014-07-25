@@ -206,7 +206,7 @@ function set_basket_type(type)
     var challenge = get_value_from_id('challenge', '');
     $.ajax({
         type: 'post',
-        url: "ajax_processbasket.php",
+        url: 'ajax_processbasket.php',
         cache: false,
         data: {
             command: 'set',
@@ -335,15 +335,6 @@ function toggle_set(setID, type)
         xstatus = 1;
     }
 
-    if (xstatus === 0) {
-        set.val('x');
-        $('#divset_' + setID).toggleClass('setimgplus');
-        $('#divset_' + setID).toggleClass('setimgminus');
-    } else {
-        set.val('');
-        $('#divset_' + setID).toggleClass('setimgplus');
-        $('#divset_' + setID).toggleClass('setimgminus');
-    }
     var dl_dir = get_value_from_id('dl_dir', '');
     var add_setname = get_value_from_id('add_setname', '');
     var timestamp = get_value_from_id('timestamp', '');
@@ -352,7 +343,7 @@ function toggle_set(setID, type)
     var url = "ajax_processbasket.php";
 
     $.ajax({
-        type: 'POST',
+        type: 'post',
         url: url,
         cache: false,
         data: {
@@ -365,7 +356,17 @@ function toggle_set(setID, type)
             dl_dir: dl_dir
         }
    }).done(function() {
-       update_basket_display();
+       if (xstatus === 0) {
+            set.val('x');
+            $('#divset_' + setID).toggleClass('setimgplus');
+            $('#divset_' + setID).toggleClass('setimgminus');
+        } else {
+            set.val('');
+            $('#divset_' + setID).toggleClass('setimgplus');
+            $('#divset_' + setID).toggleClass('setimgminus');
+        }
+
+        update_basket_display();
    });
 }
 
@@ -645,7 +646,7 @@ function load_control()
 {
     var url = "ajax_admincontrol.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false
     }).done(function(html) {
@@ -676,7 +677,7 @@ function show_users(order, direction)
     }
 
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
@@ -703,6 +704,9 @@ function show_blacklist(options)
     var which = get_value_from_id('which', '');
     var order, direction;
     var add_rows = 0;
+    if (which == '') { 
+        which = 'spots_blacklist'; 
+    }
     var data = {
         cmd: 'load_blacklist',
         search: search,
@@ -711,7 +715,6 @@ function show_blacklist(options)
         offset: offset
     };
 
-    if (which == '') { which = 'spots_blacklist'; }
     if (options !== undefined) {
         if (options.which !== undefined) {
             data.which = options.which;
@@ -752,7 +755,7 @@ function show_blacklist(options)
     }
     
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
@@ -804,7 +807,7 @@ function show_files(options)
     $('#search').keypress( function(event) { do_keypress_viewfiles(event); } );
     var url = "ajax_editviewfiles.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
@@ -860,7 +863,7 @@ function show_buttons(order, direction)
         data.sort_dir = direction;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
@@ -895,7 +898,7 @@ function show_usenet_servers(order, direction)
         data.sort_dir = direction;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
@@ -920,16 +923,20 @@ function show_post_message(type, spotid)
             data.rating = rating;
         }
     }
+    console.log('foo');
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
     }).done(function(html) {
-        if (html.substr(0, 7) != ':error:') {
-            show_overlayed_content_1(html, 'popup700x400');
+        console.log(html);
+        var x = $.parseJSON(html);
+
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup700x400');
         } else {
-            set_message('message_bar', html.substr(7), 5000);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -943,7 +950,7 @@ function show_uploadnzb(dir, name)
         data.filename = name;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: data,
         cache: false
@@ -960,7 +967,7 @@ function show_edit_post(postid)
 {
     var url = "ajax_show_post.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         data: {
             cmd: 'showrename', 
@@ -981,7 +988,7 @@ function show_post()
 {
     var url = "ajax_show_post.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false
     }).done(function(html) {
@@ -1013,7 +1020,7 @@ function load_jobs(order, direction)
         data.sort_dir = direction;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -1055,7 +1062,7 @@ function load_tasks(order, direction, clear_offset)
         data.offset = offsetval;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -1119,7 +1126,7 @@ function load_disk_status()
 {
     var url = "ajax_showstatus.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { type: 'disk' }
@@ -1142,14 +1149,14 @@ function load_activity_status(force)
     activity_status = new Date().getTime();
 
     var url = "ajax_showstatus.php";
-    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { $('#status_activity').html(html); }); 
+    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { $('#status_activity').html(html); }); 
 }
 
 function load_quick_status()
 {
     var url = "ajax_showstatus.php";
-    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'quick' } }).done( function(html) { $('#status_msg').html(html); }); 
-    $.ajax({ type: 'get', url: url, cache: false, data: { type: 'icon'  } }).done( function(html) { $('#smallstatus').html(html); }); 
+    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'quick' } }).done( function(html) { $('#status_msg').html(html); }); 
+    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'icon'  } }).done( function(html) { $('#smallstatus').html(html); }); 
 }
 
 function update_activity_status()
@@ -1237,7 +1244,7 @@ function mark_read(setid, cmd, type)
         data.challenge = challenge;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data 
@@ -1761,7 +1768,7 @@ function show_popup_remote(referrer, command)
         data.cmd = command;
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -1788,7 +1795,7 @@ function show_rename_transfer(dlid)
 {
     var url = "ajax_edittransfers.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -1804,7 +1811,7 @@ function edit_group(id)
 {
     var url = "ajax_editgroup.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -1822,7 +1829,7 @@ function edit_rss(id)
 {
     var url = "ajax_editrss.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -1841,7 +1848,7 @@ function edit_usenet_server(id, only_auth)
     var url = "ajax_edit_usenet_servers.php";
     var data = { cmd : 'showeditusenetserver', id : id, only_auth : (only_auth ? "1" : "0") };
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -2089,10 +2096,13 @@ function post_message()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html.substr(0,2) == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        update_message_bar(html);
     });
 }
 
@@ -2336,7 +2346,7 @@ function show_quickmenu(type, subject, srctype, e)
     var url = "ajax_showquickmenu.php";
     
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -2399,7 +2409,7 @@ function show_quick_display(srctype, subject, e, type)
     // Fill menu
     var url = "ajax_showquickdisplay.php";
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data:{ 
@@ -2439,7 +2449,7 @@ function guess_extset_info_safe(setID, type)
     } else {
         var url = "ajax_showquickdisplay.php";
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: url,
             cache: false,
             data: { 
@@ -2468,7 +2478,7 @@ function guess_basket_extset_info(setID, type)
             setname : setname
         }; 
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: url,
             cache: false,
             data: data
@@ -2495,7 +2505,7 @@ function guess_extset_info(setID, type)
             setname: setname
         };
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: url,
             cache: false,
             data: data
@@ -2610,7 +2620,7 @@ function fold_transfer(id, type)
     // type = down/post
     var url = 'ajax_update_session.php';
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -3196,7 +3206,7 @@ function select_tab_setting(tab, session_var, session_val)
     if (session_var !== null && session_val !== null) {
         var url = 'ajax_update_session.php';
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: url,
             cache: false,
             data: { 
@@ -3225,7 +3235,7 @@ function select_tab_transfers(tab, session_var, session_val)
     if (session_var !== null && session_val !== null) {
         var url = 'ajax_update_session.php';
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: url,
             cache: false,
             data: { 
@@ -3288,7 +3298,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         data.source = source; 
     }
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: 'ajax_stats.php',
         cache: false,
         data: data
@@ -3414,7 +3424,7 @@ function update_search_names(name)
         current: name 
     };
      $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data 
@@ -3475,7 +3485,7 @@ function delete_search()
 
     var type = get_value_from_id('usersettype', '');
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -3532,7 +3542,7 @@ function save_browse_search()
     data.search = search;
     hide_overlayed_content();
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -3577,7 +3587,7 @@ function save_spot_search()
     data.search = search;
     hide_overlayed_content();
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -3608,7 +3618,7 @@ function update_browse_searches(name)
     var type = get_value_from_id('usersettype', '');
    
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: { 
@@ -3668,7 +3678,7 @@ function update_spot_searches(name)
     } 
     var type = get_value_from_id('usersettype', '');
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data:{
@@ -4540,7 +4550,7 @@ function fold_details(button_id, divid)
     fold_adv_search(button_id, divid);
     $.ajax({
         url: 'ajax_update_session.php',
-        type: 'get',
+        type: 'post',
         cache: false,
         data: { type : 'control' }
     });
@@ -5778,7 +5788,7 @@ function show_post_spot()
     var url = "ajax_post_spot.php";
 
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: {
@@ -5803,7 +5813,7 @@ function change_spotsubcats()
     var url = "ajax_post_spot.php";
 
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: {
