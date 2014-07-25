@@ -336,7 +336,7 @@ $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 if ($isadmin) {
     echo "<h3>Global configuration</h3>\n";
     foreach ($prefs as $k => $p) {
-        if (strstr($k, 'password'))
+        if (strstr($k, 'password') ||strstr($k, 'privatekey'))
             $prefs[$k] = 'xxxxxx';
     }
     ksort($prefs);
@@ -346,7 +346,7 @@ if ($isadmin) {
 echo "<h3>User preferences</h3>\n";
 $uprefs = load_prefs($db, $userid);
 foreach ($uprefs as $k => $p) {
-    if (strstr($k, 'password')) {
+    if (strstr($k, 'password') ||strstr($k, 'privatekey') ) {
         $uprefs[$k] = 'xxxxxx';
     }
 }

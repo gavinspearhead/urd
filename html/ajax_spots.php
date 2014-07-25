@@ -541,7 +541,9 @@ try {
         'maxage' => $maxage,
         'flag' => $flag,
         'minrating' => $minrating,
-        'maxrating' => $maxrating
+        'maxrating' => $maxrating,
+        'only_rows' => $only_rows,
+        'REQUEST' => $_REQUEST
     )));
 
 } catch (exception $e) {

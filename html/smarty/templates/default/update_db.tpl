@@ -20,7 +20,6 @@
  * $Author: gavinspearhead $
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <link rel="stylesheet" href="{$CSSDIR}/_basic.css" type="text/css"/>
@@ -54,8 +53,3 @@ start_updatedb();
 </div>
 </body>
 </html>
-<script type="text/javascript">
-</script>
-
-
-

@@ -21,7 +21,6 @@
  * $Id: js.js 2660 2012-09-08 22:59:41Z gavinspearhead@gmail.com $
  */
 "use strict";
-
 function LoadPage(pagenumber)
 {
 	var installform = document.forms[0];
@@ -129,7 +128,7 @@ function GeneratePassword(length)
 function getRandomNum() {
         
     // between 0 - 1
-    var rndNum = Math.random()
+    var rndNum = Math.random();
 
     // rndNum from 0 - 1000    
     rndNum = parseInt(rndNum * 1000);
@@ -177,8 +176,8 @@ function fill_in_usenet_form()
     server_id = server_id.options[server_id.selectedIndex].value;
     var server_data = get_value_from_id('server_'+server_id, '');
     if (server_data != '') {
-        var arr = server_data.split('|')
-            var name = arr[0];
+        var arr = server_data.split('|');
+        var name = arr[0];
         var host = arr[1];
         var port = arr[2];
         var sport = arr[3];
@@ -277,8 +276,6 @@ function levenshtein(s1, s2)
 }
 
 
-
-
 function check_weak_pw(password)
 {
     if (password.length < 6) { return 0; }
@@ -309,61 +306,60 @@ function check_weak_pw(password)
     return score;
 }
 
-
 function check_password_strength(npw_id1, npw_id2)
 {
     var fn = function() {
-            var npw1 = $('#' + npw_id1).val();
-            var npw2 = $('#' + npw_id2).val();
-            var pwd = $('#' + npw_id2);
-            if (npw2 == ''){
-                pwd.removeClass('passwordincorrect');
+        var pw;
+        var npw1 = $('#' + npw_id1).val();
+        var npw2 = $('#' + npw_id2).val();
+        var pwd = $('#' + npw_id2);
+        if (npw2 == ''){
+            pwd.removeClass('passwordincorrect');
+            pwd.removeClass('passwordcorrect');
+            $('#password_incorrect').html('');
+        } else if (npw1 != '' && npw2 != '' && npw1 == npw2) {
+            pwd.removeClass('passwordincorrect');
+            pwd.addClass('passwordcorrect');
+            $('#password_incorrect').html('<i>Passwords match</i>');
+        } else {
+            if (npw2 != '' && npw1 != npw2) {
                 pwd.removeClass('passwordcorrect');
-                $('#password_incorrect').html('');
-            } else if (npw1 != '' && npw2 != '' && npw1 == npw2) {
-                pwd.removeClass('passwordincorrect');
-                pwd.addClass('passwordcorrect');
-                $('#password_incorrect').html('<i>Passwords match</i>');
-            } else {
-                if (npw2 != '' && npw1 != npw2) {
-                    pwd.removeClass('passwordcorrect');
-                    pwd.addClass('passwordincorrect');
-                    $('#password_incorrect').html('<i>Passwords don\'t match</i>');
-                }
-            }
-            if (npw1 != '') {
-                var weak_pw = check_weak_pw(npw1);
-                var pw = $('#' + npw_id1);
-
-                if (weak_pw <= 5) {
-                    pw.removeClass('passwordmedium');
-                    pw.removeClass('passwordstrong');
-                    pw.addClass('passwordweak');
-                    $('#urdd_pass_weak').html('<i>Password strength: Weak</i>');
-                } else if (weak_pw <= 7) {
-                    pw.removeClass('passwordweak');
-                    pw.removeClass('passwordstrong');
-                    pw.addClass('passwordmedium');
-                    $('#urdd_pass_weak').html('<i>Password strength: Medium</i>');
-                }                
-                else if (weak_pw > 7) {
-                    pw.removeClass('passwordweak');
-                    pw.removeClass('passwordmedium');
-                    pw.addClass('passwordstrong');
-                    $('#urdd_pass_weak').html('<i>Password strength: Strong</i>');
-                }
-            } else if (npw1 == '') {
-                var pw = $('#' + npw_id1);
-                    pw.removeClass('passwordstrong');
-                    pw.removeClass('passwordweak');
-                    pw.removeClass('passwordmedium');
-                    $('#urdd_pass_weak').html('');
+                pwd.addClass('passwordincorrect');
+                $('#password_incorrect').html('<i>Passwords don\'t match</i>');
             }
         }
-   
+        if (npw1 != '') {
+            var weak_pw = check_weak_pw(npw1);
+            pw = $('#' + npw_id1);
+
+            if (weak_pw <= 5) {
+                pw.removeClass('passwordmedium');
+                pw.removeClass('passwordstrong');
+                pw.addClass('passwordweak');
+                $('#urdd_pass_weak').html('<i>Password strength: Weak</i>');
+            } else if (weak_pw <= 7) {
+                pw.removeClass('passwordweak');
+                pw.removeClass('passwordstrong');
+                pw.addClass('passwordmedium');
+                $('#urdd_pass_weak').html('<i>Password strength: Medium</i>');
+            }                
+            else if (weak_pw > 7) {
+                pw.removeClass('passwordweak');
+                pw.removeClass('passwordmedium');
+                pw.addClass('passwordstrong');
+                $('#urdd_pass_weak').html('<i>Password strength: Strong</i>');
+            }
+        } else if (npw1 == '') {
+            pw = $('#' + npw_id1);
+            pw.removeClass('passwordstrong');
+            pw.removeClass('passwordweak');
+            pw.removeClass('passwordmedium');
+            $('#urdd_pass_weak').html('');
+        }
+    };
+
     $('#' + npw_id1).on('mouseup', fn);
     $('#' + npw_id1).on('keyup', fn);
     $('#' + npw_id2).on('keyup', fn);
     $('#' + npw_id2).on('mouseup', fn);
- 
 }

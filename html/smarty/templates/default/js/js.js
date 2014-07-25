@@ -25,6 +25,17 @@
 var mousedown = 0;
 var selected_text = "";
 var text_counter = 0;
+var mouse_click_time = 0;
+var last_clicked_setid = false;
+
+function jump(url, newwindow)
+{
+    if (newwindow) {
+        window.open(url);
+    } else {
+        window.location = url;
+    }
+}
 
 function get_selected_text()
 {
@@ -35,7 +46,6 @@ function get_selected_text()
 function set_selected()
 { 
     var s = get_selected_text();
-    var len = s.length;
     if ((!s || s.length == 0) && text_counter > 0) { 
         text_counter--; 
     } else {
@@ -50,192 +60,15 @@ function setvalbyid(id, val)
 
 }
 
-function setselectbyid(id, val)
-{
-    $("#" + id ).val(val);
-}
-
 function get_value_from_id(id, def)
 {
     var val = $('#'+id).val();
-    if (val == undefined) {
+    if (val === undefined) {
         return def;
     } else {
         return val;
     }
 }
-
-function do_command(command, name, message)
-{
-    var group_id, form;
-    if (command == 'update_ng') { // we are in a browsepage
-        group_id = $('#select_groupid>option:selected').val();
-        if (group_id == '') {
-            control_action('updatearticles');
-        } else {
-            ng_action('updategroup', group_id);
-        }
-
-    } else if (command == 'expire_ng') {
-        group_id = $('#select_groupid>option:selected').val();
-        if (group_id == '') {
-            control_action('expirearticles');
-        } else {
-            ng_action('expiregroup', group_id);
-        }
-    } else if (command == 'purge_ng') {
-        group_id = $('#select_groupid>option:selected').val();
-        if (group_id == '') {
-            control_action_confirm('purgearticles', message + '?');
-        } else {
-            ng_action_confirm('purgegroup', group_id, message + ' @@?');
-        }
-    } else if (command == 'gensets_ng') {
-        group_id = $('#select_groupid>option:selected').val();
-        if (group_id == '') {
-            control_action('gensetsarticles');
-        } else {
-            ng_action('gensetsgroup', group_id);
-        }
-    } else if (command == 'update_rss') { // we are in a browsepage
-        group_id = $('#select_feedid>option:selected').val();
-        if (group_id == '') {
-            control_action('updaterssall');
-        } else {
-            ng_action('updaterss', group_id);
-        }
-    } else if (command == 'expire_rss') {
-        group_id = $('#select_feedid>option:selected').val();
-        if (group_id == '') {
-            control_action('expirerssall');
-        } else {
-           ng_action('expirerss', group_id);
-        }
-    } else if (command == 'purge_rss') {
-        group_id = $('#select_feedid>option:selected').val();
-        if (group_id == '') {
-            control_action_confirm('purgerssall', message +'?');
-        } else {
-            ng_action_confirm('purgerss', group_id, message + ' @@?');
-        }
-    } else if (command == 'updatespotscomments') {
-        control_action('updatespotscomments');
-    } else if (command == 'updatespotsimages') {
-        control_action('updatespotsimages');
-    } else if (command == 'updatespots') {
-        control_action('updatespots');
-    } else if (command == 'expirespots') {
-        control_action('expirespots');
-    } else if (command == 'purgespots') {
-        control_action_confirm('purgespots', message + '?');
-    } else if (command == 'editcategories') {
-        edit_categories();
-    } else if (command == 'add_button') {
-        buttons_action('edit', 'new');
-    } else if (command == 'import_buttons') {
-        show_popup_remote('ajax_edit_searchoptions', 'import_settings');
-    } else if (command == 'export_buttons') {
-        jump('ajax_edit_searchoptions.php?cmd=export_settings');
-    } else if (command == 'add_user') {
-        user_action('edit', 'new');
-    } else if (command == 'export_users') {
-        jump('ajax_edit_users.php?cmd=export_settings');
-    } else if (command == 'import_users') {
-        show_popup_remote('ajax_edit_users', 'import_settings');
-    } else if (command == 'add_server') {
-        edit_usenet_server('new', false);
-    } else if (command == 'autoconfig') {
-        control_action('findservers');
-    } else if (command == 'autoconfig_ext') {
-        control_action('findservers_ext');
-    } else if (command == 'import_servers') {
-        show_popup_remote('ajax_edit_usenet_servers', 'import_settings');
-    } else if (command == 'import_spots_blacklist') {
-        show_popup_remote('ajax_user_blacklist', 'import_settings_blacklist');
-    } else if (command == 'import_spots_whitelist') {
-        show_popup_remote('ajax_user_blacklist', 'import_settings_whitelist');
-    } else if (command == 'export_servers') {
-        jump('ajax_edit_usenet_servers.php?cmd=export_settings');
-    } else if (command == 'import_groups') {
-        show_popup_remote('ajax_groups', 'load_settings');
-    } else if (command == 'export_spots_blacklist') {
-        jump('ajax_user_blacklist.php?cmd=export_settings&list=black');
-    } else if (command == 'export_spots_whitelist') {
-        jump('ajax_user_blacklist.php?cmd=export_settings&list=white');
-    } else if (command == 'export_groups') {
-        group_export();
-    } else if (command == 'export_rss') {
-        rss_feeds_export();
-    } else if (command == 'export_config') {
-        config_export();
-    } else if (command == 'import_config') {
-        show_popup_remote('ajax_admin_config', 'load_settings');
-    } else if (command == 'reset_config') {
-        reset_prefs(message); 
-    } else if (command == 'export_prefs') {
-        user_settings_export();
-    } else if (command == 'import_prefs') {
-        show_popup_remote('ajax_prefs', 'load_settings');
-    } else if (command == 'reset_prefs') {
-        reset_prefs(message); 
-    } else if (command == 'import_rss') {
-        show_popup_remote('ajax_rss_feeds', 'load_settings');
-    } else if (command == 'new_file') {
-        edit_file('');
-    } else if (command == 'new_rss') {
-        edit_rss('new');
-    } else if (command == 'optimise') {
-        control_action('optimise');
-    } else if (command == 'sendsetinfo') {
-        control_action('sendsetinfo');
-    } else if (command == 'getsetinfo') {
-        control_action('getsetinfo');
-    } else if (command == 'cleandir') {
-        control_action('cleandir');
-    } else if (command == 'checkversion') {
-        control_action('checkversion');
-    } else if (command == 'export_all_settings') {
-        jump('ajax_action.php?cmd=export_all');
-    } else if (command == 'import_all_settings') {
-        show_popup_remote('ajax_action', 'import_all');
-    } else if (command == 'updategroups') {
-        control_action('updategroups');
-    } else if (command == 'updateblacklist') {
-        control_action('updateblacklist');
-    } else if (command == 'updatewhitelist') {
-        control_action('updatewhitelist');
-    } else if (command == 'postmessage') {
-        show_post_message();
-    } else if (command == 'postcomment') {
-        post_spot_comment();
-    } else if (command == 'continueall') {
-        control_action('continue_all');
-    } else if (command == 'pauseall') {
-        control_action('pause_all');
-    } else if (command == 'getnzb') {
-        show_uploadnzb();
-    } else if (command == 'post') {
-        show_post();
-    } else if (command == 'post_spot') {
-        show_post_spot();
-    } else if (command == 'cleandb') {
-        control_action('cleandb');
-    } else if (command == 'cleanall') {
-        control_action('cleanall');
-    } else if (command == 'cancelall') {
-        control_action('cancelall');
-    } else if (command == 'shutdown') {
-        control_action('poweroff');
-    } else if (command == 'reload') {
-        control_action('restart');
-    } else if (command == 'add_search') {
-        show_savename();
-    } else if (command == 'delete_search') {
-        delete_search_confirm();
-    } else {
-        show_alert('Unknown command: ' + command);
-    }
-} 
 
 function init()
 {
@@ -253,7 +86,7 @@ function init()
     };
     var urdd_status = $('#urdd_status').val();
     var msg = $('#urdd_message').val();
-    if (urdd_status != undefined && urdd_status == 0) {            
+    if (urdd_status !== undefined && urdd_status == 0) {            
         set_message('message_bar', msg, 5000);
     } 
     update_quick_status();
@@ -261,7 +94,7 @@ function init()
     $('#message_bar').click(function() { hide_message('message_bar', 0); } );  
     $('#scrollmenuright').click(function(e) { scroll_menu_right(e); } );
     $('#scrollmenuleft').click(function(e) { scroll_menu_left(e); } );
-    $('#smalllogo').click(function(e) { jump('index.php'); } );
+    $('#smalllogo').click(function() { jump('index.php'); } );
     $('#status_item').mouseover(function() { load_activity_status(); } );
     $('#topcontent').mouseup( function() { set_selected();} );
     $('#contentout').mouseover( function() { close_quickmenu();} );
@@ -309,14 +142,6 @@ function job_action(action, job)
     }
 }
 
-function control_action_confirm(action, confirmmsg)
-{
-    show_confirm(confirmmsg, function() { 
-            control_action(action);
-        }
-    );
-}
-
 function control_action(action)
 {
     var challenge = get_value_from_id('challenge', '');
@@ -335,16 +160,12 @@ function control_action(action)
     }
 }
 
-function ng_action_confirm(action, id, confirmmsg)
+function control_action_confirm(action, confirmmsg)
 {
-    var name = get_value_from_id("ng_id_" + id, null);
-    if (name === null) {
-        return;
-    }
-    confirmmsg = confirmmsg.replace('@@', name);
-    var resp = show_confirm(confirmmsg, function () {
-        ng_action(action, id);
-    });
+    show_confirm(confirmmsg, function() { 
+            control_action(action);
+        }
+    );
 }
 
 function ng_action(action, id)
@@ -368,10 +189,16 @@ function ng_action(action, id)
     }
 }
 
-
-function add_class(item, classname)
+function ng_action_confirm(action, id, confirmmsg)
 {
-    $(item).addClass(classname);
+    var name = get_value_from_id("ng_id_" + id, null);
+    if (name === null) {
+        return;
+    }
+    confirmmsg = confirmmsg.replace('@@', name);
+    show_confirm(confirmmsg, function () {
+        ng_action(action, id);
+    });
 }
 
 function set_basket_type(type)
@@ -391,7 +218,6 @@ function set_basket_type(type)
 
 function get_basket_type()
 {
-    var type = '';
     $.ajax({
         type: 'post',
         url: "ajax_processbasket.php",
@@ -399,10 +225,10 @@ function get_basket_type()
         data: {
             command: 'get' 
         }
-       }).done(function(html) {
-           var content = $.parseJSON(html);
-           update_basket_display(content.basket_type);
-    });
+   }).done(function(html) {
+       var content = $.parseJSON(html);
+       update_basket_display(content.basket_type);
+   });
 }
 
 function update_basket_display(basket_type)
@@ -446,7 +272,7 @@ function update_basket_display(basket_type)
         content = $.trim(content.contents);
         if (basket_type != 2) { // the normal basket
             $('#basketdiv').html(content);
-            if ($('#basketbuttondiv') != undefined) {
+            if ($('#basketbuttondiv') !== undefined) {
                 $('#minibasketdiv').addClass('hidden');
                 if (content === '') {
                     $('#basketbuttondiv').addClass('hidden');
@@ -474,14 +300,11 @@ function update_search_bar_height()
 {
     var div_height = $('#searchbar').height();
     var menu_height = $('#pulldown_menu').height();
-    var top_height = $('#topcontent').height();
     var diff = div_height + menu_height + 7;
     if (diff > 50) { diff += 2; } 
-    $('#topcontent').css({ "top": (diff) + 'px'});
+    $('#topcontent').css( { "top": diff + 'px'});
     $('#contentout').height($(window).height() - diff);
 }
-
-var last_clicked_setid = false;
 
 function select_set(setID, type, theevent)
 {
@@ -624,7 +447,7 @@ function submit_viewfiles_action_confirm(fileid, command, msg)
         return;
     }
     msg = msg.replace('@@', escape_tags(name));
-    var resp = show_confirm(msg, function () {
+    show_confirm(msg, function () {
         submit_viewfiles_action(fileid, command);
     });
 }
@@ -638,13 +461,13 @@ function submit_viewfiles_action(fileid, command)
         return;
     }
     var url = "ajax_editviewfiles.php";
-    var params = "cmd=" + command + 
-        "&dir=" + encodeURIComponent(dir) + 
-        "&filename=" + encodeURIComponent(name) + 
-        "&challenge=" + encodeURIComponent(challenge);
     if (command == 'up_nzb') {
         show_uploadnzb(dir, name);
     } else if (command == 'zip_dir') {
+        var params = "cmd=" + command + 
+            "&dir=" + encodeURIComponent(dir) + 
+            "&filename=" + encodeURIComponent(name) + 
+            "&challenge=" + encodeURIComponent(challenge);
         var id = 'iframe_' + String(Math.round(Math.random()* 10000));
         $('<iframe id="' + id + '" name="iframe" style="top:200px;">').appendTo('body');
         $('#' + id).attr('src', url + '?' + params);
@@ -726,15 +549,15 @@ function load_transfers()
 {
     var active_tab = get_value_from_id('active_tab', null);
     var url = "ajax_showtransfers.php";
-    var _data = null;
+    var data = null;
     if (active_tab !== null) {
-        _data = { active_tab: active_tab };
+        data = { active_tab: active_tab };
     }
     $.ajax({
         type: 'post',
         url: url,
         cache: false,
-        data: _data
+        data: data
     }).done(function(html) {
         show_content_div_2(html, 'transfersdiv');
         update_search_bar_height();
@@ -752,7 +575,6 @@ function update_transfers()
     update_transfer_interval = setInterval(load_transfers, 4000);
 }
 
-
 function hide_overlayed_content()
 {
     _hide_overlayed_content('#overlay_content', '#overlay_back');
@@ -768,7 +590,7 @@ function _hide_overlayed_content(content, back)
     $(back).hide();
     $(content).hide();
     $(content).html('');
-    $(document).keydown(function(event) { } );
+    $(document).keydown(function() { } );
 }
 
 function _show_overlayed_content(html, style, content, back, close_button)
@@ -797,7 +619,7 @@ function _overlayed_content_visible(content)
 
 function overlayed_content_visible()
 {
-    return _overlayed_content_visible('#overlay_content')
+    return _overlayed_content_visible('#overlay_content');
 }
 
 function show_overlayed_content_1(html, style)
@@ -825,7 +647,7 @@ function load_control()
     $.ajax({
         type: 'get',
         url: url,
-        cache: false,
+        cache: false
     }).done(function(html) {
         show_content_div_2(html, 'controldiv');
         update_search_bar_height();
@@ -839,25 +661,25 @@ function show_users(order, direction)
     var orderdirval = get_value_from_id('order_dir', '');
     var search = get_value_from_id('search', '');
     var data = { search : search, cmd: 'reload_users' };
-    if (order == undefined) {
+    if (order === undefined) {
         order = orderval;
     }
-    if (order != undefined) {
-        data ['sort'] = order;
+    if (order !== undefined) {
+        data.sort = order;
     }
 
     if (direction == null) {
         direction = orderdirval;
     }
     if (direction != null) {
-        data['sort_dir'] = direction;
+        data.sort_dir = direction;
     }
 
     $.ajax({
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         show_content_div_2(html, 'usersdiv');
         update_search_bar_height();
@@ -867,7 +689,7 @@ function show_users(order, direction)
 function blacklist_offset(offset)
 {
     var which = $('#which').val();
-    show_blacklist({ offset: offset, which : which} );
+    show_blacklist({ offset: offset, which : which } );
 }
 
 function show_blacklist(options)
@@ -878,6 +700,7 @@ function show_blacklist(options)
     var search = get_value_from_id('search', '');
     var offset = get_value_from_id('offset', '0');
     var status_val = $('#status>option:selected').val();
+    var which = get_value_from_id('which', '');
     var order, direction;
     var add_rows = 0;
     var data = {
@@ -888,23 +711,22 @@ function show_blacklist(options)
         offset: offset
     };
 
-    var which = get_value_from_id('which', '');
     if (which == '') { which = 'spots_blacklist'; }
-    if (options != undefined) {
-        if (options.which != undefined) {
-            data['which'] = options.which;
+    if (options !== undefined) {
+        if (options.which !== undefined) {
+            data.which = options.which;
             $('#which').val(options.which);
         }
-        if (options.order == undefined) {
+        if (options.order === undefined) {
             order = orderval;
         } else {
             order = options.order;
         }
-        if (order != undefined) {
-            data["sort"] = order;
+        if (order !== undefined) {
+            data.sort = order;
         }
 
-        if (options.def_direction != undefined && orderval != order) {
+        if (options.def_direction !== undefined && orderval != order) {
             direction = options.def_direction;
         } else if (orderdirval == 'asc') {
             direction = 'desc';
@@ -912,19 +734,19 @@ function show_blacklist(options)
             direction = 'asc';
         }
         if (direction != null) {
-           data["sort_dir"] = direction;
+           data.sort_dir = direction;
         }
-        if (options.offset != undefined) {
-            data['offset'] = options.offset;
+        if (options.offset !== undefined) {
+            data.offset = options.offset;
         }
         var per_page = $('#perpage').val();
         if (options.add_rows != null) {
-            data["only_rows"] = "1";
-            data["perpage"] = per_page;
+            data.only_rows = "1";
+            data.perpage = per_page;
             add_rows = 1;
             offset = parseInt( $('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
-            data['offset'] = offset;
+            data.offset = offset;
             $('#last_line').val(offset + parseInt(per_page));
         }
     }
@@ -933,7 +755,7 @@ function show_blacklist(options)
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         if (add_rows == 0) {
             show_content_div_2(html, 'usersdiv');
@@ -942,11 +764,6 @@ function show_blacklist(options)
             $('#black_list_table>tbody tr').eq(-2).after(html);
         }
     });
-}
-
-function show_files_clean()
-{
-    return show_files( { 'curdir':null, 'reset_offset':true });
 }
 
 function show_files(options)
@@ -968,29 +785,29 @@ function show_files(options)
 
     if (options != null) {
         if (options.curdir != null) {
-            data['dir'] = options.curdir; 
+            data.dir = options.curdir; 
         }
         if (options.reset_offset != null && options.reset_offset === true) {
-            data['offset'] = 0;
+            data.offset = 0;
         }
         if (options.add_rows != null && options.add_rows == 1) {
             var per_page = $('#perpage').val();
             add_rows = 1;
-            data['only_rows'] = '1';
-            data['perpage'] = per_page;
+            data.only_rows = '1';
+            data.perpage = per_page;
             offset = parseInt($('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset+parseInt(per_page));
-            data['offset'] = offset;
+            data.offset = offset;
         }
     }
-    $('#search').keypress( function(event) { do_keypress_viewfiles(event)} );
+    $('#search').keypress( function(event) { do_keypress_viewfiles(event); } );
     var url = "ajax_editviewfiles.php";
     $.ajax({
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         if (html.substr(0, 7) == ':error:') {
             set_message('message_bar', html.substr(7), 5000);
@@ -1012,6 +829,11 @@ function show_files(options)
     });
 }
 
+function show_files_clean()
+{
+    return show_files( { 'curdir':null, 'reset_offset':true });
+}
+
 function show_buttons(order, direction)
 {
     var url = "ajax_edit_searchoptions.php";
@@ -1024,24 +846,24 @@ function show_buttons(order, direction)
     var orderval = get_value_from_id('order', 'name');
     var orderdirval = get_value_from_id('order_dir', 'asc');
     
-    if (order == undefined) {
+    if (order === undefined) {
         order = orderval;
     }
-    if (order != undefined) {
-        data['sort'] = order;
+    if (order !== undefined) {
+        data.sort = order;
     }
 
     if (direction == null) {
         direction = orderdirval;
     }
     if (direction != null) {
-        data['sort_dir'] = direction;
+        data.sort_dir = direction;
     }
     $.ajax({
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         show_content_div_2(html, 'buttonsdiv');
         update_search_bar_height();
@@ -1059,24 +881,24 @@ function show_usenet_servers(order, direction)
     var orderval = get_value_from_id('order', 'name');
     var orderdirval = get_value_from_id('order_dir', 'asc');
     
-    if (order == undefined) {
+    if (order === undefined) {
         order = orderval;
     }
-    if (order != undefined) {
-        data['sort'] = order;
+    if (order !== undefined) {
+        data.sort = order;
     }
 
     if (direction == null) {
         direction = orderdirval;
     }
     if (direction != null) {
-        data['sort_dir'] = direction;
+        data.sort_dir = direction;
     }
     $.ajax({
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         show_content_div_2(html, 'usenetserversdiv');
         update_search_bar_height();
@@ -1092,17 +914,17 @@ function show_post_message(type, spotid)
     };
     
     if (spotid !== null) {
-        data ['spotid'] = spotid;
+        data.spotid = spotid;
         if (type == 'comment') {
             var rating = get_value_from_id('rating', '0');
-            data ['rating'] = rating;
+            data.rating = rating;
         }
     }
     $.ajax({
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         if (html.substr(0, 7) != ':error:') {
             show_overlayed_content_1(html, 'popup700x400');
@@ -1116,15 +938,15 @@ function show_uploadnzb(dir, name)
 {
     var url = "ajax_show_upload.php";
     var data = {};
-    if (dir != undefined && name != undefined) {
-        data["dir"] = dir;
-        data["filename"] = name;
+    if (dir !== undefined && name !== undefined) {
+        data.dir = dir;
+        data.filename = name;
     }
     $.ajax({
         type: 'get',
         url: url,
         data: data,
-        cache: false,
+        cache: false
     }).done(function(html) {
         if (html.substr(0, 7) != ':error:') {
             show_overlayed_content_1(html, 'popup525x300');
@@ -1144,7 +966,7 @@ function show_edit_post(postid)
             cmd: 'showrename', 
             postid: postid
         },
-        cache: false,
+        cache: false
     }).done(function(html) {
 
         if (html.substr(0, 7) != ':error:') {
@@ -1161,7 +983,7 @@ function show_post()
     $.ajax({
         type: 'get',
         url: url,
-        cache: false,
+        cache: false
     }).done(function(html) {
         if (html.substr(0, 7) != ':error:') {
             show_overlayed_content_1(html, 'popup700x400');
@@ -1182,13 +1004,13 @@ function load_jobs(order, direction)
         order = orderval;
     }
     if (order != null) {
-        data['sort'] = order;
+        data.sort = order;
     }
     if (direction === undefined) {
         direction = orderdirval;
     }
     if (direction != null){
-        data['sort_dir'] = direction;
+        data.sort_dir = direction;
     }
     $.ajax({
         type: 'get',
@@ -1202,11 +1024,6 @@ function load_jobs(order, direction)
     });
 }
 
-function load_tasks_no_offset(order, direction)
-{
-     load_tasks(order, direction, true);
-}
-
 function load_tasks(order, direction, clear_offset)
 {
     var url = "ajax_admintasks.php";
@@ -1216,26 +1033,26 @@ function load_tasks(order, direction, clear_offset)
     var offsetval = get_value_from_id('offset', '');
     var tasksearch = get_value_from_id('tasksearch', '');
     var timeval = $('#time_select>option:selected').val();
-    data ["time"]= timeval;
+    data.time= timeval;
     if (tasksearch != '') {
-        data ["tasksearch"]= tasksearch;
+        data.tasksearch = tasksearch;
     }
     var statusval = $('#status_select>option:selected').val();
-    data ["status"]= statusval;
+    data.status = statusval;
     if (order === undefined && orderval != '') {
         order = orderval;
     }
     if (order !== null) {
-        data ["sort"]= order;
+        data.sort= order;
     }
     if (direction === undefined && orderdirval != '') {
         direction = orderdirval;
     }
     if (direction != null) {
-        data ["sort_dir"]= direction;
+        data.sort_dir= direction;
     }
     if (offsetval != '' && clear_offset !== true) {
-        data ["offset"]= offsetval;
+        data.offset = offsetval;
     }
     $.ajax({
         type: 'get',
@@ -1248,6 +1065,11 @@ function load_tasks(order, direction, clear_offset)
         update_widths("comment_td");
         update_search_bar_height();
     });
+}
+
+function load_tasks_no_offset(order, direction)
+{
+     load_tasks(order, direction, true);
 }
 
 function update_jobs()
@@ -1412,7 +1234,7 @@ function mark_read(setid, cmd, type)
     };
     if (cmd == 'wipe') {
         var challenge = get_value_from_id('challenge', '');
-        data ['challenge'] = challenge;
+        data.challenge = challenge;
     }
     $.ajax({
         type: 'get',
@@ -1551,7 +1373,7 @@ function process_whichbutton(buttonval, rightclick)
         set_ids.push($(this).val());
     }
     ); 
-    data ['set_ids'] = set_ids;
+    data.set_ids = set_ids;
 
     $.ajax({
         type: 'post',
@@ -1598,7 +1420,7 @@ function set_message(id, msg, timeout)
     }
 }
 
-function blink_status(dlid, binary_id, group_id)
+function blink_status()
 {
     $('#status_item').addClass("menu_highlight");
     setTimeout(function() {
@@ -1623,7 +1445,7 @@ function select_preview(binid, gid)
     }).done( function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
-            blink_status(x.dlid, binid, gid);
+            blink_status();
         } else {
             set_message('message_bar', x.error , 5000);
         }
@@ -1654,7 +1476,7 @@ function show_preview(dlid, binary_id, group_id)
         } else {
             setTimeout(function () {
                 var do_reload = $('#do_reload');
-                if (overlayed_content_visible() && do_reload.val() == undefined) {
+                if (overlayed_content_visible() && do_reload.val() === undefined) {
                     show_preview(dlid, binary_id, group_id);
                 }
             }, 1000);
@@ -1718,7 +1540,7 @@ function delete_blacklist(id, msg)
         });
     };
 
-    if (msg == undefined) {
+    if (msg === undefined) {
         f();
     } else {
         show_confirm(msg, f);
@@ -1777,7 +1599,7 @@ function update_message_bar(html)
 
 function buttons_action_confirm(action, uid, msg)
 {
-    var resp = show_confirm(msg, function () {
+    show_confirm(msg, function () {
         buttons_action(action, uid);
     });
 }
@@ -1830,7 +1652,7 @@ function user_update_setting(uid, action, value)
 
 function user_action_confirm(action, uid, msg)
 {
-    var resp = show_confirm(msg, function() {
+    show_confirm(msg, function() {
         user_action(action, uid);
     });
 }
@@ -1838,7 +1660,6 @@ function user_action_confirm(action, uid, msg)
 function user_action(action, uid)
 {
     var challenge = get_value_from_id('challenge', '');
-    var which = get_value_from_id('which', '');
     var url = "ajax_edit_users.php";
     var data = {
         id : uid,
@@ -1862,7 +1683,7 @@ function user_action(action, uid)
 
 function usenet_action_confirm(action, uid, msg)
 {
-    var resp = show_confirm(msg, function() {
+    show_confirm(msg, function() {
         usenet_action(action, uid);
     });
 }
@@ -1900,7 +1721,7 @@ function upload_handler(url, fn)
                 fn(xhr);
             }
         };
-        var fd = new FormData;
+        var fd = new FormData();
         fd.append('challenge', challenge);
         fd.append('cmd', command);
         fd.append('filename', file);
@@ -1937,7 +1758,7 @@ function show_popup_remote(referrer, command)
         challenge: challenge 
     };
     if (command !== null) {
-        data ['cmd'] = command;
+        data.cmd = command;
     }
     $.ajax({
         type: 'get',
@@ -2458,13 +2279,11 @@ function update_quick_menu_images()
     // Loop all "quickmenuitem_x" divs:
     var themaindiv = $('#quickmenu');
     var theinnerdiv = $('#quickmenuinner');
-    var divwidth = themaindiv.outerWidth();
-    var divheight = themaindiv.outerHeight();
 
     // Assuming 400x10
-    var width = 400;
-    var height = 18;
-    var offsety = 0;
+    var height = 18,
+        i;
+    var thediv;
 
     // Number of items to show:
     var quicks = $('#nrofquickmenuitems').val();
@@ -2472,8 +2291,7 @@ function update_quick_menu_images()
         close_quickmenu();
         return;
     }
-    var thediv;
-    for (var i = 1; i <= quicks; i++) {
+    for (i = 1; i <= quicks; i++) {
         thediv = $('#quickmenuitem_' + i);
         thediv.css('left', '0px');
         thediv.css('top',( (i - 1) * height) + 'px');
@@ -2630,7 +2448,7 @@ function guess_extset_info_safe(setID, type)
                 setname : setname,
                 subject : setID 
             } 
-        }).done( function(html) {
+        }).done( function() {
             show_quick_display('seteditesi', setID, '', type);
         });
     }
@@ -2654,7 +2472,7 @@ function guess_basket_extset_info(setID, type)
             url: url,
             cache: false,
             data: data
-        }).done( function(html) {
+        }).done( function() {
             // Reload to show the new info:
             load_sets();
             close_quickmenu();
@@ -2685,7 +2503,7 @@ function guess_extset_info(setID, type)
             close_quickmenu();
             // Also echo the new setname into the TD:
             if (html !== '') {
-                $('#td_set_' + setID).html('<div class="donotoverflowdamnit">' + html + '</div>')
+                $('#td_set_' + setID).html('<div class="donotoverflowdamnit">' + html + '</div>');
                 update_widths('browsesubjecttd');
             }
         });
@@ -2741,7 +2559,7 @@ function save_extset_info(setID, type)
 
 function remove_rss(id, msg)
 {
-    var resp = show_confirm(msg, function() {
+    show_confirm(msg, function() {
         var challenge = get_value_from_id('challenge');
         $.ajax({
             type: 'post',
@@ -2764,7 +2582,7 @@ function remove_rss(id, msg)
 function confirm_delete_account(id, msg)
 {
     var challenge = get_value_from_id('challenge');
-    var resp = show_confirm(msg, function () {
+    show_confirm(msg, function () {
         $.ajax({
             type: 'post',
             url: 'ajax_delete_account.php',
@@ -2790,7 +2608,7 @@ function fold_transfer(id, type)
 {
     // id = global or ready/active/finished/error/etc...
     // type = down/post
-    var url = 'ajax_update_session.php'
+    var url = 'ajax_update_session.php';
     $.ajax({
         type: 'get',
         url: url,
@@ -2914,7 +2732,7 @@ function submit_language_login()
     if (change !== null ) {
         var langval = $('#language_select>option:selected').val();
         change.val(1);
-        if (curr_language == undefined || curr_language.value != langval) {
+        if (curr_language === undefined || curr_language.value != langval) {
             curr_language.value = langval;
             myform.submit();
         }
@@ -2926,8 +2744,6 @@ function submit_upload()
     // need to rewrite to do proper error handling
     var src_remote = get_value_from_id('url'); // its a url we post, to be gotten by the server
     var src_local = get_value_from_id('upfile'); // it's a local file we upload to the server
-    var dl_dir = get_value_from_id('dl_dir');
-    var uploaded_text = get_value_from_id('uploaded_text');
     var iframe_id = 'iframe_' + String(Math.round(Math.random()* 10000));
 
     $('<iframe id="' + iframe_id + '" name="' + iframe_id + '" style="margin-top:200px;">').appendTo('body');
@@ -2965,7 +2781,7 @@ function submit_upload()
         if (i < 20) { 
             setTimeout(poll_iframe, 200);
         }
-    }
+    };
     poll_iframe();
     return true;
 }
@@ -3036,7 +2852,7 @@ function save_file()
         set_message('message_bar', filename_err, 5000);
         return false;
     }
-    newfile = (newfile == undefined) ? "0" : "1";
+    newfile = (newfile === undefined) ? "0" : "1";
     var url = "ajax_editviewfiles.php";
     var data = { 
         cmd: 'save_file',
@@ -3090,7 +2906,7 @@ function get_category_name()
     var cat_name = $('#cat_name');
     var cat_id = $('#cat_id');
 
-    idx = $('#category_id>option:selected').val();
+    var idx = $('#category_id>option:selected').val();
     var url = "ajax_editcategory.php";
     var data = { 
         cmd : 'get_name', 
@@ -3132,7 +2948,7 @@ function update_category()
         url: url,
         cache: false,
         data: data 
-    }).done( function(html) {
+    }).done( function() {
         load_subscriptions();
         hide_overlayed_content();
         toggle_table('groupstable', 'user', 'admin');
@@ -3158,7 +2974,7 @@ function delete_category()
         url: url,
         cache: false,
         data: data 
-    }).done( function(html) {
+    }).done( function() {
         load_subscriptions();
     });
 }
@@ -3172,23 +2988,23 @@ function show_calendar(month, year, clear_time)
     var data = { 
         cmd : 'show_calendar', 
         timestamp : timestamp
-    }
+    };
     if (month !== null) {
-        data [ 'month' ] = month;
+        data.month = month;
     }
     if (year !== null) {
-        data [ 'year' ] = year;
+        data.year = year;
     }
     if (clear_time !== null) {
         var hour = $('#hour');
         var minute = $('#minute');
         if (hour !== null) {
             hour = hour.val();
-            _hour = data [ 'hour' ] = hour;
+            _hour = data.hour = hour;
         }
         if (minute !== null) {
             minute = minute.val();
-            _minute = data [ 'minute' ] = minute;
+            _minute = data.minute = minute;
         }
     }
     $.ajax({
@@ -3233,7 +3049,7 @@ function submit_calendar(none)
     } else { 
         $('#timestamp').val($('#date1').val() + ' ' + $('#time1').val());
     }
-    if ($('#basketbuttondiv') != undefined) {
+    if ($('#basketbuttondiv') !== undefined) {
         // we're in the basket so we need to update it to store the values
         update_basket_display(1);
     }
@@ -3256,7 +3072,7 @@ function select_calendar(day)
 function clear_checkbox(id)
 {
     var box = $('#' + id);
-    var img = $('#' +id + '_img');
+    var img = $('#' + id + '_img');
     if (box != null && img != null) {
         box.val(0);
         img.removeClass('checkbox_on checkbox_tri');
@@ -3267,7 +3083,7 @@ function clear_checkbox(id)
 function set_checkbox(id, val)
 {
     var box = $('#' + id);
-    var img = $('#' +id + '_img');
+    var img = $('#' + id + '_img');
     if (box != null && img != null) {
         box.val(val);
         img.removeClass('checkbox_on checkbox_tri checkbox_off');
@@ -3375,15 +3191,10 @@ function toggle_table(table_id, scope_off, scope_on)
     });
 }
 
-function has_class(item, classname)
-{
-    return $(item).hasClass(classname);
-}
-
 function select_tab_setting(tab, session_var, session_val)
 {
     if (session_var !== null && session_val !== null) {
-        var url = 'ajax_update_session.php'
+        var url = 'ajax_update_session.php';
         $.ajax({
             type: 'get',
             url: url,
@@ -3412,7 +3223,7 @@ function select_tab_setting(tab, session_var, session_val)
 function select_tab_transfers(tab, session_var, session_val)
 {
     if (session_var !== null && session_val !== null) {
-        var url = 'ajax_update_session.php'
+        var url = 'ajax_update_session.php';
         $.ajax({
             type: 'get',
             url: url,
@@ -3465,16 +3276,16 @@ function select_tab_stats(tab, type, year, period, source, subtype)
     var width = ($(window).width()) / 2.2;
     var data = { type : type , width : String (width) };
     if (year != null) {
-        data ['year'] = year; 
+        data.year = year; 
     }
     if (period != null) {
-        data ['period'] = period; 
+        data.period = period; 
     }
     if (subtype != null) {
-        data ['subtype'] = subtype; 
+        data.subtype = subtype; 
     }
     if (source != null) {
-        data ['source'] = source; 
+        data.source = source; 
     }
     $.ajax({
         type: 'get',
@@ -3703,22 +3514,22 @@ function save_browse_search()
     var maxcomplete = get_value_from_id('maxcomplete','');
     var minrating = get_value_from_id('minrating','');
     var maxrating = get_value_from_id('maxrating','');
-    data['feed'] = feed;
-    data['group'] = group;
-    data['name'] = sname;
-    data['save_category'] = save_category;
-    data['cat'] = "0";
-    data['flag'] = flag;
-    data['minsetsize'] = minsetsize;
-    data['maxsetsize'] = maxsetsize;
-    data['minage'] = minage;
-    data['maxage'] = maxage;
-    data['minrating'] = minrating;
-    data['maxrating'] = maxrating;
-    data['mincomplete'] = mincomplete;
-    data['maxcomplete'] = maxcomplete;
-    data['type'] = type;
-    data['search'] = search;
+    data.feed = feed;
+    data.group = group;
+    data.name = sname;
+    data.save_category = save_category;
+    data.cat = "0";
+    data.flag = flag;
+    data.minsetsize = minsetsize;
+    data.maxsetsize = maxsetsize;
+    data.minage = minage;
+    data.maxage = maxage;
+    data.minrating = minrating;
+    data.maxrating = maxrating;
+    data.mincomplete = mincomplete;
+    data.maxcomplete = maxcomplete;
+    data.type = type;
+    data.search = search;
     hide_overlayed_content();
     $.ajax({
         type: 'get',
@@ -3752,18 +3563,18 @@ function save_spot_search()
     var minage = get_value_from_id('minage','');
     var maxage = get_value_from_id('maxage','');
     var poster = get_value_from_id('poster','');
-    data['name'] = sname;
-    data['save_category'] = save_category;
-    data['cat'] = cat;
-    data['flag'] = flag;
-    data['minsetsize'] = minsetsize;
-    data['maxsetsize'] = maxsetsize;
-    data['minage'] = minage;
-    data['poster'] = poster;
-    data['maxage'] = maxage;
-    data['cmd'] = 'save';
-    data['type'] = type;
-    data['search'] = search;
+    data.name = sname;
+    data.save_category = save_category;
+    data.cat = cat;
+    data.flag = flag;
+    data.minsetsize = minsetsize;
+    data.maxsetsize = maxsetsize;
+    data.minage = minage;
+    data.poster = poster;
+    data.maxage = maxage;
+    data.cmd = 'save';
+    data.type = type;
+    data.search = search;
     hide_overlayed_content();
     $.ajax({
         type: 'get',
@@ -3824,9 +3635,9 @@ function update_browse_searches(name)
                     else if (key == 'mincomplete') { setvalbyid('mincomplete', val); }
                     else if (key == 'maxrating') { setvalbyid('maxrating', val); }
                     else if (key == 'minrating') { setvalbyid('minrating', val); }
-                    else if (key == 'flag') { setselectbyid('flag', val); }
-                    else if (key == 'group') { setselectbyid('select_groupid', val); }
-                    else if (key == 'feed') { setselectbyid('select_feedid', val); }
+                    else if (key == 'flag') { setvalbyid('flag', val); }
+                    else if (key == 'group') { setvalbyid('select_groupid', val); }
+                    else if (key == 'feed') { setvalbyid('select_feedid', val); }
                     else if (key == 'search') { setvalbyid('search', val);}
                     else if (key == 'category') { setvalbyid('save_category', val); }
                 });
@@ -3866,7 +3677,7 @@ function update_spot_searches(name)
             cmd : 'get' 
         } 
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         setvalbyid('save_category', '');
         update_search_names(name);
@@ -3885,7 +3696,7 @@ function update_spot_searches(name)
                 else if (key == 'minage')     { setvalbyid('minage', val); }
                 else if (key == 'category')   { setvalbyid('save_category', val); }
                 else if (key == 'poster')     { setvalbyid('poster', val); }
-                else if (key == 'flag')       { setselectbyid('flag', val); }
+                else if (key == 'flag')       { setvalbyid('flag', val); }
                 else if (key == 'cat')        { cat = val; set_checkbox('checkbox_cat_' + val, 1);}
                 else if (key == 'search')     { setvalbyid('search', val);}
                 else if (key == 'subcats') {
@@ -3935,65 +3746,65 @@ function load_spots(options)
     var flag = $('#flag>option:selected').val();
     var per_page = $('#perpage').val();
     var add_rows = 0;
-    if (options != undefined) {
-        if (options.add_rows != undefined) {
+    if (options !== undefined) {
+        if (options.add_rows !== undefined) {
             add_rows = 1;
-            data['only_rows'] = 1;
-            data['perpage'] = per_page;
+            data.only_rows = 1;
+            data.perpage = per_page;
             offset = parseInt( $('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
         }
-        if (options.minsetsize != undefined) {
+        if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
         }
-        if (options.maxsetsize != undefined) {
+        if (options.maxsetsize !== undefined) {
             maxsetsize = options.maxsetsize;
         }
-        if (options.minage != undefined) {
+        if (options.minage !== undefined) {
             minage = options.minage;
         }
-        if (options.maxage != undefined) {
+        if (options.maxage !== undefined) {
             maxage = options.maxage;
         }
-        if (options.minrating != undefined) {
+        if (options.minrating !== undefined) {
             minrating = options.minrating;
         }
-        if (options.maxrating != undefined) {
+        if (options.maxrating !== undefined) {
             maxrating = options.maxrating;
         }
-        if (options.order != undefined) {
+        if (options.order !== undefined) {
             order = options.order;
         }
-        if (options.flag != undefined) {
+        if (options.flag !== undefined) {
             flag = options.flag;
         }
-        if (options.offset != undefined) {
+        if (options.offset !== undefined) {
             offset = options.offset;
         }
-        if (options.spot_cat != undefined) {
+        if (options.spot_cat !== undefined) {
             //spot categories
             cat_id = options.spot_cat;
         }
-        if (options.setid != undefined) {
+        if (options.setid !== undefined) {
             spotid = options.setid;
         }
-        if (options.next != undefined) {
+        if (options.next !== undefined) {
             cat_id = options.next;
         }
-        if (options.category != undefined) {
+        if (options.category !== undefined) {
             // user defined categories
             $('#save_category').val(options.category);
         }
-        if (options.search != undefined) {
+        if (options.search !== undefined) {
             search = options.search;
             $('#search').val(search);
         }
-        if (options.poster != undefined) {
+        if (options.poster !== undefined) {
             poster = options.poster;
             $('#poster').val(poster);
         }
-        if (options.subcat != undefined) {
+        if (options.subcat !== undefined) {
             data [ options.subcat ] = "1";
         }
     }
@@ -4002,20 +3813,21 @@ function load_spots(options)
         $('#setsdiv').addClass('hidden');
     }
     var url = "ajax_spots.php";
-    data['search'] = search;
-    data['minsetsize'] = minsetsize;
-    data['maxsetsize'] = maxsetsize;
-    data['minrating'] = minrating;
-    data['maxrating'] = maxrating;
-    data['minage'] = minage;
-    data['maxage'] = maxage;
-    data['poster'] = poster;
-    data['categoryID'] =cat_id;
-    data['offset'] = offset;
-    data['spotid'] = spotid;
-    data['flag'] = flag;
-    data['order'] = order;
+    data.search = search;
+    data.minsetsize = minsetsize;
+    data.maxsetsize = maxsetsize;
+    data.minrating = minrating;
+    data.maxrating = maxrating;
+    data.minage = minage;
+    data.maxage = maxage;
+    data.poster = poster;
+    data.categoryID =cat_id;
+    data.offset = offset;
+    data.spotid = spotid;
+    data.flag = flag;
+    data.order = order;
     hide_overlayed_content();
+    console.log(data);
     $.ajax({
         type: 'get',
         url: url,
@@ -4069,61 +3881,61 @@ function load_groupsets(options)
     var group_id = $('#select_groupid>option:selected').val();
     var per_page = $('#perpage').val();
     var add_rows = 0;
-    if (options != undefined) {
-        if (options.add_rows != undefined) {
+    if (options !== undefined) {
+        if (options.add_rows !== undefined) {
             add_rows = 1;
-            data['only_rows'] = 1;
-            data['perpage'] = per_page;
+            data.only_rows = 1;
+            data.perpage = per_page;
             offset = parseInt( $('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
         }
-        if (options.minsetsize != undefined) {
+        if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
         }
-        if (options.maxsetsize != undefined) {
+        if (options.maxsetsize !== undefined) {
             maxsetsize = options.maxsetsize;
         }
-        if (options.mincomplete != undefined) {
+        if (options.mincomplete !== undefined) {
             mincomplete = options.mincomplete;
         }
-        if (options.maxcomplete != undefined) {
+        if (options.maxcomplete !== undefined) {
             maxcomplete = options.maxcomplete;
         }
-        if (options.minage != undefined) {
+        if (options.minage !== undefined) {
             minage = options.minage;
         }
-        if (options.maxage != undefined) {
+        if (options.maxage !== undefined) {
             maxage = options.maxage;
         }
-        if (options.minrating != undefined) {
+        if (options.minrating !== undefined) {
             minrating = options.minrating;
         }
-        if (options.maxrating != undefined) {
+        if (options.maxrating !== undefined) {
             maxrating = options.maxrating;
         }
-        if (options.order != undefined) {
+        if (options.order !== undefined) {
             order = options.order;
         }
-        if (options.flag != undefined) {
+        if (options.flag !== undefined) {
             flag = options.flag;
         }
-        if (options.group_id != undefined) {
+        if (options.group_id !== undefined) {
             group_id = options.group_id;
         }
-        if (options.offset != undefined) {
+        if (options.offset !== undefined) {
             offset = options.offset;
         }
-        if (options.setid != undefined) {
+        if (options.setid !== undefined) {
             setid = options.setid;
         }
-        if (options.next != undefined) {
+        if (options.next !== undefined) {
             group_id = options.next;
         }
-        if (options.category != undefined) {
+        if (options.category !== undefined) {
             $('#save_category').val( options.category);
         }
-        if (options.order != undefined) {
+        if (options.order !== undefined) {
             order = options.order;
         }
     }
@@ -4134,20 +3946,20 @@ function load_groupsets(options)
     }
     var url = "ajax_browse.php";
 
-    data['search'] = search;
-    data['minsetsize'] = minsetsize;
-    data['maxsetsize'] = maxsetsize;
-    data['minrating'] = minrating;
-    data['maxrating'] = maxrating;
-    data['minage'] = minage;
-    data['maxage'] = maxage;
-    data['mincomplete'] = mincomplete;
-    data['maxcomplete'] = maxcomplete;
-    data['groupID'] = group_id;
-    data['offset'] = offset;
-    data['setid'] = setid;
-    data['flag'] = flag;
-    data['order'] = order;
+    data.search = search;
+    data.minsetsize = minsetsize;
+    data.maxsetsize = maxsetsize;
+    data.minrating = minrating;
+    data.maxrating = maxrating;
+    data.minage = minage;
+    data.maxage = maxage;
+    data.mincomplete = mincomplete;
+    data.maxcomplete = maxcomplete;
+    data.groupID = group_id;
+    data.offset = offset;
+    data.setid = setid;
+    data.flag = flag;
+    data.order = order;
     $.ajax({
         type: 'get',
         url: url,
@@ -4169,7 +3981,7 @@ function load_groupsets(options)
             show_content_div_2(x.content, 'setsdiv');
             $('#group_id').val(group_id);
             update_rss_url();
-            setselectbyid('select_groupid', group_id);
+            setvalbyid('select_groupid', group_id);
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
@@ -4182,7 +3994,7 @@ function load_groupsets(options)
 
 function change_sort_order(val, default_sort)
 {
-    if (default_sort == undefined) {
+    if (default_sort === undefined) {
         default_sort = 'asc';
     } else {
         default_sort = ($.trim(default_sort) == 'asc') ? 'asc' : 'desc';
@@ -4257,52 +4069,52 @@ function load_rsssets(options)
     var flag = $('#flag>option:selected').val(); 
     var feed_id = $('#select_feedid>option:selected').val();
 
-    if (options != undefined) {
-        if (options.add_rows != undefined) {
+    if (options !== undefined) {
+        if (options.add_rows !== undefined) {
             add_rows = 1;
-            data['only_rows'] = 1;
-            data['perpage'] = per_page;
+            data.only_rows = 1;
+            data.perpage = per_page;
             offset = parseInt( $('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
             $('#last_line').val(offset + parseInt(per_page));
         }
-        if (options.minsetsize != undefined) {
+        if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
         }
-        if (options.maxsetsize != undefined) {
+        if (options.maxsetsize !== undefined) {
             maxsetsize = options.maxsetsize;
         }
-        if (options.minage != undefined) {
+        if (options.minage !== undefined) {
             minage = options.minage;
         }
-        if (options.maxage != undefined) {
+        if (options.maxage !== undefined) {
             maxage = options.maxage;
         }
-        if (options.minrating != undefined) {
+        if (options.minrating !== undefined) {
             minrating = options.minrating;
         }
-        if (options.maxrating != undefined) {
+        if (options.maxrating !== undefined) {
             maxrating = options.maxrating;
         }
-        if (options.order != undefined) {
+        if (options.order !== undefined) {
             order = options.order;
         }
-        if (options.flag != undefined) {
+        if (options.flag !== undefined) {
             flag = options.flag;
         }
-        if (options.feed_id != undefined) {
+        if (options.feed_id !== undefined) {
             feed_id = options.feed_id;
         }
-        if (options.offset != undefined) {
+        if (options.offset !== undefined) {
             offset = options.offset;
         }
-        if (options.setid != undefined) {
+        if (options.setid !== undefined) {
             setid = options.setid;
         }
-        if (options.next != undefined) {
+        if (options.next !== undefined) {
             feed_id = options.next;
         }
-        if (options.category != undefined) {
+        if (options.category !== undefined) {
             $('#save_category').val(options.category);
         }
     }
@@ -4312,20 +4124,20 @@ function load_rsssets(options)
         $('#setsdiv').addClass('hidden');
     }
     var url = "ajax_rsssets.php";
-    data['search'] = search;
-    data['minsetsize'] = minsetsize;
-    data['maxsetsize'] = maxsetsize;
-    data['minrating'] = minrating;
-    data['maxrating'] = maxrating;
-    data['minage'] = minage;
-    data['maxage'] = maxage;
-    data['mincomplete'] = mincomplete;
-    data['maxcomplete'] = maxcomplete;
-    data['feed_id'] = feed_id;
-    data['offset'] = offset;
-    data['order'] = order;
-    data['setid'] = setid;
-    data['flag'] = flag;
+    data.search = search;
+    data.minsetsize = minsetsize;
+    data.maxsetsize = maxsetsize;
+    data.minrating = minrating;
+    data.maxrating = maxrating;
+    data.minage = minage;
+    data.maxage = maxage;
+    data.mincomplete = mincomplete;
+    data.maxcomplete = maxcomplete;
+    data.feed_id = feed_id;
+    data.offset = offset;
+    data.order = order;
+    data.setid = setid;
+    data.flag = flag;
     $.ajax({
         type: 'get',
         url: url,
@@ -4347,7 +4159,7 @@ function load_rsssets(options)
             $('#waitingdiv').addClass('hidden');
             $('#setsdiv').removeClass('hidden');
             update_rss_url();
-            setselectbyid('select_feedid', feed_id);
+            setvalbyid('select_feedid', feed_id);
             update_widths("browsesubjecttd");
         } else {
             if (x.error == 0) {
@@ -4406,8 +4218,8 @@ function show_alert(msg)
         });
 
         var cancelbutton = $('#cancelbutton');
-        if (cancelbutton != undefined) {
-            hide_overlayed_content1();
+        if (cancelbutton !== undefined) {
+            hide_overlayed_content();
         }
     });
 }
@@ -4499,7 +4311,7 @@ function load_groups(options)
        search_all:searchall 
     };
     if (page_tab != '') {
-        data ['page_tab'] = page_tab;
+        data.page_tab = page_tab;
     }
 
     $.ajax({
@@ -4564,7 +4376,7 @@ function load_rss_feeds(options)
         search_all:search_all
     };
     if (page_tab != '') {
-        data ['page_tab'] = page_tab;
+        data.page_tab = page_tab;
     }
     $.ajax({
         type: 'post',
@@ -4722,21 +4534,13 @@ function open_hidden_link(url)
     set_message('message_bar', uploaded_text + ': ' + uploaded_file, 5000); 
 }
 
-function jump(url, newwindow)
-{
-    if (newwindow) {
-        window.open(url);
-    } else {
-        window.location = url;
-    }
-}
 
 function fold_details(button_id, divid)
 {
     fold_adv_search(button_id, divid);
     $.ajax({
         url: 'ajax_update_session.php',
-        type: 'GET',
+        type: 'get',
         cache: false,
         data: { type : 'control' }
     });
@@ -4764,7 +4568,6 @@ function submit_enter(e, fn, vars)
     }
 }
 
-var mouse_click_time = 0;
 function set_mouse_click()
 {
     var d = new Date();
@@ -4793,35 +4596,33 @@ function do_select_subcat()
 function show_subcat_selector()
 {
     var cat = $('#select_catid>option:selected').val();
-    var subcat = document.getElementById('subcat_selector_'+cat);
-    var sc;
+    var subcat = $('#subcat_selector_'+cat);
     close_browse_divs();
 
     $('div').each(function () {
         var id = $(this).attr('id');
-        if (id != undefined && id.substr(0,16) == 'subcat_selector_') {
+        if (id !== undefined && id.substr(0,16) == 'subcat_selector_') {
             $(this).hide();
         }
     });
 
-    if (cat != '' && subcat !== null) {
-        $('#subcat_selector_'+cat).css('zIndex', 1000001);
-        $('#subcat_selector_'+cat).wrap('<div id="overlay_back3"/>');
+    if (cat != '' && subcat !== undefined) {
+        subcat.css('zIndex', 1000001);
+        subcat.wrap('<div id="overlay_back3"/>');
         $('#overlay_back3').css('zIndex', 1000000);
-        $('#subcat_selector_'+cat).click(function(e) { e.stopPropagation(); });
+        subcat.click(function(e) { e.stopPropagation(); });
         $('#overlay_back3').click(function(e) { close_subcat_selector(); });
         $('#overlay_back3').show();
-        $('#subcat_selector_'+cat).show();
-        $('#subcat_selector_'+cat).removeClass('hidden');
+        subcat.show();
+        subcat.removeClass('hidden');
     }
 }
 
 function close_subcat_selector()
 {
-    var sc;
     $('div').each(function () {
         var id = $(this).attr('id');
-        if (id != undefined && id.substr(0,16) == 'subcat_selector_') {
+        if (id !== undefined && id.substr(0,16) == 'subcat_selector_') {
             $(this).hide();
             if ($(this).parent().is("div") && $(this).parent().attr('id') == 'overlay_back3') {
                 $(this).unwrap();
@@ -4898,11 +4699,11 @@ function add_whitelist(id, type)
     var data = { cmd: 'add_whitelist' };
     var challenge = get_value_from_id('challenge', '');
     if (type == 'spotterid') {
-        data ['spotterid'] = id;
+        data.spotterid = id;
     } else {
-        data ['spotid'] = id;
+        data.spotid = id;
     }
-    data ['challenge'] = challenge;
+    data.challenge = challenge;
     var confirmmsg = get_value_from_id('whitelist_confirm_msg', 'Add spotter to whitelist?');
     show_confirm(confirmmsg, function() { 
         $.ajax({
@@ -4952,14 +4753,14 @@ function add_blacklist(id, type, global)
     var challenge = get_value_from_id('challenge', '');
     var data = { cmd: 'add_blacklist' };
     if (type == 'spotterid') {
-        data ['spotterid'] = id;
+        data.spotterid = id;
     } else {
-        data ['spotid'] = id;
+        data.spotid = id;
     }
-    if (global != undefined && global == 'global') {
-        data ['global'] = global;
+    if (global !== undefined && global == 'global') {
+        data.global = global;
     }
-    data [ 'challenge'] = challenge;
+    data.challenge = challenge;
     var confirmmsg = get_value_from_id('blacklist_confirm_msg', 'Add spotter to blacklist?');
     show_confirm(confirmmsg, function() { 
         $.ajax({
@@ -5024,7 +4825,6 @@ function hide_overlay(closelink)
 
 function toggle_textarea(ta_id, checkboxid)
 {
-    var checked = get_value_from_id(checkboxid);
     $('#' + ta_id).toggleClass('hidden'); 
 }
 
@@ -5136,9 +4936,9 @@ function set_scroll_handler(id, fn)
 {
     $(id).scroll(function() {
         var scrollPosition = $(id).scrollTop() + $(id).innerHeight();
-        var divTotalHeight = $(id).get(0).scrollHeight 
-        + parseInt($(id).css('padding-top'), 10) 
-        + parseInt($(id).css('padding-bottom'), 10);
+        var divTotalHeight = $(id).get(0).scrollHeight + 
+            parseInt($(id).css('padding-top'), 10) + 
+            parseInt($(id).css('padding-bottom'), 10);
 
         if ((scrollPosition + 1) >= divTotalHeight) {
             fn( { 'add_rows':'1' } );
@@ -5206,20 +5006,20 @@ function update_setting(id, type, optionals)
         }
         option = $('#' + id ).attr('name');
         value = $('#' + id + ' :selected').val();
-        data['time1'] = $('#' + optionals.time1).val();
-        data['time2'] = $('#' + optionals.time2).val();
+        data.time1 = $('#' + optionals.time1).val();
+        data.time2 = $('#' + optionals.time2).val();
 
         if (optionals.extra != null) {
-            data['extra'] = $('#' + optionals.extra).val();
+            data.extra = $('#' + optionals.extra).val();
         }
         timeout = 1200;
     } else if (type == 'custom_text') {
         option = $('#' + 'custom_' + id + '_name').val();
-        if (option == '') return;
+        if (option == '') { return; }
         value = $('#' + 'custom_' + id + '_value').val();
-        if (optionals.source == 'name' && value == '') return;
+        if (optionals.source == 'name' && value == '') { return; }
         var orig_name = optionals.original_name;
-        data['original_name'] = orig_name;
+        data.original_name = orig_name;
 
     } else if (type == 'multiselect') {
         // cleartimeout
@@ -5233,12 +5033,12 @@ function update_setting(id, type, optionals)
         timeout = 800;
     } else {
         option = $('#' + id).attr('name');
-        var value = $('#' + id).val();
+        value = $('#' + id).val();
     }
-    data['challenge'] = challenge;
-    data['option'] = option;
-    data['value'] = value;
-    data['type'] = type;
+    data.challenge = challenge;
+    data.option = option;
+    data.value = value;
+    data.type = type;
     var send_data = function() {
         $.ajax({
             type: 'post',
@@ -5303,6 +5103,7 @@ function handle_passwords_register(npw_id1, npw_id2, username_id)
         var npw1 = $('#' + npw_id1).val();
         var npw2 = $('#' + npw_id2).val();
         var pwd = $('#' + npw_id2);
+        var pw;
         if (npw2 == ''){
             pwd.removeClass('passwordincorrect');
             pwd.removeClass('passwordcorrect');
@@ -5325,7 +5126,7 @@ function handle_passwords_register(npw_id1, npw_id2, username_id)
         if (npw1 != '') {
             var username = $('#' + username_id).val();
             var weak_pw = check_weak_pw(npw1, username);
-            var pw = $('#' + npw_id1);
+            pw = $('#' + npw_id1);
 
             if (weak_pw <= 5) {
                 pw.removeClass('passwordmedium passwordstrong');
@@ -5347,10 +5148,10 @@ function handle_passwords_register(npw_id1, npw_id2, username_id)
                 $('#pwstrong').show();
             }
         } else if (npw1 == '') {
-            var pw = $('#' + npw_id1);
+            pw = $('#' + npw_id1);
             pw.removeClass('passwordstrong passwordweak passwordmedium');
         }
-    }
+    };
 
     $('#pwcorrect').hide();
     $('#pwincorrect').hide();
@@ -5372,6 +5173,7 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
         var opw = $('#' + opw_id).val();
         var pwd = $('#' + npw_id2);
         var pwd_msg = $('#pw_message_' + npw_id2);
+        var pw, pw_msg;
         if (npw2 == ''){
             $('#' + sub_id).hide();
             pwd_msg.html('');
@@ -5395,8 +5197,8 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
 
         if (npw1 != '') {
             var weak_pw = check_weak_pw(npw1, username);
-            var pw = $('#' + npw_id1);
-            var pw_msg = $('#pw_message_' + npw_id1);
+            pw = $('#' + npw_id1);
+            pw_msg = $('#pw_message_' + npw_id1);
 
             if (weak_pw <= 5) {
                 pw.removeClass('passwordmedium passwordstrong');
@@ -5412,12 +5214,12 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
                 pw_msg.html($('#pwstrong').html());
             }
         } else if (npw1 == '') {
-            var pw_msg = $('#pw_message_' + npw_id1);
-            var pw = $('#' + npw_id1);
+            pw_msg = $('#pw_message_' + npw_id1);
+            pw = $('#' + npw_id1);
             pw.removeClass('passwordstrong passwordweak passwordmedium');
             pw_msg.html("");
         }
-    }
+    };
     var change_password = function () {
         var npw1 = $('#' + npw_id1).val();
         var npw2 = $('#' + npw_id2).val();
@@ -5461,7 +5263,7 @@ function load_prefs()
     var url= '';
     var source = $('#source').val();
     var current_tab = $('#current_tab').val();
-    if (current_tab == undefined) { 
+    if (current_tab === undefined) { 
         current_tab = '';
     }
     if (source == 'prefs') { 
@@ -5526,7 +5328,7 @@ function change_stylesheet(id)
     $('#urd_css').attr('href', stylesheet);
 } 
 
-function show_logs(options)
+function show_logs()
 {
     var url = 'ajax_admin_log.php';
     var challenge = get_value_from_id('challenge', '');
@@ -5892,7 +5694,7 @@ function update_category(type, group_id)
             option : 'category',
             challenge: challenge,
             value: $('#category_' + group_id + '>option:selected').val()
-        }
+        };
     } else {
         url = 'ajax_rss_feeds.php';
         data = {
@@ -5929,7 +5731,7 @@ function update_ng_time(type,  group_id)
              time1: $('#time1_' + group_id).val(),
              time2: $('#time2_' + group_id).val(),
              period: $('#period_'+ group_id + '>option:selected').val()
-        }
+        };
     } else {
         url = 'ajax_rss_feeds.php';
         data = {
@@ -6036,10 +5838,10 @@ function progressHandlingFunction(e, id)
 
 function upload_file(id, type, post_id, fn)
 {
-    var fd = new FormData;
+    var fd = new FormData();
     var challenge = get_value_from_id('challenge', '');
     var file = $('#' + id)[0].files[0];
-    if (file == undefined) {
+    if (file === undefined) {
         fn(-1);
         return false;
     }
@@ -6054,8 +5856,8 @@ function upload_file(id, type, post_id, fn)
         type: 'POST',
         xhr: function() {  // Custom XMLHttpRequest
             var myXhr = $.ajaxSettings.xhr();
-            if (myXhr.upload){ // Check if upload property exists
-                myXhr.upload.addEventListener('progress', function(e) { progressHandlingFunction(e, '#progress_' + type)}, false); // For handling the progress of the upload
+            if (myXhr.upload) { // Check if upload property exists
+                myXhr.upload.addEventListener('progress', function(e) { progressHandlingFunction(e, '#progress_' + type); }, false); // For handling the progress of the upload
             }
             return myXhr;
         },
@@ -6121,7 +5923,7 @@ function post_spot()
                 } else if (rv1 > 0 && rv2 > 0) {
                     start_post(x.post_id);
                     hide_overlayed_content();
-                    if (x.message != undefined) {
+                    if (x.message !== undefined) {
                         set_message('message_bar', x.message, 5000);
                     }
         // close popup which we won't do because we have to fill in the stuff over and over again.
@@ -6129,7 +5931,7 @@ function post_spot()
                     counter++;
                     setTimeout(test_f, 500);
                 }
-            }
+            };
             setTimeout(test_f, 500);
         } else {
             set_message('message_bar', x.error, 5000);
@@ -6239,9 +6041,10 @@ function init_rss_sliders()
 function load_side_bar(fn)
 {
     var type = $('#type').val();
+    var url;
     $('#sidebar_button').css('display', 'block');
     if (type == 'spots') {
-        var url = "ajax_load_spot_sidebar.php";
+        url = "ajax_load_spot_sidebar.php";
         $.ajax({
             type: 'post',
             url: url,
@@ -6262,7 +6065,7 @@ function load_side_bar(fn)
             }
         });
     } else if (type == 'groups') {
-        var url = "ajax_load_browse_sidebar.php";
+        url = "ajax_load_browse_sidebar.php";
         $.ajax({
             type: 'post',
             url: url,
@@ -6283,7 +6086,7 @@ function load_side_bar(fn)
             }
         });
     } else if (type == 'rss') {
-        var url = "ajax_load_rss_sidebar.php";
+        url = "ajax_load_rss_sidebar.php";
         $.ajax({
             type: 'post',
             url: url,
@@ -6314,3 +6117,176 @@ function uncheck_all(cat)
         }
     });
 }
+
+function do_command(command, message)
+{
+    var group_id;
+    if (command == 'update_ng') { // we are in a browsepage
+        group_id = $('#select_groupid>option:selected').val();
+        if (group_id == '') {
+            control_action('updatearticles');
+        } else {
+            ng_action('updategroup', group_id);
+        }
+
+    } else if (command == 'expire_ng') {
+        group_id = $('#select_groupid>option:selected').val();
+        if (group_id == '') {
+            control_action('expirearticles');
+        } else {
+            ng_action('expiregroup', group_id);
+        }
+    } else if (command == 'purge_ng') {
+        group_id = $('#select_groupid>option:selected').val();
+        if (group_id == '') {
+            control_action_confirm('purgearticles', message + '?');
+        } else {
+            ng_action_confirm('purgegroup', group_id, message + ' @@?');
+        }
+    } else if (command == 'gensets_ng') {
+        group_id = $('#select_groupid>option:selected').val();
+        if (group_id == '') {
+            control_action('gensetsarticles');
+        } else {
+            ng_action('gensetsgroup', group_id);
+        }
+    } else if (command == 'update_rss') { // we are in a browsepage
+        group_id = $('#select_feedid>option:selected').val();
+        if (group_id == '') {
+            control_action('updaterssall');
+        } else {
+            ng_action('updaterss', group_id);
+        }
+    } else if (command == 'expire_rss') {
+        group_id = $('#select_feedid>option:selected').val();
+        if (group_id == '') {
+            control_action('expirerssall');
+        } else {
+           ng_action('expirerss', group_id);
+        }
+    } else if (command == 'purge_rss') {
+        group_id = $('#select_feedid>option:selected').val();
+        if (group_id == '') {
+            control_action_confirm('purgerssall', message +'?');
+        } else {
+            ng_action_confirm('purgerss', group_id, message + ' @@?');
+        }
+    } else if (command == 'updatespotscomments') {
+        control_action('updatespotscomments');
+    } else if (command == 'updatespotsimages') {
+        control_action('updatespotsimages');
+    } else if (command == 'updatespots') {
+        control_action('updatespots');
+    } else if (command == 'expirespots') {
+        control_action('expirespots');
+    } else if (command == 'purgespots') {
+        control_action_confirm('purgespots', message + '?');
+    } else if (command == 'editcategories') {
+        edit_categories();
+    } else if (command == 'add_button') {
+        buttons_action('edit', 'new');
+    } else if (command == 'import_buttons') {
+        show_popup_remote('ajax_edit_searchoptions', 'import_settings');
+    } else if (command == 'export_buttons') {
+        jump('ajax_edit_searchoptions.php?cmd=export_settings');
+    } else if (command == 'add_user') {
+        user_action('edit', 'new');
+    } else if (command == 'export_users') {
+        jump('ajax_edit_users.php?cmd=export_settings');
+    } else if (command == 'import_users') {
+        show_popup_remote('ajax_edit_users', 'import_settings');
+    } else if (command == 'add_server') {
+        edit_usenet_server('new', false);
+    } else if (command == 'autoconfig') {
+        control_action('findservers');
+    } else if (command == 'autoconfig_ext') {
+        control_action('findservers_ext');
+    } else if (command == 'import_servers') {
+        show_popup_remote('ajax_edit_usenet_servers', 'import_settings');
+    } else if (command == 'import_spots_blacklist') {
+        show_popup_remote('ajax_user_blacklist', 'import_settings_blacklist');
+    } else if (command == 'import_spots_whitelist') {
+        show_popup_remote('ajax_user_blacklist', 'import_settings_whitelist');
+    } else if (command == 'export_servers') {
+        jump('ajax_edit_usenet_servers.php?cmd=export_settings');
+    } else if (command == 'import_groups') {
+        show_popup_remote('ajax_groups', 'load_settings');
+    } else if (command == 'export_spots_blacklist') {
+        jump('ajax_user_blacklist.php?cmd=export_settings&list=black');
+    } else if (command == 'export_spots_whitelist') {
+        jump('ajax_user_blacklist.php?cmd=export_settings&list=white');
+    } else if (command == 'export_groups') {
+        group_export();
+    } else if (command == 'export_rss') {
+        rss_feeds_export();
+    } else if (command == 'export_config') {
+        config_export();
+    } else if (command == 'import_config') {
+        show_popup_remote('ajax_admin_config', 'load_settings');
+    } else if (command == 'reset_config') {
+        reset_prefs(message); 
+    } else if (command == 'export_prefs') {
+        user_settings_export();
+    } else if (command == 'import_prefs') {
+        show_popup_remote('ajax_prefs', 'load_settings');
+    } else if (command == 'reset_prefs') {
+        reset_prefs(message); 
+    } else if (command == 'import_rss') {
+        show_popup_remote('ajax_rss_feeds', 'load_settings');
+    } else if (command == 'new_file') {
+        edit_file('');
+    } else if (command == 'new_rss') {
+        edit_rss('new');
+    } else if (command == 'optimise') {
+        control_action('optimise');
+    } else if (command == 'sendsetinfo') {
+        control_action('sendsetinfo');
+    } else if (command == 'getsetinfo') {
+        control_action('getsetinfo');
+    } else if (command == 'cleandir') {
+        control_action('cleandir');
+    } else if (command == 'checkversion') {
+        control_action('checkversion');
+    } else if (command == 'export_all_settings') {
+        jump('ajax_action.php?cmd=export_all');
+    } else if (command == 'import_all_settings') {
+        show_popup_remote('ajax_action', 'import_all');
+    } else if (command == 'updategroups') {
+        control_action('updategroups');
+    } else if (command == 'updateblacklist') {
+        control_action('updateblacklist');
+    } else if (command == 'updatewhitelist') {
+        control_action('updatewhitelist');
+    } else if (command == 'postmessage') {
+        show_post_message();
+    } else if (command == 'postcomment') {
+        post_spot_comment();
+    } else if (command == 'continueall') {
+        control_action('continue_all');
+    } else if (command == 'pauseall') {
+        control_action('pause_all');
+    } else if (command == 'getnzb') {
+        show_uploadnzb();
+    } else if (command == 'post') {
+        show_post();
+    } else if (command == 'post_spot') {
+        show_post_spot();
+    } else if (command == 'cleandb') {
+        control_action('cleandb');
+    } else if (command == 'cleanall') {
+        control_action('cleanall');
+    } else if (command == 'cancelall') {
+        control_action('cancelall');
+    } else if (command == 'shutdown') {
+        control_action('poweroff');
+    } else if (command == 'reload') {
+        control_action('restart');
+    } else if (command == 'add_search') {
+        show_savename();
+    } else if (command == 'delete_search') {
+        delete_search_confirm();
+    } else {
+        show_alert('Unknown command: ' + command);
+    }
+} 
+

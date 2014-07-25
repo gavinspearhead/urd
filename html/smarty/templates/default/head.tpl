@@ -27,8 +27,8 @@
 <noscript><div id="nojs" class="centered_nojs down100">{$LN_login_jserror}</div></noscript>
 
 <div id="message_bar" class="Message hidden">
-<div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
-<div id="message_content" class="inline"></div>
+    <div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
+    <div id="message_content" class="inline"></div>
 </div>
 
 {capture assign=urdmenu}
@@ -71,7 +71,7 @@
                 <li 
                  {if $menuitems->get_link_type()=='jump'} class="buttonlike {$category} {$add_class}" onclick="javascript:jump('{$mainmenulink}');" 
                  {elseif $menuitems->get_link_type()=='jumpext'} class="buttonlike {$category} {$add_class}" onclick="javascript:jump('{$mainmenulink}', true);" 
-                 {elseif $menuitems->get_link_type()=='command'} class="buttonlike {$category} {$add_class}" onclick="javascript:do_command('{$mainmenulink}', '{$mainmenuname}', '{$mainmenumessage}');"
+                 {elseif $menuitems->get_link_type()=='command'} class="buttonlike {$category} {$add_class}" onclick="javascript:do_command('{$mainmenulink}', '{$mainmenumessage}');"
                  {else} class="{$category} {$add_class}"  
                  {/if}>
                     <div class="nooverflow down3">{$mainmenuname}</div>
@@ -80,7 +80,7 @@
 		</ul>
     {else}
     <div {if $first->get_link_type() == 'jump'}onclick="javascript:jump('{$first->get_url()}');" class="down3 nooverflow buttonlike" 
-    {elseif $first->get_link_type()=='command'} class="buttonlike down3 nooverflow {$category}" onclick="javascript:do_command('{$first->get_url()}', '{$first->get_name()|escape:javascript}', '{$first->get_message()|escape:javascript}');"
+    {elseif $first->get_link_type()=='command'} class="buttonlike down3 nooverflow {$category}" onclick="javascript:do_command('{$first->get_url()}' '{$first->get_message()|escape:javascript}');"
     {else}class="down3 nooverflow" {/if}>{$first->get_name()}</div>
     {/if}
         </li>
@@ -100,9 +100,9 @@
 <div><div id="smallhelp" class="hidden"></div></div>
 {* this is the larger topcentered help window *}
 <div id="helpwrapper" class="hidden">
-<div id="helptext" class="helptext">
-<div id="helpheader"></div>
-<div id="helpbody"></div>
+    <div id="helptext" class="helptext">
+        <div id="helpheader"></div>
+        <div id="helpbody"></div>
 </div>
 </div>
 
@@ -111,11 +111,11 @@
 <input type="hidden" name="urdd_status" id="urdd_status" value="{$urdd_online}"/>
 
 <div id="overlay_back">
-<div id="overlay_content"></div>
+    <div id="overlay_content"></div>
 </div>
 
 <div id="overlay_back2">
-<div id="overlay_content2"></div>
+    <div id="overlay_content2"></div>
 </div>
 
 <div id="quickmenu" class="quickmenuoff"></div>
@@ -126,6 +126,6 @@
 <div id="searchbar"></div>
 <div id="topcontent">
 <div id="contentout">
-<div id="sbdiv" onclick="javascript:show_sidebar();"><span id="sidebar_button">></span></div>
+<div id="sbdiv" onclick="javascript:show_sidebar();"><span id="sidebar_button"></span></div>
 <div id="content" class="down3">
 <input type="hidden" name="urdd_message" id="urdd_message" value="{$offline_message}"/>
