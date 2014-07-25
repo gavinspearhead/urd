@@ -29,7 +29,6 @@ function LoadPage(pagenumber)
 	installform.submit();
 }
 
-
 function toggle_show_password(id)
 {
 	var pass = document.getElementById(id);
@@ -39,7 +38,6 @@ function toggle_show_password(id)
         pass.type = "password";
     } 
 }
-
 
 function update_database_input_fields()
 {
@@ -52,7 +50,6 @@ function update_database_input_fields()
     } else {
         show_data_for_sqlite();
     }
-
 }
 
 function change_display_dbengine(type)
@@ -64,8 +61,6 @@ function change_display_dbengine(type)
     }
 }
 
-
-
 function show_data_for_sqlite()
 {
     $("#hostname").show();
@@ -76,7 +71,6 @@ function show_data_for_sqlite()
     $("#dbrootpw").show();
     $("#dbmysqlreset").show();
 }
-
 
 function hide_data_for_sqlite()
 {
@@ -96,13 +90,11 @@ function hide_data_for_sqlite()
     $("#dbmysqlreset").hide();
 }
 
-
 function hide_button(id)
 {
     var div = document.getElementById(id);
     div.style.display = "none";
 }
-
 
 function show_message(msg)
 {
@@ -110,8 +102,6 @@ function show_message(msg)
     div.style.display = "block";
     div.innerHTML = msg;
 }
-
-
 
 function GeneratePassword(length) 
 {
@@ -151,10 +141,8 @@ function checkPunc(num) {
 
 function set_random_password(dbpass)
 {
-    var val = document.getElementById(dbpass);
-    val.value = GeneratePassword(12);
+    $('#' + dbpass).val(GeneratePassword(12));
 }
-
 
 function get_value_from_id(id, def)
 {
@@ -201,7 +189,6 @@ function fill_in_usenet_form()
         }
     }
 }
-
 
 function levenshtein(s1, s2) 
 {
@@ -276,7 +263,7 @@ function levenshtein(s1, s2)
 }
 
 
-function check_weak_pw(password)
+function check_weak_pw(password, username)
 {
     if (password.length < 6) { return 0; }
     if (password.length < 8) { return 1; }
@@ -306,7 +293,7 @@ function check_weak_pw(password)
     return score;
 }
 
-function check_password_strength(npw_id1, npw_id2)
+function check_password_strength(npw_id1, npw_id2, username_id)
 {
     var fn = function() {
         var pw;
@@ -329,7 +316,8 @@ function check_password_strength(npw_id1, npw_id2)
             }
         }
         if (npw1 != '') {
-            var weak_pw = check_weak_pw(npw1);
+            var username = $('#' + username_id).val();
+            var weak_pw = check_weak_pw(npw1, username);
             pw = $('#' + npw_id1);
 
             if (weak_pw <= 5) {

@@ -34,7 +34,6 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
 verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid, TRUE);
-$adult = urd_user_rights::is_adult($db, $userid);
 
 class group_viewer
 {
@@ -492,26 +491,28 @@ class group_viewer
 }
 
 try {
+    $adult = urd_user_rights::is_adult($db, $userid);
     $search = html_entity_decode(trim(get_request('search', '')));
-    $offset  = get_request('offset', 0);
+    $offset = get_request('offset', 0);
 
-    $order   = get_request('order', '');
-    $flag    = get_request('flag', '');
-    $maxage  = get_request('maxage', '');
-    $minage  = get_request('minage', '');
+    $order = get_request('order', '');
+    $flag = get_request('flag', '');
+    $maxage = get_request('maxage', '');
+    $minage = get_request('minage', '');
     $minsetsize = get_request('minsetsize', NULL);
     $maxsetsize = get_request('maxsetsize', NULL);
     $groupID = get_request('groupID', 0);
 
-    $maxrating  = get_request('maxrating', '');
-    $minrating  = get_request('minrating', '');
+    $maxrating = get_request('maxrating', '');
+    $minrating = get_request('minrating', '');
     $maxcomplete = get_request('maxcomplete', '');
     $mincomplete = get_request('mincomplete', '');
 
     $setid = get_request('setid', '');
     $perpage = get_maxperpage($db, $userid);
     $perpage = get_request('perpage', $perpage);
-    $only_rows  = get_request('only_rows', 0);
+    $only_rows = get_request('only_rows', 0);
+
     $sets_viewer = new group_viewer($db, $userid);
     $sets_viewer->set_search_options($search, $groupID, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $mincomplete, $maxcomplete, $order);
     list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
@@ -523,6 +524,7 @@ try {
     $smarty->assign('sort',                 $sets_viewer->get_sort());
     $smarty->assign('killflag',		        $sets_viewer->get_killflag());
     $smarty->assign('isadmin',		        $isadmin);
+    
     if (!$only_rows) {
         $smarty->assign('pages',		    $pages);
         $smarty->assign('lastpage',		    $totalpages);

@@ -3829,7 +3829,7 @@ function load_spots(options)
     hide_overlayed_content();
     console.log(data);
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data 
@@ -3961,7 +3961,7 @@ function load_groupsets(options)
     data.flag = flag;
     data.order = order;
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data
@@ -4139,7 +4139,7 @@ function load_rsssets(options)
     data.setid = setid;
     data.flag = flag;
     $.ajax({
-        type: 'get',
+        type: 'post',
         url: url,
         cache: false,
         data: data

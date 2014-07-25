@@ -50,7 +50,7 @@ $urdupdatechecked = $urdupdatecheck ? 'CHECKED' : '';
 $OUT .= <<<USERAC
 
 <tr><td class="install2">URD administrator username:</td><td class="install3">
-<input type="text" name="urduser" value="$urdusername"></td></tr>
+<input type="text" name="urduser" id="urduser" value="$urdusername"></td></tr>
 <tr><td class="install2">URD user email address:</td><td class="install3">
 <input type="email" name="urdemail" value="$urdusermail"></td></tr>
 <tr><td class="install2">URD full name:</td><td class="install3">
@@ -74,7 +74,7 @@ USERAC;
 $OUT .= '<tr colspan="2"><td><a onclick="LoadPage(6);">'.$continuepic.'</a></td></tr>';
 $OUT .= <<<PWSCR
 <script>
- check_password_strength('urdpass1', 'urdpass2');
+ check_password_strength('urdpass1', 'urdpass2', 'urduser');
 </script>
 PWSCR;
 

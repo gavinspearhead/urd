@@ -1431,7 +1431,7 @@ function export_settings(DatabaseConnection $db, $what, $filename, $userid=NULL)
 function get_subcats_requests()
 {
     $subcats = $not_subcats = $off_subcats = array();
-    foreach ($_REQUEST as $key=>$value) {
+    foreach ($_REQUEST as $key => $value) {
         if (strncmp($key, 'subcat_', 7) == 0) {
             $t = explode('_', $key);
             if (isset($t[3])) {
