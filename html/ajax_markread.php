@@ -62,5 +62,5 @@ try {
     }
     return_result(array());
 } catch (exception $e) {
-    return_result('error' => $e->getMessage());
+    return_result(array('error' => $e->getMessage()));
 }

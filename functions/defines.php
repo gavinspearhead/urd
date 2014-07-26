@@ -268,6 +268,8 @@ class stat_actions
     const SPOT_COUNT    = 11;
     const SET_COUNT     = 12;
     const RSS_COUNT     = 13;
+    const POST_MSG_COUNT= 14;
+    const POST_SPOT_COUNT= 15;
 }
 
 define('USERSETTYPE_GROUP', 0);

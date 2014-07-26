@@ -1249,6 +1249,7 @@ function mark_read(setid, cmd, type)
         cache: false,
         data: data 
     }).done( function(html) {
+        console.log(html);
         var content = $.parseJSON(html);
         if (content.error == 0) {
             var thetr = $('#base_row_' + setid);

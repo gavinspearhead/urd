@@ -422,6 +422,7 @@ function do_post_spot(DatabaseConnection $db, action $item)
         post_message($db, $item, $poster_headers, $res[0]['description'], $spots_group_id, $res[0]['subject'], $res[0]['poster_id'], $res[0]['poster_name']);
         $status = POST_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete'); 
+        add_stat_data( $db, stat_actions::SPOT_POST_COUNT, 1, $userid);
     } catch (exception $e) {
         $comment = $e->getMessage();
         write_log('Posting spot failed ' . $comment, LOG_WARNING);
@@ -885,9 +886,9 @@ function safe_chunk($data, $maxLen, $end = "\r\n")
 function special_zip_str($strInput) 
 {
     return str_replace(
-            array("=", "\n", "\r", "\0"),
-            array('=D', '=C', '=B', '=A'),
-            $strInput);
+        array("=", "\n", "\r", "\0"),
+        array('=D', '=C', '=B', '=A'),
+        $strInput);
 } 
 
 function post_binary_data(DatabaseConnection $db, $postername, $poster_email, $group_name, $nntp, $data)

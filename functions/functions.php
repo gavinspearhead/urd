@@ -1512,7 +1512,7 @@ function add_stat_data(DatabaseConnection $db, $action, $value, $userid)
     global $LN;
     if (!is_numeric($userid)) {
         assert(is_string($userid));
-        $rv = $db->select_query('"ID" FROM users WHERE "name" = ?', array($userid));
+        $rv = $db->select_query('"ID" FROM users WHERE "name"=?', array($userid));
         if ($rv === FALSE) {
             throw new exception ($LN['error_nosuchuser'] . ": $userid");
         }
@@ -1572,7 +1572,7 @@ function inc_dl_lock(DatabaseConnection $db, $dlid)
     assert (is_numeric($dlid));
     $db->lock(array('downloadinfo' => 'write'));
     try {
-        $db->execute_query('UPDATE downloadinfo SET "lock" = "lock" + 1 WHERE "ID" = ?', array($dlid));
+        $db->execute_query('UPDATE downloadinfo SET "lock" = "lock" + 1 WHERE "ID"=?', array($dlid));
         $db->unlock();
     } catch (exception $e) {
         $db->unlock();
@@ -1585,7 +1585,7 @@ function dec_dl_lock(DatabaseConnection $db, $dlid)
     assert (is_numeric($dlid));
     $db->lock(array('downloadinfo' => 'write'));
     try {
-        $db->execute_query('UPDATE downloadinfo SET "lock" = "lock" - 1 WHERE "ID" = ? AND "lock" > 0', array($dlid));
+        $db->execute_query('UPDATE downloadinfo SET "lock" = "lock" - 1 WHERE "ID"=? AND "lock" > 0', array($dlid));
         $db->unlock();
     } catch (exception $e) {
         $db->unlock();
@@ -1717,10 +1717,10 @@ function delete_rss_feed(DatabaseConnection $db, $id)
     assert(is_numeric($id));
     $rss_info = get_rss_info($db, $id, FALSE);
     $type = USERSETTYPE_RSS;
-    $db->delete_query('usersetinfo', '"setID" IN (SELECT "setid" FROM rss_sets WHERE "rss_id" = ?) AND "type" = ?', array($id, $type));
-    $db->delete_query('extsetdata', '"setID" IN (SELECT "setid" FROM rss_sets WHERE "rss_id" = ?) AND "type" = ?', array($id, $type));
-    $db->delete_query('rss_urls', '"id" = ?', array($id));
-    $db->delete_query('rss_sets', '"rss_id" = ?', array($id));
+    $db->delete_query('usersetinfo', '"setID" IN (SELECT "setid" FROM rss_sets WHERE "rss_id"=?) AND "type"=?', array($id, $type));
+    $db->delete_query('extsetdata', '"setID" IN (SELECT "setid" FROM rss_sets WHERE "rss_id"=?) AND "type"=?', array($id, $type));
+    $db->delete_query('rss_urls', '"id"=?', array($id));
+    $db->delete_query('rss_sets', '"rss_id"=?', array($id));
     fetch_rss::delete_cache_entry($rss_info['url'], get_magpie_cache_dir($db));
 }
 
@@ -1901,7 +1901,7 @@ function get_all_feeds(DatabaseConnection $db)
 function get_all_active_groups(DatabaseConnection $db)
 {
     global $LN;
-    $rv = $db->select_query('* FROM groups WHERE "active" = ?', array(newsgroup_status::NG_SUBSCRIBED));
+    $rv = $db->select_query('* FROM groups WHERE "active"=?', array(newsgroup_status::NG_SUBSCRIBED));
     if ($rv === FALSE) {
         throw new exception($LN['error_nofeedsfound']);
     }
@@ -1922,7 +1922,7 @@ function gmp_max($a, $b)
 function rss_url_name_exists(DatabaseConnection $db, $name, $id=NULL)
 {
     $inputarr= array($name);
-    $sql = 'count("id") AS cnt FROM rss_urls WHERE "name" = ?';
+    $sql = 'count("id") AS cnt FROM rss_urls WHERE "name"=?';
     if ($id !== NULL) {
         $sql .= " AND \"id\" != ?";
         $inputarr[] = $id;
@@ -1975,7 +1975,7 @@ function add_rss_url(DatabaseConnection $db, $name, $url, $subscribed, $expire, 
     } catch (exception $e) {
         throw new exception('Insert failed: ' . $e->getmessage());
     }
-    $sql = '"id" FROM rss_urls WHERE "name" = ?';
+    $sql = '"id" FROM rss_urls WHERE "name"=?';
     try {
         $res = $db->select_query($sql,1, array($name));
         if (isset($res[0]['id'])) {
@@ -1994,12 +1994,11 @@ function clear_all_spots_blacklist($db, $userid=NULL)
     $input_arr = array();
     if (!is_null($userid)) {
         assert(is_numeric($userid));
-        $where = '"userid" = ?';
+        $where = '"userid"=?';
         $input_arr[] = $userid;
     }
     $db->delete_query('spot_blacklist', $where, $input_arr);
 }
-
 
 function clear_all_spots_whitelist($db, $userid=NULL)
 {
@@ -2007,7 +2006,7 @@ function clear_all_spots_whitelist($db, $userid=NULL)
     $input_arr = array();
     if (!is_null($userid)) {
         assert(is_numeric($userid));
-        $where = '"userid" = ?';
+        $where = '"userid"=?';
         $input_arr[] = $userid;
     }
     $db->delete_query('spot_whitelist', $where, $input_arr);
@@ -2237,7 +2236,7 @@ function get_post_name(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"subject" FROM postinfo WHERE "id" = ?', 1, array($id));
+    $res = $db->select_query('"subject" FROM postinfo WHERE "id"=?', 1, array($id));
     if (isset($res[0]['subject'])) {
         return $res[0]['subject'];
     } else {
@@ -2248,7 +2247,7 @@ function get_post_name(DatabaseConnection $db, $id)
 function get_feeds_by_category(DatabaseConnection $db, $userid, $categoryID)
 {
     assert(is_numeric($userid) && is_numeric($categoryID));
-    $sql = '"feedid" FROM userfeedinfo WHERE "userid" = ? AND "category" = ?';
+    $sql = '"feedid" FROM userfeedinfo WHERE "userid"=? AND "category"=?';
     $res = $db->select_query($sql, array($userid, $categoryID));
     if (!is_array($res)) {
         return array();
@@ -2264,7 +2263,7 @@ function get_feeds_by_category(DatabaseConnection $db, $userid, $categoryID)
 function get_groups_by_category(DatabaseConnection $db, $userid, $categoryID)
 {
     assert(is_numeric($userid) && is_numeric($categoryID));
-    $sql = '"groupid" FROM usergroupinfo WHERE "userid" = ? AND "category" = ?';
+    $sql = '"groupid" FROM usergroupinfo WHERE "userid"=? AND "category"=?';
     $res = $db->select_query($sql, array($userid, $categoryID));
     if (!is_array($res)) {
         return array();

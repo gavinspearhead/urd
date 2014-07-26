@@ -2057,6 +2057,7 @@ function do_post_message(DatabaseConnection $db, action $item)
         post_message( $db, $item, $poster_headers, $message, $groupid, $subject, $poster_id, $poster_name);
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete');
+        add_stat_data( $db, stat_actions::SPOT_MSG_COUNT, 1, $userid);
     } catch (exception $e) {
         write_log($e->getMessage(), LOG_NOTICE);
 
@@ -2064,7 +2065,7 @@ function do_post_message(DatabaseConnection $db, action $item)
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Failed');
         // and now?
     }
-    $db->delete_query('post_messages', "\"id\" = ? AND \"userid\" = ?", array($msg_id, $userid));
+    $db->delete_query('post_messages', '"id"=? AND "userid"=?', array($msg_id, $userid));
 
     return NO_ERROR;
 }
