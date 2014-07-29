@@ -831,6 +831,7 @@ Array
     {
         try {
             $this->newsgroup = '';
+            $name = strtolower($name);
             $data = $this->nntp->select_group($name);
             $this->newsgroup = $name;
             return $data;

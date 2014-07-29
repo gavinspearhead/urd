@@ -39,7 +39,7 @@ $(document).ready(function() {
     show_files( { 'curdir':'{$directory|escape:javascript}' } );
     set_scroll_handler('#contentout', show_files);
     $('#searchbar').html( $('#searchformdiv').html());
-    $('#searchformdiv').html('')
+    $('#searchformdiv').html('');
 });
 </script>
 </div>

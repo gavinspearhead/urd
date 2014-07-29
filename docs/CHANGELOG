@@ -17,6 +17,7 @@
 - Fixed a bug in handling connection timeouts on downloads
 - Fixed a bug in setting admin config time values (thanx to Reab4)
 - Fixed a bug not expiring extsetdata when expiring spots
+- Fixed an odd bug not showing some statistics
 - Cleanup stylesheets and replaced images by css
 - Updated smarty to 3.1.19
 - Updated to jquery 2.1.1 - note IE 6-8 are no longer supported

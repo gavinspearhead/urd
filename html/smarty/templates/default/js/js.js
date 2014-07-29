@@ -474,9 +474,9 @@ function submit_viewfiles_action(fileid, command)
         $('#' + id).attr('src', url + '?' + params);
         $('#' + id).hide();
         $('#' + id).load( function() {
-            var msg = document.getElementById(id).contentWindow.document.body.innerHTML;
-            $('#' + id).remove();
-            if (msg.substr(0, 7) == ':error:') {
+        var msg = document.getElementById(id).contentWindow.document.body.innerHTML;
+        $('#' + id).remove();
+        if (msg.substr(0, 7) == ':error:') {
                 set_message('message_bar', msg.substr(7), 5000);
             }
         });
@@ -491,9 +491,10 @@ function submit_viewfiles_action(fileid, command)
                 cmd: command,
                 challenge: challenge
                 }
-           }).done(function(html) {
+        }).done(function(html) {
+               var x = $.parseJSON(html);
                show_files( { 'curdir':dir, 'reset_offset': false });
-               update_message_bar(html);
+               set_message('message_bar', x.error, 5000);
 
         });
     }
@@ -753,18 +754,23 @@ function show_blacklist(options)
             $('#last_line').val(offset + parseInt(per_page));
         }
     }
-    
+   console.log(data, orderval, order, orderdirval); 
     $.ajax({
         type: 'post',
         url: url,
         data: data,
         cache: false
     }).done(function(html) {
-        if (add_rows == 0) {
-            show_content_div_2(html, 'usersdiv');
-            update_search_bar_height();
+        var x = $.parseJSON(html);
+        if (x.error == 0) { 
+            if (add_rows == 0) {
+                show_content_div_2(x.contents, 'usersdiv');
+                update_search_bar_height();
+            } else {
+                $('#black_list_table>tbody tr').eq(-2).after(x.contents);
+            }
         } else {
-            $('#black_list_table>tbody tr').eq(-2).after(html);
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -812,20 +818,22 @@ function show_files(options)
         data: data,
         cache: false
     }).done(function(html) {
-        if (html.substr(0, 7) == ':error:') {
-            set_message('message_bar', html.substr(7), 5000);
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
             if (add_rows == 0) {
                 $('#viewfilesdiv').html('');
             }
         } else {
             if (add_rows == 0) {
-                show_content_div_2(html, 'viewfilesdiv');
+                show_content_div_2(x.contents, 'viewfilesdiv');
                 update_widths('filenametd');
                 $('#directory_top').html( $('#dir2').val());
                 $('#contentout').scrollTop(0);
                 update_search_bar_height();
             } else {
-                $('#files_table>tbody tr').eq(-2).after(html);
+                $('#files_table>tbody tr').eq(-2).after(x.contents);
                 update_widths("filenametd");
             }
         }
@@ -923,7 +931,6 @@ function show_post_message(type, spotid)
             data.rating = rating;
         }
     }
-    console.log('foo');
     $.ajax({
         type: 'post',
         url: url,
@@ -2251,7 +2258,12 @@ function rename_file_form(fileid)
         cache: false,
         data: data
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup525x300');
+        var x = $.parseJSON(html);
+        if (x.error == 0 ) {
+            show_overlayed_content_1(x.contents, 'popup525x300');
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -2279,9 +2291,14 @@ function update_filename()
         cache: false,
         data: data
     }).done( function(html) {
-        hide_overlayed_content();
-        show_files( { 'curdir':directory, 'reset_offset': false });
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0 ) {
+            hide_overlayed_content();
+            show_files( { 'curdir':directory, 'reset_offset': false });
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -2812,6 +2829,7 @@ function show_auth()
 
 function edit_file(fileid)
 {
+    console.log('foo');
     var cmd, name;
     var challenge = get_value_from_id('challenge');
     var dir = get_value_from_id('dir', '');
@@ -2842,8 +2860,14 @@ function edit_file(fileid)
         cache: false,
         data: data 
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup700x400');
-        $('#filename_editfile').focus();
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup700x400');
+            $('#filename_editfile').focus();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -2853,17 +2877,18 @@ function save_file()
     var name = get_value_from_id('filename_editfile');
     var dir = get_value_from_id('directory_editfile');
     var filename_err = get_value_from_id('filename_err');
-    var newfile = $('#newfile');
+    var newfile = $('#newfile').val();
     var contents = get_value_from_id('filecontents_editfile');
     var newdir = get_value_from_id('newdir', '0');
-    if (dir == '' || contents == '') {
+    if (dir == '' && contents == '') {
         return false;
     }
     if (name == '') {
+        console.log('aoeuao');
         set_message('message_bar', filename_err, 5000);
         return false;
     }
-    newfile = (newfile === undefined) ? "0" : "1";
+    newfile = (newfile == 'new') ? "1" : "0";
     var url = "ajax_editviewfiles.php";
     var data = { 
         cmd: 'save_file',
@@ -2874,18 +2899,18 @@ function save_file()
         newdir : newdir,
         challenge : challenge
     };
-
     $.ajax({
         type: 'post',
         url: url,
         cache: false,
         data: data 
     }).done( function(html) {
-        if (html == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
-            show_files( { 'curdir':null, 'reset_offset': false });
+            show_files( { 'curdir' : null, 'reset_offset': false });
         } else {
-            update_message_bar(html);
+            set_message('message_bar', x.error, 5000);
         }
     });
     return true;
@@ -3610,6 +3635,7 @@ function update_browse_searches(name)
     if (name == null || name == '') {
         if ($('#saved_search').prop('selectedIndex') == 0 || name == '') {
             clear_form("searchform");
+            clear_form("sidebar_contents");
             update_search_names('');
             load_sets();
             return;
@@ -3636,6 +3662,7 @@ function update_browse_searches(name)
             if (x.count > 0) {
                 update_search_names(name);
                 clear_form("searchform");
+                clear_form("sidebar_contents");
                 var sc = x.options;
                 $.each(sc, function(key, val) {
                     if (key == 'minsetsize') { setvalbyid('minsetsize', val); }
@@ -3669,6 +3696,7 @@ function update_spot_searches(name)
     if (name == null) {
         if ($('#saved_search').prop('selectedIndex') == 0) {
             clear_form("searchform");
+            clear_form("sidebar_contents");
             clear_all_checkboxes(null); 
             uncheck_all(null) ;
             update_search_names('');
@@ -3696,6 +3724,7 @@ function update_spot_searches(name)
             if (x.count > 0) {
 
             clear_form("searchform");
+            clear_form("sidebar_contents");
             var sc = x.options;
             var cat;
             clear_all_checkboxes(null); 

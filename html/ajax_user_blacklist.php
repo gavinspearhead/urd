@@ -159,86 +159,58 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
     $smarty->assign('status_disabled',  $list_status_disabled);
     $smarty->assign('maxstrlen',        round($perpage / 3));
     $smarty->assign('only_rows',        $only_rows);
-    $smarty->display('ajax_user_blacklist.tpl');
+    return $smarty->fetch('ajax_user_blacklist.tpl');
 }
 
-$cmd = get_request('cmd', FALSE);
-$which = get_request('which', 'spots_blacklist');
 
-switch ($cmd) {
-    case FALSE:
-        throw new exception('No command found');
-    case 'export_settings':
-        $list = get_request('list');
-        if ($list == 'black') {
-            export_settings($db, 'spots_blacklist', 'urd_spots_blacklist.xml', (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
-        } elseif ($list == 'white') {
-            export_settings($db, 'spots_whitelist', 'urd_spots_whitelist.xml', (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
-        }
-    break;
-    case 'import_settings_blacklist':
-    if (isset ($_FILES['filename']['tmp_name'])) {
-        try {
+try {
+    $cmd = get_request('cmd', FALSE);
+    $which = get_request('which', 'spots_blacklist');
 
-            $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-            $blacklist = $xml->read_spots_blacklist($db);
-            clear_all_spots_blacklist($db, (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
-            set_all_spots_blacklist($db, $blacklist, $userid);
-        } catch (exception $e) {
-            echo_debug($e->getMessage(), DEBUG_ALL);
-            echo_debug_trace($e, 255);
-        }
-    } else {
-        throw new exception('File not found');
+    switch ($cmd) {
+        case 'export_settings':
+            $list = get_request('list');
+            if ($list == 'black') {
+                export_settings($db, 'spots_blacklist', 'urd_spots_blacklist.xml', (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
+            } elseif ($list == 'white') {
+                export_settings($db, 'spots_whitelist', 'urd_spots_whitelist.xml', (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
+            }
+            break;
+        case 'import_settings_blacklist':
+            if (isset ($_FILES['filename']['tmp_name'])) {
+                $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
+                $blacklist = $xml->read_spots_blacklist($db);
+                clear_all_spots_blacklist($db, (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
+                set_all_spots_blacklist($db, $blacklist, $userid);
+            } else {
+                throw new exception($LN['error_filenotfound'] );
+            }
+            return_result(array());
+            break;
+        case 'import_settings_whitelist':
+            if (isset ($_FILES['filename']['tmp_name'])) {
+                try {
+                    $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
+                    $whitelist = $xml->read_spots_whitelist($db);
+                    clear_all_spots_whitelist($db, (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
+                    set_all_spots_whitelist($db, $whitelist, $userid);
+                } catch (exception $e) {
+                    echo_debug($e->getMessage(), DEBUG_ALL);
+                }
+            } else {
+                throw new exception($LN['error_filenotfound'] );
+            }
+            return_result(array());
+            break;
+        case 'load_blacklist':
+            $contents = show_spots_list($db, $userid, $which);
+            return_result(array('contents' => $contents));
+        default:
+            throw new exception ($LN['error_invalidaction']);
+            break;
     }
-    die_html('OK');
-    break;
-case 'import_settings_whitelist':
-    if (isset ($_FILES['filename']['tmp_name'])) {
-        try {
-            $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-            $whitelist = $xml->read_spots_whitelist($db);
-            clear_all_spots_whitelist($db, (urd_user_rights::is_admin($db, $userid)?NULL:$userid));
-            set_all_spots_whitelist($db, $whitelist, $userid);
-        } catch (exception $e) {
-            echo_debug($e->getMessage(), DEBUG_ALL);
-        }
-    } else {
-        throw new exception('File not found');
-    }
-    die_html('OK');
-    break;
-case 'load_blacklist':
-    show_spots_list($db, $userid, $which);
-    die;
-default:
-    throw new exception ("O-oh - Unknown command $cmd");
-    break;
-}
 
-$blacklist = array();
-$cnt = 0;
-$number = $offset;
-foreach ($res as $row) {
-    $user['number'] = ++$number;
-    $user['spotter_id'] = $row['spotter_id'];
-    $user['source'] = $row['source'];
-    $blacklist[] = $user;
-    $cnt++;
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-list($pages, $lastpage, $currentpage) = build_skipper($perpage, $offset, $cnt);
-init_smarty('', 0);
-if (!$only_rows) {
-    $smarty->assign('pages',		    $pages);
-    $smarty->assign('currentpage',		$currentpage);
-    $smarty->assign('lastpage',		    $lastpage);
-}
-$smarty->assign('offset',		$offset);
-$smarty->assign('sort',         $sort);
-$smarty->assign('sort_dir',     $sort_dir);
-$smarty->assign('search',       $o_search);
-$smarty->assign('blacklist',    $blacklist);
-$smarty->assign('maxstrlen',    $prefs['maxsetname']/3);
-$smarty->assign('only_rows',    $only_rows);
-$smarty->display('ajax_user_blacklist.tpl');
 

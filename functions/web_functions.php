@@ -1059,12 +1059,12 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
     $adult = urd_user_rights::is_adult($db, $userid);
     $Qadult = '';
     if (!$adult) {
-        $Qadult = " AND groups.adult != " . ADULT_ON . ' ';
+        $Qadult = ' AND groups."adult" != ' . ADULT_ON . ' ';
     }
     if (is_numeric($groupID) && $groupID != 0 && $groupID != '') {
         $Qgroups .= " OR \"groupid\" = '$groupID'";
     } elseif (is_numeric($categoryID) && $categoryID != 0 && $categoryID != '') {
-        $Qgroups .= " OR \"groupid\" IN (";
+        $Qgroups .= ' OR "groupid" IN (';
         $groups = get_groups_by_category($db, $userid, $categoryID);
         $count = 0;
         foreach ($groups as $gr) {
@@ -1122,7 +1122,7 @@ function get_userfeed_settings(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     $sql = 'categories."name" AS c_name, rss_urls."name" AS f_name, userfeedinfo."minsetsize", userfeedinfo."maxsetsize", userfeedinfo."visible" ' .
         'FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category" = categories."id" LEFT JOIN rss_urls ON userfeedinfo.feedid = rss_urls."id" ' .
-        'WHERE userfeedinfo."userid" = ?';
+        'WHERE userfeedinfo."userid"=?';
     $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
@@ -1136,7 +1136,7 @@ function get_usergroup_settings(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     $sql = 'categories."name" AS c_name, groups."name" AS g_name, usergroupinfo."minsetsize", usergroupinfo."maxsetsize", usergroupinfo."visible" ' .
         'FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" LEFT JOIN groups ON usergroupinfo."groupid" = groups."ID" ' .
-        'WHERE usergroupinfo."userid" = ?';
+        'WHERE usergroupinfo."userid"=?';
     $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
         return array();
@@ -1210,7 +1210,6 @@ function get_used_categories_rss(DatabaseConnection $db, $userid)
 
     return $categories;
 }
-
 
 function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, array $categories, $userid)
 {
@@ -1290,7 +1289,7 @@ function get_feed_last_updated(DatabaseConnection $db, $feed_id, $userid)
     // get last update times for groups
     assert(is_numeric($userid));
     $input_arr = array($userid);
-    $sql = '"feedid", "last_update_seen" FROM userfeedinfo WHERE "userid" = ?';
+    $sql = '"feedid", "last_update_seen" FROM userfeedinfo WHERE "userid"=?';
 
     if (is_numeric($feed_id) && $feed_id != 0) {
         $sql .= " AND \"feedid\" = '$feed_id'";
@@ -1312,7 +1311,7 @@ function get_group_last_updated(DatabaseConnection $db, $groupid, $userid)
     assert(is_numeric($userid));
     // get last update times for groups
     $input_arr = array($userid);
-    $sql = '"groupid", "last_update_seen" FROM usergroupinfo WHERE "userid" = ?';
+    $sql = '"groupid", "last_update_seen" FROM usergroupinfo WHERE "userid"=?';
     if ($groupid != '') {
         if (!is_numeric($groupid)) {
             $groupid = group_by_name($db, $groupid);
@@ -1374,8 +1373,8 @@ function get_active_stylesheet(DatabaseConnection $db, $userid)
     $template_dir = $template_dir[0] . '/css';
 
     $default_stylesheet = get_config($db, 'default_stylesheet', 'light.css');
-    if ($stylesheet == '' || !file_exists($template_dir . '/' . $stylesheet . '/' .$stylesheet . '.css') || !is_file($template_dir . '/' . $stylesheet. '/'. $stylesheet . '.css')) {
-        if (!file_exists($template_dir . '/' . $default_stylesheet. '/'. $default_stylesheet . '.css') || !is_file($template_dir . '/' . $default_stylesheet. '/' .$default_stylesheet . '.css')) {
+    if ($stylesheet == '' || !file_exists($template_dir . '/' . $stylesheet . '/' . $stylesheet . '.css') || !is_file($template_dir . '/' . $stylesheet. '/' . $stylesheet . '.css')) {
+        if (!file_exists($template_dir . '/' . $default_stylesheet . '/'. $default_stylesheet . '.css') || !is_file($template_dir . '/' . $default_stylesheet . '/' .$default_stylesheet . '.css')) {
             $stylesheet = '';
         } else {
             $stylesheet = $default_stylesheet;
@@ -1535,7 +1534,7 @@ function add_to_whitelist(DatabaseConnection $db, $spotterID, $userid, $global, 
         $userid == user_status::SUPER_USERID;
     }
 
-    $sql = 'count(*) AS cnt FROM spot_whitelist WHERE "spotter_id" = ? AND "source" = ? AND "userid" = ?';
+    $sql = 'count(*) AS cnt FROM spot_whitelist WHERE "spotter_id"=? AND "source"=? AND "userid"=?';
     $res = $db->select_query($sql, array($spotterID, $source, $userid));
     if ($res[0]['cnt'] == 0) {
         $add_ids = array($spotterID, $source, $userid, $status);
@@ -1546,7 +1545,7 @@ function add_to_whitelist(DatabaseConnection $db, $spotterID, $userid, $global, 
 
 function get_spotterid_from_spot(DatabaseConnection $db, $spotid)
 {
-    $sql = '"spotter_id" FROM spots WHERE "spotid" = ?';
+    $sql = '"spotter_id" FROM spots WHERE "spotid"=?';
     $res = $db->select_query($sql, 1, array($spotid));
     if (!isset($res[0]['spotter_id'])) {
         return FALSE;
@@ -1828,7 +1827,7 @@ function get_age_limits_groups(DatabaseConnection $db, $groupID=NULL)
     $sql = "min({$now} - \"date\") AS \"minage\", max({$now} - \"date\") AS \"maxage\" FROM setdata";
     if (is_numeric($groupID) && $groupID > 0) {
         $input_arr[] = $groupID;
-        $sql .= ' WHERE "groupID" = ?';
+        $sql .= ' WHERE "groupID"=?';
     }
     $res = $db->select_query($sql, 1, $input_arr);
 
@@ -1855,7 +1854,7 @@ function get_age_limits_rsssets(DatabaseConnection $db, $rss_id=NULL)
     $input_arr = array();
     if (is_numeric($rss_id) && $rss_id > 0) {
         $input_arr[] = $rss_id;
-        $sql .= ' WHERE "rss_id" = ?';
+        $sql .= ' WHERE "rss_id"=?';
 
     }
     $res = $db->select_query($sql, 1, $input_arr);

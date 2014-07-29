@@ -101,11 +101,6 @@
 <input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage}"/>
-<div>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-</div>
 
 <script type="text/javascript">
 
@@ -141,11 +136,5 @@ $(document).ready(function() {
    $('#saved_search').change( function () { update_spot_searches(null); } );
 });
 </script>
-
-<div>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-</div>
 
 {include file="foot.tpl"}

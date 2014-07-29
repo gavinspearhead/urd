@@ -567,7 +567,7 @@ function get_sets_stats_date_day(DatabaseConnection $db, $type, $year, $month)
     $ystr = $db->get_extract('year', '"timestamp"');
     $monthstr = $db->get_extract('month', '"timestamp"');
     $daystr = $db->get_extract('day', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $daystr AS \"day\" FROM stats WHERE \"action\" = ? AND $ystr = ? AND $monthstr=? GROUP BY $daystr ORDER BY \"day\" DESC";
+    $qry = "sum(\"value\") AS \"spot_sum\", $daystr AS \"day\" FROM stats WHERE \"action\"=? AND $ystr=? AND $monthstr=? GROUP BY $daystr ORDER BY \"day\" DESC";
     $res = $db->select_query($qry, array($type, $year, $month));
     $years = array();
     if (is_array($res)) {
@@ -586,7 +586,7 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
     assert(is_numeric($year));
     $ystr = $db->get_extract('year', '"timestamp"');
     $monthstr = $db->get_extract('month', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\" = ? AND $ystr = ? GROUP BY $monthstr ORDER BY \"month\" DESC";
+    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=? AND $ystr=? GROUP BY $monthstr ORDER BY \"month\" DESC";
     $res = $db->select_query($qry, array($type, $year));
     $years = array();
 
@@ -604,7 +604,7 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
 function get_sets_stats_date(DatabaseConnection $db, $type)
 {
     $ystr = $db->get_extract('year', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE \"action\" = ? GROUP BY $ystr ORDER BY \"year\" DESC";
+    $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE \"action\"=? GROUP BY $ystr ORDER BY \"year\" DESC";
     $res = $db->select_query($qry, array($type));
     $years = array();
 
@@ -743,18 +743,14 @@ function create_blank_graph(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
     header('Content-Type: image/png');
-    global $width, $height;
+    global $width, $height, $pathstat;
 
     $plot = new PHPlot_truecolor($width, $height);
     $plot->SetImageBorderType('raised');
     $plot->SetImageBorderWidth('1');
 
     // Main plot title:
-    $plot->SetFontTTF('title', '../functions/libs/phplot/LiberationSans-Regular.ttf', 12);
-    $plot->SetFontTTF('y_label', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('x_label', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('x_title', '../functions/libs/phplot/LiberationSans-Regular.ttf', 12);
-    $plot->SetFontTTF('legend', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
+   
     $plot->SetTitle('');
     $plot->SetYTitle('none');
     $plot->SetXTitle('none');
@@ -771,7 +767,7 @@ function create_blank_graph(DatabaseConnection $db, $userid)
     $plot->SetTitleColor($bgcolor);
     $plot->SetLightGridColor($bgcolor);
     $plot->SetGridColor($bgcolor);
-    $plot->SetDataValues(array(array(0,0)));
+    $plot->SetDataValues(array(array(0, 0)));
     $plot->SetBackgroundColor($bgcolor);
     $plot->SetDataColors(array($bgcolor));
     $plot->DrawGraph();
@@ -780,7 +776,7 @@ function create_blank_graph(DatabaseConnection $db, $userid)
 function create_graph(DatabaseConnection $db, $userid, $sizeorcount, $datainput, $legend, $graphtitle, $maxval, $type='stackedbars', $ylabel='')
 {
     assert(is_numeric($userid));
-    global $LN;
+    global $LN, $pathstat;
     header('Content-Type: image/png');
     // Hide notices:
     //error_reporting(0);
@@ -830,12 +826,12 @@ function create_graph(DatabaseConnection $db, $userid, $sizeorcount, $datainput,
     $plot->SetYTitle($ylabel);
     $plot->SetBrowserCache(FALSE);
     // Main plot title:
-    $plot->SetUseTTF(TRUE);
-    $plot->SetFontTTF('title', '../functions/libs/phplot/LiberationSans-Regular.ttf', 12);
-    $plot->SetFontTTF('y_label', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('x_label', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('x_title', '../functions/libs/phplot/LiberationSans-Regular.ttf', 12);
-    $plot->SetFontTTF('legend', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
+    $font_path = $pathstat.'/../functions/libs/phplot/';
+    $plot->SetFontTTF('title', $font_path . 'LiberationSans-Regular.ttf', 12);
+    $plot->SetFontTTF('y_label', $font_path . 'LiberationSans-Regular.ttf', 8);
+    $plot->SetFontTTF('x_label', $font_path . 'LiberationSans-Regular.ttf', 8);
+    $plot->SetFontTTF('x_title', $font_path . 'LiberationSans-Regular.ttf', 12);
+    $plot->SetFontTTF('legend', $font_path . 'LiberationSans-Regular.ttf', 8);
     $plot->SetTitle($graphtitle);
 
     // Make a legend for the 3 data sets plotted:
@@ -1259,12 +1255,12 @@ function enter_month_names(OverallMonthStats &$overallmonthstats)
 function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
 {
     assert(is_numeric($userid));
-    global $width, $height;
+    global $width, $height, $pathstat;
     if (!in_array($subcat, array('a', 'b', 'c', 'd', 'z'))) {
         create_blank_graph($db, $userid);
         die;
     }
-    $sql = "\"subcat$subcat\" AS \"subcat\" FROM spots WHERE \"category\" = ?";
+    $sql = "\"subcat$subcat\" AS \"subcat\" FROM spots WHERE \"category\"=?";
     $limit = 0;
     $stats = SpotCategories::get_subcats_ids($cat, $subcat);
     $row_count = 20000;
@@ -1322,11 +1318,12 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     $plot->SetDataColors(array('color1','color2','color3','color4','color5','color6','color7','color8','color9'));
 
     $plot->SetImageBorderType('plain');
-    $plot->SetFontTTF('title', '../functions/libs/phplot/LiberationSans-Regular.ttf', 12);
-    $plot->SetFontTTF('y_label', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('legend', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('x_label', '../functions/libs/phplot/LiberationSans-Regular.ttf', 8);
-    $plot->SetFontTTF('x_title', '../functions/libs/phplot/LiberationSans-Regular.ttf', 12);
+    $font_path = $pathstat.'/../functions/libs/phplot/';
+    $plot->SetFontTTF('title', $font_path . 'LiberationSans-Regular.ttf', 12);
+    $plot->SetFontTTF('y_label',$font_path . 'LiberationSans-Regular.ttf', 8);
+    $plot->SetFontTTF('legend', $font_path . 'LiberationSans-Regular.ttf', 8);
+    $plot->SetFontTTF('x_label', $font_path . 'LiberationSans-Regular.ttf', 8);
+    $plot->SetFontTTF('x_title', $font_path . 'LiberationSans-Regular.ttf', 12);
 
     $plot->SetXDataLabelPos('plotin');
     $plot->SetPlotType('bars');

@@ -84,7 +84,6 @@ class file_icons
     }
 }
 
-
 function normalise_dir(DatabaseConnection $db, $dir, $username, $is_admin)
 {
     global $LN;
@@ -124,7 +123,6 @@ function normalise_dir(DatabaseConnection $db, $dir, $username, $is_admin)
 
     return $dirname;
 }
-
 
 function match_files($filename, $file_list)
 {
@@ -334,380 +332,380 @@ class file_list
     }
 }
 
-$icons = new file_icons();
-
-$title = $LN['urdname'] . ' - ' . $LN['viewfiles_title'];
-
-$rprefs = load_config($db);
-
-$is_admin = urd_user_rights::is_admin($db, $userid);
-$is_fileeditor = urd_user_rights::is_file_editor($db, $userid);
-
-$hiddenfiles = $hiddenfiles_root = array();
-if ($prefs['hiddenfiles']) {
-    $hiddenfiles = get_hiddenfiles(get_pref($db, 'hidden_files_list', $userid));
-}
-if ($rprefs['global_hiddenfiles']) {
-    $hiddenfiles_root = get_hiddenfiles(get_config($db, 'global_hidden_files_list'));
-}
-
-$hiddenfiles = array_merge($hiddenfiles, $hiddenfiles_root);
-
-stored_files::set_cache_dir(get_config($db, 'dlpath') . DIRECTORY_SEPARATOR . FILELIST_CACHE_PATH);
-
-
-$cmd = trim(get_request('cmd', ''));
-$dir = get_request('dir', '');
-
-try {
-    $dirname = normalise_dir($db, $dir, $username, $is_admin);
-} catch (exception $e) {
-    if ($e->getCode() == ERR_PATH_NOT_FOUND) {
-        throw new exception($LN['error_dirnotfound'] . ' ' . $dir);
-    } else {
-        throw new exception($LN['error_nodlpath'], 'admin_config.php', $LN['error_setithere']);
-    }
-}
-
-$search = get_request('search', '');
-
-$submitbutton = get_request('submitbutton', '');
-$offset = get_request('offset', 0);
-if ($submitbutton != '') {// reset the page skipper if the search button is pressed
-    $offset = 0;
-}
-$sort = get_request('sort', 'name');
-$sort_dir = get_request('sort_dir', 'asc');
-$perpage = get_maxperpage($db, $userid);
-$perpage = get_request('perpage', $perpage);
-$only_rows  = get_request('only_rows', 0);
-$rename_file = NULL;
-if ($sort == '') {
-    if (isset($_SESSION['viewfiles']['sort'])) {
-        $sort = $_SESSION['viewfiles']['sort'];
-    } else {
-        $sort = 'name';
-    }
-}
-if ($sort_dir == '') {
-    if (isset($_SESSION['viewfiles']['sort_dir'])) {
-        $sort_dir = $_SESSION['viewfiles']['sort_dir'];
-    } else {
-        $sort_dir = 'asc';
-    }
-}
 
 function die_smarty($msg, $filename='')
-{
-    global $smarty, $prefs;
-    $smarty->assign('message', $msg);
-    $smarty->assign('maxstrlen',		((int) $prefs['maxsetname'])/3);
-    $smarty->assign('filename',		    $filename);
-    $smarty->assign('new_file',		    0);
-    $smarty->display('ajax_editfile.tpl');
-    die;
-}
+    {
+        global $smarty, $prefs;
+        $smarty->assign('message', $msg);
+        $smarty->assign('maxstrlen',		((int) $prefs['maxsetname'])/3);
+        $smarty->assign('filename',		    $filename);
+        $smarty->assign('new_file',		    0);
+        $smarty->display('ajax_editfile.tpl');
+        die;
+    }
 
-$_SESSION['viewfiles']['sort'] = $sort;
-$_SESSION['viewfiles']['sort_dir'] = $sort_dir;
-$currentdir = $dirname;
+try { 
+    $title = $LN['urdname'] . ' - ' . $LN['viewfiles_title'];
+    $icons = new file_icons();
+    $rprefs = load_config($db);
 
-$new_file = FALSE;
-switch (strtolower($cmd)) {
-case 'get_file_name':
-    $idx = get_request($idx);
+    $is_admin = urd_user_rights::is_admin($db, $userid);
+    $is_fileeditor = urd_user_rights::is_file_editor($db, $userid);
 
-    return stored_files::get_file($idx);
-    break;
-case 'check_file_idx':
-    $idx = get_request($idx);
+    $hiddenfiles = $hiddenfiles_root = array();
+    if ($prefs['hiddenfiles']) {
+        $hiddenfiles = get_hiddenfiles(get_pref($db, 'hidden_files_list', $userid));
+    }
+    if ($rprefs['global_hiddenfiles']) {
+        $hiddenfiles_root = get_hiddenfiles(get_config($db, 'global_hidden_files_list'));
+    }
 
-    return stored_files::index_exists($idx)? 'OK' : 'NO';
-    break;
-case 'new_file':
-    $new_file = TRUE;
-case 'edit_file':
-    $allow_edit = $rprefs['webeditfile'] && ($is_fileeditor || $is_admin);
-    if (!$allow_edit) {
-        die_smarty($LN['error_filenotallowed'] );
-    }
-    if (!$new_file) {
-        $filename = get_post('filename', '');
-        if ($filename == '') {
-            die_smarty($LN['error_needfilenames']);
-        }
-        $fullname = $dirname.$filename;
-        if (filesize($fullname) > ($rprefs['maxfilesize']) && $rprefs['maxfilesize'] != 0) {
-            die_smarty($LN['error_filetoolarge'], $filename);
-        }
-        $file_contents = @file_get_contents($fullname);
-        if ($file_contents === FALSE || $file_contents == '') {
-            die_smarty($LN['error_filereaderror'], $filename);
-        }
-        $_SESSION['viewfiles']['file_edit'] = $fullname;
-    } else {
-        $file_contents = $filename = '';
-        $_SESSION['viewfiles']['file_edit'] = '';
-    }
-    init_smarty('', 0);
-    $smarty->assign('error',            '');
-    $smarty->assign('textboxsize',		TEXT_BOX_SIZE);
-    $smarty->assign('directory',		$currentdir);
-    $smarty->assign('new_file',		    $new_file);
-    $smarty->assign('file_contents',	htmlentities($file_contents));
-    $smarty->assign('maxstrlen',		((int) $prefs['maxsetname'])/3);
-    $smarty->assign('filename',		    $filename);
-    $smarty->display('ajax_editfile.tpl');
-    die;
-    break;
+    $hiddenfiles = array_merge($hiddenfiles, $hiddenfiles_root);
 
-case 'save_file':
-    $allow_edit = $rprefs['webeditfile'] && ($is_fileeditor || $is_admin);
-    if (!$allow_edit) {
-        throw new exception($LN['error_filenotallowed']);
-    }
-    challenge::verify_challenge($_POST['challenge']);
-    $filename = get_post('filename', '');
-    if ($filename == '') {
-        throw new exception($LN['error_needfilenames']);
-    }
-    if (strpos($filename, DIRECTORY_SEPARATOR) !== FALSE) {
-        throw new exception($LN['error_invalidfilename']);
-    }
-    $newdir = (get_post('newdir', 0) == 1) ? TRUE: FALSE;
-    $newfile = get_post('newfile', 0);
-    $fullname = $dirname.$filename;
-    $contents = get_post('file_contents', NULL);
-    if ($contents === NULL) {
-        throw new exception($LN['error_invalidvalue']);
-    }
-    if ($newfile == 1) {
-        if (file_exists($fullname)) {
-            throw new exception($LN['error_fileexists']);
-        }
-    } else {
-        if ($_SESSION['viewfiles']['file_edit'] != $fullname) {
-            throw new exception($LN['error_filenotallowed']);
-        }
-    }
-    if ($newdir) {
-        $rv = @mkdir($fullname);
-        if ($rv === FALSE) {
-            throw new exception($LN['error_notmakedir']);
-        }
-    } else {
-        $rv = @file_put_contents($fullname, $contents, LOCK_EX);
-        if ($rv === FALSE) {
-            throw new exception($LN['error_nowrite']);
-        }
-    }
-    die_html('OK');
-    break;
+    stored_files::set_cache_dir(get_config($db, 'dlpath') . DIRECTORY_SEPARATOR . FILELIST_CACHE_PATH);
 
-case 'delete_file':
-    if (!$is_admin && !$is_fileeditor) {
-        throw new exception($LN['error_filenotallowed']);
+    $cmd = trim(get_request('cmd', ''));
+    $dir = get_request('dir', '');
+
+    try {
+        $dirname = normalise_dir($db, $dir, $username, $is_admin);
+    } catch (exception $e) {
+        if ($e->getCode() == ERR_PATH_NOT_FOUND) {
+            throw new exception($LN['error_dirnotfound'] . ' ' . $dir);
+        } else {
+            throw new exception($LN['error_nodlpath'], 'admin_config.php', $LN['error_setithere']);
+        }
     }
-    challenge::verify_challenge($_POST['challenge']);
-    //delete a single file
-    $file = get_post('filename','');
-    if ($file == '') {
-        throw new exception($LN['error_needfilenames']);
+
+    $search = get_request('search', '');
+
+    $submitbutton = get_request('submitbutton', '');
+    $offset = get_request('offset', 0);
+    if ($submitbutton != '') {// reset the page skipper if the search button is pressed
+        $offset = 0;
     }
-    $rv = FALSE;
-    if (strpos($file, DIRECTORY_SEPARATOR) === FALSE) {
-        $rv = @unlink($dirname . $file);
+    $sort = get_request('sort', 'name');
+    $sort_dir = get_request('sort_dir', 'asc');
+    $perpage = get_maxperpage($db, $userid);
+    $perpage = get_request('perpage', $perpage);
+    $only_rows  = get_request('only_rows', 0);
+    $rename_file = NULL;
+    if ($sort == '') {
+        if (isset($_SESSION['viewfiles']['sort'])) {
+            $sort = $_SESSION['viewfiles']['sort'];
+        } else {
+            $sort = 'name';
+        }
     }
-    if ($rv === FALSE) {
-        throw new exception($LN['error_noremovefile']. ': ' . htmlentities($file));
+    if ($sort_dir == '') {
+        if (isset($_SESSION['viewfiles']['sort_dir'])) {
+            $sort_dir = $_SESSION['viewfiles']['sort_dir'];
+        } else {
+            $sort_dir = 'asc';
+        }
     }
-    break;
-case 'delete_dir':
-    if (!$is_admin && !$is_fileeditor) {
-        throw new exception($LN['error_filenotallowed']);
-    }
-    challenge::verify_challenge($_POST['challenge']);
-    // recursively delete files and dirs
-    $subdir = get_post('filename', '');
-    if ($subdir == '') {
-        throw new exception($LN['error_needfilenames']);
-    }
-    $rv = TRUE;
-    $error = '';
-    if (strpos($subdir, DIRECTORY_SEPARATOR) === FALSE && $subdir != '..' && $subdir != '.') {
-        try {
-            list ($count, $error) = rmdirtree($dirname . $subdir, 0, TRUE);
-            if ($error == '') {
-                $rv = TRUE;
+
+    $_SESSION['viewfiles']['sort'] = $sort;
+    $_SESSION['viewfiles']['sort_dir'] = $sort_dir;
+    $currentdir = $dirname;
+
+    $new_file = FALSE;
+    switch (strtolower($cmd)) {
+/*        case 'get_file_name':
+            $idx = get_request($idx);
+
+            return stored_files::get_file($idx);
+            break; */
+/*        case 'check_file_idx':
+            $idx = get_request($idx);
+
+            return stored_files::index_exists($idx)? 'OK' : 'NO';
+            break;*/
+        case 'new_file':
+            $new_file = TRUE;
+        case 'edit_file':
+            $allow_edit = $rprefs['webeditfile'] && ($is_fileeditor);
+            if (!$allow_edit) {
+                throw new exception($LN['error_filenotallowed'] );
             }
-        } catch (exception $e) {
-            throw new exception($e->getMessage());
-        }
-    } else {
-        $rv = FALSE;
-    }
-    if ($rv === FALSE) {
-        throw new exception($LN['error_noremovefile'] . " $error $subdir");
-    }
-    if ($error != '') {
-        throw new exception($error);
-    }
-    break;
-case 'zip_dir': // not very neat now....
-    if ($rprefs['webdownload'] != 1) {
-        throw new exception($LN['error_filenotallowed']);
-    }
-    challenge::verify_challenge($_GET['challenge']);
-    $tar_cmd = my_escapeshellcmd (get_config($db,'tar_path'));
-    if ($tar_cmd != 'off' && $tar_cmd != '') {
-        $subdir = get_request('filename');
-        if (strpos($subdir, DIRECTORY_SEPARATOR) === FALSE && strstr($subdir, '..') === FALSE) {
-            $subdir_dl = preg_replace ('/[^a-z0-9_\-.]+/i', '_', $subdir);
-
-            $path = my_escapeshellarg ($dirname);
-            $filename = my_escapeshellarg($subdir);
-            set_time_limit(3600);
-            @ob_end_flush(); // turn off output buffering otherwise large files will be hit by the memory limit
-            $pipe = popen("$tar_cmd -cz -C $path $filename 2>> /tmp/tar", 'r');
-            if ($pipe === FALSE) {
-                throw new exception($LN['viewfiles_compressfailed']);
+            if (!$new_file) {
+                $filename = get_post('filename', '');
+                if ($filename == '') {
+                    throw new exception($LN['error_needfilenames']);
+                }
+                $fullname = $dirname.$filename;
+                if (filesize($fullname) > ($rprefs['maxfilesize']) && $rprefs['maxfilesize'] != 0) {
+                    throw new exception($LN['error_filetoolarge'], $filename);
+                }
+                $file_contents = @file_get_contents($fullname);
+                if ($file_contents === FALSE || $file_contents == '') {
+                    throw new exception($LN['error_filereaderror'], $filename);
+                }
+                $_SESSION['viewfiles']['file_edit'] = $fullname;
+            } else {
+                $file_contents = $filename = '';
+                $_SESSION['viewfiles']['file_edit'] = '';
             }
-            $size = 0;
-            header('Content-type: application/x-gtar');
-            header('Content-Description: URD Generated Data');
-            header("Content-Disposition: attachment; filename=\"$subdir_dl.tgz\"");
+            init_smarty('', 0);
+            $smarty->assign('error',            '');
+            $smarty->assign('textboxsize',		TEXT_BOX_SIZE);
+            $smarty->assign('directory',		$currentdir);
+            $smarty->assign('new_file',		    $new_file);
+            $smarty->assign('file_contents',	htmlentities($file_contents));
+            $smarty->assign('maxstrlen',		((int) $prefs['maxsetname'])/3);
+            $smarty->assign('filename',		    $filename);
+            $contents =  $smarty->fetch('ajax_editfile.tpl');
+            return_result(array('contents'=>$contents));
+            break;
 
-            while (!feof($pipe)) {
-                $output = fread($pipe, 10240);
-                if ($output === FALSE) {
-                    throw new exception($LN['error_filereaderror']);
-                } else {
-                    $size += count($output);
-                    echo $output;
+        case 'save_file':
+            $allow_edit = $rprefs['webeditfile'] && ($is_fileeditor || $is_admin);
+            if (!$allow_edit) {
+                throw new exception($LN['error_filenotallowed']);
+            }
+            challenge::verify_challenge($_POST['challenge']);
+            $filename = get_post('filename', '');
+            if ($filename == '') {
+                throw new exception($LN['error_needfilenames']);
+            }
+            if (strpos($filename, DIRECTORY_SEPARATOR) !== FALSE) {
+                throw new exception($LN['error_invalidfilename']);
+            }
+            $newdir = (get_post('newdir', 0) == 1) ? TRUE: FALSE;
+            $newfile = get_post('newfile', 0);
+            $fullname = $dirname.$filename;
+            $contents = get_post('file_contents', NULL);
+            if ($contents === NULL) {
+                throw new exception($LN['error_invalidvalue']);
+            }
+            if ($newfile == 1) {
+                if (file_exists($fullname)) {
+                    throw new exception($LN['error_fileexists']);
+                }
+            } else {
+                if ($_SESSION['viewfiles']['file_edit'] != $fullname) {
+                    throw new exception($LN['error_filenotallowed']);
                 }
             }
-            pclose($pipe);
-            add_stat_data($db, stat_actions::WEBVIEW, $size, $userid);
+            if ($newdir) {
+                $rv = @mkdir($fullname);
+                if ($rv === FALSE) {
+                    throw new exception($LN['error_notmakedir']);
+                }
+            } else {
+                $rv = @file_put_contents($fullname, $contents, LOCK_EX);
+                if ($rv === FALSE) {
+                    throw new exception($LN['error_nowrite']);
+                }
+            }
+            break;
+
+        case 'delete_file':
+            if (!$is_admin && !$is_fileeditor) {
+                throw new exception($LN['error_filenotallowed']);
+            }
+            challenge::verify_challenge($_POST['challenge']);
+            //delete a single file
+            $file = get_post('filename','');
+            if ($file == '') {
+                throw new exception($LN['error_needfilenames']);
+            }
+            $rv = FALSE;
+            if (strpos($file, DIRECTORY_SEPARATOR) === FALSE) {
+                $rv = @unlink($dirname . $file);
+            }
+            if ($rv === FALSE) {
+                throw new exception($LN['error_noremovefile']. ': ' . htmlentities($file));
+            }
+            break;
+        case 'delete_dir':
+            if (!$is_admin && !$is_fileeditor) {
+                throw new exception($LN['error_filenotallowed']);
+            }
+            challenge::verify_challenge($_POST['challenge']);
+            // recursively delete files and dirs
+            $subdir = get_post('filename', '');
+            if ($subdir == '') {
+                throw new exception($LN['error_needfilenames']);
+            }
+            $rv = TRUE;
+            $error = '';
+            if (strpos($subdir, DIRECTORY_SEPARATOR) === FALSE && $subdir != '..' && $subdir != '.') {
+                try {
+                    list ($count, $error) = rmdirtree($dirname . $subdir, 0, TRUE);
+                    if ($error == '') {
+                        $rv = TRUE;
+                    }
+                } catch (exception $e) {
+                    throw new exception($e->getMessage());
+                }
+            } else {
+                $rv = FALSE;
+            }
+            if ($rv === FALSE) {
+                throw new exception($LN['error_noremovefile'] . " $error $subdir");
+            }
+            if ($error != '') {
+                throw new exception($error);
+            }
+            break;
+        case 'zip_dir': // not very neat now....
+            if ($rprefs['webdownload'] != 1) {
+                throw new exception($LN['error_filenotallowed']);
+            }
+            challenge::verify_challenge($_GET['challenge']);
+            $tar_cmd = my_escapeshellcmd (get_config($db,'tar_path'));
+            if ($tar_cmd != 'off' && $tar_cmd != '') {
+                $subdir = get_request('filename');
+                if (strpos($subdir, DIRECTORY_SEPARATOR) === FALSE && strstr($subdir, '..') === FALSE) {
+                    $subdir_dl = preg_replace ('/[^a-z0-9_\-.]+/i', '_', $subdir);
+
+                    $path = my_escapeshellarg ($dirname);
+                    $filename = my_escapeshellarg($subdir);
+                    set_time_limit(3600);
+                    @ob_end_flush(); // turn off output buffering otherwise large files will be hit by the memory limit
+                    $pipe = popen("$tar_cmd -cz -C $path $filename 2>> /tmp/tar", 'r');
+                    if ($pipe === FALSE) {
+                        throw new exception($LN['viewfiles_compressfailed']);
+                    }
+                    $size = 0;
+                    header('Content-type: application/x-gtar');
+                    header('Content-Description: URD Generated Data');
+                    header("Content-Disposition: attachment; filename=\"$subdir_dl.tgz\"");
+
+                    while (!feof($pipe)) {
+                        $output = fread($pipe, 10240);
+                        if ($output === FALSE) {
+                            throw new exception($LN['error_filereaderror']);
+                        } else {
+                            $size += count($output);
+                            echo $output;
+                        }
+                    }
+                    pclose($pipe);
+                    add_stat_data($db, stat_actions::WEBVIEW, $size, $userid);
+                    die;
+                } else {
+                    throw new exception( $LN['error_accessdenied']);
+                }
+            } else {
+                throw new exception($LN['viewfiles_tarnotset']);
+            }
             die;
-        } else {
-            throw new exception( $LN['error_accessdenied']);
-        }
-    } else {
-        throw new exception($LN['viewfiles_tarnotset']);
-    }
-    die;
-    break;
-case 'show_files':
-    $files = new file_list;
-    $files->read_dir($currentdir, $db, $is_admin || $is_fileeditor, $search);
-    $dir = (strtolower($sort_dir) == 'desc')? -1: 1;
-    list($pages, $currentpage, $lastpage) = get_pages($files->get_total(), $perpage, $offset);
+            break;
+        case 'show_files':
+            $files = new file_list;
+            $files->read_dir($currentdir, $db, $is_admin || $is_fileeditor, $search);
+            $dir = (strtolower($sort_dir) == 'desc')? -1: 1;
+            list($pages, $currentpage, $lastpage) = get_pages($files->get_total(), $perpage, $offset);
 
-    $tar_cmd = my_escapeshellcmd(get_config($db,'tar_path'));
-    $use_tar = (int) (($tar_cmd != 'off' && $tar_cmd != '') && ($rprefs['webdownload'] == 1));
+            $tar_cmd = my_escapeshellcmd(get_config($db,'tar_path'));
+            $use_tar = (int) (($tar_cmd != 'off' && $tar_cmd != '') && ($rprefs['webdownload'] == 1));
 
-    $allow_edit = $rprefs['webeditfile'];
+            $allow_edit = $rprefs['webeditfile'];
 
-    init_smarty('', 0);
-    $smarty->assign('allow_edit',	$allow_edit);
-    $smarty->assign('search',		$search);
-    $smarty->assign('pages',		$pages);
-    $smarty->assign('use_tar',		$use_tar);
-    $smarty->assign('currentpage',	$currentpage);
-    $smarty->assign('lastpage',		$lastpage);
-    $smarty->assign('sort',			$sort);
-    $smarty->assign('sort_dir', 	$sort_dir);
-    $smarty->assign('offset', 		$offset);
-    $smarty->assign('directory',	$currentdir);
-    $smarty->assign('only_rows',    $only_rows);
-    $smarty->assign('files',		$ff = $files->get_files($sort, $offset, $perpage, $dir, ($only_rows == 0)));
-    $smarty->assign('last_line',    $offset + count($ff));
-    $smarty->display('ajax_showviewfiles.tpl');
+            init_smarty('', 0);
+            $smarty->assign('allow_edit',	$allow_edit);
+            $smarty->assign('search',		$search);
+            $smarty->assign('pages',		$pages);
+            $smarty->assign('use_tar',		$use_tar);
+            $smarty->assign('currentpage',	$currentpage);
+            $smarty->assign('lastpage',		$lastpage);
+            $smarty->assign('sort',			$sort);
+            $smarty->assign('sort_dir', 	$sort_dir);
+            $smarty->assign('offset', 		$offset);
+            $smarty->assign('directory',	$currentdir);
+            $smarty->assign('only_rows',    $only_rows);
+            $smarty->assign('files',		$ff = $files->get_files($sort, $offset, $perpage, $dir, ($only_rows == 0)));
+            $smarty->assign('last_line',    $offset + count($ff));
+            $contents = $smarty->fetch('ajax_showviewfiles.tpl');
+            return_result(array('contents'=>$contents));
+            break;
+        case 'show_rename':
+            $filename = get_post('filename', '');
+            if ($filename == '') {
+                throw new exception($LN['error_needfilenames']);
+            }
+            $fullname = $dirname.$filename;
+            $rights = substr(sprintf('%o', fileperms($fullname)), -4);
+            $group = posix_getgrgid(filegroup($fullname));
+            $group = $group['name'];
+            $groups_orig = read_system_groups();
+            sort($groups_orig);
+            foreach ($groups_orig as $g) {
+                $groups["$g"] = $g;
+            }
 
-    die;
-    break;
-case 'show_rename':
-    $filename = get_post('filename', '');
-    if ($filename == '') {
-        throw new exception($LN['error_needfilenames']);
-    }
-    $fullname = $dirname.$filename;
-    $rights = substr(sprintf('%o', fileperms($fullname)), -4);
-    $group = posix_getgrgid(filegroup($fullname));
-    $group = $group['name'];
-    $groups_orig = read_system_groups();
-    sort($groups_orig);
-    foreach ($groups_orig as $g) {
-        $groups["$g"] = $g;
-    }
+            init_smarty('', 0);
+            $smarty->assign('textboxsize',	TEXT_BOX_SIZE);
+            $smarty->assign('directory',	$currentdir);
+            $smarty->assign('maxstrlen',	((int) $prefs['maxsetname'])/3);
+            $smarty->assign('filename',		$filename);
+            $smarty->assign('rights', 		$rights);
+            $smarty->assign('group', 		$group);
+            $smarty->assign('groups', 		$groups);
+            $contents = $smarty->fetch('ajax_editviewfiles.tpl');
 
-    init_smarty('', 0);
-    $smarty->assign('textboxsize',	TEXT_BOX_SIZE);
-    $smarty->assign('directory',	$currentdir);
-    $smarty->assign('maxstrlen',	((int) $prefs['maxsetname'])/3);
-    $smarty->assign('filename',		$filename);
-    $smarty->assign('rights', 		$rights);
-    $smarty->assign('group', 		$group);
-    $smarty->assign('groups', 		$groups);
-    $smarty->display('ajax_editviewfiles.tpl');
+            return_result(array('contents'=>$contents));
+            die;
+            break;
+        case 'do_rename':
+            challenge::verify_challenge($_POST['challenge']);
+            $name = get_post('oldfilename', '');
+            $newname = get_post('newfilename', '');
+            $rights = get_post('rights', '');
+            $group = get_post('group', '');
+            if ($name != $newname) {
+                if ($name == '' || $newname == '') {
+                    throw new exception($LN['error_needfilenames']);
+                }
+                if (strpos($name, DIRECTORY_SEPARATOR) !== FALSE || strpos($newname, '/') !== FALSE) {
+                    throw new exception($LN['error_invalidfilename']);
+                }
 
-    die;
-    break;
-case 'do_rename':
-    challenge::verify_challenge($_POST['challenge']);
-    $name = get_post('oldfilename', '');
-    $newname = get_post('newfilename', '');
-    $rights = get_post('rights', '');
-    $group = get_post('group', '');
-    if ($name != $newname) {
-        if ($name == '' || $newname == '') {
-            throw new exception($LN['error_needfilenames']);
-        }
-        if (strpos($name, DIRECTORY_SEPARATOR) !== FALSE || strpos($newname, '/') !== FALSE) {
-            throw new exception($LN['error_invalidfilename']);
-        }
-
-        clearstatcache();
-        if (file_exists($dirname.$newname)) {
-            throw new exception($LN['error_fileexists']);
-        }
-        $rv = @rename($dirname . $name, $dirname . $newname);
-        if ($rv === FALSE) {
-            throw new exception($LN['error_cannotrename']);
-        }
+                clearstatcache();
+                if (file_exists($dirname.$newname)) {
+                    throw new exception($LN['error_fileexists']);
+                }
+                $rv = @rename($dirname . $name, $dirname . $newname);
+                if ($rv === FALSE) {
+                    throw new exception($LN['error_cannotrename']);
+                }
+            }
+            $fullname = $dirname.$newname;
+            $currights = substr(sprintf('%o', fileperms($fullname)), -4);
+            if ($currights != $rights || $rights == '') {
+                $rv = @chmod ($fullname, octdec($rights));
+                if ($rv === FALSE) {
+                    throw new exception($LN['error_cannotchmod']);
+                }
+            }
+            $curgroup = posix_getgrgid(filegroup($fullname));
+            $curgroup = $curgroup['name'];
+            if ($group != $curgroup || $group == '') {
+                $rv = @chgrp($fullname, $group);
+                if ($rv === FALSE) {
+                    throw new exception($LN['error_cannotchgrp']);
+                }
+            }
+            break;
+        case 'up_nzb':
+            challenge::verify_challenge($_POST['challenge']);
+            try {
+                $rprefs = load_config($db);
+                $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
+                $uc->parse_nzb($_POST['dir'] . $_POST['filename']);
+                $uc->disconnect();
+            } catch (exception $e) {
+                throw new exception($e->getMessage());
+            }
+             return_result(array('message'=> ($LN['uploaded'] . ' ' . htmlentities($_POST['dir'] . $_POST['filename'], ENT_QUOTES, 'UTF-8'))));
+            break;
+        default:
+            throw new exception($LN['error_invalidaction'] . " $cmd");
+            break;
     }
-    $fullname = $dirname.$newname;
-    $currights = substr(sprintf('%o', fileperms($fullname)), -4);
-    if ($currights != $rights || $rights == '') {
-        $rv = @chmod ($fullname, octdec($rights));
-        if ($rv === FALSE) {
-            throw new exception($LN['error_cannotchmod']);
-        }
-    }
-    $curgroup = posix_getgrgid(filegroup($fullname));
-    $curgroup = $curgroup['name'];
-    if ($group != $curgroup || $group == '') {
-        $rv = @chgrp($fullname, $group);
-        if ($rv === FALSE) {
-            throw new exception($LN['error_cannotchgrp']);
-        }
-    }
-    break;
-case 'up_nzb':
-    challenge::verify_challenge($_POST['challenge']);
-    try {
-        $rprefs = load_config($db);
-        $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-        $uc->parse_nzb($_POST['dir'] . $_POST['filename']);
-        $uc->disconnect();
-    } catch (exception $e) {
-        throw new exception($e->getMessage());
-    }
-    throw new exception ($LN['uploaded'] . ' ' . htmlentities($_POST['dir'] . $_POST['filename'], ENT_QUOTES, 'UTF-8'));
-    break;
-default:
-    throw new exception($LN['error_invalidaction'] . " $cmd");
-    break;
+    return_result(array());
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-die_html('OK');

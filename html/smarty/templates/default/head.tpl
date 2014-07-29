@@ -80,7 +80,7 @@
 		</ul>
     {else}
     <div {if $first->get_link_type() == 'jump'}onclick="javascript:jump('{$first->get_url()}');" class="down3 nooverflow buttonlike" 
-    {elseif $first->get_link_type()=='command'} class="buttonlike down3 nooverflow {$category}" onclick="javascript:do_command('{$first->get_url()}' '{$first->get_message()|escape:javascript}');"
+    {elseif $first->get_link_type()=='command'} class="buttonlike down3 nooverflow {$category}" onclick="javascript:do_command('{$first->get_url()}', '{$first->get_message()|escape:javascript}');"
     {else}class="down3 nooverflow" {/if}>{$first->get_name()}</div>
     {/if}
         </li>

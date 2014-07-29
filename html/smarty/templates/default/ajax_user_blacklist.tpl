@@ -125,8 +125,8 @@
     {$bottomskipper}
     <br/>
     <div>
-    <input type="hidden" name="order" id="order" value="{$sort|escape}}"/>
-    <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape}}"/>
+    <input type="hidden" name="order" id="order" value="{$sort|escape}"/>
+    <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape}"/>
     <input type="hidden" id="last_line" value="{$item.number}"/>
     </div>
 {/if}

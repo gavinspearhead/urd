@@ -158,10 +158,4 @@ $(document).ready(function() {
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 
-<div>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-</div>
-
 {include file="foot.tpl"}
