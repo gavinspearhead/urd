@@ -134,14 +134,14 @@ if ($minsetsize <= 0) {
 $offset  = get_request('offset', 0, 'is_numeric');
 $order   = get_request('order', '');
 $flag    = get_request('flag', '');
-$maxage  = get_request('maxage', $maxagelimit, 'is_numeric');
 $minage  = get_request('minage', $minagelimit, 'is_numeric');
+$maxage  = get_request('maxage', $maxagelimit, 'is_numeric');
 $minsetsize = get_request('minsetsize', $minsetsize, 'is_numeric');
 $maxsetsize = get_request('maxsetsize', $maxsetsize, 'is_numeric');
-$maxrating  = get_request('maxrating', 10, 'is_numeric');
 $minrating  = get_request('minrating', 0, 'is_numeric');
-$maxcomplete = get_request('maxcomplete', 100, 'is_numeric');
+$maxrating  = get_request('maxrating', 10, 'is_numeric');
 $mincomplete = get_request('mincomplete', 0, 'is_numeric');
+$maxcomplete = get_request('maxcomplete', 100, 'is_numeric');
 
 $setid = get_request('setid', '');
 $subscribedgroups = subscribed_groups_select($db, $groupID, $categoryID, $categories, $userid);
@@ -164,7 +164,7 @@ $smarty->assign('minage',		$minage);
 $smarty->assign('maxage',		$maxage);
 $smarty->assign('minrating',	$minrating);
 $smarty->assign('maxrating',	$maxrating);
-$smarty->assign('minagelimit',	$minagelimit);
+$smarty->assign('minagelimit',	0);
 $smarty->assign('maxagelimit',	$maxagelimit);
 $smarty->assign('minsetsizelimit',	$minsetsizelimit);
 $smarty->assign('maxsetsizelimit',	$maxsetsizelimit);

@@ -30,95 +30,99 @@ require_once "$pathadt/../functions/ajax_includes.php";
 
 verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid);
 
-$dlpath = get_dlpath($db);
-$postid = get_request('postid', NULL);
-
-$dir = $dlpath . POST_PATH . $username;
-$readonly = FALSE;
-
-$dirs = glob($dir . '/*', GLOB_ONLYDIR);
-
-$download_delay = get_pref($db, 'download_delay', $userid, 0);
-if ($download_delay > 0) {
-    $download_delay = "+$download_delay minutes";
-} else {
-    $download_delay = '';
-}
-
-if ($postid === NULL || !is_numeric($postid)) {
-    if ($dirs == array()) {
-        throw new exception($LN['error_nouploaddata'] . ': ' . $dir);
-    }
-    $poster_email = $prefs['poster_email'];
-    $poster_name = $prefs['poster_name'];
-    $recovery_size = $prefs['recovery_size'];
-    list($val, $suffix) = format_size($prefs['rarfile_size'], 'h', '',1024, 0);
-    $rarfile_size =  $val . $suffix;
-    $delete_files = 0;
-    $subject = '';
-    $group = '';
-    $group_nzb = '';
-    $dir = '';
-    $postid = '';
-    $start_time = $download_delay;
-} else {
-    $row = get_post_info($db, $userid, $postid);
-    $group = $row['groupid'];
-    $group_nzb = $row['groupid_nzb'];
-    $subject = $row['subject'];
-    $poster_email = $row['poster_id'];
-    $poster_name = $row['poster_name'];
-    list($val, $suffix) = format_size($row['filesize_rar'], 'h', '',1024, 0);
-    $rarfile_size =  $val . $suffix;
-    $recovery_size = $row['recovery_par'];
-    $delete_files = $row['delete_files'];
-    $start_time = time_format($row['start_time']);
-    $status = $row['status'];
-    $dir = $row['src_dir'];
-    if ($status != POST_READY) {
-        $readonly = TRUE;
-    }
-}
-
-$groups = array();
 try {
-    $groupinfo = get_all_active_groups($db);
-    foreach ($groupinfo as $gr) {
-        $groups[$gr['ID']] = $gr['name'];
+
+    $dlpath = get_dlpath($db);
+    $postid = get_request('postid', NULL);
+
+    $dir = $dlpath . POST_PATH . $username;
+    $readonly = FALSE;
+
+    $dirs = glob($dir . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+
+    $download_delay = get_pref($db, 'download_delay', $userid, 0);
+    if ($download_delay > 0) {
+        $download_delay = "+$download_delay minutes";
+    } else {
+        $download_delay = '';
     }
-} catch (exception $e) {
+
+    if ($postid === NULL || !is_numeric($postid)) {
+        if ($dirs == array()) {
+            throw new exception($LN['error_nouploaddata'] . ': ' . $dir);
+        }
+        $poster_email = $prefs['poster_email'];
+        $poster_name = $prefs['poster_name'];
+        $recovery_size = $prefs['recovery_size'];
+        list($val, $suffix) = format_size($prefs['rarfile_size'], 'h', '',1024, 0);
+        $rarfile_size =  $val . $suffix;
+        $delete_files = 0;
+        $subject = '';
+        $group = '';
+        $group_nzb = '';
+        $dir = '';
+        $postid = '';
+        $start_time = $download_delay;
+    } else {
+        $row = get_post_info($db, $userid, $postid);
+        $group = $row['groupid'];
+        $group_nzb = $row['groupid_nzb'];
+        $subject = $row['subject'];
+        $poster_email = $row['poster_id'];
+        $poster_name = $row['poster_name'];
+        list($val, $suffix) = format_size($row['filesize_rar'], 'h', '',1024, 0);
+        $rarfile_size =  $val . $suffix;
+        $recovery_size = $row['recovery_par'];
+        $delete_files = $row['delete_files'];
+        $start_time = time_format($row['start_time']);
+        $status = $row['status'];
+        $dir = $row['src_dir'];
+        if ($status != POST_READY) {
+            $readonly = TRUE;
+        }
+    }
+
     $groups = array();
-}
-natsort($groups);
+    try {
+        $groupinfo = get_all_active_groups($db);
+        foreach ($groupinfo as $gr) {
+            $groups[$gr['ID']] = $gr['name'];
+        }
+    } catch (exception $e) {
+        $groups = array();
+    }
+    natsort($groups);
 
-$default_nzb_group = get_config($db, 'ftd_group', '');
-$default_nzb_group_id = get_all_group_by_name($db, $default_nzb_group);
-if (! isset($groups [ $default_nzb_group_id ])) {
-    $default_nzb_group = array( 'group_id' => $default_nzb_group_id , 'group_name'=>$default_nzb_group);
-} else {
-    $default_nzb_group = NULL;
-}
+    $default_nzb_group = get_config($db, 'ftd_group', '');
+    $default_nzb_group_id = get_all_group_by_name($db, $default_nzb_group);
+    if (! isset($groups [ $default_nzb_group_id ])) {
+        $default_nzb_group = array( 'group_id' => $default_nzb_group_id , 'group_name'=>$default_nzb_group);
+    } else {
+        $default_nzb_group = NULL;
+    }
 
+    init_smarty('', 0);
+    $smarty->assign('postid',      	    $postid);
+    $smarty->assign('groups',    	    $groups);
+    $smarty->assign('group',    	    $group);
+    $smarty->assign('group_nzb',    	$group_nzb);
+    $smarty->assign('default_nzb_group',$default_nzb_group);
+    $smarty->assign('dirs',    	        $dirs);
+    $smarty->assign('readonly',         $readonly?1:0);
+    $smarty->assign('dir',    	        $dir);
+    $smarty->assign('subject',    	    $subject);
+    $smarty->assign('start_time',    	$start_time);
+    $smarty->assign('poster_name',    	$poster_name);
+    $smarty->assign('delete_files',    	$delete_files);
+    $smarty->assign('poster_email',    	$poster_email);
+    $smarty->assign('rarfile_size',    	$rarfile_size);
+    $smarty->assign('recovery_size',   	$recovery_size);
 
-init_smarty('', 0);
-$smarty->assign('postid',      	    $postid);
-$smarty->assign('groups',    	    $groups);
-$smarty->assign('group',    	    $group);
-$smarty->assign('group_nzb',    	$group_nzb);
-$smarty->assign('default_nzb_group',$default_nzb_group);
-$smarty->assign('dirs',    	        $dirs);
-$smarty->assign('readonly',         $readonly?1:0);
-$smarty->assign('dir',    	        $dir);
-$smarty->assign('subject',    	    $subject);
-$smarty->assign('start_time',    	$start_time);
-$smarty->assign('poster_name',    	$poster_name);
-$smarty->assign('delete_files',    	$delete_files);
-$smarty->assign('poster_email',    	$poster_email);
-$smarty->assign('rarfile_size',    	$rarfile_size);
-$smarty->assign('recovery_size',   	$recovery_size);
-
-if (!$smarty->getTemplateVars('urdd_online')) {
-    throw new exception($LN['urdddisabled']);
-} else {
-    $smarty->display('ajax_show_post.tpl');
+    if (!$smarty->getTemplateVars('urdd_online')) {
+        throw new exception($LN['urdddisabled']);
+    }
+    $contents = $smarty->fetch('ajax_show_post.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }

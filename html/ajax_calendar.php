@@ -89,6 +89,8 @@ function previous_month($month, $year)
     }
 }
 
+try {
+
 $cmd = get_request('cmd', '');
 switch ($cmd) {
 case 'show_calendar':
@@ -157,9 +159,13 @@ case 'show_calendar':
     $smarty->assign('month',		    $month);
     $smarty->assign('next_month',		next_month($month, $year));
     $smarty->assign('previous_month',	previous_month($month, $year));
-    $smarty->display('ajax_calendar.tpl');
+    $contents = $smarty->fetch('ajax_calendar.tpl');
+   return_result(array('contents' => $contents, 'hour' => $hour, 'minute'=>$minute));
     break;
 default:
     throw new exception($LN['error_invalidaction']);
     break;
+}
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }

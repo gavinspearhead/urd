@@ -59,31 +59,37 @@ require_once "$pathfp/../functions/mail_functions.php";
 require_once "$pathfp/../html/fatal_error.php";
 require_once "$pathfp/../functions/defines.php";
 
-$status = 'show';
-if (isset($_POST['username'])&& $_POST['username'] != '' && isset($_POST['email']) && $_POST['email'] != '' && verify_email($_POST['email'])) {
-    $username = get_post('username');
-    $email = get_post('email');
-    $sql = '"ID", "fullname", "name", "email" FROM users WHERE "email" = ? AND "name" = ?';
-    $res = $db->select_query($sql, 1, array($email, $username));
-    if ($res !== FALSE) {
-        $newpw = generate_password(MIN_PASSWORD_LENGTH);
-        $id = $res[0]['ID'];
-        $fullname = $res[0]['fullname'];
-        $username = $res[0]['name'];
-        $email = $res[0]['email'];
-        set_password($db, $id, $newpw);
+try {
+    $status = 'show';
+    if (isset($_POST['username'])&& $_POST['username'] != '' && isset($_POST['email']) && $_POST['email'] != '' && verify_email($_POST['email'])) {
+        $username = get_post('username');
+        $email = get_post('email');
+        $sql = '"ID", "fullname", "name", "email" FROM users WHERE "email"=? AND "name"=?';
+        $res = $db->select_query($sql, 1, array($email, $username));
+        if ($res !== FALSE) {
+            $newpw = generate_password(MIN_PASSWORD_LENGTH);
+            $id = $res[0]['ID'];
+            $fullname = $res[0]['fullname'];
+            $username = $res[0]['name'];
+            $email = $res[0]['email'];
+            set_password($db, $id, $newpw);
 
-        $sender = get_config($db, 'admin_email');
-        urd_mail::mail_pw($db, $fullname, $username, $email, $newpw, $sender);
+            $sender = get_config($db, 'admin_email');
+            urd_mail::mail_pw($db, $fullname, $username, $email, $newpw, $sender);
+        }
+        throw new exception($sql);
+    } else {
+        $err_msg = '';
+        if (!isset($_POST['username']) ||$_POST['username'] == '' ) {
+            $err_msg .= 'Invalid username; ';
+        }
+        if (!isset($_POST['email']) || $_POST['email'] == '' || !verify_email($_POST['email'])) {
+            $err_msg .= 'Invalid email address';
+        }
+        throw new exception($err_msg);
     }
-    die_html('OK');
-} else {
-    $err_msg = '';
-    if (!isset($_POST['username']) ||$_POST['username'] == '' ) {
-        $err_msg .= 'Invalid username; ';
-    }
-    if (!isset($_POST['email']) || $_POST['email'] == '' || !verify_email($_POST['email'])) {
-        $err_msg .= 'Invalid email address';
-    }
-    throw new exception($err_msg);
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
+

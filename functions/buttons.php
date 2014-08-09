@@ -79,6 +79,7 @@ function insert_default_buttons(DatabaseConnection $db)
         new button('OpenSubs',                  'https://www.google.com/search?btnI&q=site:opensubtitles.org%20%22$q%22'),
         new button('RLS',                       'http://www.rlslog.net/?s=$q'),
         new button('Rotten Tomatoes',           'http://www.rottentomatoes.com/search/full_search.php?search=$q'),
+        new button('Start Page',                'https://startpage.com/eng/advanced-search.html?&cat=web&query=$q'),
         new button('TV Rage',                   'https://www.tvrage.com/search.php?search=$q'),
         new button('Twitter',                   'https://twitter.com/search/$q'),
         new button('Wikipedia (English)',       'https://en.wikipedia.org/wiki/Special:Search?search=$q'),

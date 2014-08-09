@@ -178,7 +178,11 @@ class URD_NNTP
                 $err_msg = "Cannot authenticate to server to {$this->server}:{$this->port} as $username";
                 write_log($err_msg, LOG_ERR);
                 write_log($e->getMessage(), LOG_ERR);
-                throw new exception($err_msg, ERR_NNTP_AUTH_FAILED);
+                if ($e->getCode() == NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED) {
+                    throw new exception($err_msg, ERR_NNTP_TOO_MANY_CONNECTIONS);
+                } else {
+                    throw new exception($err_msg, ERR_NNTP_AUTH_FAILED);
+                }
             }
         }
 
@@ -850,7 +854,11 @@ Array
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         assert(is_numeric($groupid));
         $name = group_name($this->db, $groupid);
-        return $this->select_group_name($name, $code);
+        try {
+            return $this->select_group_name($name, $code); // we first try as in the db
+        } catch (exception $e) {
+            return $this->select_group_name(strtolower($name), $code); // if it fails we try the lowercase version, some servers seem a bit dubious in how they handle case 
+        }
     }
 
     public function db_update_group_list($groups)

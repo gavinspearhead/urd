@@ -29,11 +29,11 @@ $pathgf = realpath(dirname(__FILE__));
 
 require_once "$pathgf/../functions/ajax_includes.php";
 
-$idx = get_request('idx', '');
-$preview = get_request('preview', 0) ? TRUE : FALSE;
-$closelink = ($preview? 'close' : 'back');
-$is_admin = urd_user_rights::is_admin($db, $userid);
 try {
+    $idx = get_request('idx', '');
+    $preview = get_request('preview', 0) ? TRUE : FALSE;
+    $closelink = ($preview? 'close' : 'back');
+    $is_admin = urd_user_rights::is_admin($db, $userid);
     $file = get_request('file', FALSE);
     if ($file !== FALSE) {
         $file = my_realpath($file);
@@ -55,39 +55,40 @@ try {
             throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
         }
     }
-} catch (exception $e) {
-    throw new exception($e->getMessage());
-}
-if (!file_exists($file) || !is_readable($file)) {
-    throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
-}
+    if (!file_exists($file) || !is_readable($file)) {
+        throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
+    }
 
-$filename = substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1);
-$size = filesize($file);
+    $filename = substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1);
+    $size = filesize($file);
 
-init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
-$ext = strtolower(ltrim(strrchr($filename, '.'), '.'));
-$text = file($file);
-$output = '';
-if ($ext == 'nfo') {
-    header('Content-Type: text/html; charset=CP866'); // For fancy logos
-}
+    init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
+    $ext = strtolower(ltrim(strrchr($filename, '.'), '.'));
+    $text = file($file);
+    $output = '';
+    if ($ext == 'nfo') {
+        header('Content-Type: text/html; charset=CP866'); // For fancy logos
+    }
 
-// To prevent firefox from interpreting this as a non-text-file BAD FIREFOX BAD
-foreach ($text as $line) {
-    $line = htmlentities($line, ENT_QUOTES);
-    if (preg_match('|(https?://[\w.+/?\-&;%=]*/?)|', $line, $matches) == 1) {
-        $url = trim($matches[1]);
+    // To prevent firefox from interpreting this as a non-text-file BAD FIREFOX BAD
+    foreach ($text as $line) {
+        $line = htmlentities($line, ENT_QUOTES);
+        if (preg_match('|(https?://[\w.+/?\-&;%=]*/?)|', $line, $matches) == 1) {
+            $url = trim($matches[1]);
         $line = str_replace($url, "<a href=\"$url\" target=\"_new\">$url</a>", $line);
     }
     $output .=  $line;
-}
+    }
 
-list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
-$base_url = get_config($db, 'url');
-$smarty->assign('preview', $preview);
-$smarty->assign('output', $output);
-$smarty->assign('directory', dirname($file));
-$smarty->assign('size', $size . $suffix);
-$smarty->assign('url', $base_url . 'html/getfile.php?raw=1&amp;file=' . urlencode($file));
-$smarty->display('ajax_get_textfile.tpl');
+    list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
+    $base_url = get_config($db, 'url');
+    $smarty->assign('preview', $preview);
+    $smarty->assign('output', $output);
+    $smarty->assign('directory', dirname($file));
+    $smarty->assign('size', $size . $suffix);
+    $smarty->assign('url', $base_url . 'html/getfile.php?raw=1&amp;file=' . urlencode($file));
+    $contents = $smarty->fetch('ajax_get_textfile.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
+}

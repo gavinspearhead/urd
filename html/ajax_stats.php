@@ -27,46 +27,51 @@ $pathastat = realpath(dirname(__FILE__));
 
 require_once "$pathastat/../functions/ajax_includes.php";
 
-$type = get_request('type', '');
-$subtype = get_request('subtype', '');
-$period = get_request('period', '');
-$year = get_request('year', '');
-$source = get_request('source','');
-$width = floor(get_request('width',0));
+try {
+    $type = get_request('type', '');
+    $subtype = get_request('subtype', '');
+    $period = get_request('period', '');
+    $year = get_request('year', '');
+    $source = get_request('source', '');
+    $width = floor(get_request('width', 0));
 
-if (!is_numeric($width) || $width < 400) {
-    $width = 400;
+    if (!is_numeric($width) || $width < 400) {
+        $width = 400;
+    }
+
+    $types_id = urd_modules::get_stats_enabled_modules($db);
+    $nametypes = array();
+    $nametypes[stat_actions::DOWNLOAD] = 'stats_dl';
+    $nametypes[stat_actions::PREVIEW]  = 'stats_pv';
+    $nametypes[stat_actions::IMPORTNZB]= 'stats_im';
+    $nametypes[stat_actions::GETNZB]   = 'stats_gt';
+    $nametypes[stat_actions::WEBVIEW]  = 'stats_wv';
+    $nametypes[stat_actions::POST]     = 'stats_ps';
+
+    $types_txt = array();
+    foreach ($types_id as $a_type) {
+        $types_txt[] = $nametypes[$a_type];
+    }
+
+    $years = get_stats_years($db, $userid, $isadmin);
+    if (!empty($years)) {
+        $thisyear = max($years);
+    } else {
+        $thisyear = date('Y');
+    }
+
+    init_smarty('', 0);
+    $smarty->assign('years',            $years);
+    $smarty->assign('thisyear',         $thisyear);
+    $smarty->assign('subtypes',         $types_txt);
+    $smarty->assign('year',             $year);
+    $smarty->assign('width',            $width);
+    $smarty->assign('type',             $type);
+    $smarty->assign('subtype',          $subtype);
+    $smarty->assign('source',           $source);
+    $smarty->assign('period',           $period);
+    $contents = $smarty->fetch('ajax_stats.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-$types_id = urd_modules::get_stats_enabled_modules($db);
-$nametypes = array();
-$nametypes[stat_actions::DOWNLOAD] = 'stats_dl';
-$nametypes[stat_actions::PREVIEW]  = 'stats_pv';
-$nametypes[stat_actions::IMPORTNZB]= 'stats_im';
-$nametypes[stat_actions::GETNZB]   = 'stats_gt';
-$nametypes[stat_actions::WEBVIEW]  = 'stats_wv';
-$nametypes[stat_actions::POST]     = 'stats_ps';
-
-$types_txt = array();
-foreach ($types_id as $a_type) {
-    $types_txt[] = $nametypes[$a_type];
-}
-
-$years = get_stats_years($db, $userid, $isadmin);
-if (!empty($years)) {
-    $thisyear = max($years);
-} else {
-    $thisyear = date('Y');
-}
-
-init_smarty('', 0);
-$smarty->assign('years',            $years);
-$smarty->assign('thisyear',         $thisyear);
-$smarty->assign('subtypes',         $types_txt);
-$smarty->assign('year',             $year);
-$smarty->assign('width',            $width);
-$smarty->assign('type',             $type);
-$smarty->assign('subtype',          $subtype);
-$smarty->assign('source',           $source);
-$smarty->assign('period',           $period);
-$smarty->display('ajax_stats.tpl');

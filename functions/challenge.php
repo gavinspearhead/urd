@@ -30,6 +30,7 @@ class challenge
 {
     const CHALLENGE_LENGTH = 16;
     const CHALLENGE_TIMEOUT = 86400; // 1 day
+    const CHALLENGE_REFRESH_TIME = 43200; // 12 hours
     private static $need_challenge = TRUE;
 
     public static function set_need_challenge($val)
@@ -54,7 +55,7 @@ class challenge
             return FALSE;
         }
         $now = time();
-        if (!isset($_SESSION['challenge']) || ($_SESSION['challenge_timeout']  < ($now + 3600))) { // if the challenge is valid for less than the current time -1 hour
+        if (!isset($_SESSION['challenge']) || ($_SESSION['challenge_timeout']  < ($now + (self::CHALLENGE_REFRESH_TIME)))) { // if the challenge is valid for less than the current time - the refresh time
             $challenge = generate_password(self::CHALLENGE_LENGTH);
             $_SESSION['challenge'] = $challenge;
             $_SESSION['challenge_timeout'] = $now + self::CHALLENGE_TIMEOUT;

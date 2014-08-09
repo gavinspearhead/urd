@@ -204,5 +204,4 @@
 
 <div>
 <br/> 
-<input type="hidden" id="urddonline" value="{$urdd_online}"/>
 </div>

@@ -515,7 +515,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('poster_name', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('category', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('subcat', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
-        $t->add_column(new urd_column('subcats', 'TEXT', '', TRUE, '', ''));
+        $t->add_column(new urd_column('subcats', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('nzb_file', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('image_file', 'TEXT', '', TRUE, 'utf8', ''));
@@ -602,7 +602,7 @@ class urd_db_structure {
         $t = new urd_table('spot_reports', 'id', 'utf8');
         $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
         $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '0', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('reference', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
         $t->add_index(new urd_index('spotreport_prim', 'PRIMARY', array('id')));
@@ -642,7 +642,7 @@ class urd_db_structure {
 
         $t = new urd_table('spot_images', 'id', 'utf8');
         $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
-        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '0', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('image', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('image_file', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
@@ -688,7 +688,7 @@ class urd_db_structure {
         $t = new urd_table('spot_comments', 'id', 'utf8');
         $t->add_column(new urd_column('id', 'BIGSERIAL', '', TRUE, '', ''));
         $t->add_column(new urd_column('message_id', 'VARCHAR(512)', '', TRUE, 'utf8', ''));
-        $t->add_column(new urd_column('spotid', 'CHAR(32)', '', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('spotid', 'CHAR(32)', '0', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('comment', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('from', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));

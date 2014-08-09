@@ -2115,7 +2115,7 @@ function get_smileys($dir, $full= FALSE)
     return $smileys;
 }
 
-function return_result(array $vars) 
+function return_result(array $vars=array()) 
 {
     if (!isset($vars['error'])) { 
         $vars['error'] = 0;

@@ -41,7 +41,7 @@ class usenet_server
     private $posting;
     private $enabled;
 
-    const NNTP_ABS_MAX = 32; // the maximum number of connection that urdd will open at the same time
+    const NNTP_ABS_MAX = 64; // the maximum number of connection that urdd will open at the same time
 
     public function __construct ($id, $maxt, $port, $hostname, $encr, $username, $pw, $prio, $posting)
     {
@@ -239,10 +239,13 @@ class usenet_server
                     $conns[$i] = new URD_NNTP($db, $this->hostname, $this->encryption, $this->port, $timeout);
                     $conns[$i]->connect($auth, $this->username, $this->password);
                 } catch (exception $e) { // connection failed
+                    echo_debug($e->getMessage(), DEBUG_SERVER);
                     break;
                 }
             }
             $this->max_threads = $i;
+            echo_debug("Found $i connections for server {$this->hostname}", DEBUG_SERVER);
+
             if ($i == 0) {
                 $this->disable();
                 $this->set_priority(0);
@@ -335,7 +338,7 @@ class usenet_server
                             break;
                         } else {
                             write_log ("Found setting: $hostname port: $p encryption: $e group: $group (code $code) indexing not allowed", LOG_NOTICE);
-                            $test_results->add(new test_result("$hostname $p $e" , TRUE, "port: $p encryption: $e group: $group failed (code $code) indexing not allowed"));
+                            $test_results->add(new test_result("$hostname $p $e", TRUE, "port: $p encryption: $e group: $group failed (code $code) indexing not allowed"));
                         }
                     }
                     if ($e == 'off') {

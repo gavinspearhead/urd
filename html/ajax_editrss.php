@@ -30,9 +30,6 @@ require_once "$pathaet/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, '', $userid, TRUE);
 
-$cmd = get_request('cmd', '');
-$id = get_request('id', '');
-
 function deleterssfeed(DatabaseConnection $db, $id)
 {
     global $LN;
@@ -103,8 +100,7 @@ function show_edit_rss(DatabaseConnection $db, $id)
     $smarty->assign('oldurl',	        $oldurl);
     $smarty->assign('oldsubscribed',	$oldsubscribed);
     $smarty->assign('oldexpire',	    $oldexpire);
-    $smarty->display('ajax_editrss.tpl');
-    die();
+    return $smarty->fetch('ajax_editrss.tpl');
 }
 
 function update_rss(DatabaseConnection $db, $id, $userid)
@@ -176,23 +172,29 @@ function update_rss(DatabaseConnection $db, $id, $userid)
     }
 }
 
-switch (strtolower($cmd)) {
-case 'delete' :
-    challenge::verify_challenge($_POST['challenge']);
-    deleterssfeed($db, $id);
-    break;
-case 'showeditrss':
-    show_edit_rss($db, $id);
-    break;
-case 'update_rss':
-    // Actually rename the download
-    challenge::verify_challenge($_POST['challenge']);
-    update_rss($db, $id, $userid);
-    break;
-default:
-    throw new exception($LN['error_invalidaction']);
-    break;
-}
+try {
+    $cmd = get_request('cmd', '');
+    $id = get_request('id', '');
 
-// Success:
-die_html('OK');
+    switch (strtolower($cmd)) {
+        case 'delete' :
+            challenge::verify_challenge($_POST['challenge']);
+            deleterssfeed($db, $id);
+            break;
+        case 'showeditrss':
+            $contents = show_edit_rss($db, $id);
+            return_result(array('contents' => $contents));
+            break;
+        case 'update_rss':
+            // Actually rename the download
+            challenge::verify_challenge($_POST['challenge']);
+            update_rss($db, $id, $userid);
+            break;
+        default:
+            throw new exception($LN['error_invalidaction']);
+            break;
+    } 
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
+}

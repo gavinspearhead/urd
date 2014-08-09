@@ -32,67 +32,6 @@ require_once "$pathadt/../functions/pref_functions.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
-$urdd_online = check_urdd_online($db);
-
-$sort = get_request('sort', 'lastupdate');
-$offset = get_request('offset', 0);
-if (!is_numeric($offset)) {
-    $offset = 0;
-}
-$sort_dir = get_request('sort_dir', 'desc');
-$tasksearch = get_request('tasksearch', '');
-
-$_allstatus = array (
-    QUEUE_QUEUED,
-    QUEUE_FINISHED,
-    QUEUE_FAILED,
-    QUEUE_RUNNING,
-    QUEUE_PAUSED,
-    QUEUE_CANCELLED,
-    QUEUE_CRASH,
-    QUEUE_REMOVED
-);
-
-$times = array(
-    0   => $LN['all'],
-    1   => $LN['since'] . ' 1 ' . $LN['day'],
-    2   => $LN['since'] . ' 2 ' . $LN['days'],
-    7   => $LN['since'] . ' 1 ' . $LN['week'],
-    14  => $LN['since'] . ' 2 ' . $LN['weeks'],
-    30  => $LN['since'] . ' 1 ' . $LN['month'],
-    60  => $LN['since'] . ' 2 ' . $LN['months'],
-    365 => $LN['since'] . ' 1 ' . $LN['year']
-);
-
-$currentstatus = $status = get_request('status', '');
-$timeval = get_request('time', 0);
-if (!in_array($status, $_allstatus)) {
-    $status = $currentstatus = '';
-}
-if (!in_array($timeval, array_keys($times))) {
-    $timeval = 1;
-}
-$qstatus = '';
-$input_arr = array();
-if ($status != '') {
-    $input_arr[] = $status;
-    $qstatus = ' AND "status"=?';
-}
-
-$qtime = '';
-if ($timeval > 0) {
-    $input_arr[] = (string) ( time() - ($timeval * 24 * 60 * 60));
-    $qtime = ' AND "lastupdate" >= ?';
-}
-
-if (!in_array($sort, array('description', 'progress', 'ETA', 'status', 'comment', 'lastupdate', 'starttime'))) {
-    $sort = 'lastupdate';
-}
-
-if (!in_array($sort_dir, array('asc', 'desc'))) {
-    $sort_dir = 'desc';
-}
-
 function build_task_skipper($perpage, $offset, $total)
 {
     assert(is_numeric($perpage) && is_numeric($offset) && is_numeric($total));
@@ -122,62 +61,130 @@ function build_task_skipper($perpage, $offset, $total)
     return array($pages, $totalpages, $activepage);
 }
 
-$perpage = get_maxperpage($db, $userid);
-$sql = "* FROM queueinfo WHERE 1=1 $qstatus $qtime ORDER BY \"$sort\" $sort_dir";
-$res = $db->select_query($sql, $input_arr);
+try { 
+    $urdd_online = check_urdd_online($db);
 
-$tasks = array();
-$cnt = 0;
-
-if ($res !==  FALSE) {
-    foreach ($res as $row) {
-        $description = $row['description'];
-        $progress = $row['progress'];
-        $ETA = $row['ETA'];
-        $task['progress'] = $progress;
-        $task['urdd_id'] = $row['urdd_id'];
-        $task['queue_id'] = $row['ID'];
-        $task['status'] = isset($LN['transfers_status_' . strtolower($row['status'])]) ? $LN['transfers_status_' . strtolower($row['status'])] : '?';
-        $task['raw_status'] = $row['status'];
-        $task['comment'] = $row['comment'];
-        $task['added'] = time_format($row['starttime']);
-        $task['lastupdated'] = time_format($row['lastupdate']);
-        $description = command_description($db, $description);
-
-        $task_short = $description[0];
-        $task_arg = $description[1];
-        if ($progress == '100' || $ETA == 0) {
-            $ETA = '';
-        } else {
-            $ETA = readable_time($ETA, 'fancy');
-        }
-        $task_popup =  $task_short . ' ' . $task_arg;
-        $task['eta'] = $ETA;
-        $task['description'] = $task_short;
-        $task['arguments'] = $task_arg;
-        $task['task_popup'] = $task_popup;
-
-        if ($tasksearch != '' && !stristr($task_popup, $tasksearch)) {
-            continue;
-        }
-        if ($cnt >= $offset && $cnt < ($offset + $perpage)) {
-            $tasks[] = $task;
-        }
-        $cnt++;
+    $sort = get_request('sort', 'lastupdate');
+    $offset = get_request('offset', 0);
+    if (!is_numeric($offset)) {
+        $offset = 0;
     }
+    $sort_dir = get_request('sort_dir', 'desc');
+    $tasksearch = get_request('tasksearch', '');
+
+    $_allstatus = array (
+            QUEUE_QUEUED,
+            QUEUE_FINISHED,
+            QUEUE_FAILED,
+            QUEUE_RUNNING,
+            QUEUE_PAUSED,
+            QUEUE_CANCELLED,
+            QUEUE_CRASH,
+            QUEUE_REMOVED
+            );
+
+    $times = array(
+            0   => $LN['all'],
+            1   => $LN['since'] . ' 1 ' . $LN['day'],
+            2   => $LN['since'] . ' 2 ' . $LN['days'],
+            7   => $LN['since'] . ' 1 ' . $LN['week'],
+            14  => $LN['since'] . ' 2 ' . $LN['weeks'],
+            30  => $LN['since'] . ' 1 ' . $LN['month'],
+            60  => $LN['since'] . ' 2 ' . $LN['months'],
+            365 => $LN['since'] . ' 1 ' . $LN['year']
+            );
+
+    $currentstatus = $status = get_request('status', '');
+    $timeval = get_request('time', 0);
+    if (!in_array($status, $_allstatus)) {
+        $status = $currentstatus = '';
+    }
+    if (!in_array($timeval, array_keys($times))) {
+        $timeval = 1;
+    }
+    $qstatus = '';
+    $input_arr = array();
+    if ($status != '') {
+        $input_arr[] = $status;
+        $qstatus = ' AND "status"=?';
+    }
+
+    $qtime = '';
+    if ($timeval > 0) {
+        $input_arr[] = (string) ( time() - ($timeval * 24 * 60 * 60));
+        $qtime = ' AND "lastupdate" >= ?';
+    }
+
+    if (!in_array($sort, array('description', 'progress', 'ETA', 'status', 'comment', 'lastupdate', 'starttime'))) {
+        $sort = 'lastupdate';
+    }
+
+    if (!in_array($sort_dir, array('asc', 'desc'))) {
+        $sort_dir = 'desc';
+    }
+
+
+
+    $perpage = get_maxperpage($db, $userid);
+    $sql = "* FROM queueinfo WHERE 1=1 $qstatus $qtime ORDER BY \"$sort\" $sort_dir";
+    $res = $db->select_query($sql, $input_arr);
+
+    $tasks = array();
+    $cnt = 0;
+
+    if ($res !==  FALSE) {
+        foreach ($res as $row) {
+            $description = $row['description'];
+            $progress = $row['progress'];
+            $ETA = $row['ETA'];
+            $task['progress'] = $progress;
+            $task['urdd_id'] = $row['urdd_id'];
+            $task['queue_id'] = $row['ID'];
+            $task['status'] = isset($LN['transfers_status_' . strtolower($row['status'])]) ? $LN['transfers_status_' . strtolower($row['status'])] : '?';
+            $task['raw_status'] = $row['status'];
+            $task['comment'] = $row['comment'];
+            $task['added'] = time_format($row['starttime']);
+            $task['lastupdated'] = time_format($row['lastupdate']);
+            $description = command_description($db, $description);
+
+            $task_short = $description[0];
+            $task_arg = $description[1];
+            if ($progress == '100' || $ETA == 0) {
+                $ETA = '';
+            } else {
+                $ETA = readable_time($ETA, 'fancy');
+            }
+            $task_popup =  $task_short . ' ' . $task_arg;
+            $task['eta'] = $ETA;
+            $task['description'] = $task_short;
+            $task['arguments'] = $task_arg;
+            $task['task_popup'] = $task_popup;
+
+            if ($tasksearch != '' && !stristr($task_popup, $tasksearch)) {
+                continue;
+            }
+            if ($cnt >= $offset && $cnt < ($offset + $perpage)) {
+                $tasks[] = $task;
+            }
+            $cnt++;
+        }
+    }
+
+
+    list($pages, $lastpage, $currentpage) = build_task_skipper($perpage, $offset, $cnt);
+
+    init_smarty('', 0);
+    $smarty->assign('alltasks',	        $tasks);
+    $smarty->assign('sort',	            $sort);
+    $smarty->assign('sort_dir',  	    $sort_dir);
+    $smarty->assign('urdd_online',    	(int) $urdd_online);
+    $smarty->assign('pages',		    $pages);
+    $smarty->assign('currentpage',		$currentpage);
+    $smarty->assign('offset',		    $offset);
+    $smarty->assign('lastpage',		    $lastpage);
+
+    $contents = $smarty->fetch('ajax_admintasks.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-
-list($pages, $lastpage, $currentpage) = build_task_skipper($perpage, $offset, $cnt);
-
-init_smarty('', 0);
-$smarty->assign('alltasks',	        $tasks);
-$smarty->assign('sort',	            $sort);
-$smarty->assign('sort_dir',  	    $sort_dir);
-$smarty->assign('urdd_online',    	(int) $urdd_online);
-$smarty->assign('pages',		    $pages);
-$smarty->assign('currentpage',		$currentpage);
-$smarty->assign('offset',		    $offset);
-$smarty->assign('lastpage',		    $lastpage);
-
-$smarty->display('ajax_admintasks.tpl');

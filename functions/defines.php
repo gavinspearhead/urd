@@ -24,7 +24,7 @@
 
 // username for the superuser
 
-define ('DB_VERSION',               65);
+define ('DB_VERSION',               66);
 
 define ('URDD_DOWNLOAD_LOCKFILE',   '.urdd_lock');
 define ('URDD_PORT',                11666);

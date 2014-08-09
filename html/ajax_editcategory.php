@@ -31,59 +31,65 @@ $pathaec = realpath(dirname(__FILE__));
 require_once "$pathaec/../functions/ajax_includes.php";
 require_once "$pathaec/../functions/mail_functions.php";
 
-$cmd = get_request('cmd', '');
+try {
 
-switch ($cmd) {
-case 'delete_category':
-    challenge::verify_challenge($_POST['challenge']);
-    $id = get_request('id');
-    if (is_numeric($id) && $id > 0) {
-        delete_category($db, $id, $userid);
-    } else {
-        throw new exception($LN['error_invalidid']);
-    }
-    break;
-case 'update_category':
-    challenge::verify_challenge($_POST['challenge']);
-    $id = get_request('id');
-    $name = get_request('name', '');
-    if ($name == '') {
-        throw new exception($LN['error_searchnamenotfound']);
-    }
-    if ($id == 'new' || $id == 0) {
-        insert_category($db, $userid, $name);
-    } elseif (is_numeric($id)) {
-        update_category($db, $id, $userid, $name);
-    } else {
-        throw new exception($LN['error_invalidid']);
-    }
-    break;
-case 'get_name':
-    $id = get_request('id');
-    if (!is_numeric($id)) {
-        throw new exception($LN['error_invalidid']);
-    }
-    $name = get_category($db, $id, $userid);
-    if ($name == '') {
-        throw new exception($LN['error_searchnamenotfound']);
-    } else {
-        die_html($name);
-    }
-    break;
+    $cmd = get_request('cmd', '');
 
-case 'edit':
-    $categories = get_categories($db, $userid);
-    foreach ($categories as &$cat) {
-        $cat['name'] = $cat['name'];
+    switch ($cmd) {
+        case 'delete_category':
+            challenge::verify_challenge($_POST['challenge']);
+            $id = get_request('id');
+            if (is_numeric($id) && $id > 0) {
+                delete_category($db, $id, $userid);
+            } else {
+                throw new exception($LN['error_invalidid']);
+            }
+            break;
+        case 'update_category':
+            challenge::verify_challenge($_POST['challenge']);
+            $id = get_request('id');
+            $name = get_request('name', '');
+            if ($name == '') {
+                throw new exception($LN['error_searchnamenotfound']);
+            }
+            if ($id == 'new' || $id == 0) {
+                insert_category($db, $userid, $name);
+            } elseif (is_numeric($id)) {
+                update_category($db, $id, $userid, $name);
+            } else {
+                throw new exception($LN['error_invalidid']);
+            }
+            break;
+        case 'get_name':
+            $id = get_request('id');
+            if (!is_numeric($id)) {
+                throw new exception($LN['error_invalidid']);
+            }
+            $name = get_category($db, $id, $userid);
+            if ($name == '') {
+                throw new exception($LN['error_searchnamenotfound']);
+            } else {
+                return_result(array('name' => $name));
+            }
+            break;
+
+        case 'edit':
+            $categories = get_categories($db, $userid);
+            foreach ($categories as &$cat) {
+                $cat['name'] = $cat['name'];
+            }
+            init_smarty('', 0);
+            $smarty->assign('categories',	    $categories);
+            $smarty->assign('text_box_size',	TEXT_BOX_SIZE);
+            $contents = $smarty->fetch('ajax_editcategories.tpl');
+            return_result(array('contents' => $contents));
+            break;
+        default:
+            throw new exception($LN['error_invalidaction'] . " $cmd");
+            break;
     }
-    init_smarty('', 0);
-    $smarty->assign('categories',	    $categories);
-    $smarty->assign('text_box_size',	TEXT_BOX_SIZE);
-    $smarty->display('ajax_editcategories.tpl');
-    die;
-default:
-    throw new exception($LN['error_invalidaction'] . " $cmd");
-    break;
+
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-die_html('OK');

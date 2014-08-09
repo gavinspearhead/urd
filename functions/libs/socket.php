@@ -23,7 +23,7 @@ if (!defined('ORIGINAL_PAGE')) {
 }
 
 /**
- * Generalized Socket class.
+ * Generalised Socket class.
  *
  * @version 1.2
  * @author Stig Bakken <ssb@php.net>
@@ -37,41 +37,25 @@ class socket
     const NET_SOCKET_READ  = 1;
     const NET_SOCKET_WRITE = 2;
     const NET_SOCKET_ERROR = 4;
-    /**
-     * Socket file pointer.
-     */
+    /* Socket file pointer.  */
     private $fp;
 
-    /**
-     * Whether the socket is blocking. Defaults to true.
-     */
+    /* Whether the socket is blocking. Defaults to true.  */
     private $blocking;
 
-    /**
-     * Whether the socket is persistent. Defaults to false.
-     */
+    /* Whether the socket is persistent. Defaults to false.  */
     private $persistent;
 
-    /**
-     * The IP address to connect to.
-     */
+    /* The IP address to connect to.  */
     private $addr;
 
-    /**
-     * The port number to connect to.
-     */
+    /* The port number to connect to.  */
     private $port;
 
-    /**
-     * Number of seconds to wait on socket connections before assuming
-     * there's no more data. Defaults to no timeout.
-     */
+    /* Number of seconds to wait on socket connections before assuming there's no more data. Defaults to no timeout.  */
     private $timeout;
 
-    /**
-     * Number of bytes to read at a time in readLine() and
-     * readAll(). Defaults to 2048.
-     */
+    /* Number of bytes to read at a time in readLine() and readAll(). Defaults to 2048.  */
     private $lineLength;
 
     public function __construct ()
@@ -134,24 +118,23 @@ class socket
         $this->persistent = ($persistent === TRUE);
         $this->timeout = $timeout;
 
-        $openfunc = ($this->persistent === TRUE)? 'pfsockopen' : 'fsockopen';
         $errno = 0;
         $errstr = '';
-        if ($options !== NULL && function_exists('stream_context_create')) {
+        $url = "$addr:$port";
+        if ($options !== NULL) {
             if ($this->timeout !== NULL) {
                 $timeout = $this->timeout;
             } else {
                 $timeout = 0;
             }
             $context = stream_context_create($options);
-            $fp = @$openfunc($this->addr, $this->port, $errno, $errstr, $timeout, $context);
+            $fp = stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
         } else {
             if ($this->timeout !== NULL) {
-                $fp = @$openfunc($this->addr, $this->port, $errno, $errstr, $this->timeout);
+                $fp = @stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
             } else {
-                $fp = @$openfunc($this->addr, $this->port, $errno, $errstr);
+                $fp = @stream_socket_client($url, $errno, $errstr);
             }
-
         }
         if ($fp === FALSE) {
             throw new exception_nntp_connect($errstr . ' (' . $errno . ')');
@@ -180,7 +163,6 @@ class socket
         }
         $this->fp = NULL;
     }
-
 
     /**
      * Find out if the socket is in blocking mode.
@@ -263,7 +245,6 @@ class socket
         }
 
         if ($this->timeout === NULL) {  // if no timeout set, we assume we can read
-
             return TRUE;
         }
 
@@ -373,7 +354,6 @@ class socket
         return stream_get_meta_data($this->fp);
     }
 
-    
     /**
      * Get a specified line of data
      *
@@ -412,9 +392,8 @@ class socket
         $this->check_connected();
         $this->check_readable();
 
-        return fread($this->fp, $size);
+        return stream_get_contents($this->fp, $size);
     }
-
 
     /**
      * Write a specified amount of data.
@@ -489,7 +468,7 @@ class socket
     public function read_byte()
     {
         $this->check_readable();
-        $buf = @fread($this->fp, 1);
+        $buf = @stream_get_contents($this->fp, 1);
         if ($buf  === FALSE) {
             return FALSE;
         }
@@ -506,7 +485,7 @@ class socket
     public function read_word()
     {
         $this->check_readable();
-        $buf = @fread($this->fp, 2);
+        $buf = @stream_get_contents($this->fp, 2);
         if ($buf === FALSE) {
             return FALSE;
         }
@@ -523,7 +502,7 @@ class socket
     public function read_int()
     {
         $this->check_readable();
-        $buf = @fread($this->fp, 4);
+        $buf = @stream_get_contents($this->fp, 4);
         if ($buf  === FALSE) {
             return FALSE;
         }
@@ -540,7 +519,7 @@ class socket
     public function read_ipaddress()
     {
         $this->check_readable();
-        $buf = @fread($this->fp, 4);
+        $buf = @stream_get_contents($this->fp, 4);
         if ($buf  === FALSE) {
             return FALSE;
         }
@@ -601,7 +580,7 @@ class socket
         $data = '';
         while (!feof($this->fp)) {
             $this->check_readable();
-            $data .= @fread($this->fp, $this->lineLength);
+            $data .= @stream_get_contents($this->fp, $this->lineLength);
             if ($data === FALSE) {
                 return FALSE;
             }

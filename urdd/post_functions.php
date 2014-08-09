@@ -213,7 +213,7 @@ function convert_spot_to_xml($spot, $imageInfo, $nzbSegments)
 
     /* Description element is enclosed in CDATA */
     $descrElm = $doc->createElement('Description');
-    $descrElm->appendChild($doc->createCDATASection( htmlentities(str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['description']), ENT_NOQUOTES, 'UTF-8')));
+    $descrElm->appendChild($doc->createCDATASection(htmlentities(str_replace( array("\r\n", "\r", "\n"), "[br]", $spot['description']), ENT_NOQUOTES, 'UTF-8')));
     $postingElm->appendChild($descrElm);
 
     /* Website element ins enclosed in cdata section */
@@ -416,13 +416,13 @@ function do_post_spot(DatabaseConnection $db, action $item)
             throw new exception('File not found: ' . $image);
         }
 
-        $nzb_segments = post_binary_data($db, $res[0]['poster_name'], $res[0]['poster_id'], $bin_group, $nntp, gzdeflate($nzb));
-        $image_segments = post_binary_data($db, $res[0]['poster_name'], $res[0]['poster_id'], $bin_group, $nntp, $image);
+        $nzb_segments = post_binary_data($db, $res[0]['poster_name'], 'urd@spot.net', $bin_group, $nntp, gzdeflate($nzb));
+        $image_segments = post_binary_data($db, $res[0]['poster_name'], 'urd@spot.net', $bin_group, $nntp, $image);
         $poster_headers = create_spot_data($db, $res[0], $userid, $nzb_segments, $image_segments);
-        post_message($db, $item, $poster_headers, $res[0]['description'], $spots_group_id, $res[0]['subject'], $res[0]['poster_id'], $res[0]['poster_name']);
+        post_message($db, $item, $poster_headers, $res[0]['description'], $spots_group_id, $res[0]['subject'], 'urd@spot.net', $res[0]['poster_name']);
         $status = POST_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete'); 
-        add_stat_data( $db, stat_actions::SPOT_POST_COUNT, 1, $userid);
+        add_stat_data($db, stat_actions::POST_SPOT_COUNT, 1, $userid);
     } catch (exception $e) {
         $comment = $e->getMessage();
         write_log('Posting spot failed ' . $comment, LOG_WARNING);

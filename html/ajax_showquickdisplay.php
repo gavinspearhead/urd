@@ -28,73 +28,6 @@ $pathqd = realpath(dirname(__FILE__));
 
 require_once "$pathqd/../functions/ajax_includes.php";
 
-init_smarty('', 0);
-
-$subject = '';
-// Process commands:
-try {
-    if (isset($_REQUEST['type']) && isset($_REQUEST['subject'])) {
-        $type = get_request('type');
-        $srctype = get_request('srctype');
-        $subject = get_request('subject');
-
-        assert(in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
-        $items = array();
-        switch ($srctype) {
-        case 'setshowesi': // Display extsetinfo
-            display_extsetinfo($db, $subject, $type, $userid);
-            break;
-        case 'seteditesi': // Display the edit screen for extsetinfo
-            edit_extsetinfo($db, $subject, $type);
-            break;
-        case 'setsavebintype': // Update the binary type
-            urd_extsetinfo::save_extsetinfo($db, $subject, $userid, $_REQUEST['values'], $type);
-            // No output.
-            break;
-        case 'setsaveesi': // Save the extsetinfo stuff
-            $has_link = urd_extsetinfo::check_extset_link_exists($db, $subject, $type);
-            $newname = urd_extsetinfo::save_extsetinfo($db, $subject, $userid, $_REQUEST['values'], $type);
-            if (isset($_REQUEST['values']['link']) && !$has_link && ($_REQUEST['values']['link'] != '')) {
-                $file_nfo['link'] = $_REQUEST['values']['link'];
-                $file_nfo['binarytype'] = $_REQUEST['binarytype'];
-                nfo_parser::get_link_info($file_nfo);
-                $newname = urd_extsetinfo::save_extsetinfo($db, $subject, $userid, $file_nfo, $type);
-            }
-            // Returning the new setname so the browse page can be updated on the fly
-            // Actually not really returning but using smarty for name-post-processing (such as icons):
-            //echo htmlentities ($newname);
-            $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
-            $smarty->assign('newname', $newname);
-            $smarty->display('formatsetname.tpl');
-            break;
-        case 'setguessesisafe': // Guess extsetinfo stuff (safe: User needs to approve before we send it to urdland)
-            urd_extsetinfo::guess_extsetinfo_safe($db,$subject, $type, $userid);
-            break;
-        case 'setbasketguessesi': // Guess extsetinfo stuff for everything in the basket (not safe, assume that our analysis is flawless)
-            urd_extsetinfo::basketguess_extsetinfo($db,$subject, $type, $userid);
-            break;
-        case 'setguessesi': // Guess extsetinfo stuff (not safe, assume that our analysis is flawless)
-            $newname = urd_extsetinfo::guess_extsetinfo($db,$subject, $type, $userid);
-            $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
-            $smarty->assign('newname', $newname);
-            $smarty->display('formatsetname.tpl');
-            break;
-        default:
-            throw new exception($LN['error_novalidaction']);
-            break;
-        }
-    } else {
-        throw new exception($LN['error_novalidaction']);
-    }
-} catch (exception $e) {
-    $smarty->assign('setname', $LN['error']);
-    $smarty->assign('message', $e->getMessage());
-    $smarty->assign('srctype', 'error');
-    $smarty->display('ajax_showextsetinfo.tpl');
-}
-
-die();
-
 function link_to_url($description)
 {
     $position = 0;
@@ -219,7 +152,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $smarty->assign('binarytype',   $binarytype); // Binarytype
     $smarty->assign('binarytypes',  $binarytypes);  // All
     $smarty->assign('display',      $display);      // All values
-    $smarty->display('ajax_showspot.tpl');
+    return $smarty->fetch('ajax_showspot.tpl');
 }
 
 // Functions follow:
@@ -286,9 +219,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     $display = urd_extsetinfo::generate_set_info($extsetinfo);
 
     if ($type == USERSETTYPE_SPOT) {
-        show_spotinfo($db, $setID, $userid, $display, $extsetinfo['binarytype'], $binarytypes);
-
-        return;
+        return show_spotinfo($db, $setID, $userid, $display, $extsetinfo['binarytype'], $binarytypes);
     }
 
     $smarty->assign('srctype',        'display');         // Edit or just Display?
@@ -366,7 +297,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     $smarty->assign('totalsize',            $totalsize);
     $smarty->assign('par2s',                $par2s);
     $smarty->assign('type',                 $type);
-    $smarty->display('ajax_showextsetinfo.tpl');
+    return $smarty->fetch('ajax_showextsetinfo.tpl');
 }
 
 function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
@@ -413,5 +344,68 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
     $smarty->assign('binarytype',       $extsetinfo['binarytype']); // Binarytype
     $smarty->assign('binarytypes',      $binarytypes);  // All
     $smarty->assign('display',          $display);      // All values
-    $smarty->display('ajax_showextsetinfo.tpl');
+    return $smarty->fetch('ajax_showextsetinfo.tpl');
+}
+
+init_smarty('', 0);
+
+$subject = '';
+// Process commands:
+try {
+    if (isset($_REQUEST['type']) && isset($_REQUEST['subject'])) {
+        $type = get_request('type');
+        $srctype = get_request('srctype');
+        $subject = get_request('subject');
+        $contents = '';
+        assert(in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
+        $items = array();
+        switch ($srctype) {
+        case 'setshowesi': // Display extsetinfo
+            $contents = display_extsetinfo($db, $subject, $type, $userid);
+            break;
+        case 'seteditesi': // Display the edit screen for extsetinfo
+            $contents = edit_extsetinfo($db, $subject, $type);
+            break;
+        case 'setsavebintype': // Update the binary type
+            urd_extsetinfo::save_extsetinfo($db, $subject, $userid, $_REQUEST['values'], $type);
+            // No output.
+            break;
+        case 'setsaveesi': // Save the extsetinfo stuff
+            $has_link = urd_extsetinfo::check_extset_link_exists($db, $subject, $type);
+            $newname = urd_extsetinfo::save_extsetinfo($db, $subject, $userid, $_REQUEST['values'], $type);
+            if (isset($_REQUEST['values']['link']) && !$has_link && ($_REQUEST['values']['link'] != '')) {
+                $file_nfo['link'] = $_REQUEST['values']['link'];
+                $file_nfo['binarytype'] = $_REQUEST['binarytype'];
+                nfo_parser::get_link_info($file_nfo);
+                $newname = urd_extsetinfo::save_extsetinfo($db, $subject, $userid, $file_nfo, $type);
+            }
+            // Returning the new setname so the browse page can be updated on the fly
+            // Actually not really returning but using smarty for name-post-processing (such as icons):
+            //echo htmlentities ($newname);
+            $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
+            $smarty->assign('newname', $newname);
+            $contents = $smarty->fetch('formatsetname.tpl');
+            break;
+        case 'setguessesisafe': // Guess extsetinfo stuff (safe: User needs to approve before we send it to urdland)
+            urd_extsetinfo::guess_extsetinfo_safe($db,$subject, $type, $userid);
+            break;
+        case 'setbasketguessesi': // Guess extsetinfo stuff for everything in the basket (not safe, assume that our analysis is flawless)
+            urd_extsetinfo::basketguess_extsetinfo($db,$subject, $type, $userid);
+            break;
+        case 'setguessesi': // Guess extsetinfo stuff (not safe, assume that our analysis is flawless)
+            $newname = urd_extsetinfo::guess_extsetinfo($db,$subject, $type, $userid);
+            $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
+            $smarty->assign('newname', $newname);
+            $contents = $smarty->fetch('formatsetname.tpl');
+            break;
+        default:
+            throw new exception($LN['error_novalidaction']);
+            break;
+        }
+    } else {
+        throw new exception($LN['error_novalidaction']);
+    }
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }

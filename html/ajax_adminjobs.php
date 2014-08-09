@@ -31,42 +31,46 @@ require_once "$pathadt/../functions/ajax_includes.php";
 require_once "$pathadt/../functions/pref_functions.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
+try {
+    $sort = get_request('sort', 'command');
+    $sort_dir = strtolower(get_request('sort_dir', 'desc'));
 
-$sort = get_request('sort', 'command');
-$sort_dir = strtolower(get_request('sort_dir', 'desc'));
+    if (!in_array($sort, array('command', 'at_time', 'interval', 'username'))) {
+        $sort = 'command';
+    }
+    if (!in_array($sort_dir, array('asc', 'desc'))) {
+        $sort_dir = 'desc';
+    }
 
-if (!in_array($sort, array('command', 'at_time', 'interval', 'username'))) {
-    $sort = 'command';
+    $qry = "*, users.\"name\" AS \"username\" FROM schedule LEFT JOIN users ON users.\"ID\" = schedule.\"userid\" ORDER BY \"$sort\" $sort_dir";
+    $res = $db->select_query($qry);
+    $jobs = array();
+    if ($res === FALSE) {
+        $res = array();
+    }
+
+    foreach ($res as $row) {
+        $job['time'] = time_format($row['at_time']);
+        $job['period'] = readable_time($row['interval']);
+        $description = command_description($db, $row['command']);
+        $task_short = $description[0];
+        $task_arg = $description[1];
+        $job['user'] = $row['username'];
+        $task_long = '';
+        $job['cmd'] = $row['command'];
+        $job['task'] = $task_short;
+        $job['arg'] = $task_arg;
+        $jobs[] = $job;
+    }
+
+    $urdd_online = check_urdd_online($db);
+    init_smarty('', 0);
+    $smarty->assign('alljobs',	    $jobs);
+    $smarty->assign('sort',	        $sort);
+    $smarty->assign('sort_dir',	    $sort_dir);
+    $smarty->assign('urdd_online',  (int) $urdd_online);
+    $contents = $smarty->fetch('ajax_adminjobs.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-if (!in_array($sort_dir, array('asc', 'desc'))) {
-    $sort_dir = 'desc';
-}
-
-$qry = "*, users.\"name\" AS \"username\" FROM schedule LEFT JOIN users ON users.\"ID\" = schedule.\"userid\" ORDER BY \"$sort\" $sort_dir";
-$res = $db->select_query($qry);
-$jobs = array();
-if ($res === FALSE) {
-    $res = array();
-}
-
-foreach ($res as $row) {
-    $job['time'] = time_format($row['at_time']);
-    $job['period'] = readable_time($row['interval']);
-    $description = command_description($db, $row['command']);
-    $task_short = $description[0];
-    $task_arg = $description[1];
-    $job['user'] = $row['username'];
-    $task_long = '';
-    $job['cmd'] = $row['command'];
-    $job['task'] = $task_short;
-    $job['arg'] = $task_arg;
-    $jobs[] = $job;
-}
-
-$urdd_online = check_urdd_online($db);
-init_smarty('', 0);
-$smarty->assign('alljobs',	    $jobs);
-$smarty->assign('sort',	        $sort);
-$smarty->assign('sort_dir',	    $sort_dir);
-$smarty->assign('urdd_online',  (int) $urdd_online);
-$smarty->display('ajax_adminjobs.tpl');

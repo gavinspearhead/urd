@@ -58,9 +58,6 @@ class buttons_c
     }
 }
 
-$cmd = get_request('cmd');
-$id = get_request('id');
-
 function import_settings(DatabaseConnection $db)
 {
     global $LN;
@@ -72,7 +69,6 @@ function import_settings(DatabaseConnection $db)
     } else {
         throw new exception($LN['error_nosearchoptionsfound']);
     }
-    die_html('OK');
 }
 
 function edit_button(DatabaseConnection $db, $id)
@@ -99,8 +95,7 @@ function edit_button(DatabaseConnection $db, $id)
     $smarty->assign('text_box_size', TEXT_BOX_SIZE);
     $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
     $smarty->assign('button',	$button);
-    $smarty->display('ajax_edit_searchoptions.tpl');
-    die;
+    return $smarty->fetch('ajax_edit_searchoptions.tpl');
 }
 
 function show_buttons(DatabaseConnection $db, $userid)
@@ -145,8 +140,7 @@ function show_buttons(DatabaseConnection $db, $userid)
     $smarty->assign('sort_dir', $order_dir);
     $smarty->assign('search', $o_search);
     $smarty->assign('buttons', $buttons);
-    $smarty->display('ajax_show_searchoptions.tpl');
-    die;
+    return $smarty->fetch('ajax_show_searchoptions.tpl');
 }
 
 function update_button_info(DatabaseConnection $db, $id)
@@ -200,33 +194,43 @@ function update_button_info(DatabaseConnection $db, $id)
     }
 }
 
-switch (strtolower($cmd)) {
-    case 'import_settings':
-        challenge::verify_challenge($_POST['challenge']);
-        import_settings($db);
-        break;
-    case 'export_settings':
-        export_settings($db, 'buttons', 'urd_search_settings.xml');
-    case 'delete_button':
-        challenge::verify_challenge($_POST['challenge']);
-        if (is_numeric($id)) {
-            delete_button($db, $id);
-        } else {
-            throw new exception($LN['buttons_buttonnotfound']);
-        }
-        break;
-    case 'edit':
-        edit_button( $db, $id);
-        break;
-    case 'show_buttons':
-        show_buttons($db, $userid);
-        break;
-    case 'update_button':
-        update_button_info($db, $id);
-        break;
-    default:
-        throw new exception ($LN['error_invalidaction'] . " $cmd");
-        break;
-}
+try {
+    $cmd = get_request('cmd');
+    $id = get_request('id');
 
-die_html('OK');
+    switch (strtolower($cmd)) {
+        case 'import_settings':
+            challenge::verify_challenge($_POST['challenge']);
+            import_settings($db);
+            break;
+        case 'export_settings':
+            export_settings($db, 'buttons', 'urd_search_settings.xml');
+        case 'delete_button':
+            challenge::verify_challenge($_POST['challenge']);
+            if (is_numeric($id)) {
+                delete_button($db, $id);
+            } else {
+                throw new exception($LN['buttons_buttonnotfound']);
+            }
+            break;
+        case 'edit':
+            $contents = edit_button($db, $id);
+            return_result(array('contents'=>$contents));
+            break;
+        case 'show_buttons':
+            $contents = show_buttons($db, $userid);
+            return_result(array('contents'=>$contents));
+
+            break;
+        case 'update_button':
+            update_button_info($db, $id);
+            break;
+        default:
+            throw new exception ($LN['error_invalidaction'] . " $cmd");
+            break;
+    }
+
+    return_result(array());
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
+}

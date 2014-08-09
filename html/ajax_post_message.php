@@ -124,7 +124,7 @@ try {
             if ($spotid != '' && $type == 'report') {
                 $group = get_config($db, 'spots_reports_group');
                 $groups = array(group_by_name($db, $group) => $group);
-                $sql = '"messageid", "title" FROM spots WHERE "spotid" = ?';
+                $sql = '"messageid", "title" FROM spots WHERE "spotid"=?';
                 $res = $db->select_query($sql, 1, array($spotid));
                 if ($res === FALSE) {
                     throw new exception($LN['error_spotnotfound']);
@@ -186,4 +186,3 @@ try {
     return_result(array('error' => $e->getMessage()));
 }
 
-// Success:

@@ -30,10 +30,6 @@ require_once "$pathaet/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, '', $userid, TRUE);
 
-$cmd = get_request('cmd', '');
-$id = get_request('id', '');
-
-$prefs = load_config($db);
 
 function showeditgroup(DatabaseConnection $db, $id)
 {
@@ -92,8 +88,7 @@ function showeditgroup(DatabaseConnection $db, $id)
     $smarty->assign('oldrefresh',       $oldrefresh_period);
     $smarty->assign('oldsubscribed',	$oldsubscribed);
     $smarty->assign('oldexpire',	    $oldexpire);
-    $smarty->display('ajax_editgroup.tpl');
-    die();
+    return $smarty->fetch('ajax_editgroup.tpl');
 }
 
 function update_group_info(DatabaseConnection $db, $id, $userid)
@@ -175,17 +170,26 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
     }
 }
 
-switch (strtolower($cmd)) {
-case 'showeditgroup':
-    showeditgroup($db, $id);
-    break;
-case 'update_group':
-    update_group_info($db, $id, $userid);
-    break;
-default:
-    throw new exception($LN['error_invalidaction']);
-    break;
+try {
+    $cmd = get_request('cmd', '');
+    $id = get_request('id', '');
+
+    $prefs = load_config($db);
+
+    switch (strtolower($cmd)) {
+        case 'showeditgroup':
+            $contents = showeditgroup($db, $id);
+            return_result(array('contents' => $contents));
+            break;
+        case 'update_group':
+            update_group_info($db, $id, $userid);
+            break;
+        default:
+            throw new exception($LN['error_invalidaction']);
+            break;
+    }
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
 
-// Success:
-die_html('OK');

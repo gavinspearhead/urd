@@ -30,11 +30,6 @@ require_once "$pathng/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_RSS, FALSE, '', $userid, TRUE);
 
-$offset = get_request('offset', 0);
-if (!is_numeric($offset)) {
-    $offset = 0;
-}
-
 function build_rss_query(DatabaseConnection $db, $userid, $offset, &$retvals = NULL)
 {
     global $LN;
@@ -142,16 +137,6 @@ function build_rss_skipper(DatabaseConnection $db, $userid, $offset)
     return get_pages($total, $perpage, $offset);
 }
 
-$uprefs = load_config($db);
-$uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'],$userid);
-$urdd_online = $uc->is_connected();
-
-$categories = get_categories($db, $userid);
-
-$minsetsize_pref = get_pref($db, 'minsetsize', $userid, 0);
-$maxsetsize_pref = get_pref($db, 'maxsetsize', $userid, 0);
-$cmd = get_request('cmd');
-
 function set_rss_value(DatabaseConnection $db, $rss_id, $option, $value)
 {
     assert(is_numeric($rss_id));
@@ -204,225 +189,263 @@ function unsubscribe_feed(DatabaseConnection $db, urdd_client $uc, $feedid)
     remove_rss_schedule($db, $uc, $feedid, urdd_protocol::COMMAND_UPDATE_RSS );
 }
 
+try {
 
-if ($cmd == 'export') {
-    export_settings($db, 'rssfeeds', 'urd_rss_feedssettings.xml');
-} elseif ($cmd == 'load_settings' && isset ($_FILES['filename']['tmp_name']) && $isadmin) {
-    challenge::verify_challenge($_POST['challenge']);
-    $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-    $feeds = $xml->read_feeds_settings($db);
-    if ($feeds != array()) {
-        clear_all_feeds($db, $userid);
-        set_all_feeds($db, $feeds, $userid);
-        die_html('OK');
-    } else {
-        throw new exception($LN['settings_notfound']);
-    }
-} elseif ($cmd == 'unsubscribe') {
-    if ($isadmin) {
-    $feedid = get_request('feedid');
-    unsubscribe_feed($db, $uc, $feedid);
-    die_html('OK' . $LN['saved']);
-    } else {
-        throw new exception($LN['settings_notfound']);
-    }
-} elseif ($cmd == 'subscribe') {
-    if ($isadmin) {
-    $feedid = get_request('feedid');
-    $name = get_feed_by_name($feedid);
-    $period = get_request('period');
-    $time1 = get_request('time1');
-    $time2 = get_request('time2');
-    $adult = get_request('adult');
-    $expire = get_request('expire');
-    verify_expire($expire, $name);
-    subscribe_feed($db, $uc, $userid, $feedid, $period, $time1, $time2, $adult, $expire);
-    die_html('OK' . $LN['saved']);
-    } else {
-        throw new exception($LN['settings_notfound']);
-    }
-} elseif ($cmd == 'toggle_adult') {
-    if ($isadmin) {
-        challenge::verify_challenge($_POST['challenge']);
-        $feed_id = get_post('feed_id');
-        $value = get_post('value') == 1? ADULT_ON:ADULT_OFF;
-        toggle_adult($db, 'rss', $feed_id, $value);
-        die_html('OK' . $LN['saved']);
-    } else {
-        throw new exception($LN['settings_notfound']);
-    }
-} elseif ($cmd == 'toggle_visibility') {
-    challenge::verify_challenge($_POST['challenge']);
-    $feed_id = get_post('feed_id');
-    $value = get_post('visibility') ? 1 : 0;
-    set_userfeedinfo_value($db, $userid, $feed_id, 'visible', $value);
-    die_html('OK' . $LN['saved']);
-} elseif ($cmd == 'set_user_value') {
-    challenge::verify_challenge($_POST['challenge']);
-    $feed_id = get_post('feed_id');
-    $option = get_post('option');
-    $value = unformat_size(get_post('value'), 1024, 'm');
-    if (substr($option, 0, 5) == 'user_') { 
-        $option = substr($option, 5);
-    }
-    set_userfeedinfo_value($db, $userid, $feed_id, $option, $value);
-    die_html('OK' . $LN['saved']);
-} elseif ($cmd == 'set_plain_user_value') {
-    challenge::verify_challenge($_POST['challenge']);
-    $feed_id = get_post('feed_id');
-    $option = get_post('option');
-    $value = get_post('value');
-    if (substr($option, 0, 5) == 'user_') { 
-        $option = substr($option, 5);
-    }
-    set_userfeedinfo_value($db, $userid, $feed_id, $option, $value);
-    die_html('OK' . $LN['saved']);
-} elseif ($cmd == 'set_value') {
-    if ($isadmin) {
-    challenge::verify_challenge($_POST['challenge']);
-    $feed_id = get_post('feed_id');
-    $option = get_post('option');
-    $value = unformat_size(get_post('value'), 1024, 'm');
-    set_rss_value($db, $feed_id, $option, $value);
-    die_html('OK' . $LN['saved']);
-    } else {
-        throw new exception($LN['settings_notfound']);
-    }
-} elseif ($cmd == 'set_plain_value') {
-    if ($isadmin) {
-    challenge::verify_challenge($_POST['challenge']);
-    $feed_id = get_post('feed_id');
-    $option = get_post('option');
-    $value = get_post('value');
-    if ($option == 'expire' && ($value > $max_exp || $value < 1)) {
-        throw new exception($name . ': ' . $LN['error_bogusexptime']);
-    }
-    set_rss_value($db, $feed_id, $option, $value);
-    die_html('OK' . $LN['saved']);
-    } else {
-        throw new exception($LN['settings_notfound']);
-    }
-} elseif ($cmd == 'set_update_time') {
-    if ($isadmin) {
-    challenge::verify_challenge($_POST['challenge']);
-    $feed_id = get_post('feed_id');
-    $time1 = get_post('time1');
-    $time2 = get_post('time2');
-    $period = get_post('period');
-    $name = get_feed_by_id($db, $feed_id);
-    $period = $periods->get($period);
-    if ($period === FALSE) {
-        throw new exception($name . ': ' . $LN['error_invalidupdatevalue']);
-    }
-    if ($period->get_interval() !== NULL) {
-        verify_time($time1, $time2);
-        
-        // Sanity checks:
-        $time1 %= 24;
-        $time2 %= 60;
-        $time = $time1 * 60 + $time2; // Used to display the update time, is in mins after 0:00
-        $nicetime = $time1 . ':' . $time2;
-
-        remove_rss_schedule($db, $uc, $feed_id, urdd_protocol::COMMAND_UPDATE_RSS );
-    }
-    set_period_rss($uc, $db, $feed_id, $nicetime, $period->get_interval(), $time, $period->get_id());
-    die_html('OK' . $LN['saved']);
-    } else {
-        throw new exception($LN['settings_notfound']);
+    $offset = get_request('offset', 0);
+    if (!is_numeric($offset)) {
+        $offset = 0;
     }
 
-} elseif ($cmd == 'show') {
-    $allfeeds = array();
-    $res = build_rss_query($db, $userid, $offset, $retvals);
-    $unsubscribed = $retvals[0];
-    $order = get_post('order', 'name');
-    if ($order == '') { $order = 'name'; }
-    $page = get_post('page_tab', $isadmin ? 'admin':'user');
-    $order_dir = get_post('order_dir', '');
-    $search = utf8_decode(trim(get_request('search', '')));
-    $search_all = get_post('search_all', '');
+    $uprefs = load_config($db);
+    $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'],$userid);
+    $urdd_online = $uc->is_connected();
 
-    list ($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
-    $number = $offset;
-    foreach ($res as $row) {
-        $this_rss = array();
-        $id = $row['rss_id'];
-        $active = $row['subscribed'];
-        $this_rss['id'] = $id;
-        $this_rss['active_val'] = $active;
-        $this_rss['url'] = $row['url'];
-        $this_rss['name'] = $row['name'];
-        $this_rss['adult'] = $row['adult'] == ADULT_ON ? 1 : 0;
-        $this_rss['category'] = $row['category'];
-        $this_rss['expire'] = $row['expire'];
-        $this_rss['feedcount'] = $row['feedcount'];
-        $this_rss['authentication'] = ($row['password'] != '' && $row['username'] != '') ? 1 : 0;
-        $lastupdated = $row['timestamp'];
-        $refresh_time = $row['refresh_time'];
+    $categories = get_categories($db, $userid);
 
-        $refresh_period = $row['refresh_period'];
-
-        if ($refresh_period > 0) {
-            $time1 = floor($refresh_time / 60);
-            $time2 = floor($refresh_time % 60);
-        } else {
-            $time1 = $time2 = NULL;
-        }
-        $select = $refresh_period;
-
-        if ($lastupdated == 0) {
-            $lastupdated = '-';
-        } else {
-            $lastupdated = time() - $lastupdated;
-            $lastupdated = readable_time($lastupdated, 'largest_two');
-        }
-        $this_rss['lastupdated'] = $lastupdated;
-
-        $this_rss['select'] = $select;
-        $this_rss['number'] = ++$number;
-        $this_rss['time1'] = $time1;
-        $this_rss['time2'] = $time2;
-        $this_rss['visible'] = $row['visible'] === NULL ? 1 : $row['visible'];
-        $this_rss['minsetsize'] = $row['minsetsize'] === NULL ? 0: $row['minsetsize'];
-        list($val, $suf) = format_size($this_rss['minsetsize'], 'h', '');
-        $this_rss['minsetsize'] =  $val . $suf;
-
-        $this_rss['maxsetsize'] = $row['maxsetsize'] === NULL ? 0: $row['maxsetsize'];
-        list($val, $suf) = format_size($this_rss['maxsetsize'], 'h', '');
-        $this_rss['maxsetsize'] =  $val . $suf;
-
-        $allfeeds[] = $this_rss;
-    }
-
-    list($pkeys, $ptexts) = $periods->get_periods();
-    init_smarty('', 0);
-
+    $minsetsize_pref = get_pref($db, 'minsetsize', $userid, 0);
+    $maxsetsize_pref = get_pref($db, 'maxsetsize', $userid, 0);
+    $cmd = get_request('cmd');
     $message = '';
-    if ($isadmin && !$urdd_online) {
-        $message = $LN['enableurddfirst'];
+    switch($cmd) {
+        case 'export_settings':
+            export_settings($db, 'rssfeeds', 'urd_rss_feedssettings.xml');
+            break;
+        case 'load_settings':
+            if (isset ($_FILES['filename']['tmp_name']) && $isadmin) {
+                challenge::verify_challenge($_POST['challenge']);
+                $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
+                $feeds = $xml->read_feeds_settings($db);
+                if ($feeds != array()) {
+                    clear_all_feeds($db, $userid);
+                    set_all_feeds($db, $feeds, $userid);
+                } else {
+                    throw new exception($LN['settings_notfound']);
+                }
+            } else {
+                throw new exception($LN['error_nouploadsfound']);
+            }
+            break;
+        case 'unsubscribe': 
+            if ($isadmin) {
+                $feedid = get_request('feedid');
+                unsubscribe_feed($db, $uc, $feedid);
+                $message = $LN['saved'];
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+        case 'subscribe':
+            if ($isadmin) {
+                $feedid = get_request('feedid');
+                $name = get_feed_by_name($feedid);
+                $period = get_request('period');
+                $time1 = get_request('time1');
+                $time2 = get_request('time2');
+                $adult = get_request('adult');
+                $expire = get_request('expire');
+                verify_expire($expire, $name);
+                subscribe_feed($db, $uc, $userid, $feedid, $period, $time1, $time2, $adult, $expire);
+                $message = $LN['saved'];
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+        case 'toggle_adult':
+            if ($isadmin) {
+                challenge::verify_challenge($_POST['challenge']);
+                $feed_id = get_post('feed_id');
+                $value = get_post('value') == 1? ADULT_ON:ADULT_OFF;
+                toggle_adult($db, 'rss', $feed_id, $value);
+                $message = $LN['saved'];
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+
+        case 'toggle_visibility':
+            challenge::verify_challenge($_POST['challenge']);
+            $feed_id = get_post('feed_id');
+            $value = get_post('visibility') ? 1 : 0;
+            set_userfeedinfo_value($db, $userid, $feed_id, 'visible', $value);
+            $mesasge = $LN['saved'];
+            break;
+        case 'set_user_value':
+            challenge::verify_challenge($_POST['challenge']);
+            $feed_id = get_post('feed_id');
+            $option = get_post('option');
+            $value = unformat_size(get_post('value'), 1024, 'm');
+            if (substr($option, 0, 5) == 'user_') { 
+                $option = substr($option, 5);
+            }
+            set_userfeedinfo_value($db, $userid, $feed_id, $option, $value);
+            $message = $LN['saved'];
+            break;
+        case 'set_plain_user_value':
+            challenge::verify_challenge($_POST['challenge']);
+            $feed_id = get_post('feed_id');
+            $option = get_post('option');
+            $value = get_post('value');
+            if (substr($option, 0, 5) == 'user_') { 
+                $option = substr($option, 5);
+            }
+            set_userfeedinfo_value($db, $userid, $feed_id, $option, $value);
+            $message = $LN['saved'];
+            break;
+        case 'set_value':
+            if ($isadmin) {
+                challenge::verify_challenge($_POST['challenge']);
+                $feed_id = get_post('feed_id');
+                $option = get_post('option');
+                $value = unformat_size(get_post('value'), 1024, 'm');
+                set_rss_value($db, $feed_id, $option, $value);
+                $message = $LN['saved'];
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+        case 'set_plain_value':
+            if ($isadmin) {
+                challenge::verify_challenge($_POST['challenge']);
+                $feed_id = get_post('feed_id');
+                $option = get_post('option');
+                $value = get_post('value');
+                if ($option == 'expire' && ($value > $max_exp || $value < 1)) {
+                    throw new exception($name . ': ' . $LN['error_bogusexptime']);
+                }
+                set_rss_value($db, $feed_id, $option, $value);
+                $message = $LN['saved'];
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+        case 'set_update_time':
+            if ($isadmin) {
+                challenge::verify_challenge($_POST['challenge']);
+                $feed_id = get_post('feed_id');
+                $time1 = get_post('time1');
+                $time2 = get_post('time2');
+                $period = get_post('period');
+                $name = get_feed_by_id($db, $feed_id);
+                $period = $periods->get($period);
+                if ($period === FALSE) {
+                    throw new exception($name . ': ' . $LN['error_invalidupdatevalue']);
+                }
+                if ($period->get_interval() !== NULL) {
+                    verify_time($time1, $time2, $name);
+
+                    // Sanity checks:
+                    $time1 %= 24;
+                    $time2 %= 60;
+                    $time = $time1 * 60 + $time2; // Used to display the update time, is in mins after 0:00
+                    $nicetime = $time1 . ':' . $time2;
+
+                    remove_rss_schedule($db, $uc, $feed_id, urdd_protocol::COMMAND_UPDATE_RSS );
+                }
+                set_period_rss($uc, $db, $feed_id, $nicetime, $period->get_interval(), $time, $period->get_id());
+                $message = $LN['saved'];
+            } else {
+                throw new exception($LN['settings_notfound']);
+            }
+            break;
+
+        case 'show':
+            $allfeeds = array();
+            $res = build_rss_query($db, $userid, $offset, $retvals);
+            $unsubscribed = $retvals[0];
+            $order = get_post('order', 'name');
+            if ($order == '') { $order = 'name'; }
+            $page = get_post('page_tab', $isadmin ? 'admin':'user');
+            $order_dir = get_post('order_dir', '');
+            $search = utf8_decode(trim(get_request('search', '')));
+            $search_all = get_post('search_all', '');
+
+            list ($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
+            $number = $offset;
+            foreach ($res as $row) {
+                $this_rss = array();
+                $id = $row['rss_id'];
+                $active = $row['subscribed'];
+                $this_rss['id'] = $id;
+                $this_rss['active_val'] = $active;
+                $this_rss['url'] = $row['url'];
+                $this_rss['name'] = $row['name'];
+                $this_rss['adult'] = $row['adult'] == ADULT_ON ? 1 : 0;
+                $this_rss['category'] = $row['category'];
+                $this_rss['expire'] = $row['expire'];
+                $this_rss['feedcount'] = $row['feedcount'];
+                $this_rss['authentication'] = ($row['password'] != '' && $row['username'] != '') ? 1 : 0;
+                $lastupdated = $row['timestamp'];
+                $refresh_time = $row['refresh_time'];
+
+                $refresh_period = $row['refresh_period'];
+
+                if ($refresh_period > 0) {
+                    $time1 = floor($refresh_time / 60);
+                    $time2 = floor($refresh_time % 60);
+                } else {
+                    $time1 = $time2 = NULL;
+                }
+                $select = $refresh_period;
+
+                if ($lastupdated == 0) {
+                    $lastupdated = '-';
+                } else {
+                    $lastupdated = time() - $lastupdated;
+                    $lastupdated = readable_time($lastupdated, 'largest_two');
+                }
+                $this_rss['lastupdated'] = $lastupdated;
+
+                $this_rss['select'] = $select;
+                $this_rss['number'] = ++$number;
+                $this_rss['time1'] = $time1;
+                $this_rss['time2'] = $time2;
+                $this_rss['visible'] = $row['visible'] === NULL ? 1 : $row['visible'];
+                $this_rss['minsetsize'] = $row['minsetsize'] === NULL ? 0: $row['minsetsize'];
+                list($val, $suf) = format_size($this_rss['minsetsize'], 'h', '');
+                $this_rss['minsetsize'] =  $val . $suf;
+
+                $this_rss['maxsetsize'] = $row['maxsetsize'] === NULL ? 0: $row['maxsetsize'];
+                list($val, $suf) = format_size($this_rss['maxsetsize'], 'h', '');
+                $this_rss['maxsetsize'] =  $val . $suf;
+
+                $allfeeds[] = $this_rss;
+            }
+
+            list($pkeys, $ptexts) = $periods->get_periods();
+            init_smarty('', 0);
+
+            $message = '';
+            if ($isadmin && !$urdd_online) {
+                $message = $LN['enableurddfirst'];
+            }
+
+            $smarty->assign('periods_texts',	$ptexts);
+            $smarty->assign('categories',		$categories);
+            $smarty->assign('urdd_online',	    (int) $urdd_online);
+            $smarty->assign('periods_keys',		$pkeys);
+            $smarty->assign('RSS_SUBSCRIBED', 	rssfeed_status::RSS_SUBSCRIBED);
+            $smarty->assign('sort',	    	    $order);
+            $smarty->assign('sort_dir',		    $order_dir);
+            $smarty->assign('search',		    $search);
+            $smarty->assign('page_tab',         $page);
+            $smarty->assign('message',		    $message);
+            $smarty->assign('isadmin',		    (int) $isadmin);
+            $smarty->assign('unsubscribed',		$unsubscribed);
+            $smarty->assign('pages',		    $pages);
+            $smarty->assign('currentpage',		$currentpage);
+            $smarty->assign('lastpage',		    $lastpage);
+            $smarty->assign('offset',		    $offset);
+            $smarty->assign('allfeeds', 		$allfeeds);
+            $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
+            $smarty->assign('referrer', 		basename(__FILE__, '.php'));
+
+            $contents = $smarty->fetch('ajax_rss_feeds.tpl');
+            return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message'=>$message));
+        default:
+            throw new exception($LN['error_invalidaction']);
     }
-
-    $smarty->assign('periods_texts',	$ptexts);
-    $smarty->assign('categories',		$categories);
-    $smarty->assign('urdd_online',	    (int) $urdd_online);
-    $smarty->assign('periods_keys',		$pkeys);
-    $smarty->assign('RSS_SUBSCRIBED', 	rssfeed_status::RSS_SUBSCRIBED);
-    $smarty->assign('sort',	    	    $order);
-    $smarty->assign('sort_dir',		    $order_dir);
-    $smarty->assign('search',		    $search);
-    $smarty->assign('page_tab',         $page);
-    $smarty->assign('message',		    $message);
-    $smarty->assign('isadmin',		    (int) $isadmin);
-    $smarty->assign('unsubscribed',		$unsubscribed);
-    $smarty->assign('pages',		    $pages);
-    $smarty->assign('currentpage',		$currentpage);
-    $smarty->assign('lastpage',		    $lastpage);
-    $smarty->assign('offset',		    $offset);
-    $smarty->assign('allfeeds', 		$allfeeds);
-    $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
-    $smarty->assign('referrer', 		basename(__FILE__, '.php'));
-
-    $smarty->display('ajax_rss_feeds.tpl');
-} else {
-    die_html($LN['error_invalidaction'] );
+    return_result(array('message' => $message));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
+

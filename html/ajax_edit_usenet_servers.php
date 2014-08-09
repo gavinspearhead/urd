@@ -31,9 +31,6 @@ require_once "$pathaeus/../functions/pref_functions.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
-$name_pattern       = '[ a-zA-Z0-9_\-.():,@!$%^&*+=]';
-$hostname_pattern   = '[a-zA-Z0-9.\-_:\[\]]';
-
 class usenet_servers_c
 {
     public $edit;
@@ -73,24 +70,13 @@ class usenet_servers_c
     }
 };
 
-$prefs_root = load_config($db);
-$connection_types = array (
-    'off'=>$LN['off'],
-    'ssl'=>'SSL',
-    'tls'=>'TLS'
-);
-
-$cmd = get_request('cmd');
-$id = get_request('id');
-
-
 function verify_usenet_server_id(DatabaseConnection $db, $id)
 {
     global $LN;
     if (!is_numeric($id)) {
         throw new exception($LN['error_nosuchserver']);
     }
-    $sql = 'COUNT(*) AS cnt FROM usenet_servers WHERE "id" = ?';
+    $sql = 'COUNT(*) AS cnt FROM usenet_servers WHERE "id"=?';
     $res = $db->select_query($sql, array($id));
     if ($res === FALSE) {
         throw new exception($LN['error_nosuchserver']);
@@ -100,321 +86,336 @@ function verify_usenet_server_id(DatabaseConnection $db, $id)
     }
 }
 
-switch (strtolower($cmd)) {
+try {
+    $message = '';
+    $name_pattern       = '[ a-zA-Z0-9_\-.():,@!$%^&*+=]';
+    $hostname_pattern   = '[a-zA-Z0-9.\-_:\[\]]';
 
-case 'import_settings':
-    if (isset ($_FILES['filename']['tmp_name'])) {
-        challenge::verify_challenge($_POST['challenge']);
-        $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-        $usenet_servers = $xml->read_usenet_servers($db);
-        if ($usenet_servers != array()) {
-            clear_all_usenet_servers($db);
-            set_all_usenet_servers($db, $usenet_servers);
-            $prefs = $prefs_root;
-            stop_urdd($userid);
-            usleep(500000);
-            start_urdd();
-            die_html('OK');
-        } else {
-            throw new exception($LN['error_nosearchoptionsfound']);
-        }
-    }
-    break;
-case 'export_settings':
-    export_settings($db, 'usenet_servers', 'urd_usenet_servers_settings.xml');
-    break;
-case 'disable_auth':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    smart_update_usenet_server($db, $id, array('authentication'=> 0, 'username'=>'', 'password'=>''));
-    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-    if ($uc->is_connected()) {
-        $uc->set('server', 'reload', $id);
-    }
-    break;
-case 'delete_server':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    delete_usenet_server($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-    if ($uc->is_connected()) {
-        $uc->set('server', 'delete', $id);
-        usleep(50000);
-    }
-    break;
-case 'disable_posting':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-    if ($uc->is_connected()) {
-        $uc->set('server', 'noposting', $id);
-        usleep(50000);
-    } else {
-        set_posting($db, $id, FALSE);
-    }
-    break;
-case 'enable_posting':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-    if ($uc->is_connected()) {
-        $uc->set('server', 'posting', $id);
-        usleep(50000);
-    } else {
-        set_posting($db, $id, TRUE);
-    }
-    break;
+    $prefs_root = load_config($db);
+    $connection_types = array (
+            'off'=>$LN['off'],
+            'ssl'=>'SSL',
+            'tls'=>'TLS'
+            );
 
-case 'enable_server':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'],$prefs_root['urdd_port'],$userid);
-    $prio = DEFAULT_USENET_SERVER_PRIORITY;
-    if ($uc->is_connected()) {
-        $uc->set('server', $id, $prio);
-        usleep(50000);
-    } else {
-        enable_usenet_server($db, $id, $prio);
-    }
-    break;
-case 'disable_server':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-    $prio = DISABLED_USENET_SERVER_PRIORITY;
-    if ($uc->is_connected()) {
-        $uc->set('server', $id, $prio);
-        usleep(50000);
-    } else {
-        disable_usenet_server($db, $id);
-    }
-    break;
-case 'set_preferred':
-    challenge::verify_challenge($_POST['challenge']);
-    verify_usenet_server_id($db, $id);
-    $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-    if ($uc->is_connected()) {
-        $uc->set('preferred', $id);
-        usleep(50000);
-        config_cache::clear(0);
-    } else {
-        set_config($db, 'preferred_server', $id);
-    }
-    break;
-case 'showeditusenetserver':
-    $only_auth = (get_request('only_auth', 0) ? TRUE : FALSE);
-    if (is_numeric($id)) {
-        $srv = get_usenet_server($db, $id, FALSE);
-        $name = $srv['name'];
-        $username = $srv['username'];
-        $hostname = $srv['hostname'];
-        $password = $srv['password'];
-        $port = $srv['plain_port'];
-        $threads = $srv['threads'];
-        $sec_port = $srv['secure_port'];
-        $authentication = $srv['authentication'];
-        $priority = $srv['priority'];
-        $connection = $srv['connection'];
-        $posting = $srv['posting'];
-        $compressed_headers = $srv['compressed_headers'];
-    } elseif ($id == 'new') {
-        $name = '';
-        $username = '';
-        $hostname = '';
-        $password = '';
-        $threads = 1;
-        $port = 119;
-        $sec_port = 563;
-        $authentication = 0;
-        $priority = 10;
-        $connection = 'off';
-        $compressed_headers = 0;
-        $posting = 0;
-    } else {
-        throw new exception($LN['error_nosuchserver']);
-    }
-    if ($only_auth) {
-        $authentication = 1;
-    }
+    $cmd = get_request('cmd');
+    $id = get_request('id');
 
-    init_smarty('', 0);
-    $smarty->assign('id', $id);
-    $smarty->assign('name', $name);
-    $smarty->assign('only_auth', $only_auth);
-    $smarty->assign('connection_types',    $connection_types);
-    $smarty->assign('hostname', $hostname);
-    $smarty->assign('username', $username);
-    $smarty->assign('password', $password);
-    $smarty->assign('compressed_headers', $compressed_headers);
-    $smarty->assign('text_box_size', TEXT_BOX_SIZE);
-    $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
-    $smarty->assign('port', $port);
-    $smarty->assign('posting', $posting);
-    $smarty->assign('threads', $threads);
-    $smarty->assign('sec_port', $sec_port);
-    $smarty->assign('authentication', $authentication);
-    $smarty->assign('priority', $priority);
-    $smarty->assign('connection', $connection);
-    $smarty->display('ajax_edit_usenet_servers.tpl');
-    die();
+    switch (strtolower($cmd)) {
 
-    break;
-
-case 'update_usenet_server':
-    challenge::verify_challenge($_REQUEST['challenge']);
-    if (is_numeric($id) || $id == 'new') {
-        $error = '';
-        $hostname = trim(get_request('hostname'));
-        $name = trim(get_request('name'));
-        $sec_port = get_request('secure_port', 0);
-        $port = get_request('port', 0);
-        $priority = get_request('priority', 0);
-        $threads = get_request('threads', 0);
-        $connection = get_request('connection', 'off');
-        $compressed_headers = (get_request('compressed_headers', '0') == '1')? 1 : 0;
-        $posting = (get_request('posting', '0') == '1')? 1 : 0;
-
-        if (($error = verify_text($name, $name_pattern)) != '') {
-            throw new exception($LN['name'] . ': ' . $error['msg']);
-        }
-        if (($error = verify_text($hostname, $hostname_pattern)) != '') {
-            throw new exception($LN['usenet_hostname'] . ': ' . $error['msg']);
-        }
-
-        if (($error = verify_numeric_opt($sec_port, TRUE, 0, 65535, 1000)) != '') {
-            throw new exception($LN['usenet_secport'] . ': ' . $error['msg']);
-        }
-
-        if (($error = verify_numeric_opt($port, TRUE, 0, 65535, 1000)) != '') {
-            throw new exception($LN['usenet_port'] . ': ' . $error['msg']);
-        }
-
-        if (($port == '' || $port == 0) && ($sec_port == '' || $sec_port == 0)) {
-            throw new exception($LN['error_needatleastoneport']);
-        }
-
-        if (($error = verify_numeric_opt($priority, TRUE, 0, 100, 1000)) != '') {
-            throw new exception($LN['usenet_priority'] . ': ' . $error['msg']);
-        }
-        if (($error = verify_numeric($threads, 1, NULL, 1000)) != '') {
-            throw new exception($LN['usenet_threads'] . ': ' . $error['msg']);
-        }
-
-        if (($error = verify_array($connection, array_keys($connection_types))) != '') {
-            throw new exception($LN['usenet_connection'] . ': ' . $error['msg']);
-        }
-        if ($connection != 'off' && ($sec_port == '' || $sec_port == 0)) {
-            throw new exception($LN['error_needsecureport']);
-        }
-        if (get_request('authentication', '0') == '1') {
-            $authentication = TRUE;
-            $username = trim(get_request('username'));
-            if (!verify_text($username) == '') {
-                throw new exception($LN['error_invalidusername'] . $username);
+        case 'import_settings':
+            if (isset ($_FILES['filename']['tmp_name'])) {
+                challenge::verify_challenge($_POST['challenge']);
+                $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
+                $usenet_servers = $xml->read_usenet_servers($db);
+                if ($usenet_servers != array()) {
+                    clear_all_usenet_servers($db);
+                    set_all_usenet_servers($db, $usenet_servers);
+                    $prefs = $prefs_root;
+                    stop_urdd($userid);
+                    usleep(500000);
+                    start_urdd();
+                } else {
+                    throw new exception($LN['error_nosearchoptionsfound']);
+                }
             }
-            $password = trim(get_request('password'));
-            $pwmsg = verify_text($password);
-            if ($pwmsg != '') {
-                throw new exception($pwmsg['msg']);
+            break;
+        case 'export_settings':
+            export_settings($db, 'usenet_servers', 'urd_usenet_servers_settings.xml');
+            break;
+        case 'disable_auth':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            smart_update_usenet_server($db, $id, array('authentication'=> 0, 'username'=>'', 'password'=>''));
+            $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+            if ($uc->is_connected()) {
+                $uc->set('server', 'reload', $id);
             }
-        } else {
-            $authentication = 0;
-            $username = '';
-            $password = '';
-        }
-        if ($id == 'new') {
-            $query = '"id" FROM usenet_servers WHERE "name"=?';
-            $res = $db->select_query($query, 1, array($name));
-            if ($res === FALSE) {
-                $pref_server = get_config($db, 'preferred_server', 0);
-                $id = add_usenet_server($db, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
-                $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-                if ($uc->is_connected()) {
-                    $uc->set('server', 'load', $id);
-                    if ($pref_server == 0) {
-                        $uc->set('server', 'PREFERRED', $id);
+            break;
+        case 'delete_server':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            delete_usenet_server($db, $id);
+            $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+            if ($uc->is_connected()) {
+                $uc->set('server', 'delete', $id);
+                usleep(50000);
+            }
+            break;
+        case 'disable_posting':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+            if ($uc->is_connected()) {
+                $uc->set('server', 'noposting', $id);
+                usleep(50000);
+            } else {
+                set_posting($db, $id, FALSE);
+            }
+            break;
+        case 'enable_posting':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+            if ($uc->is_connected()) {
+                $uc->set('server', 'posting', $id);
+                usleep(50000);
+            } else {
+                set_posting($db, $id, TRUE);
+            }
+            break;
+
+        case 'enable_server':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            $uc = new urdd_client($db, $prefs_root['urdd_host'],$prefs_root['urdd_port'],$userid);
+            $prio = DEFAULT_USENET_SERVER_PRIORITY;
+            if ($uc->is_connected()) {
+                $uc->set('server', $id, $prio);
+                usleep(50000);
+            } else {
+                enable_usenet_server($db, $id, $prio);
+            }
+            break;
+        case 'disable_server':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+            $prio = DISABLED_USENET_SERVER_PRIORITY;
+            if ($uc->is_connected()) {
+                $uc->set('server', $id, $prio);
+                usleep(50000);
+            } else {
+                disable_usenet_server($db, $id);
+            }
+            break;
+        case 'set_preferred':
+            challenge::verify_challenge($_POST['challenge']);
+            verify_usenet_server_id($db, $id);
+            $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+            if ($uc->is_connected()) {
+                $uc->set('preferred', $id);
+                usleep(50000);
+                config_cache::clear(0);
+            } else {
+                set_config($db, 'preferred_server', $id);
+            }
+            break;
+        case 'showeditusenetserver':
+            $only_auth = (get_request('only_auth', 0) ? TRUE : FALSE);
+            if (is_numeric($id)) {
+                $srv = get_usenet_server($db, $id, FALSE);
+                $name = $srv['name'];
+                $username = $srv['username'];
+                $hostname = $srv['hostname'];
+                $password = $srv['password'];
+                $port = $srv['plain_port'];
+                $threads = $srv['threads'];
+                $sec_port = $srv['secure_port'];
+                $authentication = $srv['authentication'];
+                $priority = $srv['priority'];
+                $connection = $srv['connection'];
+                $posting = $srv['posting'];
+                $compressed_headers = $srv['compressed_headers'];
+            } elseif ($id == 'new') {
+                $name = '';
+                $username = '';
+                $hostname = '';
+                $password = '';
+                $threads = 1;
+                $port = 119;
+                $sec_port = 563;
+                $authentication = 0;
+                $priority = 10;
+                $connection = 'off';
+                $compressed_headers = 0;
+                $posting = 0;
+            } else {
+                throw new exception($LN['error_nosuchserver']);
+            }
+            if ($only_auth) {
+                $authentication = 1;
+            }
+
+            init_smarty('', 0);
+            $smarty->assign('id', $id);
+            $smarty->assign('name', $name);
+            $smarty->assign('only_auth', $only_auth);
+            $smarty->assign('connection_types',    $connection_types);
+            $smarty->assign('hostname', $hostname);
+            $smarty->assign('username', $username);
+            $smarty->assign('password', $password);
+            $smarty->assign('compressed_headers', $compressed_headers);
+            $smarty->assign('text_box_size', TEXT_BOX_SIZE);
+            $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
+            $smarty->assign('port', $port);
+            $smarty->assign('posting', $posting);
+            $smarty->assign('threads', $threads);
+            $smarty->assign('sec_port', $sec_port);
+            $smarty->assign('authentication', $authentication);
+            $smarty->assign('priority', $priority);
+            $smarty->assign('connection', $connection);
+            $contents = $smarty->fetch('ajax_edit_usenet_servers.tpl');
+            return_result(array('contents' => $contents));
+            break;
+
+        case 'update_usenet_server':
+            challenge::verify_challenge($_REQUEST['challenge']);
+            if (is_numeric($id) || $id == 'new') {
+                $error = '';
+                $hostname = trim(get_request('hostname'));
+                $name = trim(get_request('name'));
+                $sec_port = get_request('secure_port', 0);
+                $port = get_request('port', 0);
+                $priority = get_request('priority', 0);
+                $threads = get_request('threads', 0);
+                $connection = get_request('connection', 'off');
+                $compressed_headers = (get_request('compressed_headers', '0') == '1')? 1 : 0;
+                $posting = (get_request('posting', '0') == '1')? 1 : 0;
+
+                if (($error = verify_text($name, $name_pattern)) != '') {
+                    throw new exception($LN['name'] . ': ' . $error['msg']);
+                }
+                if (($error = verify_text($hostname, $hostname_pattern)) != '') {
+                    throw new exception($LN['usenet_hostname'] . ': ' . $error['msg']);
+                }
+
+                if (($error = verify_numeric_opt($sec_port, TRUE, 0, 65535, 1000)) != '') {
+                    throw new exception($LN['usenet_secport'] . ': ' . $error['msg']);
+                }
+
+                if (($error = verify_numeric_opt($port, TRUE, 0, 65535, 1000)) != '') {
+                    throw new exception($LN['usenet_port'] . ': ' . $error['msg']);
+                }
+
+                if (($port == '' || $port == 0) && ($sec_port == '' || $sec_port == 0)) {
+                    throw new exception($LN['error_needatleastoneport']);
+                }
+
+                if (($error = verify_numeric_opt($priority, TRUE, 0, 100, 1000)) != '') {
+                    throw new exception($LN['usenet_priority'] . ': ' . $error['msg']);
+                }
+                if (($error = verify_numeric($threads, 1, NULL, 1000)) != '') {
+                    throw new exception($LN['usenet_threads'] . ': ' . $error['msg']);
+                }
+
+                if (($error = verify_array($connection, array_keys($connection_types))) != '') {
+                    throw new exception($LN['usenet_connection'] . ': ' . $error['msg']);
+                }
+                if ($connection != 'off' && ($sec_port == '' || $sec_port == 0)) {
+                    throw new exception($LN['error_needsecureport']);
+                }
+                if (get_request('authentication', '0') == '1') {
+                    $authentication = TRUE;
+                    $username = trim(get_request('username'));
+                    if (!verify_text($username) == '') {
+                        throw new exception($LN['error_invalidusername'] . $username);
+                    }
+                    $password = trim(get_request('password'));
+                    $pwmsg = verify_text($password);
+                    if ($pwmsg != '') {
+                        throw new exception($pwmsg['msg']);
                     }
                 } else {
-                    if ($pref_server == 0) {
-                        set_config($db, 'preferred_server', $id);
+                    $authentication = 0;
+                    $username = '';
+                    $password = '';
+                }
+                if ($id == 'new') {
+                    $query = '"id" FROM usenet_servers WHERE "name"=?';
+                    $res = $db->select_query($query, 1, array($name));
+                    if ($res === FALSE) {
+                        $pref_server = get_config($db, 'preferred_server', 0);
+                        $id = add_usenet_server($db, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
+                        $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+                        if ($uc->is_connected()) {
+                            $uc->set('server', 'load', $id);
+                            if ($pref_server == 0) {
+                                $uc->set('server', 'PREFERRED', $id);
+                            }
+                        } else {
+                            if ($pref_server == 0) {
+                                set_config($db, 'preferred_server', $id);
+                            }
+                        }
+                    } else {
+                        throw new exception ($LN['error_usenetserverexists']);
+                    }
+                } elseif (is_numeric($id)) {
+                    $query = '"name" FROM usenet_servers WHERE "id"=?';
+                    $res = $db->select_query($query, 1, array($id));
+                    if ($res !== FALSE) {
+                        update_usenet_server($db, $id, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
+
+                        $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
+                        if ($uc->is_connected()) {
+                            $uc->set('server', 'reload', $id);
+                        }
+                    } else {
+                        throw new exception ($LN['error_nosuchserver']);
                     }
                 }
-            } else {
-                throw new exception ($LN['error_usenetserverexists']);
             }
-        } elseif (is_numeric($id)) {
-            $query = '"name" FROM usenet_servers WHERE "id"=?';
-            $res = $db->select_query($query, 1, array($id));
-            if ($res !== FALSE) {
-                update_usenet_server($db, $id, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
+            break;
+        case 'reload_servers':
+            load_config($db, TRUE);
+            $primary = get_config($db, 'preferred_server', '');
+            $sort = get_request('sort', 'name');
+            $sort_dir = get_request('sort_dir', 'asc');
 
-                $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
-                if ($uc->is_connected()) {
-                    $uc->set('server', 'reload', $id);
-                }
-            } else {
-                throw new exception ($LN['error_nosuchserver']);
+            $search = $o_search = (trim(get_request('search', '')));
+            $Qsearch = '';
+            if ($search != '') {
+                $search = "%$search%";
+                $db->escape($search, TRUE);
+                $like = $db->get_pattern_search_command('LIKE');
+                $Qsearch = " WHERE \"name\" $like $search ";
             }
-        }
-    }
-    break;
-case 'reload_servers':
-    load_config($db, TRUE);
-    $primary = get_config($db, 'preferred_server', '');
-    $sort = get_request('sort', 'name');
-    $sort_dir = get_request('sort_dir', 'asc');
+            if (!in_array($sort, array('name', 'connection', 'authentication', 'username', 'posting', 'priority', 'threads'))) {
+                $sort = 'name';
+            }
+            if (!in_array($sort_dir, array('asc', 'desc'))) {
+                $sort_dir = 'asc';
+            }
 
-    $search = $o_search = (trim(get_request('search', '')));
-    $Qsearch = '';
-    if ($search != '') {
-        $search = "%$search%";
-        $db->escape($search, TRUE);
-        $like = $db->get_pattern_search_command('LIKE');
-        $Qsearch = " WHERE \"name\" $like $search ";
+            $sql = "* FROM usenet_servers $Qsearch ORDER BY $sort $sort_dir";
+            $res = $db->select_query($sql);
+            if ($res == FALSE) {
+                $res = array();
+            }
+            $usenet_servers= array();
+            foreach ($res as $row) {
+                $id = $row['id'];
+                $name = $row['name'];
+                $hostname = $row['hostname'];
+                $port = $row['port'];
+                $sec_port = $row['secure_port'];
+                $threads = $row['threads'];
+                $conn = (isset($connection_types[$row['connection']])) ? ($connection_types[$row['connection']]) : 'off';
+                $conn_raw = $row['connection'];
+                $auth = $row['authentication'];
+                $username = $row['username'];
+                $password = $row['password'];
+                $posting = $row['posting'];
+                $compressed_headers = $row['compressed_headers'];
+                $priority = $row['priority'];
+                $usenet_servers[] = new usenet_servers_c(0, $id, $name, $hostname, $port, $sec_port, (bool) $auth, $threads, $conn, $conn_raw, $username, $password, $priority, $compressed_headers, $posting);
+            }
+            init_smarty('', 0);
+            $smarty->assign('maxstrlen',    $prefs['maxsetname']/2);
+            $smarty->assign('usenet_servers', $usenet_servers);
+            $smarty->assign('sort',	        $sort);
+            $smarty->assign('sort_dir',	    $sort_dir);
+            $smarty->assign('search',       $o_search);
+            $smarty->assign('primary',      $primary);
+            $contents = $smarty->fetch('ajax_show_usenet_servers.tpl');
+            return_result(array('contents' => $contents));
+            break;
+        default:
+            throw new exception ($LN['error_invalidaction'] . ": $cmd");
     }
-    if (!in_array($sort, array('name', 'connection', 'authentication', 'username', 'posting', 'priority', 'threads'))) {
-        $sort = 'name';
-    }
-    if (!in_array($sort_dir, array('asc', 'desc'))) {
-       $sort_dir = 'asc';
-    }
-
-    $sql = "* FROM usenet_servers $Qsearch ORDER BY $sort $sort_dir";
-    $res = $db->select_query($sql);
-    if ($res == FALSE) {
-        $res = array();
-    }
-    $usenet_servers= array();
-    foreach ($res as $row) {
-        $id = $row['id'];
-        $name = $row['name'];
-        $hostname = $row['hostname'];
-        $port = $row['port'];
-        $sec_port = $row['secure_port'];
-        $threads = $row['threads'];
-        $conn = (isset($connection_types[$row['connection']])) ? ($connection_types[$row['connection']]) : 'off';
-        $conn_raw = $row['connection'];
-        $auth = $row['authentication'];
-        $username = $row['username'];
-        $password = $row['password'];
-        $posting = $row['posting'];
-        $compressed_headers = $row['compressed_headers'];
-        $priority = $row['priority'];
-        $usenet_servers[] = new usenet_servers_c(0, $id, $name, $hostname, $port, $sec_port, (bool) $auth, $threads, $conn, $conn_raw, $username, $password, $priority, $compressed_headers, $posting);
-    }
-    init_smarty('', 0);
-    $smarty->assign('maxstrlen',    $prefs['maxsetname']/2);
-    $smarty->assign('usenet_servers', $usenet_servers);
-    $smarty->assign('sort',	        $sort);
-    $smarty->assign('sort_dir',	    $sort_dir);
-    $smarty->assign('search',       $o_search);
-    $smarty->assign('primary',      $primary);
-    $smarty->display('ajax_show_usenet_servers.tpl');
-    die;
-    break;
-default:
-    throw new exception ("O-oh - Unknown command $cmd");
-    break;
+    return_result(array('message' => $message));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
 
-die_html('OK');

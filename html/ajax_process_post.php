@@ -138,30 +138,35 @@ function update_post_db(DatabaseConnection $db, $userid, $postid, &$timestamp)
     $db->update_query_2('postinfo', $vals, '"id" =?', array($postid));
 }
 
-$rprefs = load_config($db);
-$postid = get_request('postid', '');
-$uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
+try {
 
-if (!$uc->is_connected()) {
-    throw new exception($LN['error_urddconnect']);
-}
+    $rprefs = load_config($db);
+    $postid = get_request('postid', '');
+    $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
 
-$timestamp = NULL;
-if ($postid == '') { // we got a new post
-    $id = add_post_to_db($db, $userid, $timestamp);
-    $uc->post($id);
-    if ($timestamp === NULL) {
-        $uc->unpause(get_command(urdd_protocol::COMMAND_POST) . " $id");
-    } else {
-        $uc->schedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_POST) . " $id\"", $timestamp);
+    if (!$uc->is_connected()) {
+        throw new exception($LN['error_urddconnect']);
     }
-} else { // we need to update a post
-    $uc->unschedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_POST) . " $postid\"");
-    update_post_db($db, $userid, $postid, $timestamp);
-    if ($timestamp === NULL) {
-        $uc->unpause(get_command(urdd_protocol::COMMAND_POST) . " $postid");
-    } else {
-        $uc->schedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_POST) . " $postid\"", $timestamp);
+
+    $timestamp = NULL;
+    if ($postid == '') { // we got a new post
+        $id = add_post_to_db($db, $userid, $timestamp);
+        $uc->post($id);
+        if ($timestamp === NULL) {
+            $uc->unpause(get_command(urdd_protocol::COMMAND_POST) . " $id");
+        } else {
+            $uc->schedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_POST) . " $id\"", $timestamp);
+        }
+    } else { // we need to update a post
+        $uc->unschedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_POST) . " $postid\"");
+        update_post_db($db, $userid, $postid, $timestamp);
+        if ($timestamp === NULL) {
+            $uc->unpause(get_command(urdd_protocol::COMMAND_POST) . " $postid");
+        } else {
+            $uc->schedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_POST) . " $postid\"", $timestamp);
+        }
     }
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-die_html('OK');

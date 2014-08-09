@@ -28,10 +28,6 @@ require_once "$pathadctl/../functions/ajax_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
-$prefs = load_config($db);
-$uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-
-$disable_urdland = ($prefs['extset_group'] == '') ? 1 : 0;
 
 function parse_server_info($xml)
 {
@@ -132,48 +128,56 @@ function parse_load_info($xml)
 
     return $data;
 }
+try {
+    $prefs = load_config($db);
+    $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 
-if ($uc->is_connected()) {
-    $isconnected = 1;
-    $queue_info = $uc->show('queue', 'xml');
-    $queue_info = parse_queue_info($queue_info[1]);
-    $jobs_info = $uc->show('jobs', 'xml');
-    $jobs_info = parse_jobs_info($jobs_info[1]);
-    $threads_info = $uc->show('threads', 'xml');
-    $threads_info = parse_threads_info($threads_info[1]);
-    $servers_info = $uc->show('servers', 'xml');
-    $servers_totals = parse_server_totals($servers_info[1]);
-    $servers_info = parse_server_info($servers_info[1]);
-    $load_info = $uc->show('load', 'xml');
-    $load_info = parse_load_info($load_info[1]);
-    $uptime_info = $uc->uptime();
-    $diskspace = $uc->diskfree('h');
-    $disk_perc = $uc->diskfree('p1');
-    $nodisk_perc = 100 - (int) $disk_perc;
-    unset( $load_info[0], $servers_info[0]);
-} else {
-    $diskspace = $disk_perc = $nodisk_perc = $isconnected = 0;
-    $load_info = array (1=>'', 2=>'', 3=>'');
-    $queue_info = $jobs_info = $threads_info = $servers_info = $servers_totals = array();
-    $uptime_info = '';
+    $disable_urdland = ($prefs['extset_group'] == '') ? 1 : 0;
+    if ($uc->is_connected()) {
+        $isconnected = 1;
+        $queue_info = $uc->show('queue', 'xml');
+        $queue_info = parse_queue_info($queue_info[1]);
+        $jobs_info = $uc->show('jobs', 'xml');
+        $jobs_info = parse_jobs_info($jobs_info[1]);
+        $threads_info = $uc->show('threads', 'xml');
+        $threads_info = parse_threads_info($threads_info[1]);
+        $servers_info = $uc->show('servers', 'xml');
+        $servers_totals = parse_server_totals($servers_info[1]);
+        $servers_info = parse_server_info($servers_info[1]);
+        $load_info = $uc->show('load', 'xml');
+        $load_info = parse_load_info($load_info[1]);
+        $uptime_info = $uc->uptime();
+        $diskspace = $uc->diskfree('h');
+        $disk_perc = $uc->diskfree('p1');
+        $nodisk_perc = 100 - (int) $disk_perc;
+        unset($load_info[0], $servers_info[0]);
+    } else {
+        $diskspace = $disk_perc = $nodisk_perc = $isconnected = 0;
+        $load_info = array (1=>'', 2=>'', 3=>'');
+        $queue_info = $jobs_info = $threads_info = $servers_info = $servers_totals = array();
+        $uptime_info = '';
+    }
+
+    $_SESSION['control_status'] = $control_status = get_session('control_status', 0);
+
+    init_smarty('', 0);
+    $smarty->assign('isconnected',      $isconnected);
+    $smarty->assign('disable_urdland',  $disable_urdland);
+    $smarty->assign('queue_info',       $queue_info);
+    $smarty->assign('uptime_info',      $uptime_info);
+    $smarty->assign('threads_info',     $threads_info);
+    $smarty->assign('jobs_info',        $jobs_info);
+    $smarty->assign('load_info',        $load_info);
+    $smarty->assign('control_status',   $control_status);
+    $smarty->assign('servers_info',     $servers_info);
+    $smarty->assign('servers_totals',   $servers_totals);
+    $smarty->assign('referrer',         'admin_control');
+    $smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
+    $smarty->assign('disk_perc',		$disk_perc);
+    $smarty->assign('nodisk_perc',		$nodisk_perc);
+
+    $contents = $smarty->fetch('ajax_admincontrol.tpl');
+    return_result(array('contents'=>$contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-$_SESSION['control_status'] = $control_status = get_session('control_status', 0);
-
-init_smarty('', 0);
-$smarty->assign('isconnected',      $isconnected);
-$smarty->assign('disable_urdland',  $disable_urdland);
-$smarty->assign('queue_info',       $queue_info);
-$smarty->assign('uptime_info',      $uptime_info);
-$smarty->assign('threads_info',     $threads_info);
-$smarty->assign('jobs_info',        $jobs_info);
-$smarty->assign('load_info',        $load_info);
-$smarty->assign('control_status',   $control_status);
-$smarty->assign('servers_info',     $servers_info);
-$smarty->assign('servers_totals',   $servers_totals);
-$smarty->assign('referrer',         'admin_control');
-$smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
-$smarty->assign('disk_perc',		$disk_perc);
-$smarty->assign('nodisk_perc',		$nodisk_perc);
-
-$smarty->display('ajax_admincontrol.tpl');

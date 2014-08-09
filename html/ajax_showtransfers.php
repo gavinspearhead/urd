@@ -30,19 +30,6 @@ require_once "$pathajt/../functions/ajax_includes.php";
 
 $_SESSION['transfers'] = $active_tab = get_request('active_tab', 'downloads');
 
-function calculate_speed($size, $remain, $ETA)
-{
-    global $LN;
-
-    $speed = $size * $remain / 100 / $ETA;	// 4 GB * 20% / ETA -> bytes per second
-    $speed /= 1024;		// KB/s
-    $speed *= 1.05;		// Compensate for overhead in transmission
-    $speed = floor($speed);
-    $speed .= ' K' . $LN['byte_short'] . '/s';
-
-    return $speed;
-}
-
 class download_info
 {
     public $status;
@@ -72,6 +59,19 @@ class upload_info
     public $username;
 }
 
+function calculate_speed($size, $remain, $ETA)
+{
+    global $LN;
+
+    $speed = $size * $remain / 100 / $ETA;	// 4 GB * 20% / ETA -> bytes per second
+    $speed /= 1024;		// KB/s
+    $speed *= 1.05;		// Compensate for overhead in transmission
+    $speed = floor($speed);
+    $speed .= ' K' . $LN['byte_short'] . '/s';
+
+    return $speed;
+}
+
 function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
 {
     global $LN;
@@ -82,7 +82,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
         // Admins can see any upload
         $sql_up = '* FROM postinfo ORDER BY "status" ASC, "id" DESC';
     } else {
-        $sql_up = '* FROM postinfo WHERE "userid" = ? ORDER BY "status" ASC, "id" DESC';
+        $sql_up = '* FROM postinfo WHERE "userid"=? ORDER BY "status" ASC, "id" DESC';
         $input_arr[] = $userid;
     }
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST)) {
@@ -322,38 +322,42 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
     return $infoarray_download;
 }
 
+try {
+    init_smarty('', 0);
+    $urdd_online = check_urdd_online($db);
+    $poster = urd_user_rights::is_poster($db, $userid);
+    if ($active_tab == 'uploads' && ($poster || $isadmin)) {
+        $infoarray_upload = get_upload_status($db, $userid, $isadmin);
+        $smarty->assign('infoarray_upload', $infoarray_upload);
+        $smarty->assign('infoarray_upload_size', count($infoarray_upload));
+        $filename = 'ajax_showuploads.tpl';
+    } else { // if active_tab == downloads)
+        $active_tab = 'downloads';
+        $infoarray_download = get_download_status($db, $userid, $isadmin);
+        $smarty->assign('infoarray_download', $infoarray_download);
+        $smarty->assign('infoarray_download_size', count($infoarray_download));
+        $filename = 'ajax_showdownloads.tpl';
+    }
 
-init_smarty('', 0);
-$urdd_online = check_urdd_online($db);
-$poster = urd_user_rights::is_poster($db, $userid);
-if ($active_tab == 'uploads' && ($poster || $isadmin)) {
-    $infoarray_upload = get_upload_status($db, $userid, $isadmin);
-    $smarty->assign('infoarray_upload', $infoarray_upload);
-    $smarty->assign('infoarray_upload_size', count($infoarray_upload));
-    $filename = 'ajax_showuploads.tpl';
-} else { // if active_tab == downloads)
-    $active_tab = 'downloads';
-    $infoarray_download = get_download_status($db, $userid, $isadmin);
-    $smarty->assign('infoarray_download', $infoarray_download);
-    $smarty->assign('infoarray_download_size', count($infoarray_download));
-    $filename = 'ajax_showdownloads.tpl';
+    if (!isset($_SESSION['post_hide_status'])) {
+        set_post_status();
+    }
+
+    if (!isset($_SESSION['transfer_hide_status'])) {
+        set_down_status();
+    }
+
+    $show_viewfiles = urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_VIEWFILES);
+    $smarty->assign('transfer_hide_status', $_SESSION['transfer_hide_status']);
+    $smarty->assign('post_hide_status',     $_SESSION['post_hide_status']);
+    $smarty->assign('active_tab',           $active_tab);
+    $smarty->assign('maxstrlen',		    $prefs['maxsetname']/2);
+    $smarty->assign('poster',         	    $poster?1:0);
+    $smarty->assign('isadmin',         	    $isadmin?1:0);
+    $smarty->assign('urdd_online',    	    (int) $urdd_online);
+    $smarty->assign('offline_message',      $LN['enableurddfirst']);
+    $contents = $smarty->fetch($filename);
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-if (!isset($_SESSION['post_hide_status'])) {
-    set_post_status();
-}
-
-if (!isset($_SESSION['transfer_hide_status'])) {
-    set_down_status();
-}
-
-$show_viewfiles = urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_VIEWFILES);
-$smarty->assign('transfer_hide_status', $_SESSION['transfer_hide_status']);
-$smarty->assign('post_hide_status',     $_SESSION['post_hide_status']);
-$smarty->assign('active_tab',           $active_tab);
-$smarty->assign('maxstrlen',		    $prefs['maxsetname']/2);
-$smarty->assign('poster',         	    $poster?1:0);
-$smarty->assign('isadmin',         	    $isadmin?1:0);
-$smarty->assign('urdd_online',    	    (int) $urdd_online);
-$smarty->assign('offline_message',      $LN['enableurddfirst']);
-$smarty->display($filename);

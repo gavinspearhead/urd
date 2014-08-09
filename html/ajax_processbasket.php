@@ -132,9 +132,9 @@ function display_basket(DatabaseConnection $db, $userid)
             $setID = $set['setid'];
             $type = $set['type'];
             if ($type == 'group') {
-                $res = $db->select_query("setdata.\"subject\", setdata.\"size\", extsetdata.\"value\", \"groupID\" FROM (setdata LEFT JOIN extsetdata ON "
-                    . " setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_GROUP . "') where \"ID\" = ?", 1, array($setID));
-                if ($res === FALSE) {
+                $res = $db->select_query('setdata."subject", setdata."size", extsetdata."value", "groupID" FROM (setdata LEFT JOIN extsetdata ON '
+                    . ' setdata."ID" = extsetdata."setID" AND extsetdata."name"=? AND extsetdata."type"=?) where "ID"=?', 1, array('setname', USERSETTYPE_GROUP, $setID));
+                if (!isset($res[0])) {
                     continue;
                 }
                 $setname = $res[0]['subject'];
@@ -145,9 +145,9 @@ function display_basket(DatabaseConnection $db, $userid)
                     $dltype = USERSETTYPE_GROUP;
                 }
             } elseif ($type == 'rss') {
-                $res = $db->select_query("\"setname\", \"size\", extsetdata.\"value\", \"rss_id\"  FROM (rss_sets LEFT JOIN extsetdata ON " .
-                    "rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_RSS . "') WHERE rss_sets.\"setid\" = ?", 1, array($setID));
-                if ($res === FALSE) {
+                $res = $db->select_query('"setname", "size", extsetdata."value", "rss_id"  FROM (rss_sets LEFT JOIN extsetdata ON ' .
+                    'rss_sets."setid" = extsetdata."setID" AND extsetdata."name"=? AND extsetdata."type"=?) WHERE rss_sets."setid"=?', 1, array('setname',USERSETTYPE_RSS, $setID));
+                if (!isset($res[0])) {
                     continue;
                 }
                 $setname = $res[0]['setname'];
@@ -159,9 +159,9 @@ function display_basket(DatabaseConnection $db, $userid)
                 }
                 $show_merge = FALSE;
             } elseif ($type == 'spot') {
-                $res = $db->select_query("\"title\", \"size\", extsetdata.\"value\", \"spotid\", \"category\" FROM spots LEFT JOIN extsetdata ON " .
-                    "spots.\"spotid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND extsetdata.\"type\" = '" . USERSETTYPE_SPOT . "' WHERE spots.\"spotid\" = ?", 1, array($setID));
-                if ($res === FALSE) {
+                $res = $db->select_query('"title", "size", extsetdata."value", "spotid", "category" FROM spots LEFT JOIN extsetdata ON ' .
+                    'spots."spotid" = extsetdata."setID" AND extsetdata."name"=? AND extsetdata."type"=? WHERE spots."spotid"=?', 1, array('setname', USERSETTYPE_SPOT, $setID));
+                if (!isset($res[0])) {
                     continue;
                 }
                 $setname = html_entity_decode($res[0]['title']);
@@ -238,7 +238,7 @@ function display_basket(DatabaseConnection $db, $userid)
     } else {
         $contents = $smarty->fetch('ajax_showbasket.tpl');
     }
-    die(json_encode(array('error'=>0, 'contents'=>$contents)));
+    return_result(array('contents' => $contents));
 }
 
 function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /* or feedid*/)
@@ -326,7 +326,7 @@ try {
             $group_id = get_post('feed'); // temp
         }
         $message = process_which_button($db, $userid, $type, $group_id);
-        die(json_encode(array('error' => 0, 'message' => $message)));
+        return_result(array('message' => $message));
     }
 
     $command = get_request('command', '');
@@ -345,7 +345,7 @@ try {
         clear_basket();
         break;
     case 'get':
-        die(json_encode(array('error' => 0, 'basket_type' => (get_session('basket_type', basket_type::SMALL) == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE)));
+        return_result(array('error' => 0, 'basket_type' => (get_session('basket_type', basket_type::SMALL) == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE));
         break;
     case 'set':
         $basket_type = get_request('basket_type', basket_type::SMALL);
@@ -358,5 +358,5 @@ try {
         throw new exception($LN['error_invalidaction']);
     }
 } catch (exception $e) {
-    die(json_encode(array('error'=>$e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

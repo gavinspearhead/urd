@@ -28,137 +28,143 @@ $pathajss = realpath(dirname(__FILE__));
 
 require_once "$pathajss/../functions/ajax_includes.php";
 
-$root_prefs = load_config($db);
-
-$startup_perc = $root_prefs['urdd_startup'];
-$type = get_request('type', 'normal');
-
-if (!in_array($type, array('quick', 'disk', 'activity', 'icon'))) {
-    throw new exception('Missing type');
-}
-
-// First: Basic stats.
-// can we connect?
 try {
-    $uc = new urdd_client($db, $root_prefs['urdd_host'], $root_prefs['urdd_port'], $userid);
-    $isconnected = $uc->is_connected();
+
+    $root_prefs = load_config($db);
+
+    $startup_perc = $root_prefs['urdd_startup'];
+    $type = get_request('type', 'normal');
+
+    if (!in_array($type, array('quick', 'disk', 'activity', 'icon'))) {
+        throw new exception('Missing type');
+    }
+
+    // First: Basic stats.
+    // can we connect?
+    try {
+        $uc = new urdd_client($db, $root_prefs['urdd_host'], $root_prefs['urdd_port'], $userid);
+        $isconnected = $uc->is_connected();
+    } catch (exception $e) {
+        $isconnected = FALSE;
+    }
+    init_smarty('', 0);
+    if ($type == 'quick' || $type == 'icon') {
+        $counter = 0;
+        if ($isconnected) {
+            $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status"=?';
+            $res = $db->select_query($sql, array(QUEUE_RUNNING));
+            $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
+        }
+        $smarty->assign('counter',		$counter);
+
+    } elseif ($type == 'disk') {
+        if ($isconnected) {
+            $diskspace = $uc->diskfree('h');
+            $disk_perc = $uc->diskfree('p1');
+            $nodisk_perc = 100 - $disk_perc;
+            $smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
+            $smarty->assign('diskused',		    $diskspace[4] . ' ' . $diskspace[5]);
+            $smarty->assign('disktotal',	    $diskspace[2] . ' ' . $diskspace[3]);
+            $smarty->assign('disk_perc',		$disk_perc);
+            $smarty->assign('nodisk_perc',		$nodisk_perc);
+        }
+
+    } elseif ($type == 'activity') {
+        $tasks = array();
+        if ($isconnected) {
+            // Second: Current jobs.
+            $sql = '"description", max("progress") AS "progress", min("ETA") as "ETA", min("command_id") AS "command_id", count("ID") AS "counter" FROM queueinfo WHERE "status"=? GROUP BY "description"';
+            $res = $db->select_query($sql, array(QUEUE_RUNNING));
+            if ($res === FALSE) {
+                $res = array();
+            }
+
+            foreach ($res as $row) {
+                $task = command_description($db, $row['description']);
+                $sql = 'min("ETA") AS "ETA" FROM queueinfo WHERE "description" LIKE ? AND "ETA" > ? ';
+                $res2 = $db->select_query($sql, array($row['description'], 0));
+                $ETA = isset($res2[0]['ETA']) ? $res2[0]['ETA'] : '';
+                $row['task'] = $task[0];
+                $row['args'] = $task[1];
+                $row['type'] = $task[3];
+                $dlid = $task[2];
+                $progress = $row['progress'] = min(100, $row['progress']);
+                $command_id = $row['command_id'];
+
+                // We're gonna use $row as the array containing all data:
+                $row['niceeta'] = -1;
+                $row['target'] = '';
+
+                if ($progress < 100 && $ETA != 0) {
+                    $row['niceeta'] = readable_time($ETA, 'fancy');
+                }
+
+                // Uniquify:
+                $arrayid = $row['task'] . $row['args'] . $dlid;
+
+                // $tasks are previously added items, $row is current item.
+                // If there's a previous item, it might be merged with this one if they are identical.
+
+                // Create or Overwrite the item:
+                $tasks[$arrayid] = $row;
+            }
+            $cnt = count($tasks);
+            $input_arr = array();
+            $sql = '* FROM downloadinfo WHERE "preview" = 2 AND hidden = 0';
+            if (!$isadmin) {
+                $input_arr[] = $userid;
+                $sql .= ' AND "userid"=? ';
+            }
+            $sql .= ' ORDER BY "start_time" DESC';
+
+            $res = $db->select_query($sql, $input_arr);
+            if ($res === FALSE) {
+                $res = array();
+            }
+            $previews = array();
+            foreach ($res as $row) {
+                $preview['name'] = $row['name'];
+                list($size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024);
+                $preview['size'] = $size . $suffix;
+                list($donesize, $donesuffix) = format_size($row['done_size'], 'h', $LN['byte_short'], 1024);
+                $preview['donesize'] = $donesize . $donesuffix;
+                $preview['group_id'] = $row['groupid'];
+                $preview['dlid'] = $row['ID'];
+                $preview['binary_id'] = 0; // where does this come from?
+                switch ($row['status']) {
+                    case DOWNLOAD_READY:         $cat = $LN['transfers_status_ready']; break;
+                    case DOWNLOAD_STOPPED:
+                    case DOWNLOAD_QUEUED:        $cat = $LN['transfers_status_queued']; break;
+                    case DOWNLOAD_ACTIVE:        $cat = $LN['transfers_status_active']; break;
+                    case DOWNLOAD_FINISHED:      $cat = $LN['transfers_status_finished']; break;
+                    case DOWNLOAD_CANCELLED:     $cat = $LN['transfers_status_cancelled']; break;
+                    case DOWNLOAD_PAUSED:        $cat = $LN['transfers_status_paused']; break;
+                    case DOWNLOAD_COMPLETE:      $cat = $LN['transfers_status_complete']; break;
+                    case DOWNLOAD_SHUTDOWN:
+                    case DOWNLOAD_RAR_FAILED :
+                    case DOWNLOAD_PAR_FAILED :
+                    case DOWNLOAD_CKSFV_FAILED :
+                    case DOWNLOAD_ERROR:
+                    case DOWNLOAD_FAILED:        $cat = $LN['transfers_status_dlfailed']; break;
+                    default :                    $cat = $LN['transfers_status_unknown']; break;
+                }
+                $preview['status'] = $cat;
+                $previews[] = $preview;
+            }
+
+            $smarty->assign('tasks',	$tasks);
+            $smarty->assign('previews',	$previews);
+            $smarty->assign('counter',	$cnt);
+        }
+    }
+
+    $uc->disconnect();
+    $smarty->assign('startup_perc',	 $startup_perc);
+    $smarty->assign('isconnected',	 $isconnected);
+    $smarty->assign('isadmin',	   	 $isadmin);
+    $smarty->assign('type',	         $type);
+    $contents = $smarty->fetch('ajax_showstatus.tpl');
+    return_result(array('contents' => $contents, 'connected' => $isconnected));
 } catch (exception $e) {
-    $isconnected = FALSE;
+    return_result(array('error' => $e->getMessage()));
 }
-init_smarty('', 0);
-if ($type == 'quick' || $type == 'icon') {
-    $counter = 0;
-    if ($isconnected) {
-        $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status" = ?';
-        $res = $db->select_query($sql, array(QUEUE_RUNNING));
-        $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
-    }
-    $smarty->assign('counter',		$counter);
-
-} elseif ($type == 'disk') {
-    if ($isconnected) {
-        $diskspace = $uc->diskfree('h');
-        $disk_perc = $uc->diskfree('p1');
-        $nodisk_perc = 100 - $disk_perc;
-        $smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
-        $smarty->assign('diskused',		    $diskspace[4] . ' ' . $diskspace[5]);
-        $smarty->assign('disktotal',	    $diskspace[2] . ' ' . $diskspace[3]);
-        $smarty->assign('disk_perc',		$disk_perc);
-        $smarty->assign('nodisk_perc',		$nodisk_perc);
-    }
-
-} elseif ($type == 'activity') {
-    $tasks = array();
-    if ($isconnected) {
-        // Second: Current jobs.
-        $sql = '"description", max("progress") AS "progress", min("ETA") as "ETA", min("command_id") AS "command_id", count("ID") AS "counter" FROM queueinfo WHERE "status"=? GROUP BY "description"';
-        $res = $db->select_query($sql, array(QUEUE_RUNNING));
-        if ($res === FALSE) {
-            $res = array();
-        }
-
-        foreach ($res as $row) {
-            $task = command_description($db, $row['description']);
-            $sql = 'min("ETA") AS "ETA" FROM queueinfo WHERE "description" LIKE ? AND "ETA" > ? ';
-            $res2 = $db->select_query($sql, array($row['description'], 0));
-            $ETA = isset($res2[0]['ETA']) ? $res2[0]['ETA'] : '';
-            $row['task'] = $task[0];
-            $row['args'] = $task[1];
-            $row['type'] = $task[3];
-            $dlid = $task[2];
-            $progress = $row['progress'] = min(100, $row['progress']);
-            $command_id = $row['command_id'];
-
-            // We're gonna use $row as the array containing all data:
-            $row['niceeta'] = -1;
-            $row['target'] = '';
-
-            if ($progress < 100 && $ETA != 0) {
-                $row['niceeta'] = readable_time($ETA, 'fancy');
-            }
-
-            // Uniquify:
-            $arrayid = $row['task'] . $row['args'] . $dlid;
-
-            // $tasks are previously added items, $row is current item.
-            // If there's a previous item, it might be merged with this one if they are identical.
-
-            // Create or Overwrite the item:
-            $tasks[$arrayid] = $row;
-        }
-        $cnt = count($tasks);
-        $input_arr = array();
-        $sql = '* FROM downloadinfo WHERE "preview" = 2 AND hidden = 0';
-        if (!$isadmin) {
-            $input_arr[] = $userid;
-            $sql .= ' AND "userid"=? ';
-        }
-        $sql .= ' ORDER BY "start_time" DESC';
-
-        $res = $db->select_query($sql, $input_arr);
-        if ($res === FALSE) {
-            $res = array();
-        }
-        $previews = array();
-        foreach ($res as $row) {
-            $preview['name'] = $row['name'];
-            list($size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024);
-            $preview['size'] = $size . $suffix;
-            list($donesize, $donesuffix) = format_size($row['done_size'], 'h', $LN['byte_short'], 1024);
-            $preview['donesize'] = $donesize . $donesuffix;
-            $preview['group_id'] = $row['groupid'];
-            $preview['dlid'] = $row['ID'];
-            $preview['binary_id'] = 0; // where does this come from?
-             switch ($row['status']) {
-                case DOWNLOAD_READY:         $cat = $LN['transfers_status_ready']; break;
-                case DOWNLOAD_STOPPED:
-                case DOWNLOAD_QUEUED:        $cat = $LN['transfers_status_queued']; break;
-                case DOWNLOAD_ACTIVE:        $cat = $LN['transfers_status_active']; break;
-                case DOWNLOAD_FINISHED:      $cat = $LN['transfers_status_finished']; break;
-                case DOWNLOAD_CANCELLED:     $cat = $LN['transfers_status_cancelled']; break;
-                case DOWNLOAD_PAUSED:        $cat = $LN['transfers_status_paused']; break;
-                case DOWNLOAD_COMPLETE:      $cat = $LN['transfers_status_complete']; break;
-                case DOWNLOAD_SHUTDOWN:
-                case DOWNLOAD_RAR_FAILED :
-                case DOWNLOAD_PAR_FAILED :
-                case DOWNLOAD_CKSFV_FAILED :
-                case DOWNLOAD_ERROR:
-                case DOWNLOAD_FAILED:        $cat = $LN['transfers_status_dlfailed']; break;
-                default :                    $cat = $LN['transfers_status_unknown']; break;
-            }
-            $preview['status'] = $cat;
-            $previews[] = $preview;
-        }
-
-        $smarty->assign('tasks',	$tasks);
-        $smarty->assign('previews',	$previews);
-        $smarty->assign('counter',	$cnt);
-    }
-}
-
-$uc->disconnect();
-$smarty->assign('startup_perc',	 $startup_perc);
-$smarty->assign('isconnected',	 $isconnected);
-$smarty->assign('isadmin',	   	 $isadmin);
-$smarty->assign('type',	         $type);
-$smarty->display('ajax_showstatus.tpl');

@@ -22,36 +22,9 @@
  */
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
-class json_return_value {
-    public $error_code = 0;
-    public $message = '';
-    public $action = '';
-    public $data = '';
-    public function __construct($ec='', $m='', $a='', $d='') {
-        $this->error_code = $ec;
-        $this->message = $m;
-        $this->action = $a;
-        $this->data = $d;
-    }
-}
-
 $pathac = realpath(dirname(__FILE__));
 require_once "$pathac/../functions/ajax_includes.php";
 require_once "$pathac/../functions/buttons.php";
-
-$prefs = load_config($db);
-$uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-
-if (isset($_GET['cmd']) && $_GET['cmd'] == 'export_all') {
-    // we will accept export also from a GET request
-    $command = 'export_all';
-} elseif (!isset($_POST['cmd'])) {
-    throw new exception($LN['error_novalidaction']);
-} else {
-    // everything else is a post
-    $command = strtolower(get_post('cmd'));
-    challenge::verify_challenge($_POST['challenge']);
-}
 
 function update_spots_images(DatabaseConnection $db, urdd_client $uc, $userid)
 {
@@ -61,7 +34,8 @@ function update_spots_images(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->update_spotsimages();
     $uc->disconnect();
-    die_html('OK' . $LN['taskgetspot_images']);
+
+    return_result(array('message' =>$LN['taskgetspot_images']));
 }
 
 function update_spots_comments(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -72,7 +46,7 @@ function update_spots_comments(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->update_spotscomments();
     $uc->disconnect();
-    die_html('OK' . $LN['taskgetspot_comments']);
+    return_result(array('message' =>$LN['taskgetspot_comments']));
 }
 
 function update_spots(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -83,7 +57,7 @@ function update_spots(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->update('', USERSETTYPE_SPOT);
     $uc->disconnect();
-    die_html('OK' . $LN['taskgetspots']);
+    return_result(array('message' =>$LN['taskgetspots']));
 }
 
 function expire_spots(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -94,7 +68,7 @@ function expire_spots(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->expire('', USERSETTYPE_SPOT);
     $uc->disconnect();
-    die_html('OK' . $LN['taskexpirespots']);
+    return_result(array('message' =>$LN['taskexpirespots']));
 }
 
 function purge_spots(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -105,7 +79,7 @@ function purge_spots(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->purge('', USERSETTYPE_SPOT);
     $uc->disconnect();
-    die_html('OK' . $LN['taskpurgespots'] );
+    return_result(array('message' =>$LN['taskpurgespots']));
 }
 
 function find_servers(DatabaseConnection $db, urdd_client $uc, $userid, $extended=FALSE)
@@ -120,7 +94,7 @@ function find_servers(DatabaseConnection $db, urdd_client $uc, $userid, $extende
     }
     $uc->findservers($ext_str);
     $uc->disconnect();
-    die_html('OK' . $LN['taskfindservers'] );
+    return_result(array('message' =>$LN['taskfindservers']));
 }
 
 function clean_db(DatabaseConnection $db, urdd_client $uc, $userid, $all=FALSE)
@@ -135,7 +109,7 @@ function clean_db(DatabaseConnection $db, urdd_client $uc, $userid, $all=FALSE)
     };
     $uc->cleandb();
     $uc->disconnect();
-    die_html('OK'. $LN['taskcleandb']);
+    return_result(array('message' =>$LN['taskcleandb']));
 }
 
 function update_blacklist(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -146,7 +120,7 @@ function update_blacklist(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->update_blacklist();
     $uc->disconnect();
-    die_html('OK' . $LN['taskgetblacklist'] );
+    return_result(array('message' =>$LN['taskgetblacklist']));
 }
 
 function update_whitelist(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -157,7 +131,7 @@ function update_whitelist(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->update_whitelist();
     $uc->disconnect();
-    die_html('OK' . $LN['taskgetwhitelist']);
+    return_result(array('message' =>$LN['taskgetwhitelist']));
 }
 
 function update_articles(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -169,7 +143,7 @@ function update_articles(DatabaseConnection $db, urdd_client $uc, $userid)
     $uc->update('all', USERSETTYPE_GROUP);
     $uc->disconnect();
     add_stat_data($db, stat_actions::UPDATE, 'all', $userid);
-    die_html('OK' . $LN['taskupdate']);
+    return_result(array('message' =>$LN['taskupdate']));
 }
 
 function update_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -180,7 +154,7 @@ function update_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->update_newsgroups();
     $uc->disconnect();
-    die_html('OK'.$LN['taskgrouplist']);
+    return_result(array('message' =>$LN['taskgrouplist']));
 }
 
 function gensets_articles(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -191,7 +165,7 @@ function gensets_articles(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->gensets('all');
     $uc->disconnect();
-    die_html('OK'. $LN['taskgensets'] . ' ' . $LN['all']);
+    return_result(array('message' =>$LN['taskgensets'] . ' ' . $LN['all']));
 }
 
 function purge_articles(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -203,7 +177,7 @@ function purge_articles(DatabaseConnection $db, urdd_client $uc, $userid)
     $uc->purge('all', USERSETTYPE_GROUP);
     $uc->disconnect();
     add_stat_data($db, stat_actions::PURGE, 'all', $userid);
-    die_html('OK'. $LN['taskpurge'] );
+    return_result(array('message' =>$LN['taskpurge']));
 
 }
 
@@ -216,7 +190,7 @@ function expire_articles(DatabaseConnection $db, urdd_client $uc, $userid)
     $uc->expire('all', USERSETTYPE_GROUP);
     $uc->disconnect();
     add_stat_data($db, stat_actions::EXPIRE, 'all', $userid);
-    die_html('OK'. $LN['taskexpire'] );
+    return_result(array('message' =>$LN['taskexpire']));
 }
 
 function gensets_group(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -250,7 +224,7 @@ function gensets_group(DatabaseConnection $db, urdd_client $uc, $userid)
     }
 
     $uc->disconnect();
-    die_html('OK'. $LN['taskgensets'] . ' ' . $name);
+    return_result(array('message' =>$LN['taskgensets'] . ' ' . $name));
 }
 
 function update_newsgroup(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -283,7 +257,7 @@ function update_newsgroup(DatabaseConnection $db, urdd_client $uc, $userid)
         }
     }
     $uc->disconnect();
-    die_html('OK'. $LN['taskupdate'] . ' ' . $name);
+    return_result(array('message' =>$LN['taskupdate'] . ' ' . $name));
 }
 
 function optimise(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -294,7 +268,7 @@ function optimise(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->optimise();
     $uc->disconnect();
-    die_html('OK' . $LN['taskoptimise']);
+    return_result(array('message' =>$LN['taskoptimise']));
 }
 
 function check_version(urdd_client $uc)
@@ -303,7 +277,7 @@ function check_version(urdd_client $uc)
     check_connected($uc);
     $uc->check_version();
     $uc->disconnect();
-    die_html('OK'. $LN['taskcheckversion']);
+    return_result(array('message' =>$LN['taskcheckversion']));
 }
 
 function update_rss(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -335,7 +309,7 @@ function update_rss(DatabaseConnection $db, urdd_client $uc, $userid)
         }
     }
     $uc->disconnect();
-    die_html('OK' . $LN['taskupdate']. ' ' . $name);
+    return_result(array('message' => $LN['taskupdate']. ' ' . $name));
 }
 
 function update_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -347,7 +321,7 @@ function update_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
     $uc->update('all', USERSETTYPE_RSS);
     $uc->disconnect();
     add_stat_data($db, stat_actions::UPDATE, 'all', $userid);
-    die_html('OK' . $LN['taskupdate']  . ' ' . $LN['all']);
+    return_result(array('message' => $LN['taskupdate']  . ' ' . $LN['all']));
 }
 
 function expire_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -379,7 +353,7 @@ function expire_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
 
     $uc->disconnect();
     add_stat_data($db, stat_actions::EXPIRE, $id, $userid);
-    die_html('OK' . $LN['taskexpire'] . ' ' . $name);
+    return_result(array('message' => $LN['taskexpire'] . ' ' . $name));
 }
 
 function purge_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -391,7 +365,7 @@ function purge_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
     $uc->purge('all', USERSETTYPE_RSS);
     $uc->disconnect();
     add_stat_data($db, stat_actions::PURGE, 'all', $userid);
-    die_html('OK' . $LN['taskpurge'] );
+    return_result(array('message' =>$LN['taskexpirespots']));
 }
 
 function expire_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -403,7 +377,7 @@ function expire_rss_all(DatabaseConnection $db, urdd_client $uc, $userid)
     $uc->expire('all', USERSETTYPE_RSS);
     $uc->disconnect();
     add_stat_data($db, stat_actions::EXPIRE, 'all', $userid);
-    die_html('OK'. $LN['taskexpire'] );
+    return_result(array('message' =>$LN['taskexpire']));
 }
 
 function expire_rss(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -437,7 +411,7 @@ function expire_rss(DatabaseConnection $db, urdd_client $uc, $userid)
     }
 
     $uc->disconnect();
-    die_html('OK'. $LN['taskexpire'] . ' ' . $name);
+    return_result(array('message' =>$LN['taskexpire'] . ' ' . $name));
 }
 
 function purge_rss(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -470,7 +444,7 @@ function purge_rss(DatabaseConnection $db, urdd_client $uc, $userid)
     }
 
     $uc->disconnect();
-    die_html('OK'. $LN['taskpurge'] . ' ' . $name);
+    return_result(array('message' => $LN['taskpurge'] . ' ' . $name));
 }
 
 function clean_all(urdd_client $uc)
@@ -479,7 +453,7 @@ function clean_all(urdd_client $uc)
     global $LN;
     check_connected($uc);
     $uc->cleandb('now');
-    die_html('OK' . $LN['taskcleandb']);
+    return_result(array('message' => $LN['taskcleandb']));
 }
 
 function purge_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -510,7 +484,7 @@ function purge_newsgroups(DatabaseConnection $db, urdd_client $uc, $userid)
     }
     $uc->disconnect();
     add_stat_data($db, stat_actions::PURGE, $id, $userid);
-    die_html('OK'. $LN['taskpurge'] . ' ' . $name);
+    return_result(array('message' =>$LN['taskpurge'] . ' ' . $name));
 }
 
 function get_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -521,7 +495,7 @@ function get_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->getsetinfo();
     $uc->disconnect();
-    die_html('OK'. $LN['taskgetsetinfo'] );
+    return_result(array('message' =>$LN['taskgetsetinfo']));
 }
 
 function send_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -532,7 +506,7 @@ function send_setinfo(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->sendsetinfo();
     $uc->disconnect();
-    die_html('OK'. $LN['tasksendsetinfo'] );
+    return_result(array('message' =>$LN['tasksendsetinfo']));
 }
 
 function clean_dir(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -543,7 +517,7 @@ function clean_dir(DatabaseConnection $db, urdd_client $uc, $userid)
     check_connected($uc);
     $uc->cleandir('all');
     $uc->disconnect();
-    die_html('OK' . $LN['taskcleandir']);
+    return_result(array('message' =>$LN['taskcleandir']));
 }
 
 function unschedule_job(DatabaseConnection $db, urdd_client $uc)
@@ -552,7 +526,7 @@ function unschedule_job(DatabaseConnection $db, urdd_client $uc)
     $job = get_post('job');
     $uc->unschedule($job, '');
     $uc->disconnect();
-    die_html('OK');
+    return_result();
 }
 
 function delete_task(DatabaseConnection $db, urdd_client $uc)
@@ -562,8 +536,8 @@ function delete_task(DatabaseConnection $db, urdd_client $uc)
     if (!is_numeric($task)) {
         throw new exception($LN['error_notanumber']);
     }
-    $db->delete_query('queueinfo', '"ID" = ?', array($task));
-    die_html('OK');
+    $db->delete_query('queueinfo', '"ID"=?', array($task));
+    return_result();
 }
 
 function cancel_all_tasks(DatabaseConnection $db, urdd_client $uc)
@@ -571,7 +545,7 @@ function cancel_all_tasks(DatabaseConnection $db, urdd_client $uc)
     global $LN;
     check_connected($uc);
     $uc->cancel('all');
-    die_html('OK');
+    return_result();
 }
 
 function cancel_task(DatabaseConnection $db, urdd_client $uc)
@@ -580,7 +554,7 @@ function cancel_task(DatabaseConnection $db, urdd_client $uc)
     $task = get_post('task');
     $uc->cancel($task);
     $uc->disconnect();
-    die_html('OK'. $LN['transfers_status_cancelled']);
+    return_result(array('message' =>$LN['transfers_status_cancelled']));
 }
 
 function pause_task(DatabaseConnection $db, urdd_client $uc)
@@ -589,7 +563,7 @@ function pause_task(DatabaseConnection $db, urdd_client $uc)
     $task = get_post('task');
     $uc->pause($task);
     $uc->disconnect();
-    die_html('OK' . $LN['transfers_status_paused']);
+    return_result(array('message' =>$LN['transfers_status_paused']));
 }
 
 function pause_all_tasks(DatabaseConnection $db, urdd_client $uc)
@@ -597,6 +571,7 @@ function pause_all_tasks(DatabaseConnection $db, urdd_client $uc)
     global $LN;
     $uc->pause('all');
     $uc->disconnect();
+    return_result(array('message' =>$LN['transfers_status_paused'] . ' ' . $LN['all']));
     die_html('OK' . $LN['transfers_status_paused'] . ' ' . $LN['all']);
 }
 
@@ -605,6 +580,7 @@ function continue_all_tasks(DatabaseConnection $db, urdd_client $uc)
     global $LN;
     $uc->continue_cmd('all');
     $uc->disconnect();
+    return_result(array('message' => $LN['success']));
     die_html('OK'. $LN['success']);
 }
 
@@ -615,6 +591,7 @@ function continue_task(DatabaseConnection $db, urdd_client $uc)
     $uc->continue_cmd($task);
     $uc->disconnect();
     die_html('OK'. $LN['success2']);
+    return_result(array('message' =>$LN['success2']));
 }
 
 function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
@@ -663,9 +640,10 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
         }
         set_all_groups($db, $settings['newsgroups'], $userid);
         set_all_feeds($db, $settings['rssfeeds'], $userid);
-        die_html('OK');
+    } else {
+        throw new exception($LN['error_nouploadsfound'] );
     }
-    die;
+    return_result();
 }
 
 function add_search(DatabaseConnection $db, $userid)
@@ -685,7 +663,7 @@ function add_search(DatabaseConnection $db, $userid)
     } else {
         throw new exception($LN['error_unknowntype']);
     }
-    die_html('OK');
+    return_result();
 }
 
 function add_whitelist(DatabaseConnection $db, $userid)
@@ -701,7 +679,7 @@ function add_whitelist(DatabaseConnection $db, $userid)
     }
     if ($spotterid !== FALSE) {
         add_to_whitelist($db, $spotterid, $userid, $global);
-        die_html('OK');
+        return_result();
     } else {
         throw new exception ($LN['error_spotnotfound']);
     }
@@ -714,6 +692,7 @@ function enable_from_whitelist(DatabaseConnection $db, $id)
     if (isset($res[0]['source']) && $res[0]['source'] == whitelist::WHITELIST_EXTERNAL) {
         $db->update_query_2('spot_whitelist', array('status' => whitelist::ACTIVE), '"id"=?', array($id));
     }
+    return_result();
 }
 
 function enable_from_blacklist(DatabaseConnection $db, $id)
@@ -724,6 +703,7 @@ function enable_from_blacklist(DatabaseConnection $db, $id)
     if (isset($res[0]['source']) && $res[0]['source'] == blacklist::BLACKLIST_EXTERNAL) {
         $db->update_query_2('spot_blacklist', array('status' => blacklist::ACTIVE), '"id"=?', array($id));
     }
+    return_result();
 }
 
 function delete_from_blacklist(DatabaseConnection $db, $id)
@@ -738,6 +718,7 @@ function delete_from_blacklist(DatabaseConnection $db, $id)
         $db->delete_query('spot_blacklist', '"id"=?', array($id));
         return 'delete';
     }
+    return_result();
 }
 
 function delete_from_whitelist(DatabaseConnection $db, $id)
@@ -758,58 +739,39 @@ function delete_whitelist(DatabaseConnection $db, $userid)
 {
     global $LN;
     assert(is_numeric($userid));
-    try {
-        challenge::verify_challenge($_POST['challenge']);
-        $id = trim(get_post('id', ''));
-        $rv = delete_from_whitelist($db, $id);
-    } catch (exception $e){
-        $x = new json_return_value($e->getCode(), $e->getMessage());
-        die(json_encode($x));
-    }
-    die(json_encode(new json_return_value(0, 'OK', $rv, $LN['disabled'])));
+    challenge::verify_challenge($_POST['challenge']);
+    $id = trim(get_post('id', ''));
+    $rv = delete_from_whitelist($db, $id);
+    return_result(array('message' =>$LN['disabled'], 'action'=>$rv));
 }
 
 function delete_blacklist(DatabaseConnection $db, $userid)
 {
     global $LN;
     assert(is_numeric($userid));
-    try {
-        challenge::verify_challenge($_POST['challenge']);
-        $id = trim(get_post('id', ''));
-        $rv = delete_from_blacklist($db, $id);
-    } catch (exception $e){
-        $x = new json_return_value($e->getCode(), $e->getMessage());
-        die(json_encode($x));
-    }
-    die(json_encode(new json_return_value(0, 'OK', $rv, $LN['disabled'])));
+    challenge::verify_challenge($_POST['challenge']);
+    $id = trim(get_post('id', ''));
+    $rv = delete_from_blacklist($db, $id);
+    return_result(array('message' => $LN['disabled'], 'action'=>$rv));
 }
+
 function enable_blacklist(DatabaseConnection $db, $userid)
 {
     global $LN;
     assert(is_numeric($userid));
-    try {
         challenge::verify_challenge($_POST['challenge']);
         $id = trim(get_post('id', ''));
         enable_from_blacklist($db, $id);
-    } catch (exception $e){
-        $x = new json_return_value($e->getCode(), $e->getMessage());
-        die(json_encode($x));
-    }
-    die(json_encode(new json_return_value(0, 'OK', 'update', $LN['active'])));
+    return_result(array('message' => $LN['active'], 'action'=>'update'));
 }
 function enable_whitelist(DatabaseConnection $db, $userid)
 {
     global $LN;
     assert(is_numeric($userid));
-    try {
-        challenge::verify_challenge($_POST['challenge']);
-        $id = trim(get_post('id', ''));
-        enable_from_whitelist($db, $id);
-    } catch (exception $e){
-        $x = new json_return_value($e->getCode(), $e->getMessage());
-        die(json_encode($x));
-    }
-    die(json_encode(new json_return_value(0, 'OK', 'update', $LN['active'])));
+    challenge::verify_challenge($_POST['challenge']);
+    $id = trim(get_post('id', ''));
+    enable_from_whitelist($db, $id);
+    return_result(array('message' => $LN['active'], 'action'=>'update'));
 
 }
 
@@ -837,7 +799,7 @@ function add_posterblacklist(DatabaseConnection $db, $userid)
     }
     $poster_blacklist = serialize($poster_blacklist);
     set_config($db, 'poster_blacklist', $poster_blacklist);
-    die_html('OK');
+    return_result();
 }
 
 function add_blacklist(DatabaseConnection $db, $userid)
@@ -850,12 +812,11 @@ function add_blacklist(DatabaseConnection $db, $userid)
         $spotid = trim(get_post('spotid', ''));
         $spotterid = get_spotterid_from_spot($db, $spotid);
     }
-    if ($spotterid !== FALSE) {
-        add_to_blacklist($db, $spotterid, $userid, $global);
-        die_html('OK');
-    } else {
+    if ($spotterid === FALSE) {
         throw new exception ($LN['error_spotnotfound']);
     }
+    add_to_blacklist($db, $spotterid, $userid, $global);
+    return_result();
 }
 
 function delete_preview(DatabaseConnection $db, urdd_client $uc, $userid)
@@ -879,182 +840,200 @@ function delete_preview(DatabaseConnection $db, urdd_client $uc, $userid)
     } else {
         throw new exception('Need download ID');
     }
-    die_html('OK' . $LN['deleted']);
+    return_result(array('message' =>$LN['deleted']));
 }
 
-switch ($command) {
-    case 'delete_preview':
-        delete_preview($db, $uc, $userid);
-        break;
-    case 'unschedule':
-        unschedule_job($db, $uc);
-        break;
-    case 'delete_task':
-        delete_task($db, $uc);
-        break;
-    case 'cancel':
-        cancel_task($db, $uc);
-        break;
-    case 'pause':
-        pause_task($db, $uc);
-        break;
-    case 'pause_all':
-        pause_all_tasks($db, $uc);
-        break;
-    case 'continue':
-        continue_task($db, $uc);
-        break;
-    case 'continue_all':
-        continue_all_tasks($db, $uc);
-        break;
-    case 'export_all':
-        verify_access($db, NULL, TRUE, '', $userid, TRUE);
-        export_settings($db, 'all', 'urd_all_settings.xml');
-        break;
-    case 'import_all':
-        import_all($db, $uc, $userid);
-    case 'add_search':
-        add_search($db, $userid);
-        break;
-    case 'add_whitelist':
-        add_blacklist($db, $userid);
-        break;
-    case 'add_blacklist':
-        add_blacklist($db, $userid);
-        break;
-    case 'add_poster_blacklist':
-        add_posterblacklist($db, $userid);
-        break;
-    case 'enable_blacklist':
-        enable_blacklist($db, $userid);
-        break;
-    case 'enable_whitelist':
-        enable_whitelist($db, $userid);
-        break;
-    case 'delete_blacklist':
-        delete_blacklist($db, $userid);
-        break;
-    case 'delete_whitelist':
-        delete_whitelist($db, $userid);
-        break;
-    case 'updatespots':
-        update_spots($db, $uc, $userid);
-        break;
-    case 'updatespotscomments':
-        update_spots_comments($db, $uc, $userid);
-        break;
-    case 'updatespotsimages':
-        update_spots_images($db, $uc, $userid);
-        break;
-    case 'expirespots':
-        expire_spots($db, $uc, $userid);
-        break;
-    case 'purgespots':
-        purge_spots($db, $uc, $userid);
-        break;
-    case 'findservers':
-        find_servers($db, $uc, $userid);
-        break;
-    case 'findservers_ext':
-        find_servers($db, $uc, $userid, TRUE);
-        break;
-    case 'cleandb_all':
-        clean_db($db, $uc, $userid, TRUE);
-        break;
-    case 'cleandb':
-        clean_db($db, $uc, $userid, FALSE);
-        break;
-    case 'updatearticles':
-        update_articles( $db, $uc, $userid);
-        break;
-    case 'updatewhitelist':
-        update_whitelist( $db, $uc, $userid);
-        break;
-    case 'updateblacklist':
-        update_blacklist( $db, $uc, $userid);
-    case 'updategroups':
-        update_newsgroups( $db, $uc, $userid);
-        break;
-    case 'gensetsarticles':
-        gensets_articles($db, $uc, $userid);
-        break;
-    case 'purgearticles':
-        purge_articles($db, $uc, $userid);
-        break;
-    case 'expirearticles':
-        expire_articles($db, $uc, $userid);
-        break;
-    case 'gensetsgroup':
-        gensets_group($db, $uc, $userid);
-        break;
-    case 'updategroup':
-        update_newsgroup($db, $uc, $userid);
-        break;
-    case 'optimise':
-        optimise($db, $uc, $userid);
-        break;
-    case 'checkversion':
-        check_version($uc);
-        break;
-    case 'updaterssall':
-        update_rss_all($db, $uc, $userid);
-        break;
-    case 'updaterss':
-        update_rss($db, $uc, $userid);
-        break;
-    case 'expiregroup':
-        expire_newsgroups( $db, $uc, $userid);
-        break;
-    case 'expirerssall':
-        expire_rss_all($db, $uc, $userid);
-        break;
-    case 'purgerssall':
-        purge_rss_all($db, $uc, $userid);
-        break;
-    case 'expirerss':
-        expire_rss($db, $uc, $userid);
-        break;
-    case 'purgerss':
-        purge_rss($db, $uc, $userid);
-        break;
-    case 'cancelall' :
-        cancel_all_tasks($db, $uc, $userid);
-        break;
-    case 'cleanall' :
-        clean_all($uc);
-        break;
-    case 'purgegroup':
-        purge_newsgroups($db, $uc, $userid);
-        break;
-    case 'getsetinfo':
-        get_setinfo($db, $uc, $userid);
-        break;
-    case 'sendsetinfo':
-        send_setinfo($db, $uc, $userid);
-        break;
-    case 'cleandir':
-        clean_dir($db, $uc, $userid);
-        break;
-    case 'poweron':
-        // Turn URDD on
-        verify_access($db, NULL, TRUE, '', $userid, TRUE);
-        start_urdd();
-        break;
-    case 'poweroff' :
-        // Turn URDD off
-        verify_access($db, NULL, TRUE, '', $userid, TRUE);
-        stop_urdd($userid);
-        break;
-    case 'restart':
-        verify_access($db, NULL, TRUE, '', $userid, TRUE);
-        $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
-        if ($uc->is_connected()) {
-            $uc->restart_urdd();
-        }
-        usleep(500000);
-        break;
+try {
+    $prefs = load_config($db);
+    $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 
-    default:
+    if (isset($_GET['cmd']) && $_GET['cmd'] == 'export_all') {
+        // we will accept export also from a GET request
+        $command = 'export_all';
+    } elseif (!isset($_POST['cmd'])) {
         throw new exception($LN['error_novalidaction']);
-        break;
+    } else {
+        // everything else is a post
+        $command = strtolower(get_post('cmd'));
+        challenge::verify_challenge($_POST['challenge']);
+    }
+
+    switch ($command) {
+        case 'delete_preview':
+            delete_preview($db, $uc, $userid);
+            break;
+        case 'unschedule':
+            unschedule_job($db, $uc);
+            break;
+        case 'delete_task':
+            delete_task($db, $uc);
+            break;
+        case 'cancel':
+            cancel_task($db, $uc);
+            break;
+        case 'pause':
+            pause_task($db, $uc);
+            break;
+        case 'pause_all':
+            pause_all_tasks($db, $uc);
+            break;
+        case 'continue':
+            continue_task($db, $uc);
+            break;
+        case 'continue_all':
+            continue_all_tasks($db, $uc);
+            break;
+        case 'export_all':
+            verify_access($db, NULL, TRUE, '', $userid, TRUE);
+            export_settings($db, 'all', 'urd_all_settings.xml');
+            break;
+        case 'import_all':
+            import_all($db, $uc, $userid);
+        case 'add_search':
+            add_search($db, $userid);
+            break;
+        case 'add_whitelist':
+            add_blacklist($db, $userid);
+            break;
+        case 'add_blacklist':
+            add_blacklist($db, $userid);
+            break;
+        case 'add_poster_blacklist':
+            add_posterblacklist($db, $userid);
+            break;
+        case 'enable_blacklist':
+            enable_blacklist($db, $userid);
+            break;
+        case 'enable_whitelist':
+            enable_whitelist($db, $userid);
+            break;
+        case 'delete_blacklist':
+            delete_blacklist($db, $userid);
+            break;
+        case 'delete_whitelist':
+            delete_whitelist($db, $userid);
+            break;
+        case 'updatespots':
+            update_spots($db, $uc, $userid);
+            break;
+        case 'updatespotscomments':
+            update_spots_comments($db, $uc, $userid);
+            break;
+        case 'updatespotsimages':
+            update_spots_images($db, $uc, $userid);
+            break;
+        case 'expirespots':
+            expire_spots($db, $uc, $userid);
+            break;
+        case 'purgespots':
+            purge_spots($db, $uc, $userid);
+            break;
+        case 'findservers':
+            find_servers($db, $uc, $userid);
+            break;
+        case 'findservers_ext':
+            find_servers($db, $uc, $userid, TRUE);
+            break;
+        case 'cleandb_all':
+            clean_db($db, $uc, $userid, TRUE);
+            break;
+        case 'cleandb':
+            clean_db($db, $uc, $userid, FALSE);
+            break;
+        case 'updatearticles':
+            update_articles( $db, $uc, $userid);
+            break;
+        case 'updatewhitelist':
+            update_whitelist( $db, $uc, $userid);
+            break;
+        case 'updateblacklist':
+            update_blacklist( $db, $uc, $userid);
+        case 'updategroups':
+            update_newsgroups( $db, $uc, $userid);
+            break;
+        case 'gensetsarticles':
+            gensets_articles($db, $uc, $userid);
+            break;
+        case 'purgearticles':
+            purge_articles($db, $uc, $userid);
+            break;
+        case 'expirearticles':
+            expire_articles($db, $uc, $userid);
+            break;
+        case 'gensetsgroup':
+            gensets_group($db, $uc, $userid);
+            break;
+        case 'updategroup':
+            update_newsgroup($db, $uc, $userid);
+            break;
+        case 'optimise':
+            optimise($db, $uc, $userid);
+            break;
+        case 'checkversion':
+            check_version($uc);
+            break;
+        case 'updaterssall':
+            update_rss_all($db, $uc, $userid);
+            break;
+        case 'updaterss':
+            update_rss($db, $uc, $userid);
+            break;
+        case 'expiregroup':
+            expire_newsgroups( $db, $uc, $userid);
+            break;
+        case 'expirerssall':
+            expire_rss_all($db, $uc, $userid);
+            break;
+        case 'purgerssall':
+            purge_rss_all($db, $uc, $userid);
+            break;
+        case 'expirerss':
+            expire_rss($db, $uc, $userid);
+            break;
+        case 'purgerss':
+            purge_rss($db, $uc, $userid);
+            break;
+        case 'cancelall' :
+            cancel_all_tasks($db, $uc, $userid);
+            break;
+        case 'cleanall' :
+            clean_all($uc);
+            break;
+        case 'purgegroup':
+            purge_newsgroups($db, $uc, $userid);
+            break;
+        case 'getsetinfo':
+            get_setinfo($db, $uc, $userid);
+            break;
+        case 'sendsetinfo':
+            send_setinfo($db, $uc, $userid);
+            break;
+        case 'cleandir':
+            clean_dir($db, $uc, $userid);
+            break;
+        case 'poweron':
+            // Turn URDD on
+            verify_access($db, NULL, TRUE, '', $userid, TRUE);
+            start_urdd();
+            break;
+        case 'poweroff' :
+            // Turn URDD off
+            verify_access($db, NULL, TRUE, '', $userid, TRUE);
+            stop_urdd($userid);
+            break;
+        case 'restart':
+            verify_access($db, NULL, TRUE, '', $userid, TRUE);
+            $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
+            if ($uc->is_connected()) {
+                $uc->restart_urdd();
+            }
+            usleep(500000);
+            break;
+
+        default:
+            throw new exception($LN['error_novalidaction']);
+            break;
+    }
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }

@@ -64,16 +64,15 @@ require_once "$pathreg/../functions/urdversion.php";
 require_once "$pathreg/../functions/defines.php";
 require_once "$pathreg/../functions/smarty.php";
 
-$captcha = extension_loaded ('gd') ? 1 : 0;
+try {
+    $captcha = extension_loaded ('gd') ? 1 : 0;
+    // initialise some stuff
+    if (!isset($prefs['register']) || $prefs['register'] == 0) {
+        throw new exception($LN['reg_disabled']);
+    }
 
-// initialise some stuff
-if (!isset($prefs['register']) || $prefs['register'] == 0) {
-    throw new exception($LN['reg_disabled']);
-}
-
-if (isset($_POST['submit_button'])) {
-    try {
-        if ($captcha != 0 && (!isset($_SESSION['register_captcha']) || !isset($_POST['register_captcha']) || $_SESSION['register_captcha'] != $_POST['register_captcha'])) {
+    if (isset($_POST['submit_button'])) {
+        if ($captcha != 0 && (!isset($_SESSION['register_captcha'], $_POST['register_captcha']) || $_SESSION['register_captcha'] != $_POST['register_captcha'])) {
             throw new exception($LN['error_captcha']);
         }
         if (isset($_POST['username']) && trim($_POST['username']) != '') {
@@ -122,10 +121,10 @@ if (isset($_POST['submit_button'])) {
 
         $db->update_query_2('users', array('token'=>$token, 'active'=>user_status::USER_PENDING), '"name"=?', array($username));
         urd_mail::mail_activation($db, $username, $fullname, $email, $token, $prefs['admin_email']);
-        die_html('OK');
-    } catch (exception $e) {
-        die_html(':error:' . $LN['error'] . ': ' . $e->getMessage());
+    } else {
+        throw new exception($LN['error_invalidaction']);
     }
-} else {
-    die_html(':error:' . $LN['error'] . ': ' . $LN['error_invalidaction']);
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }

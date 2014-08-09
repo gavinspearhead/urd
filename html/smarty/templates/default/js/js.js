@@ -57,7 +57,6 @@ function set_selected()
 function setvalbyid(id, val)
 {
     $('#' + id).val(val);
-
 }
 
 function get_value_from_id(id, def)
@@ -116,8 +115,14 @@ function task_action(action, task)
             cache: false,
             data: data
         }).done( function(html) {
-            update_tasks();
-            update_message_bar(html);
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                update_tasks();
+                update_message_bar(x.message);
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     }
 }
@@ -136,8 +141,14 @@ function job_action(action, job)
                 challenge: challenge 
             }
         }).done( function(html) {
-            update_jobs();
-            update_message_bar(html);
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                update_jobs();
+               update_message_bar(x.message);
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     }
 }
@@ -155,7 +166,13 @@ function control_action(action)
                 challenge: challenge 
             }
         }).done( function(html) {
-           update_message_bar(html);
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+               update_message_bar(x.message);
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     }
 }
@@ -184,7 +201,13 @@ function ng_action(action, id)
                 challenge: challenge 
             }
         }).done( function(html) {
-            update_message_bar(html);
+            console.log(html);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+               update_message_bar(x.message);
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     }
 }
@@ -226,8 +249,8 @@ function get_basket_type()
             command: 'get' 
         }
    }).done(function(html) {
-       var content = $.parseJSON(html);
-       update_basket_display(content.basket_type);
+       var x = $.parseJSON(html);
+       update_basket_display(x.basket_type);
    });
 }
 
@@ -561,8 +584,13 @@ function load_transfers()
         cache: false,
         data: data
     }).done(function(html) {
-        show_content_div_2(html, 'transfersdiv');
-        update_search_bar_height();
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'transfersdiv');
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -651,8 +679,13 @@ function load_control()
         url: url,
         cache: false
     }).done(function(html) {
-        show_content_div_2(html, 'controldiv');
-        update_search_bar_height();
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'controldiv');
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -683,8 +716,14 @@ function show_users(order, direction)
         data: data,
         cache: false
     }).done(function(html) {
-        show_content_div_2(html, 'usersdiv');
-        update_search_bar_height();
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'usersdiv');
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -876,8 +915,14 @@ function show_buttons(order, direction)
         data: data,
         cache: false
     }).done(function(html) {
-        show_content_div_2(html, 'buttonsdiv');
-        update_search_bar_height();
+        var x = $.parseJSON(html);
+        if (x.error == 0) { 
+            show_content_div_2(x.contents, 'buttonsdiv');
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
+
     });
 }
 
@@ -911,7 +956,12 @@ function show_usenet_servers(order, direction)
         data: data,
         cache: false
     }).done(function(html) {
-        show_content_div_2(html, 'usenetserversdiv');
+        var x = $.parseJSON(html);
+        if (x.error == 0) { 
+            show_content_div_2(x.contents, 'usenetserversdiv');
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
         update_search_bar_height();
     });
 }
@@ -939,7 +989,6 @@ function show_post_message(type, spotid)
     }).done(function(html) {
         console.log(html);
         var x = $.parseJSON(html);
-
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
         } else {
@@ -962,10 +1011,12 @@ function show_uploadnzb(dir, name)
         data: data,
         cache: false
     }).done(function(html) {
-        if (html.substr(0, 7) != ':error:') {
-            show_overlayed_content_1(html, 'popup525x300');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup525x300');
         } else {
-            set_message('message_bar', html.substr(7), 5000);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -982,11 +1033,12 @@ function show_edit_post(postid)
         },
         cache: false
     }).done(function(html) {
-
-        if (html.substr(0, 7) != ':error:') {
-            show_overlayed_content_1(html, 'popup700x400');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup700x400');
         } else {
-            set_message('message_bar', html.substr(7), 5000);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -999,10 +1051,12 @@ function show_post()
         url: url,
         cache: false
     }).done(function(html) {
-        if (html.substr(0, 7) != ':error:') {
-            show_overlayed_content_1(html, 'popup700x400');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup700x400');
         } else {
-            set_message('message_bar', html.substr(7), 5000);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -1032,9 +1086,15 @@ function load_jobs(order, direction)
         cache: false,
         data: data
     }).done( function(html) {
-        show_content_div_2(html, 'jobsdiv');
-        update_widths("descr_td");
-        update_search_bar_height();
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'jobsdiv');
+            update_widths("descr_td");
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error , 5000);
+        }
     });
 }
 
@@ -1074,10 +1134,16 @@ function load_tasks(order, direction, clear_offset)
         cache: false,
         data: data
     }).done( function(html) {
-        show_content_div_2(html, 'tasksdiv');
-        update_widths("descr_td");
-        update_widths("comment_td");
-        update_search_bar_height();
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'tasksdiv');
+            update_widths("descr_td");
+            update_widths("comment_td");
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error , 5000);
+        }
     });
 }
 
@@ -1138,11 +1204,16 @@ function load_disk_status()
         cache: false,
         data: { type: 'disk' }
     }).done( function(html) {
-        if (html.substr(0,3) == 'OFF') {
-            $('#disk_li').addClass('hidden');
-        } else {
-            $('#disk_li').removeClass('hidden');
-            $('#status_disk').html(html);
+        console.log(html);
+        var x = $.parseJSON(html);
+        console.log(x);
+        if (x.error == 0) {
+            if (!x.connected) {
+                $('#disk_li').addClass('hidden');
+            } else {
+                $('#disk_li').removeClass('hidden');
+                $('#status_disk').html(x.contents);
+            }
         }
     }); 
 }
@@ -1156,14 +1227,29 @@ function load_activity_status(force)
     activity_status = new Date().getTime();
 
     var url = "ajax_showstatus.php";
-    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { $('#status_activity').html(html); }); 
+    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'activity' } }).done( function(html) { 
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            $('#status_activity').html(x.contents); 
+        }
+    }); 
 }
 
 function load_quick_status()
 {
     var url = "ajax_showstatus.php";
-    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'quick' } }).done( function(html) { $('#status_msg').html(html); }); 
-    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'icon'  } }).done( function(html) { $('#smallstatus').html(html); }); 
+    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'quick' } }).done( function(html) {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            $('#status_msg').html(x.contents);
+        }
+    }); 
+    $.ajax({ type: 'post', url: url, cache: false, data: { type: 'icon'  } }).done( function(html) {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            $('#smallstatus').html(x.contents); 
+        }
+    }); 
 }
 
 function update_activity_status()
@@ -1319,7 +1405,12 @@ function transfer_edit(cmd, dlid)
             challenge: challenge 
         }
     }).done( function (html) { 
-        update_message_reload_transfers(html); 
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        }
+        load_transfers();
     });
 }
 
@@ -1481,20 +1572,23 @@ function show_preview(dlid, binary_id, group_id)
         cache: false,
         data: data
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup700x400');
-        var filetype = get_value_from_id('filetype', '');
-        var file = get_value_from_id ('file', '');
-        if (filetype == 'image') {
-            show_image(file);
-        } else if (filetype == 'text') {
-            show_contents(file);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup700x400');
+            if (x.filetype == 'image') {
+                show_image(x.file);
+            } else if (x.filetype == 'text') {
+                show_contents(x.file);
+            } else {
+                setTimeout(function () {
+                    var do_reload = $('#do_reload');
+                    if (overlayed_content_visible() && do_reload.val() === undefined) {
+                        show_preview(dlid, binary_id, group_id);
+                    }
+                }, 1000);
+            }
         } else {
-            setTimeout(function () {
-                var do_reload = $('#do_reload');
-                if (overlayed_content_visible() && do_reload.val() === undefined) {
-                    show_preview(dlid, binary_id, group_id);
-                }
-            }, 1000);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -1514,8 +1608,13 @@ function delete_preview(dlid)
         cache: false,
         data: data
     }).done( function(html) {
-        load_activity_status(1);
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+         if (x.error == 0) {
+             load_activity_status(1);
+             update_message_bar(x.message);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -1543,14 +1642,14 @@ function delete_blacklist(id, msg)
             data: data
         }).done( function(html) {
             var x = $.parseJSON(html);
-            if (x.error_code == 0) {
+            if (x.error == 0) {
                 if (x.action == 'delete') {
                     $("#item" + id).hide();
                 } else if (x.action == 'update') {
                     $("#status"+id).html(x.data);
                 }
             } else {
-                update_message_bar(x.message);
+                update_message_bar(x.error);
             }
         });
     };
@@ -1585,14 +1684,14 @@ function enable_blacklist(id)
         data: data
     }).done( function(html) {
         var x = $.parseJSON(html);
-        if (x.error_code == 0) {
+        if (x.error == 0) {
             if (x.action == 'hide') {
                 $("#item" + id).hide();
             } else if (x.action == 'update') {
                 $("#status"+id).html(x.data);
             }
         } else {
-            update_message_bar(x.message);
+            update_message_bar(x.error);
         }
     });
 }
@@ -1634,11 +1733,17 @@ function buttons_action(action, uid)
         cache: false,
         data: data
     }).done( function(html) {
-        if (action == 'edit') {
-            show_overlayed_content_1(html, 'popup525x300');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            if (action == 'edit') {
+                show_overlayed_content_1(x.contents, 'popup525x300');
+            } else {
+                show_buttons();
+                update_message_bar(x.message);
+            }
         } else {
-            show_buttons();
-            update_message_bar(html);
+            set_message('message_bar', x.error , 5000);
         }
     });
 }
@@ -1660,8 +1765,13 @@ function user_update_setting(uid, action, value)
         cache: false,
         data: data
     }).done( function(html) {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
         show_users();
-        update_message_bar(html);
+                update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -1687,11 +1797,16 @@ function user_action(action, uid)
         cache : false,
         data : data
     }).done( function(html) {
-        if (action == 'edit') {
-            show_overlayed_content_1(html, 'popup700x400');
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            if (action == 'edit') {
+                show_overlayed_content_1(x.contents, 'popup700x400');
+            } else {
+                show_users();
+                update_search_bar_height();
+            }
         } else {
-            show_users();
-            update_message_bar(html);
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -1718,8 +1833,13 @@ function usenet_action(action, uid)
         cache: false,
         data: data
     }).done( function(html) {
-        show_usenet_servers();
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_usenet_servers();
+            update_message_bar(x.message);
+        } else {
+            update_message_bar(x.error);
+        }
     });
 }
 
@@ -1811,7 +1931,13 @@ function show_rename_transfer(dlid)
             dlid: dlid 
         }
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup700x400');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        } else {
+            show_overlayed_content_1(x.contents, 'popup700x400');
+        }
     });
 }
 
@@ -1827,9 +1953,15 @@ function edit_group(id)
             id: id
         }
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup700x400');
-        $('#group_name').focus();
-        display_timebox('group_refresh_period');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        } else {
+            show_overlayed_content_1(x.contents, 'popup700x400');
+            $('#group_name').focus();
+            display_timebox('group_refresh_period');
+        }
     });
 }
 
@@ -1845,9 +1977,15 @@ function edit_rss(id)
             id: id 
         }
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup700x400');
-        $('#rss_name').focus();
-        display_timebox('rss_refresh_period');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        } else {
+            show_overlayed_content_1(x.contents, 'popup700x400');
+            $('#rss_name').focus();
+            display_timebox('rss_refresh_period');
+        }
     });
 }
 
@@ -1861,10 +1999,12 @@ function edit_usenet_server(id, only_auth)
         cache: false,
         data: data
     }).done( function(html) {
-        if (html.substr(0, 7) == ':error:') {
-            set_message('message_bar', html.substr(7), 5000);
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
         } else {
-            show_overlayed_content_1(html, (only_auth?'popup525x300':'popup700x400'));
+            show_overlayed_content_1(x.contents, (only_auth?'popup525x300':'popup700x400'));
         }
     });
 }
@@ -1900,10 +2040,13 @@ function update_group()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html == 'OK') {
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        } else {
             hide_overlayed_content();
         }
-        update_message_bar(html);
         load_groups();
     });
 }
@@ -1943,10 +2086,13 @@ function update_rss()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html == 'OK') {
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        } else {
             hide_overlayed_content();
         }
-        update_message_bar(html);
         load_rss_feeds();
     });
 }
@@ -1971,11 +2117,14 @@ function update_buttons()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
+            set_message('message_bar', x.message, 5000);
             show_buttons();
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        update_message_bar(html);
     });
 }
 
@@ -2019,11 +2168,14 @@ function update_user()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
             show_users();
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        update_message_bar(html);
     });
 }
 
@@ -2067,11 +2219,14 @@ function update_usenet_server()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
             show_usenet_servers();
+            update_message_bar(x.message);
+        } else {
+            update_message_bar(x.error);
         }
-        update_message_bar(html);
     });
 }
 
@@ -2147,10 +2302,13 @@ function create_post()
         cache: false,
         data: data
     }).done( function(html) {
-            if (html == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        update_message_reload_transfers(html);
+        load_transfers();
     });
 }
 
@@ -2188,10 +2346,13 @@ function rename_transfer()
         cache: false,
         data: data
     }).done( function(html) {
-        if (html == 'OK') {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             hide_overlayed_content();
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        update_message_reload_transfers(html);
+        load_transfers();
     });
 }
 
@@ -2430,32 +2591,37 @@ function show_quick_display(srctype, subject, e, type)
         type: 'post',
         url: url,
         cache: false,
-        data:{ 
+        data: { 
             type : type, 
             srctype : srctype,
             subject : subject 
         } 
     }).done( function(html) {
-        show_overlayed_content_1(html, 'quickwindowon');
-        // we increase the size beyond the default if div is not large enough for the contents
-        var height = Math.floor($(window).height() * 0.9);
-        var used_height = $('#td_sets').get(0).scrollHeight;
-        var max_height = $('#td_sets').css('max-height').replace('px', '');
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'quickwindowon');
+            // we increase the size beyond the default if div is not large enough for the contents
+            var height = Math.floor($(window).height() * 0.9);
+            var used_height = $('#td_sets').get(0).scrollHeight;
+            var max_height = $('#td_sets').css('max-height').replace('px', '');
 
-        if ((used_height > max_height && height > max_height)) {
-            var width = Math.floor($(window).width() * 0.75);
-            $('#overlay_content').css('width', width);
-            $('#overlay_content').css('height', height);
-            $('#overlay_content').css('marginTop', (- Math.floor(height / 2)));
-            $('#overlay_content').css('marginLeft', (- Math.floor(width / 2)));
-            $('#overlay_content').css('top', '50%');
-            $('#overlay_content').css('left', '50%');
-            var title_height = $('#text_title').outerHeight() + 28;
-            var inner_height = $('#overlay_content').innerHeight();
-            $('#td_sets').css('height', inner_height - title_height);
-            $('#td_sets').css('max-height', inner_height - title_height);
+            if ((used_height > max_height && height > max_height)) {
+                var width = Math.floor($(window).width() * 0.75);
+                $('#overlay_content').css('width', width);
+                $('#overlay_content').css('height', height);
+                $('#overlay_content').css('marginTop', (- Math.floor(height / 2)));
+                $('#overlay_content').css('marginLeft', (- Math.floor(width / 2)));
+                $('#overlay_content').css('top', '50%');
+                $('#overlay_content').css('left', '50%');
+                var title_height = $('#text_title').outerHeight() + 28;
+                var inner_height = $('#overlay_content').innerHeight();
+                $('#td_sets').css('height', inner_height - title_height);
+                $('#td_sets').css('max-height', inner_height - title_height);
+            }
+            $('#td_sets').scrollTop(0);
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        $('#td_sets').scrollTop(0);
     });
 }
 
@@ -2477,7 +2643,12 @@ function guess_extset_info_safe(setID, type)
                 subject : setID 
             } 
         }).done( function() {
-            show_quick_display('seteditesi', setID, '', type);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                show_quick_display('seteditesi', setID, '', type);
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     }
 }
@@ -2501,9 +2672,14 @@ function guess_basket_extset_info(setID, type)
             cache: false,
             data: data
         }).done( function() {
-            // Reload to show the new info:
-            load_sets();
-            close_quickmenu();
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                // Reload to show the new info:
+                load_sets();
+                close_quickmenu();
+            } else {
+                set_message('message_bar', x.error, 5000);
+            }
         });
     }
     return true;
@@ -2528,11 +2704,14 @@ function guess_extset_info(setID, type)
             cache: false,
             data: data
         }).done( function(html) {
-            close_quickmenu();
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                close_quickmenu();
             // Also echo the new setname into the TD:
-            if (html !== '') {
-                $('#td_set_' + setID).html('<div class="donotoverflowdamnit">' + html + '</div>');
+                $('#td_set_' + setID).html('<div class="donotoverflowdamnit">' + x.contents + '</div>');
                 update_widths('browsesubjecttd');
+            } else {
+                set_message('message_bar', x.error, 5000);
             }
         });
     }
@@ -2554,7 +2733,12 @@ function save_extset_binary_type(setID, sel, srctype, type)
         cache: false,
         data: data
     }).done( function(html) {
-        show_quick_display('seteditesi', setID, '', type);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_quick_display('seteditesi', setID, '', type);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -2577,10 +2761,13 @@ function save_extset_info(setID, type)
         cache: false,
         data: data
     }).done( function(html) {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
         // Also echo the new setname into the TD
-        var thetd = $('#td_set_' + setID);
-        if (html !== '') {
-            thetd.html(html);
+            var thetd = $('#td_set_' + setID);
+            thetd.html(x.contents);
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -2598,10 +2785,11 @@ function remove_rss(id, msg)
                 challenge: challenge 
             } 
         }).done( function(html) {
-            if (html.substr(0, 7) == ':error:') {
-                set_message('message_bar', html.substr(7), 5000);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                load_subscriptions();
             } else {
-                load_subscriptions(html);
+                set_message('message_bar', x.error, 5000);
             }
         });
     });
@@ -2697,7 +2885,6 @@ function toggle_group_of_sets(startset, stopset, type)
     // Now do the actual toggling
     $.each(toggleitems, function(key, val) {
         toggle_set(val, type);
-
     });
 }
 
@@ -2932,8 +3119,14 @@ function edit_categories()
         cache: false,
         data: data 
     }).done( function(html) {
-        show_overlayed_content_1(html,'popup525x300');
-        $('#cat_name').focus();
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents,'popup525x300');
+            $('#cat_name').focus();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -2954,22 +3147,27 @@ function get_category_name()
         cache: false,
         data: data 
     }).done( function(html) {
-        if (html != '__error__') {
-            cat_name.val(html);
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            cat_name.val(x.name);
             cat_id.val(idx); 
         } else {
+            set_message('message_bar', x.error, 5000);
             cat_name.val('');
             cat_id.val('new'); 
         }
     });
 }
 
-function update_category()
+function update_category_name()
 {
+    console.log('.');
     var challenge = get_value_from_id('challenge');
     var cat_id = get_value_from_id('cat_id');
     var cat_name = get_value_from_id('cat_name');
     var url = "ajax_editcategory.php";
+    console.log(cat_name, cat_id);
     if (cat_name == '' || cat_id == '') {
         return;
     }
@@ -2984,10 +3182,16 @@ function update_category()
         url: url,
         cache: false,
         data: data 
-    }).done( function() {
-        load_subscriptions();
-        hide_overlayed_content();
-        toggle_table('groupstable', 'user', 'admin');
+    }).done( function(html) {
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            load_subscriptions();
+            hide_overlayed_content();
+            toggle_table('groupstable', 'user', 'admin');
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -3010,8 +3214,15 @@ function delete_category()
         url: url,
         cache: false,
         data: data 
-    }).done( function() {
-        load_subscriptions();
+    }).done( function(html) {
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            hide_overlayed_content();
+            load_subscriptions();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -3035,12 +3246,10 @@ function show_calendar(month, year, clear_time)
         var hour = $('#hour');
         var minute = $('#minute');
         if (hour !== null) {
-            hour = hour.val();
-            _hour = data.hour = hour;
+            data.hour = hour.val();
         }
         if (minute !== null) {
-            minute = minute.val();
-            _minute = data.minute = minute;
+            data.minute = minute.val();
         }
     }
     $.ajax({
@@ -3049,32 +3258,32 @@ function show_calendar(month, year, clear_time)
         cache: false,
         data: data 
     }).done( function(html) {
-        show_overlayed_content_2(html, 'calendardiv');
-        $(function() {
-            _hour =$("#hour").val();
-            _minute = $("#minute").val();
-        $('#hours').slider(
-            {
-                min: 0,
-                max: 23,
-                value: _hour,
-                slide: function(event, ui) { 
-                    $("#hour").val(ui.value);
-                    $("#time1").val(ui.value + ':' + $("#minute").val());
-                }
-            }
-            );
-        $('#minutes').slider(
-            {
-                min: 0,
-                max: 59,
-                value: _minute,
-                slide: function(event, ui) { 
-                    $("#minute").val(ui.value);
-                    $("#time1").val($("#hour").val() + ':' + $("#minute").val());
-                }
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_2(x.contents, 'calendardiv');
+            $(function() {
+                $('#hours').slider( {
+                    min: 0,
+                    max: 23,
+                    value: x.hour,
+                    slide: function(event, ui) { 
+                        $("#hour").val(ui.value);
+                        $("#time1").val(ui.value + ':' + $("#minute").val());
+                    }
+                });
+                $('#minutes').slider( {
+                    min: 0,
+                    max: 59,
+                    value: x.minute,
+                    slide: function(event, ui) { 
+                        $("#minute").val(ui.value);
+                        $("#time1").val($("#hour").val() + ':' + ui.value);
+                    }
+                });
             });
-        });
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -3174,7 +3383,12 @@ function update_adult(type, id)
         cache: false,
         data: data 
     }).done( function(html) {
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -3329,14 +3543,19 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         cache: false,
         data: data
     }).done( function(html) {
-        $('#show_stats').html(html);
-        var x = document.getElementsByName('tabs');
-        for (var i = 0; i < x.length; i++) {
-            $('#' + x[i].value + '_bar').removeClass('tab_selected');
+        var y = $.parseJSON(html);
+        if (x.error == 0) {
+            $('#show_stats').html(y.contents);
+            var x = document.getElementsByName('tabs');
+            for (var i = 0; i < x.length; i++) {
+                $('#' + x[i].value + '_bar').removeClass('tab_selected');
+            }
+            $('#' +tab + '_bar').addClass('tab_selected');
+            $('#selected').val(type);
+            update_search_bar_height();
+        } else {
+            set_message('message_bar', x.error, 5000);
         }
-        $('#' +tab + '_bar').addClass('tab_selected');
-        $('#selected').val(type);
-        update_search_bar_height();
     });
 }
 
@@ -3455,7 +3674,7 @@ function update_search_names(name)
         cache: false,
         data: data 
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0 || x.count == 0) {
             $('#save_search_outer').addClass('hidden');
@@ -3483,7 +3702,7 @@ function show_savename()
         cache: false,
         data: data 
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'savenamediv');
         $('#savename_val').focus();
@@ -3520,7 +3739,7 @@ function delete_search()
             name: sname
         } 
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names('');
@@ -3573,7 +3792,7 @@ function save_browse_search()
         cache: false,
         data: data
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -3618,7 +3837,7 @@ function save_spot_search()
         cache: false,
         data: data
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -3655,7 +3874,7 @@ function update_browse_searches(name)
             cat: 0 
         } 
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         $('#save_category').val('');
         if (x.error == 0) {
@@ -3760,7 +3979,7 @@ function update_spot_searches(name)
 
 function get_selected_cat()
 {
-    for (var i=0; i<4; i++) {
+    for (var i = 0; i < 4; i++) {
         if ($('#checkbox_cat_' + i).val() == 1) {
             return i;
         }
@@ -4251,7 +4470,8 @@ function show_alert(msg)
         cache: false,
         data:{ msg : msg } 
     }).done( function(html) {
-        show_overlayed_content_1(html, 'alertdiv');
+        var x = $.parseJSON(html);
+        show_overlayed_content_1(x.contents, 'alertdiv');
         
         $('#okbutton').click( function() {
             hide_overlayed_content();
@@ -4287,7 +4507,8 @@ function show_confirm(msg, fn)
         cache: false,
         data:{ msg : msg, allow_cancel : 1 } 
     }).done( function(html) {
-        show_overlayed_content_1(html, 'alertdiv');
+        var x = $.parseJSON(html);
+        show_overlayed_content_1(x.contents, 'alertdiv');
         $('#cancelbutton').click (function() { hide_overlayed_content(); });
         $('#okbutton').click( function() {
             hide_overlayed_content();
@@ -4343,12 +4564,12 @@ function load_groups(options)
         }
     }
     var data = {
-        search:search,
-       cmd:cmd,
-       order:order,
-       order_dir:order_dir,
-       offset:page,
-       search_all:searchall 
+       search: search,
+       cmd: cmd,
+       order: order,
+       order_dir: order_dir,
+       offset: page,
+       search_all: searchall 
     };
     if (page_tab != '') {
         data.page_tab = page_tab;
@@ -4360,17 +4581,22 @@ function load_groups(options)
         cache: false,
         data: data
     }).done( function(html) {
-        show_content_div_2(html, 'groupsdiv');
-
-        var urddonline = get_value_from_id('urddonline',0);
-        $('#waitingdiv').addClass('hidden');
-        $('#groupsdiv').removeClass('hidden');
-        if (urddonline != 1) {
-            $('#ng_apply').addClass('hidden');
+        console.log(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'groupsdiv');
+            $('#waitingdiv').addClass('hidden');
+            $('#groupsdiv').removeClass('hidden');
+            if (x.urddonline != 1) {
+                $('#ng_apply').addClass('hidden');
+            } else {
+                $('#ng_apply').removeClass('hidden');
+            }
+            set_message('message_bar', x.message , 5000);
         } else {
-            $('#ng_apply').removeClass('hidden');
+            set_message('message_bar', x.error , 5000);
         }
-        update_search_bar_height();
+            update_search_bar_height();
     });
 }
 
@@ -4408,12 +4634,12 @@ function load_rss_feeds(options)
         }
     }
     var data = {
-        search:search,
-        cmd:cmd,
-        order:order,
-        order_dir:order_dir,
-        offset:page,
-        search_all:search_all
+        search: search,
+        cmd: cmd,
+        order: order,
+        order_dir: order_dir,
+        offset: page,
+        search_all: search_all
     };
     if (page_tab != '') {
         data.page_tab = page_tab;
@@ -4424,16 +4650,20 @@ function load_rss_feeds(options)
         cache: false,
         data: data
     }).done( function(html) {
-        show_content_div_2(html, 'rss_feeds_div');
-        var urddonline = get_value_from_id('urddonline',0);
-        $('#waitingdiv').addClass('hidden');
-        $('#rss_feeds_div').removeClass('hidden');
-        if (urddonline != 1) {
-            $('#rss_apply').addClass('hidden');
-            $('#rss_new').addClass('hidden');
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'rss_feeds_div');
+            $('#waitingdiv').addClass('hidden');
+            $('#rss_feeds_div').removeClass('hidden');
+            if (x.urddonline != 1) {
+                $('#rss_apply').addClass('hidden');
+                $('#rss_new').addClass('hidden');
+            } else {
+                $('#rss_apply').removeClass('hidden');
+                $('#rss_new').removeClass('hidden');
+            }
         } else {
-            $('#rss_apply').removeClass('hidden');
-            $('#rss_new').removeClass('hidden');
+            set_message('message_bar', x.error, 5000);
         }
         update_search_bar_height();
     });
@@ -4464,19 +4694,24 @@ function show_contents(file, idx)
         challenge: challenge 
     }
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup700x400');
-        var width = Math.floor($(window).width() * 0.9);
-        var height = Math.floor($(window).height() * 0.9);
-        $('#overlay_content').css({
-            width: width,
-            height: height,
-            marginTop: (-Math.floor(height / 2)),
-            marginLeft: (- Math.floor(width / 2)),
-            'top': '50%',
-            'left': '50%'
-        });
-        var title_height = $('#text_title').height() + 14;
-        $('#inner_content').css('height', height - title_height);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            show_overlayed_content_1(x.contents, 'popup700x400');
+            var width = Math.floor($(window).width() * 0.9);
+            var height = Math.floor($(window).height() * 0.9);
+            $('#overlay_content').css({
+                width: width,
+                height: height,
+                marginTop: (-Math.floor(height / 2)),
+                marginLeft: (- Math.floor(width / 2)),
+                'top': '50%',
+                'left': '50%'
+            });
+            var title_height = $('#text_title').height() + 14;
+            $('#inner_content').css('height', height - title_height);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -4501,66 +4736,58 @@ function show_image(file, idx)
             challenge: challenge 
         }
     }).done( function(html) {
-        if (preview != 0) { 
-            $('#textcontent').html(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            if (preview != 0) { 
+                $('#textcontent').html(x.contents);
+            } else {
+                show_overlayed_content_1(x.contents, 'popup700x400');
+                var width = $('#overlay_image').width() + 110;
+                var height = $('#overlay_image').height() + 100;
+                $('#overlay_content').css( {
+                    width: width,
+                    height: height,
+                    marginTop: (-Math.floor(height / 2)),
+                    marginLeft: (- Math.floor(width / 2)),
+                    'top': '50%',
+                    'left': '50%'
+                });
+            }
         } else {
-            show_overlayed_content_1(html, 'popup700x400');
-            var width = $('#overlay_image').width()+110;
-            var height = $('#overlay_image').height()+100;
-            $('#overlay_content').css( {
-                width: width,
-                height: height,
-                marginTop: (-Math.floor(height / 2)),
-                marginLeft: (- Math.floor(width / 2)),
-                'top': '50%',
-                'left': '50%'
-            });
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
 
-function config_export()
+
+function do_export(url)
 {
-    var url = 'ajax_admin_config.php';
     var params = "cmd=" + encodeURIComponent('export_settings');
 
     var elemIF = document.createElement("iframe");
     elemIF.src = url + '?' + params;
     elemIF.style.display = "none";
     document.body.appendChild(elemIF);
+}
+
+function config_export()
+{
+    do_export('ajax_admin_config.php');
 }
 
 function user_settings_export()
 {
-    var url = 'ajax_prefs.php';
-    var params = "cmd=" + encodeURIComponent('export_settings');
-
-    var elemIF = document.createElement("iframe");
-    elemIF.src = url + '?' + params;
-    elemIF.style.display = "none";
-    document.body.appendChild(elemIF);
+    do_export('ajax_prefs.php');
 }
 
 function rss_feeds_export()
 {
-    var url = 'ajax_rss_feeds.php';
-    var params = "cmd=" + encodeURIComponent('export');
-
-    var elemIF = document.createElement("iframe");
-    elemIF.src = url + '?' + params;
-    elemIF.style.display = "none";
-    document.body.appendChild(elemIF);
+    do_export('ajax_rss_feeds.php');
 }
 
 function group_export()
 {
-    var url = 'ajax_groups.php';
-    var params = "cmd=" + encodeURIComponent('export');
-
-    var elemIF = document.createElement("iframe");
-    elemIF.src = url + '?' + params;
-    elemIF.style.display = "none";
-    document.body.appendChild(elemIF);
+    do_export('ajax_groups.php');
 }
 
 function open_hidden_link(url)
@@ -4595,7 +4822,6 @@ function submit_enter2 (e, id)
         return true;
     }
 }
-
 
 function submit_enter(e, fn, vars)
 {
@@ -4651,7 +4877,7 @@ function show_subcat_selector()
         subcat.wrap('<div id="overlay_back3"/>');
         $('#overlay_back3').css('zIndex', 1000000);
         subcat.click(function(e) { e.stopPropagation(); });
-        $('#overlay_back3').click(function(e) { close_subcat_selector(); });
+        $('#overlay_back3').click(function() { close_subcat_selector(); });
         $('#overlay_back3').show();
         subcat.show();
         subcat.removeClass('hidden');
@@ -4752,10 +4978,11 @@ function add_whitelist(id, type)
             cache: false,
             data: data
         }).done( function(html) {
-            if (html != 'OK') {
-                set_message('message_bar', html, 5000);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                update_message_bar(x.message);
             } else {
-                set_message('message_bar', html, 5000);
+                set_message('message_bar', x.error, 5000);
             }
         });
     });
@@ -4778,10 +5005,11 @@ function add_poster_blacklist(id)
             cache: false,
             data: data
         }).done( function(html) {
-            if (html != 'OK') {
-            set_message('message_bar', html, 5000);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                update_message_bar(x.message);
             } else {
-            set_message('message_bar', html, 5000);
+                set_message('message_bar', x.error, 5000);
             }
         });
     });
@@ -4809,11 +5037,13 @@ function add_blacklist(id, type, global)
             cache: false,
             data: data
         }).done( function(html) {
-            if (html != 'OK') {
-                set_message('message_bar', html, 5000);
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                update_message_bar(x.message);
             } else {
-                set_message('message_bar', html, 5000);
+                set_message('message_bar', x.error, 5000);
             }
+
         });
     });
 }
@@ -4845,7 +5075,7 @@ function select_dir(dir_select, dl_dir)
 
 function toggle_show_password(id)
 {
-    var pass = $('#' +id);
+    var pass = $('#' + id);
     if (pass.attr('type') == "password") { 
         pass.prop("type", "text"); 
     } else { 
@@ -5008,7 +5238,6 @@ function delete_setting(name)
         }).done( function(html) {
             console.log(html);
             var x = $.parseJSON(html);
-
             if (x.error == 0) {
                 set_message('message_bar', x.message, 5000);
             } else {
@@ -5320,7 +5549,7 @@ function load_prefs()
             current_tab: current_tab
         }
     }).done( function(html) {
-            console.log(html);
+        console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
@@ -5497,13 +5726,12 @@ function submit_registration()
             submit_button: 1
         }
     }).done( function(html) {
-        if (html == "OK") {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
             $('#form').hide();
             $('#sent').show();
         } else {
-            if (html.substr(0, 7) == ':error:') {
-                set_message('message_bar', html.substr(7), 5000);
-            }
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -5523,13 +5751,13 @@ function submit_forgot_password()
             email: email
         }
     }).done( function(html) {
-        if (html == "OK") {
+        var x = $.parseJSON(html);
+        console.log(x.error);
+        if (x.error == 0) {
             $("#sent_table").show();
             $("#form_table").hide();
         } else {
-            if (html.substr(0, 7) == ':error:') {
-                set_message('message_bar', html.substr(7), 5000);
-            }
+            set_message('message_bar', x.error, 5000);
         }
     });
 }
@@ -5580,7 +5808,12 @@ function subscribe_rss(feedid)
         cache: false,
         data: data
     }).done( function(html) {
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -5616,7 +5849,12 @@ function subscribe_ng(groupid)
         cache: false,
         data: data
     }).done( function(html) {
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -5654,9 +5892,14 @@ function update_ng_value(type, option, group_id)
         cache: false,
         data: data
     }).done( function(html) {
-        update_message_bar(html);
-        });
-    }
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
+    });
+}
 
 function toggle_visibility(type, group_id)
 {
@@ -5685,7 +5928,12 @@ function toggle_visibility(type, group_id)
         cache: false,
         data: data
     }).done(function(html) {
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -5718,7 +5966,12 @@ function update_user_ng_value(type, option, group_id)
         cache: false,
         data: data
     }).done( function(html) {
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -5751,7 +6004,12 @@ function update_category(type, group_id)
         cache: false,
         data:  data
     }).done( function(html) {
-        update_message_bar(html);
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            set_message('message_bar', x.message, 5000);
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 }
 
@@ -5798,11 +6056,16 @@ function update_ng_time(type,  group_id)
             cache: false,
             data: data
         }).done( function(html) {
-            if ($('#period_'+ group_id + '>option:selected').val() == 0) {
-                $('#time1_' + group_id).val('');
-                $('#time2_' + group_id).val('');
+            var x = $.parseJSON(html);
+            if (x.error == 0) {
+                set_message('message_bar', x.message, 5000);
+                if ($('#period_'+ group_id + '>option:selected').val() == 0) {
+                    $('#time1_' + group_id).val('');
+                    $('#time2_' + group_id).val('');
+                }
+            } else {
+                set_message('message_bar', x.error, 5000);
             }
-            update_message_bar(html);
         });
     };
     if (timeout > 0) {

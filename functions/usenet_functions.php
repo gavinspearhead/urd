@@ -167,11 +167,11 @@ function create_usenet_servers(DatabaseConnection $db)
     add_usenet_server($db, 'XLNED', 'news.xlned.com', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XLusenet', 'ssl-news.eu.xlusenet.nl', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS usenet', 'reader.xsusenet.com', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
-    add_usenet_server($db, 'XS4all - Newszilla', 'newszilla.xs4all.nl', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
-    add_usenet_server($db, 'XS4all - Newszilla IPv6', 'newszilla6.xs4all.nl', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
+    add_usenet_server($db, 'XS4all - Newszilla', 'newszilla.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1);
+    add_usenet_server($db, 'XS4all - Newszilla IPv6', 'newszilla6.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XMS', 'news.xmsnet.nl', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
-    add_usenet_server($db, 'XSnews', 'reader.xsnews.nl', 119, 563, 10, 'ssl', 0, '', '', 0, 0, 0);
-    add_usenet_server($db, 'XSnews (IPv6)', 'reader.ipv6.xsnews.nl', 119, 563, 10, 'off', 0, '', '', 0, 0, 0);
+    add_usenet_server($db, 'XSnews', 'reader.xsnews.nl', 119, 563, 50, 'ssl', 0, '', '', 0, 0, 0);
+    add_usenet_server($db, 'XSnews (IPv6)', 'reader.ipv6.xsnews.nl', 119, 563, 50, 'off', 0, '', '', 0, 0, 0);
     add_usenet_server($db, 'Yabnews', 'news.yabnews.com', 119, 0, 4, 'off', 1, '', '', 0, 0, 0);
     add_usenet_server($db, 'Zeelandnet', 'news.zeelandnet.nl', 119, 0, 4, 'off', 1, '', '', 0, 0, 1);
     add_usenet_server($db, 'Ziggo', 'news.ziggo.nl', 119, 0, 4, 'off', 1, '', '', 0, 0, 1);

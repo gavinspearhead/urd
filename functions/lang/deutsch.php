@@ -1059,7 +1059,7 @@ $LN['config_group_msg']		    = 'The group for all downloaded files';
 $LN['config_maxfilesize_msg']	= 'The max filesize to view in viewfiles in kB, 0 for no limit';
 $LN['config_maxpreviewsize_msg']	= 'The max filesize to preview in kB, 0 for no limit';
 $LN['config_maxbuttons']	= 'Maximal zahl Suchm&ouml;gligkeiten';
-$LN['config_maxbuttons_msg']	= 'The maximum number of search buttons that are shown on the browse page';
+$LN['config_maxbuttons_msg']	= 'The maximum number of search options that are shown on the browse page';
 $LN['config_nntp_maxthreads_msg'] 	= 'The number of parallel connections that the URD daemon can use';
 $LN['config_maxfilesize']	= 'Max filesize to view in viewfiles';
 $LN['config_maxpreviewsize']    = 'Max filesize to preview';
@@ -1421,7 +1421,7 @@ $LN['manual_content'][10] = array ('Control','Here you can apply some basic acti
 $LN['manual_content'][11] = array ('Tasks','This provides an overview of all running or queued tasks');
 $LN['manual_content'][12] = array ('Jobs','URDD can schedule tasks to execute them on a given time or date, here is an overview of all scheduled tasks');
 $LN['manual_content'][13] = array ('Users','The users page is for user account management, to modify the rights, to add or delete or to deactivate a user');
-$LN['manual_content'][14] = array ('Buttons','These are the search buttons as placed on the browse page. The search URL should contain a $q, which will be replaced with the search string');
+$LN['manual_content'][14] = array ('Search options','These are the search options as placed on the browse page. The search URL should contain a $q, which will be replaced with the search string');
 $LN['manual_content'][15] = array ('Log','Here you can see the URD log file, search it and so on. Check this in case an error occurred.');
 
 $LN['manual_content'][16] = array ('Preferences', 'The Preferences tab can be used to modify most user settings.');

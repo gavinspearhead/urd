@@ -28,11 +28,6 @@ $pathajsp = realpath(dirname(__FILE__));
 require_once "$pathajsp/../functions/ajax_includes.php";
 
 // Display progress bar, if 100% complete then redirect to the dl link:
-
-$dlid = get_request('dlid', 0);
-$binary_id = get_request('binary_id', 0);
-$group_id = get_request('group_id', 0);
-
 class preview_data
 {
     public $finished = -1;
@@ -123,6 +118,13 @@ function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, 
     return $preview_data;
 }
 
+try {
+
+$dlid = get_request('dlid', 0);
+$binary_id = get_request('binary_id', 0);
+$group_id = get_request('group_id', 0);
+
+
 $preview_data = get_preview_data($db, $dlid, $binary_id, $group_id, $userid);
 
 $smarty->assign('do_reload',	$preview_data->do_reload);
@@ -138,4 +140,8 @@ $smarty->assign('file_utf8',	utf8_encode($preview_data->filename));
 $smarty->assign('progress',	    $preview_data->progress);
 $smarty->assign('nroffiles',	count($preview_data->files));
 
-$smarty->display('ajax_preview.tpl');
+$contents = $smarty->fetch('ajax_preview.tpl');
+ return_result(array('contents' => $contents, 'filetype'=>$preview_data->filetype, 'file'=> $preview_data ->path . $preview_data->filename ));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
+}

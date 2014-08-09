@@ -27,40 +27,44 @@ $__auth = 'silent';
 $pathadt = realpath(dirname(__FILE__));
 
 require_once "$pathadt/../functions/ajax_includes.php";
+try {
+    $localfile = '';
+    $dir = get_request('dir', '');
+    $filename = get_request('filename', '');
+    $setname = '';
+    if ($dir != '' && $filename != '') {
+        $localfile = $dir . $filename;
+        $setname = substr($filename, 0, strpos($filename, '.'));
+    }
 
-$localfile = '';
-$dir = get_request('dir', '');
-$filename = get_request('filename', '');
-$setname = '';
-if ($dir != '' && $filename != '') {
-    $localfile = $dir . $filename;
-    $setname = substr($filename, 0, strpos($filename, '.'));
-}
+    $download_delay = get_pref($db, 'download_delay', $userid, 0);
+    if (is_numeric($download_delay) && ($download_delay > 0)) {
+        $download_delay = "+$download_delay minutes";
+    } else {
+        $download_delay = '';
+    }
 
-$download_delay = get_pref($db, 'download_delay', $userid, 0);
-if (is_numeric($download_delay) && ($download_delay > 0)) {
-    $download_delay = "+$download_delay minutes";
-} else {
-    $download_delay = '';
-}
+    $directories = get_directories($db, $userid);
+    $add_setname = get_pref($db, 'add_setname', $userid) ? 1 : 0;
+    list($dl_dir) = get_user_dlpath($db, FALSE, 0, NULL, $userid, '', 'DOWNLOAD');
+    $base_dlpath = get_dlpath($db);
+    $base_dlpath = $base_dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
+    $dl_dir = substr($dl_dir, strlen($base_dlpath));
 
-$directories = get_directories($db, $userid);
-$add_setname = get_pref($db, 'add_setname', $userid) ? 1 : 0;
-list($dl_dir) = get_user_dlpath($db, FALSE, 0, NULL, $userid, '', 'DOWNLOAD');
-$base_dlpath = get_dlpath($db);
-$base_dlpath = $base_dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
-$dl_dir = substr($dl_dir, strlen($base_dlpath));
+    init_smarty('', 0);
 
-init_smarty('', 0);
-
-if (!$smarty->getTemplateVars('urdd_online')) {
-    throw new exception($LN['urdddisabled']);
-} else {
-    $smarty->assign('localfile', $localfile);
-    $smarty->assign('setname', $setname);
-    $smarty->assign('download_delay', $download_delay);
-    $smarty->assign('add_setname',  $add_setname);
-    $smarty->assign('dl_dir', $dl_dir);
-    $smarty->assign('directories', $directories);
-    $smarty->display('ajax_show_upload.tpl');
+    if (!$smarty->getTemplateVars('urdd_online')) {
+        throw new exception($LN['urdddisabled']);
+    } else {
+        $smarty->assign('localfile', $localfile);
+        $smarty->assign('setname', $setname);
+        $smarty->assign('download_delay', $download_delay);
+        $smarty->assign('add_setname',  $add_setname);
+        $smarty->assign('dl_dir', $dl_dir);
+        $smarty->assign('directories', $directories);
+        $contents = $smarty->fetch('ajax_show_upload.tpl');
+    }
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }

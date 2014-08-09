@@ -36,6 +36,7 @@ require_once "$path_idx_std/../functions/defines.php";
 require_once "$path_idx_std/../functions/urdversion.php";
 require_once "$path_idx_std/../functions/functions.php";
 require_once "$path_idx_std/../functions/file_functions.php";
+require_once "$path_idx_std/../functions/error_codes.php";
 
 if (isset($config['urdweb_logfile'])) {
     $config['log_file'] = $config['urdweb_logfile'];
