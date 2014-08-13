@@ -217,7 +217,7 @@ class URD_NNTP
     }
     private function get_content($msg_id, $fn)
     {
-        $msg_id = '<' . $msg_id . '>';
+        $msg_id = '<' . $msg_id . '>'; // XXX cleanup where the < and > are added. Preferred as late as possible
         try {
             return $this->nntp->$fn($msg_id, FALSE);
         } catch (exception $e) {
@@ -241,7 +241,10 @@ class URD_NNTP
             throw new exception("Article not found ($err_code) $msg_id", ERR_ARTICLE_NOT_FOUND);
         }
     }
-
+    public function get_header_multi(array $msg_id)
+    {
+        return $this->nntp->get_header_multi($msg_id);
+    }
     public function get_header($msg_id)
     {
         return $this->get_content($msg_id, 'get_header');

@@ -355,6 +355,12 @@ class NNTP_Client extends Base_NNTP_Client
 
         return $data;
     }
+    public function get_header_multi(array $articles)
+    {
+        $data = $this->cmd_head_multi($articles);
+
+        return $data;
+    }
 
     /**
      * Fetch article body.

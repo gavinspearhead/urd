@@ -792,7 +792,6 @@ class urd_spots
         $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
         $expire_time = time() - ($expire * 24 * 3600);
            
-$time1 = $time2 = $time3 = $time4 = $time5= $time6= $time7 = $time8 = $time9 = $timea = 0;
         update_queue_status($db, $item->get_dbid(), NULL, 0, 0, 'Getting spots');
         while (TRUE) {
             $sql = '"id", "message_id" FROM spot_messages';
@@ -801,21 +800,25 @@ $time1 = $time2 = $time3 = $time4 = $time5= $time6= $time7 = $time8 = $time9 = $
                 break;
             }
             $ids = array();
+            $msg_ids = array();
             foreach ($res as $row) {
-$time1 = microtime(true);
-                $msg_id = $row['message_id'];
+                $msg_ids[] = $row['message_id'];
                 $ids[] = $row['id'];
+            }
+            try {
+                $headers = $nzb->get_header_multi($msg_ids);
+            } catch (exception $e) {
+                write_log($e->getMessage(), LOG_WARNING);
+            }
+            foreach ($headers as $msg_id => $header) {
                 try {
-$time2 += microtime(true) - $time1;
-                    $header = $nzb->get_header($msg_id);
-$time3 += microtime(true) - $time1;
+                    if ($header == '') { 
+                        continue; 
+                    }
                     $spot_data = self::parse_spot_header($header, $msg_id, $spots_blacklist);
-$time4 += microtime(true) - $time1;
                     if (($spot_data != FALSE) && ($spot_data['date'] > $expire_time)) {
                         $spot_data['body'] = $nzb->get_article($msg_id);
-$time5 += microtime(true) - $time1;
                         self::parse_spot_data($spot_data);
-$time6 += microtime(true) - $time1;
                         if ($max_cat_count > 0 && $spot_data['subcat_count'] > $max_cat_count) {
                             echo_debug(DEBUG_SERVER, 'Rejected - too many subcats ' . $spot_data['subcat_count'] . " > $max_cat_count");
                             continue;
@@ -829,22 +832,17 @@ $time6 += microtime(true) - $time1;
                             echo_debug(DEBUG_SERVER, 'Rejected - spot too large');
                             continue;
                         }
-$time7 += microtime(true) - $time1;
                         self::verify_spot($spot_data);
                         if (!$spot_data['verified']) {
                             write_log('Signature on spot incorrect', LOG_NOTICE);
                         }
-$time8 += microtime(true) - $time1;
                         $spotid = self::add_spot($db, $spot_data);
-$time9 += microtime(true) - $time1;
                         self::parse_spots_for_extset_data($db, $spot_data, $spotid);
-$timea += microtime(true) - $time1;
                     }
                 } catch (exception $e) {
                     write_log($e->getMessage(), LOG_WARNING);
                 }
             }
-var_dump($time1, $time2, $time3, $time4, $time5, $time6, $time7, $time8, $time9, $timea);
             if (count($ids) > 0) {
                 $db->delete_query('spot_messages', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
             }

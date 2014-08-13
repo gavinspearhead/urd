@@ -142,6 +142,19 @@ class Base_NNTP_Client
             return FALSE;
         }
     }
+    private function _send_command_fast($cmd)
+    {
+        // NNTP/RFC977 only allows command up to 512 (-2) chars.
+        if (isset($cmd[510])) {
+            throw new exception('Failed writing to socket! (Command too long - max 510 chars)');
+        }
+        // Send the command
+        if ($this->_is_connected()) {
+            $this->_socket->write_line($cmd);
+        } else {
+            throw new exception_nntp_connect('Not connected', ERR_NNTP_CONNECT_FAILED);
+        }
+    }
 
     /**
      * Send command
@@ -189,6 +202,23 @@ class Base_NNTP_Client
 
         return $this->_current_status_response[0];
     }
+
+    private function _get_status_response_line()
+    {
+        // Retrieve a line (terminated by "\r\n") from the server.
+        $response = $this->_socket->read_line();
+
+        // Trim the start of the response in case of misplased whitespace (should not be needed!!!)
+        $response = ltrim($response);
+
+        $this->_current_status_response = array(
+                (int) substr($response, 0, 3),
+                (string) substr($response, 4)
+                );
+
+        return $response;
+    }
+
 
     protected function _get_text_response()
     {
@@ -778,6 +808,51 @@ class Base_NNTP_Client
             default:
                 return $this->_handle_unexpected_response($response);
         }
+    }
+    protected function cmd_head_multi(array $articles)
+    {
+        $command = 'HEAD';
+       
+        $resps = array();
+        foreach ($articles as $article) {
+            // tell the newsserver we want the header of an article
+            $this->_send_command_fast($command . " <$article>");
+            $resps [ $article ] = '';
+        }
+        $nr_of_resps = count($resps);
+        for ($i = 0; $i < $nr_of_resps; $i++) {
+            try { 
+                $line = $this->_get_status_response_line();
+                $values = explode(' ', $line);
+                $response = $values[0];
+                $message_id = substr($values[2], 1, -1); // cut of the < and >
+                switch ($response) {
+                    case NNTP_PROTOCOL_RESPONSECODE_HEAD_FOLLOWS:     // 221, RFC977: 'n <a> article retrieved - head follows'
+
+                        $resp  = $this->_get_text_response();
+                        $resps [ $message_id ] = $resp;
+                        break;
+                    case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected'
+                        throw new exception("No newsgroup has been selected ({$this->_current_status_response()})", $response);
+                        break;
+                    case NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED: // 420, RFC977: 'no current article has been selected'
+                        throw new exception("No current article has been selected ({$this->_current_status_response()})", $response);
+                        break;
+                    case NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: // 423, RFC977: 'no such article number in this group'
+                        throw new exception("No such article number in this group ({$this->_current_status_response()})", $response);
+                        break;
+                    case NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID: // 430, RFC977: 'no such article found'
+                        throw new exception("No such article found ({$this->_current_status_response()})", $response);
+                        break;
+                    default:
+                }       
+                // return $this->_handle_unexpected_response($response);
+            } catch (exception $e) {
+                write_log($e->getMessage(), LOG_NOTICE);
+                continue;
+            }
+        }
+        return $resps;
     }
 
     /**
