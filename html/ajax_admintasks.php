@@ -123,8 +123,6 @@ try {
         $sort_dir = 'desc';
     }
 
-
-
     $perpage = get_maxperpage($db, $userid);
     $sql = "* FROM queueinfo WHERE 1=1 $qstatus $qtime ORDER BY \"$sort\" $sort_dir";
     $res = $db->select_query($sql, $input_arr);
@@ -169,7 +167,6 @@ try {
             $cnt++;
         }
     }
-
 
     list($pages, $lastpage, $currentpage) = build_task_skipper($perpage, $offset, $cnt);
 

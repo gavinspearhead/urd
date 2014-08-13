@@ -50,7 +50,7 @@ function smarty_function_urd_checkbox($params, &$smarty)
     $rv .= '>';
     $rv .= "<input type=\"hidden\" name=\"$name\" id=\"$id\" value=\"$value\"/>\n";
     if ($data != '' && $before) {
-        $rv .= "<div class=\"floatleft\">$data</div>";
+        $rv .= "<div class=\"floatleft buttonlike\">$data</div>";
     }
     if ($value == 0) {
         $cb_class = 'checkbox_off';
@@ -63,7 +63,7 @@ function smarty_function_urd_checkbox($params, &$smarty)
     $rv .= "<div class=\"floatleft $cb_class iconsizeplus $buttonlike\" id=\"{$id}_img\">";
     $rv .= "</div>\n";
     if ($data != '' && !$before) {
-        $rv .= "<div class=\"floatleft\">&nbsp;" . $data . '&nbsp;</div>';
+        $rv .= "<div class=\"floatleft buttonlike\">&nbsp;" . $data . '&nbsp;</div>';
     }
     $rv .= '</div>';
 

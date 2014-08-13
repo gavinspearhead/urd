@@ -190,7 +190,6 @@ function unsubscribe_feed(DatabaseConnection $db, urdd_client $uc, $feedid)
 }
 
 try {
-
     $offset = get_request('offset', 0);
     if (!is_numeric($offset)) {
         $offset = 0;

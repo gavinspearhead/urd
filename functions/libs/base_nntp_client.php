@@ -156,7 +156,7 @@ class Base_NNTP_Client
     private function _send_command($cmd)
     {
         // NNTP/RFC977 only allows command up to 512 (-2) chars.
-        if (!strlen($cmd) > 510) {
+        if (isset($cmd[510])) {
             throw new exception('Failed writing to socket! (Command too long - max 510 chars)');
         }
         // Send the command
@@ -439,7 +439,7 @@ class Base_NNTP_Client
      */
     protected function connect($host, $encryption = NULL, $port = NULL, $timeout = socket::DEFAULT_SOCKET_TIMEOUT)
     {
-        assert(is_numeric($timeout));
+        assert(is_numeric($timeout) || is_null($timeout));
         if ($this->_is_connected()) {
             throw new exception('Already connected, disconnect first!');
         }

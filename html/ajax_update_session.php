@@ -28,29 +28,36 @@ $pathaus = realpath(dirname(__FILE__));
 
 require_once "$pathaus/../functions/ajax_includes.php";
 
-$type = get_request('type', NULL);
-$var = get_request('var', NULL);
+try {
 
-// Apparently there's a session variable named $type, which is an array and an element of which is $var, and the value of which is toggled in this function.....
+    $type = get_request('type', NULL);
+    $var = get_request('var', NULL);
 
-if ($type == 'post') {
-    if (isset($_SESSION['post_hide_status'][$var])) {
-        $_SESSION['post_hide_status'][$var]++;  // we simply swap a bit 1-> 0 and 0 -> 1 :)
-        $_SESSION['post_hide_status'][$var] %= 2;
+    // Apparently there's a session variable named $type, which is an array and an element of which is $var, and the value of which is toggled in this function.....
+
+    if ($type == 'post') {
+        if (isset($_SESSION['post_hide_status'][$var])) {
+            $_SESSION['post_hide_status'][$var]++;  // we simply swap a bit 1-> 0 and 0 -> 1 :)
+            $_SESSION['post_hide_status'][$var] %= 2;
+        } else {
+            $_SESSION['post_hide_status'][$var] = 0;
+        }
+    } elseif ($type == 'down') {
+        if (isset($_SESSION['transfer_hide_status'][$var])) {
+            $_SESSION['transfer_hide_status'][$var]++;  // we simply swap a bit 1-> 0 and 0 -> 1 :)
+            $_SESSION['transfer_hide_status'][$var] %= 2;
+        } else {
+            $_SESSION['transfer_hide_status'][$var] = 0;
+        }
+    } elseif (in_array($type, array('transfers'))) {
+        $_SESSION[$type] = $var;
+    } elseif ($type == 'control') {
+        $_SESSION['control_status'] = (++$_SESSION['control_status'] % 2);
     } else {
-        $_SESSION['post_hide_status'][$var] = 0;
+        throw new exception($LN['error_novalidaction']);
     }
-} elseif ($type == 'down') {
-    if (isset($_SESSION['transfer_hide_status'][$var])) {
-        $_SESSION['transfer_hide_status'][$var]++;  // we simply swap a bit 1-> 0 and 0 -> 1 :)
-        $_SESSION['transfer_hide_status'][$var] %= 2;
-    } else {
-        $_SESSION['transfer_hide_status'][$var] = 0;
-    }
-} elseif (in_array($type, array('transfers'))) {
-    $_SESSION[$type] = $var;
-} elseif ($type == 'control') {
-    $_SESSION['control_status'] = (++$_SESSION['control_status'] % 2);
+
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-die_html('OK');

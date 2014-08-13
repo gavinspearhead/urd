@@ -119,29 +119,27 @@ function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, 
 }
 
 try {
+    $dlid = get_request('dlid', 0);
+    $binary_id = get_request('binary_id', 0);
+    $group_id = get_request('group_id', 0);
 
-$dlid = get_request('dlid', 0);
-$binary_id = get_request('binary_id', 0);
-$group_id = get_request('group_id', 0);
+    $preview_data = get_preview_data($db, $dlid, $binary_id, $group_id, $userid);
 
+    $smarty->assign('do_reload',	$preview_data->do_reload);
+    $smarty->assign('finished',	    $preview_data->finished);
+    $smarty->assign('path',		    $preview_data->path);
+    $smarty->assign('filetype',		$preview_data->filetype);
+    $smarty->assign('isnzb', 	    $preview_data->isnzb);
+    $smarty->assign('file',		    $preview_data->filename);
+    $smarty->assign('title_str',	$preview_data->title_str);
+    $smarty->assign('dlsize',	    $preview_data->size);
+    $smarty->assign('done_size',    $preview_data->done_size);
+    $smarty->assign('file_utf8',	utf8_encode($preview_data->filename));
+    $smarty->assign('progress',	    $preview_data->progress);
+    $smarty->assign('nroffiles',	count($preview_data->files));
 
-$preview_data = get_preview_data($db, $dlid, $binary_id, $group_id, $userid);
-
-$smarty->assign('do_reload',	$preview_data->do_reload);
-$smarty->assign('finished',	    $preview_data->finished);
-$smarty->assign('path',		    $preview_data->path);
-$smarty->assign('filetype',		$preview_data->filetype);
-$smarty->assign('isnzb', 	    $preview_data->isnzb);
-$smarty->assign('file',		    $preview_data->filename);
-$smarty->assign('title_str',	$preview_data->title_str);
-$smarty->assign('dlsize',	    $preview_data->size);
-$smarty->assign('done_size',    $preview_data->done_size);
-$smarty->assign('file_utf8',	utf8_encode($preview_data->filename));
-$smarty->assign('progress',	    $preview_data->progress);
-$smarty->assign('nroffiles',	count($preview_data->files));
-
-$contents = $smarty->fetch('ajax_preview.tpl');
- return_result(array('contents' => $contents, 'filetype'=>$preview_data->filetype, 'file'=> $preview_data ->path . $preview_data->filename ));
+    $contents = $smarty->fetch('ajax_preview.tpl');
+    return_result(array('contents' => $contents, 'filetype'=>$preview_data->filetype, 'file'=> $preview_data ->path . $preview_data->filename ));
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

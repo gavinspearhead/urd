@@ -62,7 +62,6 @@ try {
     $filename = substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1);
     $size = filesize($file);
 
-    init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
     $ext = strtolower(ltrim(strrchr($filename, '.'), '.'));
     $text = file($file);
     $output = '';
@@ -82,6 +81,8 @@ try {
 
     list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
     $base_url = get_config($db, 'url');
+
+    init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
     $smarty->assign('preview', $preview);
     $smarty->assign('output', $output);
     $smarty->assign('directory', dirname($file));

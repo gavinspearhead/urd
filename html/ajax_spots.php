@@ -504,10 +504,6 @@ try {
     $allsets = $spots_viewer->get_spot_data($perpage, $offset);
     $rssurl = $spots_viewer->get_rss_url($perpage);
 
-    if ($only_rows && count($allsets) == 0) {
-        throw new exception('No more rows');
-    }
-
     init_smarty('', 0);
     $smarty->assign('rssurl',		$rssurl);
     $smarty->assign('isadmin',		$isadmin);
@@ -531,8 +527,7 @@ try {
 
     $content = $smarty->fetch('ajax_spots.tpl');
 
-    die(json_encode(array(
-        'error' => 0,
+    return_result(array(
         'content' => $content,
         'minsetsize' => $minsetsize,
         'maxsetsize' => $maxsetsize,
@@ -544,8 +539,8 @@ try {
         'maxrating' => $maxrating,
         'only_rows' => $only_rows,
         'REQUEST' => $_REQUEST
-    )));
+    ));
 
 } catch (exception $e) {
-    die(json_encode(array('error'=> $e->getMessage()))); 
+    return_result(array('error' => $e->getMessage()));
 }

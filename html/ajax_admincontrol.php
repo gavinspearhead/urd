@@ -128,6 +128,7 @@ function parse_load_info($xml)
 
     return $data;
 }
+
 try {
     $prefs = load_config($db);
     $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
@@ -153,7 +154,7 @@ try {
         unset($load_info[0], $servers_info[0]);
     } else {
         $diskspace = $disk_perc = $nodisk_perc = $isconnected = 0;
-        $load_info = array (1=>'', 2=>'', 3=>'');
+        $load_info = array (1 => '', 2 => '', 3 => '');
         $queue_info = $jobs_info = $threads_info = $servers_info = $servers_totals = array();
         $uptime_info = '';
     }
@@ -177,7 +178,7 @@ try {
     $smarty->assign('nodisk_perc',		$nodisk_perc);
 
     $contents = $smarty->fetch('ajax_admincontrol.tpl');
-    return_result(array('contents'=>$contents));
+    return_result(array('contents' => $contents));
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

@@ -31,7 +31,6 @@ require_once "$pathadt/../functions/ajax_includes.php";
 verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid);
 
 try {
-
     $dlpath = get_dlpath($db);
     $postid = get_request('postid', NULL);
 

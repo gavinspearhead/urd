@@ -28,6 +28,7 @@
 $pathgf = realpath(dirname(__FILE__));
 
 require_once "$pathgf/../functions/ajax_includes.php";
+
 try {
     $idx = get_request('idx', '');
     $preview = get_request('preview', 0) ? TRUE : FALSE;
@@ -49,18 +50,18 @@ try {
             }
         } else {
             if (substr($file, 0, strlen($done_path)) != $done_path && substr($file, 0, strlen($preview_path)) != $preview_path) {
-                throw new exception($ln['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
+                throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
             }
         }
     } catch (exception $e) {
         if ($e->getCode() == ERR_PATH_NOT_FOUND) {
             throw new exception($LN['error_filenotfound'] . ' ' . $file);
         } else {
-            throw new exception ($LN['error_nodlpath']);
+            throw new exception($LN['error_nodlpath']);
         }
     }
     if (!file_exists($file) || !is_readable($file)) {
-        throw new exception ($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
+        throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
     }
 
     stored_files::set_cache_dir(get_config($db, 'dlpath') . DIRECTORY_SEPARATOR . FILELIST_CACHE_PATH);
@@ -74,7 +75,6 @@ try {
     }
     $width = $i_size[0];
     $height = $i_size[1];
-    init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
     if ($width > $def_width && $def_width > 0) {
         $f = $width / $def_width;
         $height /= $f;
@@ -98,6 +98,8 @@ try {
     $last = stored_files::find_last($idx, 'image');
     list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
     $base_url = get_config($db, 'url');
+
+    init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
     $smarty->assign('nextidx', $next);
     $smarty->assign('lastidx', $last);
     $smarty->assign('previousidx', $previous);

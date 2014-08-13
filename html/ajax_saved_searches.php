@@ -56,6 +56,7 @@ function get_options()
 
     return $options;
 }
+
 try {
     $cmd = get_request('cmd', '');
     $name = get_request('name', NULL);
@@ -109,7 +110,7 @@ try {
             } catch (exception $e) {
                 throw new exception($LN['error_nameexists']);
             }
-            die(json_encode(array('error'=>0, 'message'=> $LN['saved'] . ' "' . htmlentities($name) . '"' )));
+            return_result(array('message'=> $LN['saved'] . ' "' . htmlentities($name) . '"' ));
             break;
         case 'get':
             // gets the subcat values for a given name, category combi
@@ -128,7 +129,7 @@ try {
             $options = $option['options'];
             $options['subcats'] = $option['subcats'];
             $options['category'] = $option['category'];
-            die(json_encode(array('error'=>0, 'options'=> $options, 'count'=> count($option))));
+            return_result(array('options'=> $options, 'count'=> count($option)));
             break;
         case 'names':
             $saved_searches->load($db);
@@ -139,7 +140,7 @@ try {
                 $names[$k] = htmlentities(utf8_decode($v));
             }
             if (count($names) == 0) {
-                die(json_encode(array('error'=>0, 'count'=>0)));
+                return_result(array('count'=>0));
             }
             init_smarty('', 0);
             natcasesort($names);
@@ -152,7 +153,7 @@ try {
             $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
 
             $contents = $smarty->fetch('ajax_spot_search.tpl');
-            die(json_encode(array('error'=>0, 'contents' => $contents, 'count'=>count($names)))); 
+            return_result(array('contents' => $contents, 'count'=>count($names))); 
             break;
         case 'delete':
             // removes a certain name, category combination
@@ -166,7 +167,7 @@ try {
             } catch (exception $e) {
                 throw new exception($LN['error_searchnamenotfound'] );
             }
-            die(json_encode(array('error'=>0, 'message' => $LN['deleted'] . ' "' . htmlentities($name) . '"' )));
+            return_result(array('message' => $LN['deleted'] . ' "' . htmlentities($name) . '"' ));
             break;
         case 'show':
             init_smarty('', 0);
@@ -188,9 +189,9 @@ try {
             $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
             $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
             $contents = $smarty->fetch('ajax_savename.tpl');
-            die(json_encode(array('error'=>0, 'contents' => $contents))); 
+            return_result(array('contents' => $content));
     }
-    die(json_encode(array('error' => 0)));
+    return_result();
 } catch (exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

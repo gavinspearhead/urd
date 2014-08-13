@@ -33,8 +33,7 @@ try {
     init_smarty('', 0);
 
     $content = $smarty->fetch('ajax_load_browse_sidebar.tpl');
-    die(json_encode(array('error' => 0, 'contents' => $content)));
-
+    return_result(array('contents' => $content));
 } catch (exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

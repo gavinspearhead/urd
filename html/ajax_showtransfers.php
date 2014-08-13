@@ -188,23 +188,24 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
     return $infoarray_upload;
 }
 
-
 function get_download_status(DatabaseConnection $db, $userid, $isadmin)
 {
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_DOWNLOAD | urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_USENZB, FALSE, '', $userid, TRUE);
     if ($isadmin) {
         // Admins can see any download
-        $sql_dl = '* FROM downloadinfo WHERE "preview" = \''. download_types::NORMAL .'\' ORDER BY "status" ASC, "position" ASC, "ID" DESC';
+        $sql_dl = '* FROM downloadinfo WHERE "preview"=? ORDER BY "status" ASC, "position" ASC, "ID" DESC';
+        $input_arr = array(download_types::NORMAL);
     } else {
-        $sql_dl = "* FROM downloadinfo WHERE \"userid\" = '$userid' AND \"preview\" ='" . download_types::NORMAL . "' ORDER BY \"status\" ASC, \"position\" ASC, \"ID\" DESC";
+        $sql_dl = '* FROM downloadinfo WHERE "userid"=? AND "preview"=? ORDER BY "status" ASC, "position" ASC, "ID" DESC';
+        $input_arr = array($userid, download_types::NORMAL);
     }
     // Get download info:
 
     $infoarray_download = array();
 
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_DOWNLOAD)) {
-        $res_dl = $db->select_query($sql_dl);
+        $res_dl = $db->select_query($sql_dl, $input_arr);
         if ($res_dl === FALSE) {
             $res_dl = array();
         }
@@ -226,9 +227,8 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             }
 
             // Get more information for this download (when it's in progress:)
-            $sql = "* FROM queueinfo WHERE \"description\" = '" . get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . " $dlid' OR "
-                . " (\"description\" = '" . get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid' AND \"status\" NOT IN ( '" . QUEUE_FINISHED . '\',\'' . QUEUE_REMOVED . "'))";
-            $res3 = $db->select_query($sql);
+            $sql = '* FROM queueinfo WHERE "description"=? OR ("description"=? AND "status" NOT IN (?,?))';
+            $res3 = $db->select_query($sql, array(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . " $dlid", get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid", QUEUE_FINISHED, QUEUE_REMOVED));
             if ($res3 === FALSE || $db->num_rows() == 0) {
                 continue;
             }

@@ -2120,6 +2120,9 @@ function return_result(array $vars=array())
     if (!isset($vars['error'])) { 
         $vars['error'] = 0;
     }
+    if (isset($var['contents'])) { // should we do this??? might mangle some utf8 stuff
+        $vars['contents'] = preg_replace('/[[:cntrl:]]+/', '', $vars['contents']);
+    }
     die(json_encode($vars));
 }
 

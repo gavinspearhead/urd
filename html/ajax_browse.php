@@ -33,7 +33,7 @@ require_once "$pathidx/../functions/ajax_includes.php";
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
-verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid, TRUE);
+verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid);
 
 class group_viewer
 {
@@ -537,8 +537,7 @@ try {
 
     $content = $smarty->fetch('ajax_browse.tpl');
 
-    die(json_encode(array(
-        'error' => 0,
+    return_result(array(
         'content' => $content,
         'minsetsize' => $minsetsize,
         'maxsetsize' => $maxsetsize,
@@ -549,8 +548,8 @@ try {
         'maxrating' => $maxrating,
         'mincomplete' => $mincomplete,
         'maxcomplete' => $maxcomplete
-    )));
+    ));
 
 } catch (exception $e) {
-    die(json_encode(array('error'=> $e->getMessage()))); 
+    return_result(array('error' => $e->getMessage()));
 }

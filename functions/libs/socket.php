@@ -32,7 +32,7 @@ if (!defined('ORIGINAL_PAGE')) {
  */
 class socket
 {
-// timeout in seconds that a socket will timeout
+    // timeout in seconds that a socket will timeout
     const DEFAULT_SOCKET_TIMEOUT = 60;
     const NET_SOCKET_READ  = 1;
     const NET_SOCKET_WRITE = 2;
@@ -130,6 +130,7 @@ class socket
             $context = stream_context_create($options);
             $fp = stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
         } else {
+            $context = stream_context_create();
             if ($this->timeout !== NULL) {
                 $fp = @stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
             } else {
@@ -139,181 +140,187 @@ class socket
         if ($fp === FALSE) {
             throw new exception_nntp_connect($errstr . ' (' . $errno . ')');
         }
+/*stream_set_chunk_size($fp, 1);
+stream_set_write_buffer($fp, 0);
+stream_set_read_buffer($fp, 0);*/
         $this->fp = $fp;
-
+        if ($timeout !== NULL) {
+            $this->set_timeout($timeout);
+        }
         return $this->set_blocking($this->blocking);
-    }
+        }
 
-    /**
-     * Disconnects from the peer, closes the socket.
-     *
-     * @return mixed true on success or an error object otherwise
-     */
-    public function disconnect()
-    {
+        /**
+         * Disconnects from the peer, closes the socket.
+         *
+         * @return mixed true on success or an error object otherwise
+         */
+        public function disconnect()
+        {
         $this->check_connected();
         $this->force_disconnect();
 
         return TRUE;
-    }
-    public function force_disconnect()
-    {
-        if (is_resource($this->fp)) {
-            @fclose($this->fp);
         }
-        $this->fp = NULL;
-    }
-
-    /**
-     * Find out if the socket is in blocking mode.
-     * @return boolean The current blocking mode.
-     */
-    public function is_blocking()
-    {
-        return $this->blocking;
-    }
-
-    /**
-     * Sets whether the socket connection should be blocking or
-     * not. A read call to a non-blocki	ng socket will return immediately
-     * if there is no data available, whereas it will block until there
-     * is data for blocking sockets.
-     *
-     * @param  boolean $mode True for blocking sockets, false for nonblocking.
-     * @return mixed   true on success or an error object otherwise
-     */
-    public function set_blocking($mode)
-    {
-        assert(is_bool($mode));
-        $this->check_connected();
-
-        $this->blocking = $mode;
-        socket_set_blocking($this->fp, $this->blocking);
-
-        return true;
-    }
-
-    /**
-     * Sets the timeout value on socket descriptor,
-     * expressed in the sum of seconds and microseconds
-     *
-     * @param  integer $seconds      Seconds.
-     * @param  integer $microseconds Microseconds.
-     * @return mixed   true on success or an error object otherwise
-     */
-    public function set_timeout($seconds, $microseconds=0)
-    {
-        assert(is_numeric($seconds) && is_numeric($microseconds));
-        $this->check_connected();
-
-        return stream_set_timeout($this->fp, $seconds, $microseconds);
-    }
-    public function has_timedout()
-    {
-        if ($this->timeout === NULL) {
-            return FALSE;
-        }
-        $info = stream_get_meta_data($this->fp);
-
-        return $info['timed_out'];
-    }
-
-    public function check_readable()
-    {
-        if (!$this->is_readable()) {
-            echo_debug('Read timeout occurred', DEBUG_MAIN);
-            $this->force_disconnect();
-            throw new exception_nntp_connect('Read timeout occurred');
-        }
-    }
-
-    public function check_writeable()
-    {
-        if (!$this->is_writeable()) {
-            echo_debug('Write timeout occurred', DEBUG_MAIN);
-            $this->force_disconnect();
-            throw new exception_nntp_connect('Write timeout occurred');
-        }
-    }
-    protected function is_readable()
-    {
-        // returns TRUE if there is data reabable, a read will not block
-         // returns FALSE if a timeout has occurred
-
-        if (!is_resource($this->fp)) {
-            return FALSE;
+        public function force_disconnect()
+        {
+            if (is_resource($this->fp)) {
+                @fclose($this->fp);
+            }
+            $this->fp = NULL;
         }
 
-        if ($this->timeout === NULL) {  // if no timeout set, we assume we can read
-            return TRUE;
+        /*
+         * Find out if the socket is in blocking mode.
+         * @return boolean The current blocking mode.
+         */
+        public function is_blocking()
+        {
+            return $this->blocking;
         }
 
-        $null = NULL;
-        $r = array ($this->fp);
-        // do a quick check first, typically this succeeds and we do less expensive time() calls
-        $rv = stream_select($r, $null, $null, 0, 1);
-        if (count($r) > 0) {
-            return TRUE;
+        /**
+         * Sets whether the socket connection should be blocking or
+         * not. A read call to a non-blocki	ng socket will return immediately
+         * if there is no data available, whereas it will block until there
+         * is data for blocking sockets.
+         *
+         * @param  boolean $mode True for blocking sockets, false for nonblocking.
+         * @return mixed   true on success or an error object otherwise
+         */
+        public function set_blocking($mode)
+        {
+            assert(is_bool($mode));
+            $this->check_connected();
+
+            $this->blocking = $mode;
+            socket_set_blocking($this->fp, $this->blocking);
+
+            return true;
         }
-        // a slow check later where we handle timeout stuff.
-        $timeout = $this->timeout;
-        $start_time = time();
-        while (1) {
-            $null = NULL;
-            $r = array($this->fp);
-            $rv = stream_select($r, $null, $null, $timeout);
-            if ($rv === FALSE) {
-                $timeout = max(0, $timeout - (time() - $start_time));
-                continue;
-            } else {
-                return (count($r) > 0) ? TRUE : FALSE;
+
+        /**
+         * Sets the timeout value on socket descriptor,
+         * expressed in the sum of seconds and microseconds
+         *
+         * @param  integer $seconds      Seconds.
+         * @param  integer $microseconds Microseconds.
+         * @return mixed   true on success or an error object otherwise
+         */
+        public function set_timeout($seconds, $microseconds=0)
+        {
+            assert(is_numeric($seconds) && is_numeric($microseconds));
+            $this->check_connected();
+
+            return stream_set_timeout($this->fp, $seconds, $microseconds);
+        }
+        public function has_timedout()
+        {
+            if ($this->timeout === NULL) {
+                return FALSE;
+            }
+            $info = stream_get_meta_data($this->fp);
+
+            return $info['timed_out'];
+        }
+
+        public function check_readable()
+        {
+            if (!$this->is_readable()) {
+                echo_debug('Read timeout occurred', DEBUG_MAIN);
+                var_dump(stream_get_meta_data($this->fp));
+                $this->force_disconnect();
+                throw new exception_nntp_connect('Read timeout occurred');
             }
         }
 
-        return FALSE;
-    }
-
-
-    protected function is_writeable()
-    {
-        // returns TRUE if there is data reabable, a read will not block
-         // returns FALSE if a timeout has occurred
-        if (!is_resource($this->fp)) {
-            return FALSE;
-        }
-        if ($this->timeout === NULL) {  // if no timeout set, we assume we can read
-            return TRUE;
-        }
-        $null = NULL;
-        $w = array ($this->fp);
-        $rv = stream_select($null, $w, $null, 0, 1); // do a quick check first
-        if (count($w) > 0) {
-            return TRUE;
-        }
-        $timeout = $this->timeout;
-        $start_time = time();
-        while (1) {
-            $null = NULL;
-            $w = array($this->fp);
-            $rv = stream_select($null, $w, $null, $timeout);
-            if ($rv === FALSE) {
-                $timeout = max(0, $timeout - (time() - $start_time));
-                continue;
-            } else {
-                return (count($w) > 0) ? TRUE : FALSE;
+        public function check_writeable()
+        {
+            if (!$this->is_writeable()) {
+                echo_debug('Write timeout occurred', DEBUG_MAIN);
+                $this->force_disconnect();
+                throw new exception_nntp_connect('Write timeout occurred');
             }
         }
-    }
+        protected function is_readable()
+        {
+            // returns TRUE if there is data reabable, a read will not block
+            // returns FALSE if a timeout has occurred
 
-    /**
-     * Read a specified amount of data. This is guaranteed to return,
-     * and has the added benefit of getting everything in one fread()
-     * chunk; if you know the size of the data you're getting
-     * beforehand, this is definitely the way to go.
-     *
-     * @param integer $size The number of bytes to read from the socket.
-     *
-    }
+            if (!is_resource($this->fp)) {
+                return FALSE;
+            }
+
+            if ($this->timeout === NULL) {  // if no timeout set, we assume we can read
+                return TRUE;
+            }
+
+            $null = NULL;
+            $r = array ($this->fp);
+            // do a quick check first, typically this succeeds and we do less expensive time() calls
+            $rv = stream_select($r, $null, $null, 0, 1);
+            if (count($r) > 0) {
+                return TRUE;
+            }
+            // a slow check later where we handle timeout stuff.
+            $timeout = $this->timeout;
+            $start_time = time();
+            while (1) {
+                $null = NULL;
+                $r = array($this->fp);
+                $rv = stream_select($r, $null, $null, $timeout);
+                if ($rv === FALSE) {
+                    $timeout = max(0, $timeout - (time() - $start_time));
+                    continue;
+                } else {
+                    if (count($r) == 0) var_dump($r, $rv);
+                    return (count($r) > 0) ? TRUE : FALSE;
+                }
+            }
+            echo "foo\n";
+            return FALSE;
+        }
+
+        protected function is_writeable()
+        {
+            // returns TRUE if there is data reabable, a read will not block
+            // returns FALSE if a timeout has occurred
+            if (!is_resource($this->fp)) {
+                return FALSE;
+            }
+            if ($this->timeout === NULL) {  // if no timeout set, we assume we can read
+                return TRUE;
+            }
+            $null = NULL;
+            $w = array ($this->fp);
+            $rv = stream_select($null, $w, $null, 0, 1); // do a quick check first
+            if (count($w) > 0) {
+                return TRUE;
+            }
+            $timeout = $this->timeout;
+            $start_time = time();
+            while (1) {
+                $null = NULL;
+                $w = array($this->fp);
+                $rv = stream_select($null, $w, $null, $timeout);
+                if ($rv === FALSE) {
+                    $timeout = max(0, $timeout - (time() - $start_time));
+                    continue;
+                } else {
+                    return (count($w) > 0) ? TRUE : FALSE;
+                }
+            }
+        }
+
+        /**
+         * Read a specified amount of data. This is guaranteed to return,
+         * and has the added benefit of getting everything in one fread()
+         * chunk; if you know the size of the data you're getting
+         * beforehand, this is definitely the way to go.
+         *
+         * @param integer $size The number of bytes to read from the socket.
+         *
+         }
 
     /**
      * Sets the file buffering size on the stream.
@@ -436,8 +443,9 @@ class socket
     {
         $this->check_connected();
 
-        if ($this->timeout !== NULL)
-        $this->set_timeout($this->timeout);
+        if ($this->timeout !== NULL) {
+            $this->set_timeout($this->timeout);
+        }
         $this->check_writeable();
         $rv = @fwrite($this->fp, $data . "\r\n");
         if ($this->has_timedout()) {

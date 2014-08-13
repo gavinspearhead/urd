@@ -160,7 +160,7 @@ case 'show_calendar':
     $smarty->assign('next_month',		next_month($month, $year));
     $smarty->assign('previous_month',	previous_month($month, $year));
     $contents = $smarty->fetch('ajax_calendar.tpl');
-   return_result(array('contents' => $contents, 'hour' => $hour, 'minute'=>$minute));
+    return_result(array('contents' => $contents, 'hour' => $hour, 'minute'=>$minute));
     break;
 default:
     throw new exception($LN['error_invalidaction']);

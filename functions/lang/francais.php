@@ -748,6 +748,7 @@ $LN['error_invalidemail']       = 'Adresse email invalide';
 $LN['error_invalidpassword']    = 'Mot de passe invalide';
 $LN['error_userexists']         = 'L&#39;utilisateur existe d&eacute;j&agrave;';
 $LN['error_acctexpired']        = 'Compte expir&eacute;';
+$LN['error_invalid_upload_type']= 'Unknown upload type';
 $LN['error_notleftblank']       = 'Ne doit pas rester vide';
 $LN['error_invalidvalue']       = 'Valeur invalide';
 $LN['error_urlstart']           = 'L&#39;adresse doit commencer par http:// et terminer par /';

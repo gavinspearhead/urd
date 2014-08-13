@@ -162,7 +162,6 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
     return $smarty->fetch('ajax_user_blacklist.tpl');
 }
 
-
 try {
     $cmd = get_request('cmd', FALSE);
     $which = get_request('which', 'spots_blacklist');
@@ -185,7 +184,7 @@ try {
             } else {
                 throw new exception($LN['error_filenotfound'] );
             }
-            return_result(array());
+            return_result();
             break;
         case 'import_settings_whitelist':
             if (isset ($_FILES['filename']['tmp_name'])) {
@@ -200,7 +199,7 @@ try {
             } else {
                 throw new exception($LN['error_filenotfound'] );
             }
-            return_result(array());
+            return_result();
             break;
         case 'load_blacklist':
             $contents = show_spots_list($db, $userid, $which);

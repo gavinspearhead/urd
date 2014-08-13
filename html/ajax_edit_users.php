@@ -107,7 +107,7 @@ try {
                 }
 
             } else {
-                throw new exception('File not found');
+                throw new exception($LN['error_filenotfound']);
             }
             break;
         case 'edit':
@@ -196,7 +196,7 @@ try {
                 write_log('Could not send email message', LOG_WARNING);
                 throw new exception($LN['error_pwresetnomail'] . ': ' . $e->getmessage());
             }
-            return_result(array('message' =>$LN['forgot_sent'] ));
+            return_result(array('message' =>$LN['forgot_sent']));
             break;
         case 'delete':
             challenge::verify_challenge($_POST['challenge']);
@@ -239,7 +239,7 @@ try {
                 case 'active':
                     try {
                         $db->update_query_2('users', array('active'=>$value), '"ID"=?', array($id));
-                        $sql = '"fullname", "name", "email", "active" FROM users WHERE "ID" = ?';
+                        $sql = '"fullname", "name", "email", "active" FROM users WHERE "ID"=?';
                         $res = $db->select_query($sql, 1, array($id));
                         if ($res === FALSE) {
                             throw new exception($LN['error_nosuchuser']);
@@ -391,7 +391,7 @@ try {
             throw new exception ($LN['error_invalidaction']);
             break;
     }
-    return_result(array());
+    return_result();
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

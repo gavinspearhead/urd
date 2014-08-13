@@ -181,7 +181,7 @@ try {
         default:
             throw new exception($LN['error_novalidaction']);
     }
-    return_result(array());
+    return_result();
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

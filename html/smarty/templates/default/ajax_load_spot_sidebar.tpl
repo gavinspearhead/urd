@@ -78,7 +78,7 @@
 
 {foreach $subcat_list as $k1 => $item}
     <div style="height:22px" class="{cycle values="even, highlight2"}">
-    <span onclick="$('#cat_items_{$k1}').toggleClass('hidden');"> &nbsp;{$item.name} </span>
+    <span onclick="$('#cat_items_{$k1}').toggleClass('hidden');" class="buttonlike"> &nbsp;{$item.name}</span>
         <div class="floatleft">
             {urd_checkbox name="cat_{$k1}" id="checkbox_cat_{$k1}" value="" post_js="uncheck_all('{$k1}');load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"}
         </div>
@@ -87,11 +87,11 @@
     {foreach $item.subcats as $k2 => $si} 
         <div class="cats" style="margin-left:10px">
             <div onclick="javascript:fold_adv_search('subcat_button_{$k1}_{$k2}', 'subcat_items_{$k1}_{$k2}');" class="subcat_head">
-                <div id="subcat_button_{$k1}_{$k2}" class="inline iconsize dynimgplus buttonlike"></div>&nbsp;{$si.name}
+                <div id="subcat_button_{$k1}_{$k2}" class="inline iconsize dynimgplus buttonlike"></div><span class="buttonlike">&nbsp;{$si.name}</span>
             </div>
 
         <div id="subcat_items_{$k1}_{$k2}" class="hidden ">
-            {foreach $si.subcats as $k3 => $item2 }
+            {foreach $si.subcats as $k3 => $item2}
                 <div class="subcats" style="margin-left:10px">
                     {if $item2 != '??'}
                         {capture name=current assign=current}{$subcat_{$k1}_{$k2}_{$k3}|default:''}{/capture}

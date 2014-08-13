@@ -137,8 +137,8 @@ try {
 
     $contents = $smarty->fetch('ajax_admin_log.tpl');
 
-    die(json_encode(array('error' => 0, 'contents'=> $contents)));
+    return_result(array('contents' => $contents));
 
 } catch ( exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

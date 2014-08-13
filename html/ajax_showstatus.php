@@ -29,14 +29,13 @@ $pathajss = realpath(dirname(__FILE__));
 require_once "$pathajss/../functions/ajax_includes.php";
 
 try {
-
     $root_prefs = load_config($db);
 
     $startup_perc = $root_prefs['urdd_startup'];
     $type = get_request('type', 'normal');
 
     if (!in_array($type, array('quick', 'disk', 'activity', 'icon'))) {
-        throw new exception('Missing type');
+        throw new exception($LN['error_unknowntype']);
     }
 
     // First: Basic stats.
@@ -56,7 +55,6 @@ try {
             $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
         }
         $smarty->assign('counter',		$counter);
-
     } elseif ($type == 'disk') {
         if ($isconnected) {
             $diskspace = $uc->diskfree('h');
@@ -68,12 +66,11 @@ try {
             $smarty->assign('disk_perc',		$disk_perc);
             $smarty->assign('nodisk_perc',		$nodisk_perc);
         }
-
     } elseif ($type == 'activity') {
         $tasks = array();
         if ($isconnected) {
             // Second: Current jobs.
-            $sql = '"description", max("progress") AS "progress", min("ETA") as "ETA", min("command_id") AS "command_id", count("ID") AS "counter" FROM queueinfo WHERE "status"=? GROUP BY "description"';
+            $sql = '"description", max("progress") AS "progress", min("ETA") AS "ETA", min("command_id") AS "command_id", count("ID") AS "counter" FROM queueinfo WHERE "status"=? GROUP BY "description"';
             $res = $db->select_query($sql, array(QUEUE_RUNNING));
             if ($res === FALSE) {
                 $res = array();
@@ -110,7 +107,7 @@ try {
             }
             $cnt = count($tasks);
             $input_arr = array();
-            $sql = '* FROM downloadinfo WHERE "preview" = 2 AND hidden = 0';
+            $sql = '* FROM downloadinfo WHERE "preview" = 2 AND "hidden" = 0';
             if (!$isadmin) {
                 $input_arr[] = $userid;
                 $sql .= ' AND "userid"=? ';

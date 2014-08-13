@@ -31,7 +31,7 @@ try {
     $pbin_id = get_post('preview_bin_id');
     $pgroup_id = get_post('preview_group_id');
     $dlid = start_preview($db, $pbin_id, $pgroup_id, $userid);
-    die(json_encode(array('error' => 0, 'dlid' => $dlid)));
+    return_result('dlid' => $dlid));
 } catch (exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

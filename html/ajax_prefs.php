@@ -736,7 +736,7 @@ try {
             throw new exception($LN['error_invalidaction'] . ' ' . htmlentities($cmd));
             break;
     }
-    die(json_encode(array('error' => 0, 'message'=>$message, 'contents'=>$contents)));
+    return_result(array('message' => $message, 'contents' => $contents));
 } catch (exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

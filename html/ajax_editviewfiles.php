@@ -333,17 +333,6 @@ class file_list
 }
 
 
-function die_smarty($msg, $filename='')
-    {
-        global $smarty, $prefs;
-        $smarty->assign('message', $msg);
-        $smarty->assign('maxstrlen',		((int) $prefs['maxsetname'])/3);
-        $smarty->assign('filename',		    $filename);
-        $smarty->assign('new_file',		    0);
-        $smarty->display('ajax_editfile.tpl');
-        die;
-    }
-
 try { 
     $title = $LN['urdname'] . ' - ' . $LN['viewfiles_title'];
     $icons = new file_icons();
@@ -411,16 +400,6 @@ try {
 
     $new_file = FALSE;
     switch (strtolower($cmd)) {
-/*        case 'get_file_name':
-            $idx = get_request($idx);
-
-            return stored_files::get_file($idx);
-            break; */
-/*        case 'check_file_idx':
-            $idx = get_request($idx);
-
-            return stored_files::index_exists($idx)? 'OK' : 'NO';
-            break;*/
         case 'new_file':
             $new_file = TRUE;
         case 'edit_file':
@@ -705,7 +684,7 @@ try {
             throw new exception($LN['error_invalidaction'] . " $cmd");
             break;
     }
-    return_result(array());
+    return_result();
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

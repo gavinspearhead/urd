@@ -46,20 +46,20 @@ require_once "$pathfp/../functions/functions.php";
 require_once "$pathfp/../functions/config_functions.php";
 
 try {
-    $db = connect_db(FALSE);  // initialise the database
-} catch (exception $e) {
-    $msg = $e->getMessage();
-    throw new exception("Connection to database failed. $msg\n");
-}
+    try {
+        $db = connect_db(FALSE);  // initialise the database
+    } catch (exception $e) {
+        $msg = $e->getMessage();
+        throw new exception("Connection to database failed. $msg\n");
+    }
 
-require_once "$pathfp/../functions/user_functions.php";
-require_once "$pathfp/../functions/web_functions.php";
-require_once "$pathfp/../functions/exception.php";
-require_once "$pathfp/../functions/mail_functions.php";
-require_once "$pathfp/../html/fatal_error.php";
-require_once "$pathfp/../functions/defines.php";
+    require_once "$pathfp/../functions/user_functions.php";
+    require_once "$pathfp/../functions/web_functions.php";
+    require_once "$pathfp/../functions/exception.php";
+    require_once "$pathfp/../functions/mail_functions.php";
+    require_once "$pathfp/../html/fatal_error.php";
+    require_once "$pathfp/../functions/defines.php";
 
-try {
     $status = 'show';
     if (isset($_POST['username'])&& $_POST['username'] != '' && isset($_POST['email']) && $_POST['email'] != '' && verify_email($_POST['email'])) {
         $username = get_post('username');
@@ -80,7 +80,7 @@ try {
         throw new exception($sql);
     } else {
         $err_msg = '';
-        if (!isset($_POST['username']) ||$_POST['username'] == '' ) {
+        if (!isset($_POST['username']) ||$_POST['username'] == '') {
             $err_msg .= 'Invalid username; ';
         }
         if (!isset($_POST['email']) || $_POST['email'] == '' || !verify_email($_POST['email'])) {

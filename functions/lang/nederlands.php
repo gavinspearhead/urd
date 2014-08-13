@@ -733,6 +733,7 @@ $LN['error_invalidemail']       = 'Ongeldig e-mail-adres';
 $LN['error_invalidpassword']    = 'Ongeldig wachtwoord';
 $LN['error_userexists']         = 'Gebruiker bestaat al';
 $LN['error_acctexpired']        = 'Gebruikersaccount is verlopen';
+$LN['error_invalid_upload_type']= 'Ongeldig upload type';
 $LN['error_notleftblank']       = 'Mag niet leeggelaten worden';
 $LN['error_invalidvalue']       = 'Ongeldige waarde';
 $LN['error_urlstart']           = 'De link moet beginnen met http:// en eindigen met een /';

@@ -139,7 +139,6 @@ function update_post_db(DatabaseConnection $db, $userid, $postid, &$timestamp)
 }
 
 try {
-
     $rprefs = load_config($db);
     $postid = get_request('postid', '');
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);

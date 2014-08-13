@@ -115,7 +115,6 @@ function task_action(action, task)
             cache: false,
             data: data
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 update_tasks();
@@ -141,7 +140,6 @@ function job_action(action, job)
                 challenge: challenge 
             }
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 update_jobs();
@@ -166,7 +164,6 @@ function control_action(action)
                 challenge: challenge 
             }
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                update_message_bar(x.message);
@@ -201,7 +198,6 @@ function ng_action(action, id)
                 challenge: challenge 
             }
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                update_message_bar(x.message);
@@ -716,7 +712,6 @@ function show_users(order, direction)
         data: data,
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'usersdiv');
@@ -793,7 +788,6 @@ function show_blacklist(options)
             $('#last_line').val(offset + parseInt(per_page));
         }
     }
-   console.log(data, orderval, order, orderdirval); 
     $.ajax({
         type: 'post',
         url: url,
@@ -857,7 +851,6 @@ function show_files(options)
         data: data,
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -987,7 +980,6 @@ function show_post_message(type, spotid)
         data: data,
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -1011,7 +1003,6 @@ function show_uploadnzb(dir, name)
         data: data,
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup525x300');
@@ -1033,7 +1024,6 @@ function show_edit_post(postid)
         },
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -1051,7 +1041,6 @@ function show_post()
         url: url,
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -1086,7 +1075,6 @@ function load_jobs(order, direction)
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'jobsdiv');
@@ -1134,7 +1122,6 @@ function load_tasks(order, direction, clear_offset)
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'tasksdiv');
@@ -1204,9 +1191,7 @@ function load_disk_status()
         cache: false,
         data: { type: 'disk' }
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
-        console.log(x);
         if (x.error == 0) {
             if (!x.connected) {
                 $('#disk_li').addClass('hidden');
@@ -1342,7 +1327,6 @@ function mark_read(setid, cmd, type)
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var content = $.parseJSON(html);
         if (content.error == 0) {
             var thetr = $('#base_row_' + setid);
@@ -1387,7 +1371,11 @@ function post_edit(cmd, postid)
             challenge: challenge 
         }
     }).done( function (html) { 
-        update_message_reload_transfers(html); 
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        }
+        load_transfers();
     });
 }
 
@@ -1405,7 +1393,6 @@ function transfer_edit(cmd, dlid)
             challenge: challenge 
         }
     }).done( function (html) { 
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -1733,7 +1720,6 @@ function buttons_action(action, uid)
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             if (action == 'edit') {
@@ -1901,15 +1887,20 @@ function show_popup_remote(referrer, command)
         cache: false,
         data: data
     }).done( function(html) {
-        show_overlayed_content_1(html, 'popup525x300');
-        upload_handler(url, function(xmlHttp2) {
-            if (xmlHttp2.responseText == 'OK') {
-                hide_overlayed_content();
-                reload_page(referrer);
-            } else {
-                update_message_bar(xmlHttp2.responseText);
-            }
-        });
+        var x = $.parseJSON(html);
+        if (x.error != 0) {
+            set_message('message_bar', x.error, 5000);
+        } else {
+            show_overlayed_content_1(html, 'popup525x300');
+            upload_handler(url, function(xmlHttp2) {
+                if (xmlHttp2.responseText == 'OK') {
+                    hide_overlayed_content();
+                    reload_page(referrer);
+                } else {
+                    update_message_bar(xmlHttp2.responseText);
+                }
+            });
+        }
     });
 }
 
@@ -1931,7 +1922,6 @@ function show_rename_transfer(dlid)
             dlid: dlid 
         }
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -1953,7 +1943,6 @@ function edit_group(id)
             id: id
         }
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -1977,7 +1966,6 @@ function edit_rss(id)
             id: id 
         }
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -1999,7 +1987,6 @@ function edit_usenet_server(id, only_auth)
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -2040,7 +2027,6 @@ function update_group()
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -2086,7 +2072,6 @@ function update_rss()
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
@@ -2524,6 +2509,7 @@ function show_quickmenu(type, subject, srctype, e)
     // Fill menu
     var url = "ajax_showquickmenu.php";
     
+    $('#quickmenu').html("");
     $.ajax({
         type: 'post',
         url: url,
@@ -2536,12 +2522,16 @@ function show_quickmenu(type, subject, srctype, e)
             subject : subject 
         } 
     }).done(function(html) {
-        $('#quickmenu').html(html);
-        update_quick_menu_images();
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            $('#quickmenu').html(x.contents);
+            update_quick_menu_images();
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
     });
 
     // Loading.
-    $('#quickmenu').html("");
 
     // Make sure it's displayed around the cursor:
     var posx = 0;
@@ -2833,15 +2823,21 @@ function fold_transfer(id, type)
             'var' : id, 
             type : type 
         } 
-    }); 
-    $('#' + id + type).toggleClass('dynimgplus');
-    $('#' + id + type).toggleClass('dynimgminus');
+    }).done( function(html) {
+        var x = $.parseJSON(html);
+        if (x.error == 0) {
+            $('#' + id + type).toggleClass('dynimgplus');
+            $('#' + id + type).toggleClass('dynimgminus');
 
-    if (type == 'post') {
-        $('#data_post_' + id).toggleClass('hidden');
-    } else {
-        $('#data_down_' + id).toggleClass('hidden');
-    }
+            if (type == 'post') {
+                $('#data_post_' + id).toggleClass('hidden');
+            } else {
+                $('#data_down_' + id).toggleClass('hidden');
+            }
+        } else {
+            set_message('message_bar', x.error, 5000);
+        }
+    });
 }
 
 function toggle_group_of_sets(startset, stopset, type)
@@ -3016,7 +3012,6 @@ function show_auth()
 
 function edit_file(fileid)
 {
-    console.log('foo');
     var cmd, name;
     var challenge = get_value_from_id('challenge');
     var dir = get_value_from_id('dir', '');
@@ -3047,7 +3042,6 @@ function edit_file(fileid)
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -3071,7 +3065,6 @@ function save_file()
         return false;
     }
     if (name == '') {
-        console.log('aoeuao');
         set_message('message_bar', filename_err, 5000);
         return false;
     }
@@ -3119,7 +3112,6 @@ function edit_categories()
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents,'popup525x300');
@@ -3147,7 +3139,6 @@ function get_category_name()
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             cat_name.val(x.name);
@@ -3162,12 +3153,10 @@ function get_category_name()
 
 function update_category_name()
 {
-    console.log('.');
     var challenge = get_value_from_id('challenge');
     var cat_id = get_value_from_id('cat_id');
     var cat_name = get_value_from_id('cat_name');
     var url = "ajax_editcategory.php";
-    console.log(cat_name, cat_id);
     if (cat_name == '' || cat_id == '') {
         return;
     }
@@ -3183,7 +3172,6 @@ function update_category_name()
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             load_subscriptions();
@@ -3215,7 +3203,6 @@ function delete_category()
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -3544,7 +3531,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         data: data
     }).done( function(html) {
         var y = $.parseJSON(html);
-        if (x.error == 0) {
+        if (y.error == 0) {
             $('#show_stats').html(y.contents);
             var x = document.getElementsByName('tabs');
             for (var i = 0; i < x.length; i++) {
@@ -3674,7 +3661,6 @@ function update_search_names(name)
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0 || x.count == 0) {
             $('#save_search_outer').addClass('hidden');
@@ -3702,7 +3688,6 @@ function show_savename()
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'savenamediv');
         $('#savename_val').focus();
@@ -3739,7 +3724,6 @@ function delete_search()
             name: sname
         } 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names('');
@@ -3792,7 +3776,6 @@ function save_browse_search()
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -3837,7 +3820,6 @@ function save_spot_search()
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -3874,7 +3856,6 @@ function update_browse_searches(name)
             cat: 0 
         } 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         $('#save_category').val('');
         if (x.error == 0) {
@@ -3935,7 +3916,6 @@ function update_spot_searches(name)
             cmd : 'get' 
         } 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         setvalbyid('save_category', '');
         update_search_names(name);
@@ -4086,14 +4066,12 @@ function load_spots(options)
     data.flag = flag;
     data.order = order;
     hide_overlayed_content();
-    console.log(data);
     $.ajax({
         type: 'post',
         url: url,
         cache: false,
         data: data 
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        
@@ -4581,7 +4559,6 @@ function load_groups(options)
         cache: false,
         data: data
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'groupsdiv');
@@ -5236,7 +5213,6 @@ function delete_setting(name)
         challenge : challenge,
         option: name }
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 set_message('message_bar', x.message, 5000);
@@ -5315,7 +5291,6 @@ function update_setting(id, type, optionals)
             cache: false,
             data: data
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 $('#stop_mark_' + id).hide();
@@ -5508,7 +5483,6 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
                 challenge: challenge
         }
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 set_message('message_bar', x.message, 5000);
@@ -5549,7 +5523,6 @@ function load_prefs()
             current_tab: current_tab
         }
     }).done( function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
@@ -5576,7 +5549,6 @@ function reset_prefs(msg)
                 challenge: challenge,
             }
         }).done( function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 load_prefs();
@@ -5752,7 +5724,6 @@ function submit_forgot_password()
         }
     }).done( function(html) {
         var x = $.parseJSON(html);
-        console.log(x.error);
         if (x.error == 0) {
             $("#sent_table").show();
             $("#form_table").hide();

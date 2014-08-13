@@ -91,6 +91,7 @@ class URD_NNTP
                     write_log('SSL module not loaded', LOG_ERR);
                     throw new exception('SSL module not loaded', ERR_NNTP_CONNECT_FAILED);
                 }
+                $timeout=NULL;
                 break;
         }
         $this->auth = FALSE;
@@ -247,16 +248,7 @@ class URD_NNTP
     }
     public function get_article($msg_id)
     {
-        try {
-            return $this->get_content($msg_id, 'get_body');
-        } catch (exception $e) {
-            if ($e->getCode() == ERR_ARTICLE_NOT_FOUND) {
-                echo_debug('trying again', DEBUG_MAIN);
-                // try again to get by some newszilla errors
-                return $this->get_content($msg_id, 'get_body');
-            }
-            throw $e;
-        }
+        return $this->get_content($msg_id, 'get_body');
     }
     protected function estimate_headers($first, $last, $expire)
     {

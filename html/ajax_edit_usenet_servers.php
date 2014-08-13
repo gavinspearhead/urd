@@ -102,7 +102,6 @@ try {
     $id = get_request('id');
 
     switch (strtolower($cmd)) {
-
         case 'import_settings':
             if (isset ($_FILES['filename']['tmp_name'])) {
                 challenge::verify_challenge($_POST['challenge']);

@@ -55,16 +55,16 @@ require_once "$pathreg/../functions/config_functions.php";
 config_cache::clear(user_status::SUPER_USERID); // needed to read tthe right values
 require_once "$pathreg/../functions/user_functions.php";
 
-$prefs = load_config($db);
-require_once "$pathreg/../functions/web_functions.php";
-require_once "$pathreg/../functions/exception.php";
-require_once "$pathreg/../functions/mail_functions.php";
-require_once "$pathreg/../html/fatal_error.php";
-require_once "$pathreg/../functions/urdversion.php";
-require_once "$pathreg/../functions/defines.php";
-require_once "$pathreg/../functions/smarty.php";
-
 try {
+    $prefs = load_config($db);
+    require_once "$pathreg/../functions/web_functions.php";
+    require_once "$pathreg/../functions/exception.php";
+    require_once "$pathreg/../functions/mail_functions.php";
+    require_once "$pathreg/../html/fatal_error.php";
+    require_once "$pathreg/../functions/urdversion.php";
+    require_once "$pathreg/../functions/defines.php";
+    require_once "$pathreg/../functions/smarty.php";
+
     $captcha = extension_loaded ('gd') ? 1 : 0;
     // initialise some stuff
     if (!isset($prefs['register']) || $prefs['register'] == 0) {

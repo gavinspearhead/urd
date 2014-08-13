@@ -736,6 +736,7 @@ $LN['error_invalidemail']       = 'Felaktig email-adress';
 $LN['error_invalidpassword']    = 'Felaktigt l&ouml;senord';
 $LN['error_userexists']         = 'Anv&auml;ndaren existerar redan';
 $LN['error_acctexpired']        = 'Kontot har g&aring;tt ut';
+$LN['error_invalid_upload_type']= 'Unknown upload type';
 $LN['error_notleftblank']       = 'F&aring;r inte l&auml;mnas blankt';
 $LN['error_invalidvalue']       = 'Felaktigt v&auml;rde';
 $LN['error_urlstart']           = 'URLen m&aring;ste b&ouml;rja med http:// och sluta med /';

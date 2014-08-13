@@ -27,75 +27,77 @@ $pathaet = realpath(dirname(__FILE__));
 
 require_once "$pathaet/../functions/ajax_includes.php";
 
-$cmd = get_request('cmd');
-$postid = get_request('postid');
+try {
+    $cmd = get_request('cmd');
+    $postid = get_request('postid');
 
-verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid, TRUE);
+    verify_access($db, urd_modules::URD_CLASS_POST, FALSE, 'P', $userid, TRUE);
 
-if (!is_numeric($postid)) {
-    throw new exception('Invalid post ID');
-}
+    if (!is_numeric($postid)) {
+        throw new exception($LN['error_invalidid']);
+    }
 
-$prefs = load_config($db);
-$uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
+    $prefs = load_config($db);
+    $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 
-switch (strtolower($cmd)) {
-case 'start' :
-    challenge::verify_challenge($_POST['challenge']);
-    // In case it's paused, continue it:
-    try {
-        $uc->continue_cmd(get_command(urdd_protocol::COMMAND_POST) . " $postid");
-        $uc->continue_cmd(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
-        $uc->continue_cmd(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
-    } catch (exception $e) {
-        throw new exception($LN['error_urddconnect']);
+    switch (strtolower($cmd)) {
+        case 'start' :
+            challenge::verify_challenge($_POST['challenge']);
+            // In case it's paused, continue it:
+            try {
+                $uc->continue_cmd(get_command(urdd_protocol::COMMAND_POST) . " $postid");
+                $uc->continue_cmd(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
+                $uc->continue_cmd(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
+            } catch (exception $e) {
+                throw new exception($LN['error_urddconnect']);
+            }
+            break;
+        case 'pause' :
+            challenge::verify_challenge($_POST['challenge']);
+            try {
+                $uc->pause(get_command(urdd_protocol::COMMAND_POST) . " $postid");
+                $uc->pause(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
+                $uc->pause(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
+            } catch (exception $e) {
+                throw new exception($LN['error_urddconnect']);
+            }
+            break;
+        case 'cancel' :
+            challenge::verify_challenge($_POST['challenge']);
+            try {
+                $uc->cancel(get_command(urdd_protocol::COMMAND_POST) . " $postid");
+                $uc->cancel(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
+                $uc->cancel(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
+            } catch (exception $e) {
+                throw new exception($LN['error_urddconnect']);
+            }
+            break;
+        case 'delete' :
+            challenge::verify_challenge($_POST['challenge']);
+            try {
+                $uc->cancel(get_command(urdd_protocol::COMMAND_POST) . " $postid");
+                $uc->cancel(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
+                $uc->cancel(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
+            } catch (exception $e) {
+                throw new exception($LN['error_urddconnect']);
+            }
+            if ($isadmin) {
+                // Admins can delete any download
+                $db->delete_query('postinfo', '"id"=?', array($postid));
+                $db->delete_query('post_files', '"postid"=?', array($postid));
+            } else {
+                $sql = '* FROM postinfo WHERE "userid"=? AND "id"=?';
+                $res = $db->select_query($sql, array($userid, $postid));
+                if (isset($res[0]['id']) && $res[0]['id'] == $postid) {
+                    $db->delete_query('postinfo', '"id"=?', array($postid));
+                    $db->delete_query('post_files', '"postid"=?', array($postid));
+                }
+            }
+            break;
+        default:
+            throw new exception($LN['error_invalidaction']);
     }
-    break;
-case 'pause' :
-    challenge::verify_challenge($_POST['challenge']);
-    try {
-        $uc->pause(get_command(urdd_protocol::COMMAND_POST) . " $postid");
-        $uc->pause(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
-        $uc->pause(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
-    } catch (exception $e) {
-        throw new exception($LN['error_urddconnect']);
-    }
-    break;
-case 'cancel' :
-    challenge::verify_challenge($_POST['challenge']);
-    try {
-        $uc->cancel(get_command(urdd_protocol::COMMAND_POST) . " $postid");
-        $uc->cancel(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
-        $uc->cancel(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
-    } catch (exception $e) {
-        throw new exception($LN['error_urddconnect']);
-    }
-    break;
-case 'delete' :
-    challenge::verify_challenge($_POST['challenge']);
-    try {
-        $uc->cancel(get_command(urdd_protocol::COMMAND_POST) . " $postid");
-        $uc->cancel(get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid");
-        $uc->cancel(get_command(urdd_protocol::COMMAND_START_POST) . " $postid");
-    } catch (exception $e) {
-        throw new exception($LN['error_urddconnect']);
-    }
-    if ($isadmin) {
-        // Admins can delete any download
-        $db->delete_query('postinfo', '"id"=?', array($postid));
-        $db->delete_query('post_files', '"postid"=?', array($postid));
-    } else {
-        $sql = '* FROM postinfo WHERE "userid"=? AND "id"=?';
-        $res = $db->select_query($sql, array($userid, $postid));
-        if (isset($res[0]['id']) && $res[0]['id'] == $postid) {
-            $db->delete_query('postinfo', '"id" = ?', array($postid));
-            $db->delete_query('post_files', '"postid" = ?', array($postid));
-        }
-    }
-    break;
-default:
-    throw new exception('Invalid command!');
-}
-
-// Success:
-die_html('OK');
+    return_result();
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
+} 

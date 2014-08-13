@@ -102,7 +102,7 @@ function handle_uploaded_file(DatabaseConnection $db, $userid)
         }
         add_nzb_to_spot_post($db, $userid, $filename, $orig_filename, $postid); 
     } else {
-        throw new exception('Unknown upload type');
+        throw new exception($LN['error_invalid_upload_type']);
     }
 }
 
@@ -198,7 +198,7 @@ function start_post_spot(DatabaseConnection $db, $userid)
         throw new exception($LN['error_urddconnect']);
     }
     $uc->continue_cmd(get_command(urdd_protocol::COMMAND_POST_SPOT) . ' ' . $postid);
-    die(json_encode(array('error' => 0)));
+    return_result();
 }
 
 function cancel_post_spot(DatabaseConnection $db, $userid)
@@ -215,15 +215,15 @@ function cancel_post_spot(DatabaseConnection $db, $userid)
         throw new exception($LN['error_urddconnect']);
     }
     $uc->cancel(get_command(urdd_protocol::COMMAND_POST_SPOT) . ' ' . $postid);
-    die(json_encode(array('error' => 0)));
+    return_result();
 }
 
-$cmd = get_request('cmd');
 try {
+    $cmd = get_request('cmd');
     switch (strtolower($cmd)) {
         case 'upload_file':
             handle_uploaded_file($db, $userid);
-            die(json_encode(array('error' => 0)));
+            return_result();
             break;
         case 'category_info':
             $cat = get_request('category');
@@ -231,7 +231,7 @@ try {
             $subcats = SpotCategories::get_subcats($cat, $adult);
             $smarty->assign('subcats',    	    $subcats);
             $content = $smarty->fetch('ajax_subcats_info.tpl');
-            die(json_encode(array('error' => 0, 'content'=>$content)));
+            return_result(array('contents' => $contents));
             break;
         case 'start_post' :
             start_post_spot($db, $userid);
@@ -242,7 +242,7 @@ try {
         case 'post' :
             // image file and nzbfile
             $post_id = insert_spot_post($db, $userid);
-            die(json_encode(array('error' => 0, 'post_id' => $post_id, 'message'=>$LN['spots_post_started'])));
+            return_result(array('post_id' => $post_id, 'message'=>$LN['spots_post_started'])));
             break;
         case 'show':
             init_smarty('', 0);
@@ -261,8 +261,9 @@ try {
             $poster_email = $prefs['poster_email'];
             $poster_name = $prefs['poster_name'];
             $content = @unserialize($prefs['poster_default_text']);
-            if ($content === FALSE) { $content = ''; }
-            else {
+            if ($content === FALSE) { 
+                $content = ''; 
+            } else {
                 $content = @implode("\n", $content);
             }
             $subject = '';
@@ -275,12 +276,12 @@ try {
             $smarty->assign('categories',	    $categories);
 
             $content = $smarty->fetch('ajax_post_spot.tpl');
-            die(json_encode(array('error' => 0, 'content'=>$content)));
+            return_result(array('contents' => $contents));
             break;
         default:
             throw new exception($LN['error_novalidaction']);
     }
 } catch (exception $e) {
-    die(json_encode(array('error'=>$e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }
 

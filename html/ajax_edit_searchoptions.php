@@ -230,7 +230,7 @@ try {
             break;
     }
 
-    return_result(array());
+    return_result();
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

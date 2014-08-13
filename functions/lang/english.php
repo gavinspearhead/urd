@@ -753,6 +753,7 @@ $LN['error_invalidbutton']      = 'Invalid search options';
 $LN['error_invalidpassword']    = 'Invalid password';
 $LN['error_userexists']         = 'User already exists';
 $LN['error_acctexpired']        = 'Account expired';
+$LN['error_invalid_upload_type']= 'Unknown upload type';
 $LN['error_notleftblank']       = 'May not be left blank';
 $LN['error_invalidvalue']       = 'Invalid value';
 $LN['error_urlstart']           = 'The url needs to start with http:// or https:// and end with a /';

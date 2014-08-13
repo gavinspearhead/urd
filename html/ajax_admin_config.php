@@ -1533,61 +1533,61 @@ function get_ln_val($name)
 }
 
 try {
-$cmd = get_request('cmd', '');
-$message = $contents = '';
-switch ($cmd) {
-    case 'reset':
-        challenge::verify_challenge($_POST['challenge']);
-        reset_config($db);
-        break;
-
-    case 'show':
-        init_smarty('', 0);
-        $contents = show_config($db, $userid);
-        break;
-    case 'delete':
-        challenge::verify_challenge($_POST['challenge']);
-        $option = get_post('option');
-        unset_config($db, "__custom_$option");
-        break;
-    case 'set':
-        $rprefs = load_config($db);
-        $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-        challenge::verify_challenge($_POST['challenge']);
-        $option = get_post('option');
-        if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
-        $value = get_post('value');
-        $type = get_post('type');
-        set_configuration($db, $uc, $userid, $option, $value, $type);
-        config_cache::clear_all();
-        if ($type == 'custom_text') {
-            $message = $LN['saved'] . ': ' . get_ln_val('custom') . " $option ";
-        } else {
-            $message = $LN['saved'] . ': ' . get_ln_val($option);
-        }
-        break;
-    case 'load_settings':
-        challenge::verify_challenge($_POST['challenge']);
-        $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-        $settings = $xml->read_config($db);
-        reset($settings);
-        if ($settings != array()) {
-            clean_config($db);
+    $cmd = get_request('cmd', '');
+    $message = $contents = '';
+    switch ($cmd) {
+        case 'reset':
+            challenge::verify_challenge($_POST['challenge']);
             reset_config($db);
-            set_configs($db, $settings);
-            $imported = 1;
-        } else {
-            throw new exception ($LN['settings_notfound']);
-        }
-        break;
-    case 'export_settings':
-        export_settings($db, 'config', 'urd_config.xml');
-        break;
-    default:
-        throw new exception($LN['error_invalidaction'] . implode($_POST, ' '));
-        break;
-}
-    die(json_encode(array('error' => 0, 'message'=>$message, 'contents'=>$contents)));
+            break;
+
+        case 'show':
+            init_smarty('', 0);
+            $contents = show_config($db, $userid);
+            break;
+        case 'delete':
+            challenge::verify_challenge($_POST['challenge']);
+            $option = get_post('option');
+            unset_config($db, "__custom_$option");
+            break;
+        case 'set':
+            $rprefs = load_config($db);
+            $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
+            challenge::verify_challenge($_POST['challenge']);
+            $option = get_post('option');
+            if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
+            $value = get_post('value');
+            $type = get_post('type');
+            set_configuration($db, $uc, $userid, $option, $value, $type);
+            config_cache::clear_all();
+            if ($type == 'custom_text') {
+                $message = $LN['saved'] . ': ' . get_ln_val('custom') . " $option ";
+            } else {
+                $message = $LN['saved'] . ': ' . get_ln_val($option);
+            }
+            break;
+        case 'load_settings':
+            challenge::verify_challenge($_POST['challenge']);
+            $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
+            $settings = $xml->read_config($db);
+            reset($settings);
+            if ($settings != array()) {
+                clean_config($db);
+                reset_config($db);
+                set_configs($db, $settings);
+                $imported = 1;
+            } else {
+                throw new exception ($LN['settings_notfound']);
+            }
+            break;
+        case 'export_settings':
+            export_settings($db, 'config', 'urd_config.xml');
+            break;
+        default:
+            throw new exception($LN['error_invalidaction'] . implode($_POST, ' '));
+            break;
+    }
+    return_result(array('message' => $message, 'contents' => $contents));
 } catch (exception $e) {
-    die(json_encode(array('error' => $e->getMessage())));
+    return_result(array('error' => $e->getMessage()));
 }

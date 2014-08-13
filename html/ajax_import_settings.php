@@ -27,15 +27,18 @@ $__auth = 'silent';
 $pathadt = realpath(dirname(__FILE__));
 
 require_once "$pathadt/../functions/ajax_includes.php";
+try {
+    $referrer = get_request('referrer', '');
+    $command = get_request('cmd', '');
+    if (preg_match('/^[a-zA-Z_.]+$/', $referrer) == 0) {
+        throw new exception ($LN['error_invalidfilename']);
+    }
 
-$referrer = get_request('referrer', '');
-$command = get_request('cmd', '');
-if (preg_match('/^[a-zA-Z_.]+$/', $referrer) == 0) {
-    throw new exception ($LN['error_invalidfilename']);
+    init_smarty('', 0);
+    $smarty->assign('referrer', $referrer . '.php');
+    $smarty->assign('command', $command);
+    $contents = $smarty->fetch('ajax_import_settings.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
 }
-
-init_smarty('', 0);
-$smarty->assign('referrer', $referrer . '.php');
-$smarty->assign('command', $command);
-
-$smarty->display('ajax_import_settings.tpl');

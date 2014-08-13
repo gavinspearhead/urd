@@ -32,7 +32,6 @@ require_once "$pathaec/../functions/ajax_includes.php";
 require_once "$pathaec/../functions/mail_functions.php";
 
 try {
-
     $cmd = get_request('cmd', '');
 
     switch ($cmd) {

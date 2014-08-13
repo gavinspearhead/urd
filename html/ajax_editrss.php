@@ -52,7 +52,7 @@ function show_edit_rss(DatabaseConnection $db, $id)
     global $smarty, $LN, $periods;
     // Get download info:
     if (is_numeric($id)) {
-        $sql = "* FROM rss_urls WHERE \"id\" = ?";
+        $sql = '* FROM rss_urls WHERE "id"=?';
         $res = $db->select_query($sql, array($id));
         if (!isset($res[0])) {
             throw new exception($LN['error_invalidfeedid']);

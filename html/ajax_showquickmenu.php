@@ -30,140 +30,6 @@ require_once "$pathqm/../functions/ajax_includes.php";
 
 $subject = '';
 
-// Process commands:
-if (isset($_REQUEST['type']) && isset($_REQUEST['subject']) && isset($_REQUEST['srctype'])) {
-    $type = get_request('type');
-    $srctype = get_request('srctype');
-    $subject = get_request('subject');
-    $killflag = get_request('killflag');
-    $isposter = urd_user_rights::is_poster($db, $userid);
-    $buttons = get_search_buttons($db, $userid);
-    $button_count = count($buttons);
-    $items = array();
-    switch ($type) {
-    case 'setdetails':
-        $selection = get_request('selection', 0);
-        if ($selection == 1) {
-            if ($button_count == 1) {
-                $button = end($buttons); // the last will be the first
-                $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
-            } elseif ($button_count > 1) {
-                $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
-            }
-            $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
-            $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
-        }
-        break;
-    case 'viewfiles':
-        $selection = get_request('selection', 0);
-        if ($selection == 1) {
-            if ($button_count == 1) {
-                $button = end($buttons); // the last will be the first
-                $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
-            } elseif ($button_count > 1) {
-                $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
-            }
-            $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
-            $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
-            $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
-        }
-        break;
-    case 'browse': // Display menu for the browse page items
-        $selection = get_request('selection', 0);
-        if ($selection == 1) {
-            if ($button_count == 1) {
-                $button = end($buttons); // the last will be the first
-                $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
-            } elseif (count ($buttons) > 1) {
-                $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
-            }
-            $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
-        }
-        if ($srctype == USERSETTYPE_GROUP) {
-            list($nfo_file_data, $img_file_data, $nzb_file_data, $sample_file_data) = find_special_file($db, $subject);
-            if ($nfo_file_data !== FALSE) {
-                $items[] = new QuickMenuItem('setpreviewnfo', $LN['quickmenu_setpreviewnfo'], 'nfopreview', $nfo_file_data);
-            }
-            if ($img_file_data !== FALSE) {
-                $items[] = new QuickMenuItem('setpreviewimg', $LN['quickmenu_setpreviewimg'], 'imgpreview', $img_file_data);
-            }
-            if ($nzb_file_data !== FALSE && urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_USENZB)) {
-                $items[] = new QuickMenuItem('setpreviewnzb', $LN['quickmenu_setpreviewnzb'], 'nzbpreview', $nzb_file_data);
-            }
-            if ($sample_file_data !== FALSE) {
-                $items[] = new QuickMenuItem('setpreviewvid', $LN['quickmenu_setpreviewvid'], 'vidpreview', $sample_file_data);
-            }
-        }
-
-        $items[] = new QuickMenuItem('setshowesi', $LN['quickmenu_setshowesi'], 'quickdisplay', 'showextinfo');
-        if ($srctype == USERSETTYPE_SPOT && $isposter) {
-            $items[] = new QuickMenuItem('post_spot_comment', $LN['quickmenu_comment_spot'], 'post_spot_comment');
-        }
-        if (urd_user_rights::is_seteditor($db, $userid) /*&& $srctype != USERSETTYPE_SPOT*/) {
-            $items[] = new QuickMenuItem('seteditesi', $LN['quickmenu_seteditesi'], 'quickdisplay', 'editextinfo');
-            // $items[] = new QuickMenuItem('setguessesisafe',$LN['quickmenu_setguessesisafe'],'guessextsetinfosafe','editextinfo');
-            if ($selection == 1) {
-                $items[] = new QuickMenuItem('setguessesi', $LN['quickmenu_setguessesi'], 'guessextsetinfo');
-                // For all sets in the basket?
-                if (is_array($_SESSION['setdata']) && count($_SESSION['setdata']) > 1) {
-                    $items[] = new QuickMenuItem('setbasketguessesi', $LN['quickmenu_setbasketguessesi'], 'guessbasketextsetinfo');
-                }
-            }
-        }
-        if ($selection == 1) {
-            $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
-            $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
-        }
-
-        if ($srctype == USERSETTYPE_SPOT && $isadmin) {
-                $items[] = new QuickMenuItem('add_blacklist', $LN['quickmenu_addglobalblacklist'], 'add_blacklist_global');
-                $items[] = new QuickMenuItem('add_whitelist', $LN['quickmenu_addglobalwhitelist'], 'add_whitelist_global');
-        }
-        if ($srctype == USERSETTYPE_SPOT) {
-                $items[] = new QuickMenuItem('add_blacklist', $LN['quickmenu_addblacklist'], 'add_blacklist');
-                $items[] = new QuickMenuItem('add_whitelist', $LN['quickmenu_addwhitelist'], 'add_whitelist');
-        }
-        if ($srctype == USERSETTYPE_SPOT && $isposter) {
-                $items[] = new QuickMenuItem('report_spam', $LN['quickmenu_report_spam'], 'report_spam');
-        }
-        if (urd_user_rights::is_seteditor($db, $userid) && $srctype == USERSETTYPE_SPOT) {
-            // todo $items[] = new QuickMenuItem('spotedit', $LN['quickmenu_editspot'], 'quickdisplay', 'editspot');
-        }
-        if ($killflag) {
-            $items[] = new QuickMenuItem($subject, $LN['browse_resurrectset'], 'unhide_set');
-        } else {
-            $items[] = new QuickMenuItem($subject, $LN['browse_removeset'], 'hide_set');
-        }
-
-        if ($srctype == USERSETTYPE_RSS) {
-            $items[] = new QuickMenuItem($subject, $LN['browse_savenzb'], 'follow_link');
-        }
-        if ($srctype == USERSETTYPE_GROUP) {
-            $items[] = new QuickMenuItem('add_posterblacklist', $LN['quickmenu_addposterblacklist'], 'add_posterblacklist');
-        }
-        break;
-    case 'setsearch': // Search buttons for a set
-        foreach ($buttons as $button) {
-            $items[] = new QuickMenuItem('search' . $button['name'], $button['name'], 'searchbutton', $button);
-        }
-        break;
-
-    default:
-        $smarty->assign('message', $LN['error_novalidaction']);
-        break;
-    }
-} else {
-    throw new exception($LN['error_invalidaction']);
-}
-
-/* Type can be:
-    - quickmenu
-    - quickdisplay
-    - newpage
-   This can be used by the template to determine how to treat a click on the buttom (new menu, display or new page)
-   Extra can be the URL (newpage), or a button array (searchbutton).
-*/
-
 class QuickMenuItem
 {
     public $id;
@@ -248,10 +114,149 @@ function find_special_file(DatabaseConnection $db, $setID)
 
     return array($rv2, $rv1, $rv3, $rv4);
 }
+ 
+try {
+    // Process commands:
+    if (isset($_REQUEST['type']) && isset($_REQUEST['subject']) && isset($_REQUEST['srctype'])) {
+        $type = get_request('type');
+        $srctype = get_request('srctype');
+        $subject = get_request('subject');
+        $killflag = get_request('killflag');
+        $isposter = urd_user_rights::is_poster($db, $userid);
+        $buttons = get_search_buttons($db, $userid);
+        $button_count = count($buttons);
+        $items = array();
+        switch ($type) {
+            case 'setdetails':
+                $selection = get_request('selection', 0);
+                if ($selection == 1) {
+                    if ($button_count == 1) {
+                        $button = end($buttons); // the last will be the first
+                        $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
+                    } elseif ($button_count > 1) {
+                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
+                    }
+                    $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
+                    $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
+                }
+                break;
+            case 'viewfiles':
+                $selection = get_request('selection', 0);
+                if ($selection == 1) {
+                    if ($button_count == 1) {
+                        $button = end($buttons); // the last will be the first
+                        $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
+                    } elseif ($button_count > 1) {
+                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
+                    }
+                    $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
+                    $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
+                    $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
+                }
+                break;
+            case 'browse': // Display menu for the browse page items
+                $selection = get_request('selection', 0);
+                if ($selection == 1) {
+                    if ($button_count == 1) {
+                        $button = end($buttons); // the last will be the first
+                        $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
+                    } elseif (count ($buttons) > 1) {
+                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
+                    }
+                    $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
+                }
+                if ($srctype == USERSETTYPE_GROUP) {
+                    list($nfo_file_data, $img_file_data, $nzb_file_data, $sample_file_data) = find_special_file($db, $subject);
+                    if ($nfo_file_data !== FALSE) {
+                        $items[] = new QuickMenuItem('setpreviewnfo', $LN['quickmenu_setpreviewnfo'], 'nfopreview', $nfo_file_data);
+                    }
+                    if ($img_file_data !== FALSE) {
+                        $items[] = new QuickMenuItem('setpreviewimg', $LN['quickmenu_setpreviewimg'], 'imgpreview', $img_file_data);
+                    }
+                    if ($nzb_file_data !== FALSE && urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_USENZB)) {
+                        $items[] = new QuickMenuItem('setpreviewnzb', $LN['quickmenu_setpreviewnzb'], 'nzbpreview', $nzb_file_data);
+                    }
+                    if ($sample_file_data !== FALSE) {
+                        $items[] = new QuickMenuItem('setpreviewvid', $LN['quickmenu_setpreviewvid'], 'vidpreview', $sample_file_data);
+                    }
+                }
 
-init_smarty('', 0);
-$smarty->assign('items',	 $items);
-$smarty->assign('srctype',   $srctype);     // group or rss or spot
-$smarty->assign('subject',   $subject);
+                $items[] = new QuickMenuItem('setshowesi', $LN['quickmenu_setshowesi'], 'quickdisplay', 'showextinfo');
+                if ($srctype == USERSETTYPE_SPOT && $isposter) {
+                    $items[] = new QuickMenuItem('post_spot_comment', $LN['quickmenu_comment_spot'], 'post_spot_comment');
+                }
+                if (urd_user_rights::is_seteditor($db, $userid) /*&& $srctype != USERSETTYPE_SPOT*/) {
+                    $items[] = new QuickMenuItem('seteditesi', $LN['quickmenu_seteditesi'], 'quickdisplay', 'editextinfo');
+                    // $items[] = new QuickMenuItem('setguessesisafe',$LN['quickmenu_setguessesisafe'],'guessextsetinfosafe','editextinfo');
+                    if ($selection == 1) {
+                        $items[] = new QuickMenuItem('setguessesi', $LN['quickmenu_setguessesi'], 'guessextsetinfo');
+                        // For all sets in the basket?
+                        if (is_array($_SESSION['setdata']) && count($_SESSION['setdata']) > 1) {
+                            $items[] = new QuickMenuItem('setbasketguessesi', $LN['quickmenu_setbasketguessesi'], 'guessbasketextsetinfo');
+                        }
+                    }
+                }
+                if ($selection == 1) {
+                    $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
+                    $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
+                }
 
-$smarty->display('ajax_quickmenu.tpl');
+                if ($srctype == USERSETTYPE_SPOT && $isadmin) {
+                    $items[] = new QuickMenuItem('add_blacklist', $LN['quickmenu_addglobalblacklist'], 'add_blacklist_global');
+                    $items[] = new QuickMenuItem('add_whitelist', $LN['quickmenu_addglobalwhitelist'], 'add_whitelist_global');
+                }
+                if ($srctype == USERSETTYPE_SPOT) {
+                    $items[] = new QuickMenuItem('add_blacklist', $LN['quickmenu_addblacklist'], 'add_blacklist');
+                    $items[] = new QuickMenuItem('add_whitelist', $LN['quickmenu_addwhitelist'], 'add_whitelist');
+                }
+                if ($srctype == USERSETTYPE_SPOT && $isposter) {
+                    $items[] = new QuickMenuItem('report_spam', $LN['quickmenu_report_spam'], 'report_spam');
+                }
+                if (urd_user_rights::is_seteditor($db, $userid) && $srctype == USERSETTYPE_SPOT) {
+                    // todo $items[] = new QuickMenuItem('spotedit', $LN['quickmenu_editspot'], 'quickdisplay', 'editspot');
+                }
+                if ($killflag) {
+                    $items[] = new QuickMenuItem($subject, $LN['browse_resurrectset'], 'unhide_set');
+                } else {
+                    $items[] = new QuickMenuItem($subject, $LN['browse_removeset'], 'hide_set');
+                }
+
+                if ($srctype == USERSETTYPE_RSS) {
+                    $items[] = new QuickMenuItem($subject, $LN['browse_savenzb'], 'follow_link');
+                }
+                if ($srctype == USERSETTYPE_GROUP) {
+                    $items[] = new QuickMenuItem('add_posterblacklist', $LN['quickmenu_addposterblacklist'], 'add_posterblacklist');
+                }
+                break;
+            case 'setsearch': // Search buttons for a set
+                foreach ($buttons as $button) {
+                    $items[] = new QuickMenuItem('search' . $button['name'], $button['name'], 'searchbutton', $button);
+                }
+                break;
+
+            default:
+                $smarty->assign('message', $LN['error_novalidaction']);
+                break;
+        }
+    } else {
+        throw new exception($LN['error_invalidaction']);
+    }
+
+    /* Type can be:
+       - quickmenu
+       - quickdisplay
+       - newpage
+       This can be used by the template to determine how to treat a click on the buttom (new menu, display or new page)
+       Extra can be the URL (newpage), or a button array (searchbutton).
+     */
+
+    init_smarty('', 0);
+    $smarty->assign('items',	 $items);
+    $smarty->assign('srctype',   $srctype);     // group or rss or spot
+    $smarty->assign('subject',   $subject);
+
+    $contents = $smarty->fetch('ajax_quickmenu.tpl');
+    return_result(array('contents' => $contents));
+} catch (exception $e) {
+    return_result(array('error' => $e->getMessage()));
+}

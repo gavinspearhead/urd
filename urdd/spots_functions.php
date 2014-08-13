@@ -42,7 +42,7 @@ class urd_spots
     {
         //echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         $spotid = self::make_spot_id($spot_data['spotid'], $spot_data['messageid'], $spot_data['poster']);
-        $res = $db->select_query('"spotid" FROM spots WHERE "spotid"=?', 1, array($spotid));
+      //  $res = $db->select_query('"spotid" FROM spots WHERE "spotid"=?', 1, array($spotid));
         static $cols = array (
             'messageid',
             'spotid',
@@ -91,20 +91,21 @@ class urd_spots
             0,
             0,
         );
-        if (!isset($res[0]['spotid'])) {
+    //    if (!isset($res[0]['spotid'])) {
             $db->insert_query('spots', $cols, $vals);
             if (is_string($spot_data['image'])) {
                 $db->insert_query('spot_images', array('spotid', 'image', 'fetched', 'stamp'), 
                         array($spotid, $spot_data['image'], 
                             ((substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), $spot_data['date']));
             }
-        } else {
-            $db->update_query('spots', $cols, $vals, '"spotid" = ?', array($spotid));
+    /*    } else {
+            $db->update_query('spots', $cols, $vals, '"spotid"=?', array($spotid));
+            write_log('We are updating a spot', LOG_INFO);
             if (is_string($spot_data['image'])) {
                 $db->update_query('spot_images', array('image', 'fetched'), 
                         array($spot_data['image'], (substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), '"spotid"=?', array($spotid));
             }
-        }
+        }*/
 
         return $spotid;
     }
@@ -148,10 +149,10 @@ class urd_spots
                 'verified' => FALSE
                 );
         $spotParser = new SpotParser();
-        $now = time();
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
+                echo "something wrong with the header\n";
                 continue;
             }
 
@@ -170,6 +171,7 @@ class urd_spots
                     break;
                 case 'date':
                     $spot_data['date'] .= strtotime($parts[1]);
+                    $now = time();
                     if ($spot_data['date'] > ($now + 3600)) {
                         //correct dates that are in the future to avoid those pesky spots that stick at the top
                         $spot_data['date'] = $now;
@@ -206,6 +208,7 @@ class urd_spots
         // Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
         $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
         if ($spot_data['title'] == '') {
+            echo "something wrong with the title\n";
             return FALSE;
         }
 
@@ -788,7 +791,8 @@ class urd_spots
         $time_a = microtime(TRUE);
         $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
         $expire_time = time() - ($expire * 24 * 3600);
-            
+           
+$time1 = $time2 = $time3 = $time4 = $time5= $time6= $time7 = $time8 = $time9 = $timea = 0;
         update_queue_status($db, $item->get_dbid(), NULL, 0, 0, 'Getting spots');
         while (TRUE) {
             $sql = '"id", "message_id" FROM spot_messages';
@@ -798,15 +802,20 @@ class urd_spots
             }
             $ids = array();
             foreach ($res as $row) {
+$time1 = microtime(true);
                 $msg_id = $row['message_id'];
                 $ids[] = $row['id'];
                 try {
+$time2 += microtime(true) - $time1;
                     $header = $nzb->get_header($msg_id);
+$time3 += microtime(true) - $time1;
                     $spot_data = self::parse_spot_header($header, $msg_id, $spots_blacklist);
+$time4 += microtime(true) - $time1;
                     if (($spot_data != FALSE) && ($spot_data['date'] > $expire_time)) {
                         $spot_data['body'] = $nzb->get_article($msg_id);
-                        self::verify_spot($spot_data);
+$time5 += microtime(true) - $time1;
                         self::parse_spot_data($spot_data);
+$time6 += microtime(true) - $time1;
                         if ($max_cat_count > 0 && $spot_data['subcat_count'] > $max_cat_count) {
                             echo_debug(DEBUG_SERVER, 'Rejected - too many subcats ' . $spot_data['subcat_count'] . " > $max_cat_count");
                             continue;
@@ -820,16 +829,22 @@ class urd_spots
                             echo_debug(DEBUG_SERVER, 'Rejected - spot too large');
                             continue;
                         }
+$time7 += microtime(true) - $time1;
+                        self::verify_spot($spot_data);
                         if (!$spot_data['verified']) {
                             write_log('Signature on spot incorrect', LOG_NOTICE);
                         }
+$time8 += microtime(true) - $time1;
                         $spotid = self::add_spot($db, $spot_data);
+$time9 += microtime(true) - $time1;
                         self::parse_spots_for_extset_data($db, $spot_data, $spotid);
+$timea += microtime(true) - $time1;
                     }
                 } catch (exception $e) {
                     write_log($e->getMessage(), LOG_WARNING);
                 }
             }
+var_dump($time1, $time2, $time3, $time4, $time5, $time6, $time7, $time8, $time9, $timea);
             if (count($ids) > 0) {
                 $db->delete_query('spot_messages', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
             }

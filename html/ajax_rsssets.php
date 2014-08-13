@@ -84,7 +84,7 @@ class feed_viewer
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
-        $this->Qnewfeed1 = " userfeedinfo.\"feedid\" = rss_sets.\"rss_id\" ";
+        $this->Qnewfeed1 = ' userfeedinfo."feedid" = rss_sets."rss_id" ';
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
 
@@ -488,8 +488,7 @@ try {
 
     $content = $smarty->fetch('ajax_rsssets.tpl');
 
-    die(json_encode(array(
-        'error' => 0,
+    return_result(array(
         'content' => $content,
         'minsetsize' => $minsetsize,
         'maxsetsize' => $maxsetsize,
@@ -498,8 +497,8 @@ try {
         'flag' => $flag,
         'minrating' => $minrating,
         'maxrating' => $maxrating
-    )));
+    ));
 
 } catch (exception $e) {
-    die(json_encode(array('error'=> $e->getMessage()))); 
+    return_result(array('error' => $e->getMessage()));
 }

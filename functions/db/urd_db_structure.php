@@ -679,7 +679,7 @@ class urd_db_structure {
         $t->add_index(new urd_index('spots_prim', 'PRIMARY', array('id')));
         $t->add_index(new urd_index('spot_stamp', '', array('stamp')));
         $t->add_index(new urd_index('spot_size', '', array('size')));
-        $t->add_index(new urd_index('spot_spotid', '', array('spotid')));
+        $t->add_index(new urd_index('spot_spotid', 'UNIQUE', array('spotid')));
         $t->add_index(new urd_index('spot_cat', '', array('category')));
         $t->add_index(new urd_index('spot_msgid', '', array('messageid')));
         $t->drop_column('image');
