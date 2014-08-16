@@ -41,12 +41,12 @@ if (isset($config['urdweb_logfile'])) {
 }
 
 $process_name = 'urd_web'; // needed for message format in syslog and logging
+require_once "$pathud/../functions/file_functions.php";
 require_once "$pathud/../functions/defines.php";
 require_once "$pathud/../functions/functions.php";
-require_once "$pathud/../functions/file_functions.php";
 require_once "$pathud/../functions/db.class.php";
 require_once "$pathud/../functions/urd_log.php";
-require_once $pathud. '/../functions/libs/smarty/libs/Smarty.class.php';
+require_once "$pathud/../functions/libs/smarty/libs/Smarty.class.php";
 try {
     $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {

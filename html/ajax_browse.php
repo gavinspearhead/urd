@@ -272,7 +272,7 @@ class group_viewer
     {
         assert(is_numeric($perpage));
         $rss_limit = $perpage;
-        $url = get_config($this->db, 'url');
+        $url = get_config($this->db, 'baseurl');
         $type = USERSETTYPE_GROUP;
         $minsetsize = get_pref($this->db, 'minsetsize', $this->userID, 0);
         $maxsetsize = get_pref($this->db, 'maxsetsize', $this->userID, 0);

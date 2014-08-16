@@ -80,7 +80,7 @@ try {
     }
 
     list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
-    $base_url = get_config($db, 'url');
+    $base_url = get_config($db, 'baseurl');
 
     init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
     $smarty->assign('preview', $preview);

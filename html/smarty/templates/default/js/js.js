@@ -2587,6 +2587,7 @@ function show_quick_display(srctype, subject, e, type)
             subject : subject 
         } 
     }).done( function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'quickwindowon');
@@ -4072,6 +4073,7 @@ function load_spots(options)
         cache: false,
         data: data 
     }).done( function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         $('#minage').val(x.minage);        
         $('#maxage').val(x.maxage);        

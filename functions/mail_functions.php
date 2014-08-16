@@ -71,7 +71,7 @@ class urd_mail
     {
         
         $pathmf = realpath(dirname(__FILE__));
-        $url = get_config($db, 'url');
+        $url = get_config($db, 'baseurl');
         if (substr($url, -1) != '/') {
             $url .= '/';
         }
@@ -177,7 +177,7 @@ class urd_mail
         self::$data['username'] = $username;
         self::$data['fullname'] = $fullname;
 
-        $url = get_config($db, 'url');
+        $url = get_config($db, 'baseurl');
         if (substr($url, -1) != '/') {
             $url .= '/';
         }
@@ -282,7 +282,7 @@ class urd_mail
         $fullname = $res[0]['fullname'];
         $username = $res[0]['name'];
         $mailsubject = 'URD new interesting sets found';
-        $url = get_config($db, 'url');
+        $url = get_config($db, 'baseurl');
         if (substr($url, -1) != '/') {
             $url .= '/';
         }

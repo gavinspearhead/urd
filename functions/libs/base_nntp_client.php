@@ -219,7 +219,6 @@ class Base_NNTP_Client
         return $response;
     }
 
-
     protected function _get_text_response()
     {
         $data = array();
@@ -743,7 +742,7 @@ class Base_NNTP_Client
     {
         $command = 'ARTICLE';
         if (!is_null($article)) {
-            $command .= ' ' . $article;
+            $command .= " <$article>";
         }
 
         // tell the newsserver we want an article
@@ -781,10 +780,12 @@ class Base_NNTP_Client
     protected function cmd_head($article = NULL)
     {
         $command = 'HEAD';
-        if (!is_null($article)) {
-            $command .= ' ' . $article;
+        if (is_array($article)) {
+            return $this->cmd_head_multi($article);
         }
-
+        if (!is_null($article)) {
+            $command .= " <$article>";
+        }
         // tell the newsserver we want the header of an article
         $response = $this->_send_command($command);
 
@@ -809,7 +810,7 @@ class Base_NNTP_Client
                 return $this->_handle_unexpected_response($response);
         }
     }
-    protected function cmd_head_multi(array $articles)
+    private function cmd_head_multi(array $articles)
     {
         $command = 'HEAD';
        
@@ -866,7 +867,7 @@ class Base_NNTP_Client
     {
         $command = 'BODY';
         if (!is_null($article)) {
-            $command .= ' ' . $article;
+            $command .= " <$article>";
         }
         // tell the newsserver we want the body of an article
         $response = $this->_send_command($command);
@@ -892,34 +893,7 @@ class Base_NNTP_Client
         }
     }
 
-    protected function cmd_body_adv($article, article_writer &$aw)
-    {
-        $command = 'BODY ' . $article;
-
-        // tell the newsserver we want the body of an article
-        $response = $this->_send_command($command);
-        switch ($response) {
-            case NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:     // 222, RFC977: 'n <a> article retrieved - body follows'
-
-                return $this->_get_text_responseAdv($aw);
-                break;
-            case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected'
-                throw new exception("No newsgroup has been selected ({$this->_current_status_response()})", $response);
-                break;
-            case NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED: // 420, RFC977: 'no current article has been selected'
-                throw new exception("No current article has been selected ({$this->_current_status_response()})", $response);
-                break;
-            case NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: // 423, RFC977: 'no such article number in this group'
-                throw new exception("No such article number in this group ({$this->_current_status_response()})", $response);
-                break;
-            case NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID: // 430, RFC977: 'no such article found'
-                throw new exception("No such article found ({$this->_current_status_response()})", $response);
-                break;
-            default:
-                return $this->_handle_unexpected_response($response);
-        }
-    }
-
+    
     /**
      * @param mixed $article
      *
@@ -929,7 +903,7 @@ class Base_NNTP_Client
     {
         $command = 'STAT';
         if (!is_null($article)) {
-            $command .= ' ' . $article;
+            $command .= " <$article>";
         }
 
         // tell the newsserver we want an article
@@ -1584,7 +1558,7 @@ class Base_NNTP_Client
      */
     protected function cmd_xgtitle($wildmat = '*')
     {
-        $response = $this->_send_command('XGTITLE '.$wildmat);
+        $response = $this->_send_command('XGTITLE ' . $wildmat);
 
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_GROUPS_AND_DESC_FOLLOW: // RFC2980: 'list of groups and descriptions follows'

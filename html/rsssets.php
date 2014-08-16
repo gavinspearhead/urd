@@ -151,7 +151,7 @@ $perpage = get_maxperpage($db, $userid);
 // make the rss URL
 $rss_limit = $perpage;
 
-$url = get_config($db, 'url');
+$url = get_config($db, 'baseurl');
 $rssurl = $url . "html/rss.php?type=$rsstype&amp;feed_id=$feed_id&amp;categoryID=$categoryID&amp;limit=$rss_limit&amp;minsize=$minsetsize&amp;maxage=$maxage&amp;userid=$userid";
 
 if ($order == '') {

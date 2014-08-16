@@ -60,7 +60,7 @@ $add_menu['actions'][] = new menu_item2 ('add_search','add_search', urd_modules:
 $add_menu['actions'][] = new menu_item2 ('delete_search','delete_search', urd_modules::URD_CLASS_GROUPS, '', 'command');
 $add_menu['actions'][] = new menu_item2 ('postmessage','post_message', urd_modules::URD_CLASS_POST, '', 'command');
 
-$url = get_config($db, 'url');
+$url = get_config($db, 'baseurl');
 $type = $rsstype = USERSETTYPE_GROUP;
 
 $saved_searches = new saved_searches($userid);

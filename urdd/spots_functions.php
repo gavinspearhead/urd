@@ -91,21 +91,12 @@ class urd_spots
             0,
             0,
         );
-    //    if (!isset($res[0]['spotid'])) {
-            $db->insert_query('spots', $cols, $vals);
-            if (is_string($spot_data['image'])) {
-                $db->insert_query('spot_images', array('spotid', 'image', 'fetched', 'stamp'), 
-                        array($spotid, $spot_data['image'], 
-                            ((substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), $spot_data['date']));
-            }
-    /*    } else {
-            $db->update_query('spots', $cols, $vals, '"spotid"=?', array($spotid));
-            write_log('We are updating a spot', LOG_INFO);
-            if (is_string($spot_data['image'])) {
-                $db->update_query('spot_images', array('image', 'fetched'), 
-                        array($spot_data['image'], (substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), '"spotid"=?', array($spotid));
-            }
-        }*/
+        $db->insert_query('spots', $cols, $vals);
+        if (is_string($spot_data['image'])) {
+            $db->insert_query('spot_images', array('spotid', 'image', 'fetched', 'stamp'), 
+                    array($spotid, $spot_data['image'], 
+                        ((substr($spot_data['image'], 0, 9) == 'articles:') ? 0 : 1), $spot_data['date']));
+        }
 
         return $spotid;
     }
@@ -129,7 +120,7 @@ class urd_spots
             $report['date'] = strtotime($header['Date']);
             $report['message_id'] = $reportId;
             $report['keyword'] = $tmp[0];
-            $report['reference'] = substr($tmp[1], 1, -1);
+            $report['reference'] = substr($tmp[1], 1, -1); // remove the < and >
         }
         return $report;
     }
@@ -152,7 +143,7 @@ class urd_spots
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
-                echo "something wrong with the header\n";
+                //echo "something wrong with the header\n";
                 continue;
             }
 
@@ -208,7 +199,7 @@ class urd_spots
         // Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
         $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
         if ($spot_data['title'] == '') {
-            echo "something wrong with the title\n";
+            write_log('Something wrong with the title', LOG_INFO);
             return FALSE;
         }
 
@@ -222,10 +213,10 @@ class urd_spots
         // als de spot verified is, toon dan de userid van deze user
         if ($spot_data['verified']) {
             $spot_data['userid'] = $spotSigning->calculate_userid($spot_data['user-key']['modulo']);
-            echo_debug("verified spot for " . $spot_data['userid'] , DEBUG_SERVER);
+            echo_debug('verified spot for ' . $spot_data['userid'] , DEBUG_SERVER);
 
         } else {
-            echo_debug("Unverified spot", DEBUG_SERVER);
+            echo_debug('Unverified spot', DEBUG_SERVER);
         }
 
         return $spot_data;
@@ -595,15 +586,21 @@ class urd_spots
             if (!is_array($res)) {
                 break;
             }
-            $ids = array();
-
-            $ratings = array();
+            $delete_ids = $ids = $msg_ids = array();
             foreach ($res as $row) {
-                $this_id = $row['id'];
-                $msg_id = $row['message_id'];
+                $msg_ids[] = $row['message_id'];
+                $ids[ $row['message_id'] ] = array('id' => $row['id'], 'spotid' => $row['spotid']);
+            }
+            try {
+                $headers = $nzb->get_header_multi($msg_ids);
+            } catch (exception $e) {
+                write_log($e->getMessage(), LOG_WARNING);
+            }
+            $ratings = array();
+            foreach ($headers as $msg_id => $header) {
+                $this_id = $ids[ $msg_id ]['id'];
                 try {
                     $cnt++;
-                    $header = $nzb->get_header($msg_id);
                     $comment = self::parse_spot_comment($header, $spots_blacklist);
                     if (!isset($comment['references'], $comment['from'], $comment['date'], $comment['user-key'])) {
                         throw new exception('Invalid spot comment ' . $msg_id);
@@ -620,7 +617,7 @@ class urd_spots
                     try { 
                         $spotid = self::get_spot_by_messageid($db, $ref_msg_id);
                     } catch (exception $e) {
-                        if (trim($row['spotid']) == '0') { // a quirk in postgresql / pdo seems to extend the char(32)  to 32 chars with spaces appended
+                        if (trim($ids[ $msg_id ]['spotid']) == '0') { // a quirk in postgresql / pdo seems to extend the char(32)  to 32 chars with spaces appended
                             throw $e;
                         }
                         echo_debug(DEBUG_SERVER, 'Spot not found');
@@ -650,14 +647,15 @@ class urd_spots
                     $vals = array($spotid, $from, $body, $userid, $date);
                     $db->update_query('spot_comments', $cols, $vals, '"id"=?', array($this_id));
                 } catch (exception $e) {
-                    $ids[] = "$this_id";
+                    $delete_ids[] = $this_id;
                     if ($e->getCode() != ERR_SPOT_NOT_FOUND) {
                         write_log($e->getMessage(), LOG_NOTICE);
                     }
                 }
             }
-            if (count($ids) > 0) {
-                $db->delete_query('spot_comments', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
+            $del_count = count($delete_ids);
+            if ($del_count > 0) {
+                $db->delete_query('spot_comments', '"id" IN (' . (str_repeat('?,', $del_count - 1) . '?') . ')', $delete_ids);
             }
 
             $time_b = microtime(TRUE);
@@ -694,17 +692,25 @@ class urd_spots
         $cnt = 0;
         $limit = 100;
         while (TRUE) {
-            $sql = '"id", "message_id", "spotid", "reference" FROM spot_reports WHERE "reference"=? OR "spotid"=?';
+            $sql = '"id", "message_id", "spotid" FROM spot_reports WHERE "reference"=? OR "spotid"=?';
             $res = $db->select_query($sql, $limit, array('', '0'));
             if (!is_array($res)) {
                 break;
             }
-            $ids = array();
+            $delete_ids = $ids = $msg_ids = array();
             foreach ($res as $row) {
+                $msg_ids[] = $row['message_id'];
+                $ids[ $row['message_id'] ] = array('id'=>$row['id'], 'spotid'=>$row['spotid']);
+            }
+            try {
+                $headers = $nzb->get_header_multi($msg_ids);
+            } catch (exception $e) {
+                write_log($e->getMessage(), LOG_WARNING);
+            }
+            $ratings = array();
+            foreach ($headers as $msg_id => $header) {
+                $id = $ids[ $msg_id ]['id'];
                 try {
-                    $msg_id = $row['message_id'];
-                    $id = $row['id'];
-                    $header = $nzb->get_header($msg_id);
                     $report = self::parse_spot_report($header);
                     if (!isset($report['reference'], $report['date'])) {
                         throw new exception('Invalid spot report');
@@ -713,7 +719,7 @@ class urd_spots
                     try {
                         $spotid = self::get_spot_by_messageid($db, $ref_msg_id);
                     } catch (exception $e) {
-                        if ($row['spotid'] == '0') {
+                        if ($ids[ $msg_id ]['spotid'] == '0') {
                             throw $e;
                         }
                         echo_debug(DEBUG_SERVER, 'Spot not found');
@@ -727,12 +733,13 @@ class urd_spots
                     $db->update_query_2('spot_reports', array('reference'=>$ref_msg_id, 'spotid'=> $spotid, 'stamp'=>$date), '"id"=?', array($id));
                     $cnt++;
                 } catch (exception $e) {
-                    $ids[] = $row['id'];
+                    $delete_ids[] = $id;
                     write_log($e->getMessage(), LOG_INFO);
                 }
             }
-            if (count($ids) > 0) {
-                $db->delete_query('spot_reports', '"id" IN (' . (str_repeat('?,', count($ids) -1)) . '?)', $ids);
+            $del_count = count($delete_ids);
+            if ($del_count > 0) {
+                $db->delete_query('spot_reports', '"id" IN (' . (str_repeat('?,',  $del_count - 1)) . '?)', $delete_ids);
             }
 
             $time_b = microtime(TRUE);
@@ -806,7 +813,7 @@ class urd_spots
                 $ids[] = $row['id'];
             }
             try {
-                $headers = $nzb->get_header_multi($msg_ids);
+                $headers = $nzb->get_header($msg_ids);
             } catch (exception $e) {
                 write_log($e->getMessage(), LOG_WARNING);
             }

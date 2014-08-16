@@ -355,13 +355,7 @@ class NNTP_Client extends Base_NNTP_Client
 
         return $data;
     }
-    public function get_header_multi(array $articles)
-    {
-        $data = $this->cmd_head_multi($articles);
-
-        return $data;
-    }
-
+    
     /**
      * Fetch article body.
      *
@@ -390,12 +384,6 @@ class NNTP_Client extends Base_NNTP_Client
 
         return $data;
     }
-/*
-    public function get_body_adv($article, article_writer &$aw)
-    {
-        $this->cmd_body_adv($article, $aw);
-    }
- */
     /**
      * Post a raw article to a number of groups.
      *

@@ -134,20 +134,12 @@ function echo_debug_file($file, $val, $val2=FALSE, $source=NULL)
 
 function echo_debug_var_file($file, $var)
 {
-    ob_start();
-    var_dump($var);
-    $a = ob_get_contents();
-    ob_end_clean();
-    file_put_contents($file, $a, FILE_APPEND);
+    file_put_contents($file, var_export($var, TRUE), FILE_APPEND);
 }
 
 function echo_debug_var($var, $dbg_lvl)
 {
-    ob_start();
-    var_dump($var);
-    $a = ob_get_contents();
-    ob_end_clean();
-    echo_debug($a, $dbg_lvl);
+    echo_debug(var_export($var, TRUE), $dbg_lvl);
 }
 
 function echo_debug($msg, $dbg_lvl)
@@ -155,7 +147,7 @@ function echo_debug($msg, $dbg_lvl)
     global $config;
 
     if (debug_match($dbg_lvl, $config['urdd_debug_level'])) {
-        $lines = explode ("\n", $msg);
+        $lines = explode("\n", $msg);
         foreach ($lines as $ln) {
             if (trim($ln) !== '') {
                 write_log($ln, LOG_DEBUG);

@@ -423,7 +423,7 @@ class feed_viewer
     public function get_rss_url($perpage)
     {
         $rss_limit = $perpage;
-        $url = get_config($this->db, 'url');
+        $url = get_config($this->db, 'baseurl');
         $minsetsize = get_pref($this->db, 'minsetsize', $this->userID, 0);
         $maxsetsize = get_pref($this->db, 'maxsetsize', $this->userID, '');
         $type = USERSETTYPE_RSS;

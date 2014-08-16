@@ -91,7 +91,7 @@ class URD_NNTP
                     write_log('SSL module not loaded', LOG_ERR);
                     throw new exception('SSL module not loaded', ERR_NNTP_CONNECT_FAILED);
                 }
-                $timeout=NULL;
+                $timeout = NULL; // needed so SSL connections will not cause random timeouts. Seems to be a buggy PHP /SSL issue with stream_select
                 break;
         }
         $this->auth = FALSE;
@@ -217,7 +217,6 @@ class URD_NNTP
     }
     private function get_content($msg_id, $fn)
     {
-        $msg_id = '<' . $msg_id . '>'; // XXX cleanup where the < and > are added. Preferred as late as possible
         try {
             return $this->nntp->$fn($msg_id, FALSE);
         } catch (exception $e) {
@@ -243,7 +242,7 @@ class URD_NNTP
     }
     public function get_header_multi(array $msg_id)
     {
-        return $this->nntp->get_header_multi($msg_id);
+        return $this->nntp->get_header($msg_id);
     }
     public function get_header($msg_id)
     {
@@ -484,6 +483,7 @@ class URD_NNTP
             $expire = $groupArr['expire'];
             if ($groupArr['parse_spots'] || $groupArr['parse_spots_reports'] || $groupArr['parse_spots_comments']) {
                 $expire = get_config($this->db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
+                echo_debug("Using spots expire $expire days", DEBUG_SERVER);
             }
             echo_debug("Expire $expire days", DEBUG_SERVER);
             $mindate = time() - ($expire * 24 * 3600);

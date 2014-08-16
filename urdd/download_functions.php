@@ -301,7 +301,7 @@ function start_download(DatabaseConnection $db, action $item)
 
             $s_time = microtime(TRUE);
             try {
-                $query = '* FROM downloadarticles WHERE "downloadID" = ? AND "status" = ? ORDER BY "name", "partnumber"';
+                $query = '"groupID", "partnumber", "messageID", "name", "ID" FROM downloadarticles WHERE "downloadID"=? AND "status"=? ORDER BY "name", "partnumber"';
                 $db->lock($lock_array);
                 // First time use small batch size:
                 if ($first_batch_size > 0) {

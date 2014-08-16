@@ -114,7 +114,6 @@ class spot_viewer
             '(CASE WHEN usersetinfo."statusnzb" IS NULL OR usersetinfo."statusnzb" <> 1 THEN 0 ELSE 1 END) AS "nzbcreated", ' .
             '(CASE WHEN usersetinfo."statusint" IS NULL OR usersetinfo."statusint" <> 1 THEN 0 ELSE 1 END) AS "interesting", ' .
             '(CASE WHEN extsetdata4."value" IS NULL THEN \'0\' ELSE extsetdata4."value" END) AS "rating" ';
-//            '(CASE WHEN extsetdata2."value" IS NULL THEN spots."title" ELSE extsetdata2."value" END) AS "better_subject" ';
         $sql .=	$this->get_basic_browse_query();
         if ($interesting_only) {
             $sql1 = $sql . ' AND usersetinfo."statusint" = 1';
@@ -445,7 +444,7 @@ class spot_viewer
     {
         assert(is_numeric($perpage));
         $rss_limit = $perpage;
-        $url = get_config($this->db, 'url');
+        $url = get_config($this->db, 'baseurl');
         $type = USERSETTYPE_SPOT;
         $rssurl = $url . "html/rss.php?type=$type&amp;categoryID={$this->categoryID}&amp;limit=$rss_limit&amp;minsize={$this->minsetsize}&amp;maxsize={$this->maxsetsize}" .
             "&amp;maxage={$this->maxage}&amp;minage={$this->minage}{$this->rss_flag}&amp;userid={$this->userID}&amp;search=" . urlencode(utf8_decode($this->search));

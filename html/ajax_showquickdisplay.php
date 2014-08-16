@@ -63,13 +63,13 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $row = $res[0];
     $show_image = get_pref($db, 'show_image', $userid, FALSE);
     $description = db_decompress($row['description']);
-    $description = htmlentities($description, ENT_IGNORE);
     $description = strip_tags($description);
+    $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
     $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
     $description = link_to_url($description);
 
     $ubb = new UbbParse($description);
-	TagHandler::setDeniedTags( Array() );
+	TagHandler::setDeniedTags( array() );
 	TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
     $description = insert_wbr($ubb->parse());
     list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
@@ -346,7 +346,6 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
     $smarty->assign('display',          $display);      // All values
     return $smarty->fetch('ajax_showextsetinfo.tpl');
 }
-
 init_smarty('', 0);
 
 $subject = '';
@@ -362,6 +361,7 @@ try {
         switch ($srctype) {
         case 'setshowesi': // Display extsetinfo
             $contents = display_extsetinfo($db, $subject, $type, $userid);
+            echo_debug_var_file('/tmp/foo', $contents);
             break;
         case 'seteditesi': // Display the edit screen for extsetinfo
             $contents = edit_extsetinfo($db, $subject, $type);

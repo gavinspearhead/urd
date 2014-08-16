@@ -158,7 +158,7 @@ $rss_limit = $perpage;
 
 $rss_minsetsize = $minsetsize;
 $rss_maxage = $maxage;
-$url = get_config($db, 'url');
+$url = get_config($db, 'baseurl');
 $rssurl = $url . "html/rss.php?type=$type&amp;categoryID=$categoryID&amp;limit=$rss_limit&amp;minsize=$rss_minsetsize&amp;maxage=$rss_maxage&amp;userid=$userid";
 
 $saved_searches = $saved_searches->get_all_names($type);
