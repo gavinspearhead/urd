@@ -6,8 +6,10 @@
 - Added download NZB button to mini basket
 - Added hide/delete buttons to the bottom of the sets tables
 - Added new search options, and changed some to https
+- Added displaying of Avatars to comments
 - Save the NZB file of uploaded content
 - Deprecated database settings not relying on PDO (i.e. mysql, mysqli, postgres[789] - only pdo_mysql, pdo_pgsql and pdo_sqlite are supported)
+- Speed up of downloading spots, spot comments and spot reports
 - Fixed some handling of selecting multiple sets at once
 - Fixed bug in saving some settings
 - Fixed a bug in not handling the expire settings correctly on loading spots and expiring spots

@@ -186,6 +186,7 @@ class urd_spots
                     break;
                 case 'x-user-avatar':
                     $spot_data['user-avatar'] .= substr($line, 15);
+
                     break;
             }
         }
@@ -415,6 +416,7 @@ class urd_spots
     {
         $res = array();
         $res['rating'] = 0; // default rating is 0
+        $res['user-avatar'] = '';
         foreach ($header as $line) {
             $line = explode(':', $line, 2);
             switch (strtolower($line[0])) {
@@ -462,6 +464,10 @@ class urd_spots
                     break;
                 case 'lines':
                     $res['lines'] = trim($line[1]);
+                    break;
+                case 'x-user-avatar':
+                    $res['user-avatar'] .= trim($line[1]);
+
                     break;
             }
         }
@@ -563,6 +569,7 @@ class urd_spots
 
             return NO_ERROR;
         }
+        $load_avatars = get_config($db, 'download_comment_avatar', 0);
         $time_a = microtime(TRUE);
         $totalcount = $res[0]['cnt'];
         write_log("Getting $totalcount spot comments", LOG_NOTICE);
@@ -578,7 +585,7 @@ class urd_spots
         echo_debug("Expire $expire days", DEBUG_SERVER);
         $expire_timestamp = time() - ($expire * 24 * 3600);
         echo_debug("Expire $expire_timestamp seconds", DEBUG_SERVER);
-        static $cols = array('spotid', 'from', 'comment', 'userid', 'stamp');
+        static $cols = array('spotid', 'from', 'comment', 'userid', 'stamp', 'user_avatar');
 
         while (TRUE) {
             $sql = '"id", "message_id", "spotid" FROM spot_comments WHERE "spotid"=? OR "spotid"=?';
@@ -643,8 +650,12 @@ class urd_spots
                         if ($comment['rating'] > 0 && $comment['rating'] <= 10) {
                             $ratings[$spotid][] = $comment['rating'];
                         }
+                        $user_avatar = '';
+                        if ($load_avatars) {
+                            $user_avatar = $comment['user-avatar'];
+                        }
                     }
-                    $vals = array($spotid, $from, $body, $userid, $date);
+                    $vals = array($spotid, $from, $body, $userid, $date, $user_avatar);
                     $db->update_query('spot_comments', $cols, $vals, '"id"=?', array($this_id));
                 } catch (exception $e) {
                     $delete_ids[] = $this_id;

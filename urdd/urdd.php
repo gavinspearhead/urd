@@ -109,7 +109,7 @@ function update_user_last_seen_group(DatabaseConnection $db, $group_id)
     }
     $now = time();
     foreach ($res as $row) {
-        $db->update_query_2('usergroupinfo', array('last_update_seen'=>$now), '"userid"=? AND "groupid"=? AND "last_update_seen" < ?', array($row['ID'], $group_id, $row['last_login']));
+        $db->update_query_2('usergroupinfo', array('last_update_seen' => $now), '"userid"=? AND "groupid"=? AND "last_update_seen" < ?', array($row['ID'], $group_id, $row['last_login']));
     }
 
     return TRUE;
@@ -611,9 +611,8 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
     assert(is_bool($restart));
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     try {
-        $rstatus = QUEUE_RUNNING;
         $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE ? ';
-        $res_running = $db->select_query($query, array($rstatus));
+        $res_running = $db->select_query($query, array(QUEUE_RUNNING));
         $query = '"description", "ID", "userid", "status", "restart", "priority" FROM queueinfo WHERE ("status" LIKE ? OR "status" LIKE ?)';
         $res_queued = $db->select_query($query, array(QUEUE_PAUSED, QUEUE_QUEUED));
         if (is_array($res_running)) {

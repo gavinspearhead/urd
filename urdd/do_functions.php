@@ -26,9 +26,6 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-$pathdf = realpath(dirname(__FILE__));
-
-
 function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
     assert (is_numeric($dlid));
@@ -245,7 +242,7 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     $str .= '<!-- Created by ' . urd_version::get_urd_name() . ' ' . urd_version::get_version() . ' : http://www.urdland.com : The web-based usenet resource downloader. -->' . "\n";
     $size += fwrite($file, $str);
     try {
-        $query = "\"binaryID\", count(*) AS cnt, max(\"groupID\") AS \"groupID\", max(\"name\") AS subject FROM downloadarticles WHERE \"downloadID\" = ? GROUP BY \"binaryID\" ORDER BY \"binaryID\"";
+        $query = '"binaryID", count(*) AS cnt, max("groupID") AS "groupID", max("name") AS subject FROM downloadarticles WHERE "downloadID"=? GROUP BY "binaryID" ORDER BY "binaryID"';
         $res = $db->select_query($query, array($dlid));
         if ($res === FALSE) {
             throw new exception('Could not find any articles', INTERNAL_FAILURE);
@@ -361,7 +358,7 @@ function do_priority(DatabaseConnection $db, array $arg_list, server_data &$serv
 function regenerate_setnames(DatabaseConnection $db, array $setidarray)
 {
     foreach ($setidarray as $setid => $foo) {
-        $sql = '"name", "value", "type" FROM extsetdata WHERE "setID" = ?';
+        $sql = '"name", "value", "type" FROM extsetdata WHERE "setID"=?';
         $res = $db->select_query($sql, array($setid));
         if ($res === FALSE) {
             continue;
@@ -426,7 +423,7 @@ function do_check_version(DatabaseConnection $db, action $item)
 function update_rss_status(DatabaseConnection $db, $id, $last_updated)
 {
     assert(is_numeric($id) && is_numeric($last_updated));
-    $db->update_query_2('rss_urls', array('last_updated'=>$last_updated), '"id" = ?', array($id));
+    $db->update_query_2('rss_urls', array('last_updated'=>$last_updated), '"id"=?', array($id));
 }
 
 function do_update_rss(DatabaseConnection $db, action $item)
@@ -989,7 +986,7 @@ function do_diskfree(DatabaseConnection $db, $format='')
 
 function get_spot_nzb(DatabaseConnection $db, $spotid)
 {
-    $res = $db->select_query('"nzbs" FROM spots WHERE "spotid" = ?', 1, array($spotid));
+    $res = $db->select_query('"nzbs" FROM spots WHERE "spotid"=?', 1, array($spotid));
     if (!isset($res[0]['nzbs'])) {
         throw new exception('Invalid Set ID');
     }
@@ -1024,7 +1021,7 @@ function do_addspotdata(DatabaseConnection $db, action $item)
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
 
-        $res = $db->select_query('* FROM downloadinfo WHERE "ID" = ?', 1, array($dlid));
+        $res = $db->select_query('* FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
         if ($res === FALSE) {
             $status = QUEUE_QUEUED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
@@ -1164,7 +1161,7 @@ function do_adddata(DatabaseConnection $db, action $item)
             $res3 = $db->select_query($sql, 1, array($setid, 'password'));
             if (isset($res3[0]['value'])) {
                 $pw = $res3[0]['value'];
-                $db->update_query_2('downloadinfo', array('password'=>$pw), '"ID" = ? AND "password" = ?', array($dlid, ''));
+                $db->update_query_2('downloadinfo', array('password'=>$pw), '"ID"=? AND "password"=?', array($dlid, ''));
             }
             add_download_size($db, $dlid, $size);
             dec_dl_lock($db, $dlid);
@@ -1468,7 +1465,7 @@ function do_schedule(DatabaseConnection $db, array $arg_list, server_data &$serv
             $stime += $repeat;
         }
     } elseif ($repeat === NULL && $now > $stime) {
-        $stime += 24 * 60 * 60; // next day
+        $stime += 24 * 3600; // next day
     }
     $servers->add_schedule($db, new job($item, $stime, $repeat));
     return sprintf(urdd_protocol::get_response(201), $item->get_id());
@@ -2000,7 +1997,7 @@ function do_delete_spot(DatabaseConnection $db, action $item)
     $status = QUEUE_RUNNING;
     $cnt = 0;
     foreach ($setids as $setid) {
-        $db->delete_query('spots', '"spotid" = ?', array($setid));
+        $db->delete_query('spots', '"spotid"=?', array($setid));
         update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     $status = QUEUE_FINISHED;
@@ -2019,7 +2016,7 @@ function do_delete_set_rss(DatabaseConnection $db, action $item)
     foreach ($setids as $setid) {
         $feed_id = get_feedid_for_set($db, $setid);
         $feeds[$feed_id] = 1;
-        $db->delete_query('rss_sets', '"setid" = ?', array($setid));
+        $db->delete_query('rss_sets', '"setid"=?', array($setid));
         update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     foreach ($feeds as $feed => $dummy) {
@@ -2087,7 +2084,7 @@ function do_getnfo(DatabaseConnection $db, action $item)
     try {
         $nzb = connect_nntp($db, $server_id);
         $user_id = $item->get_userid();
-        $sql = "count(*) AS \"cnt\"FROM nfo_files";
+        $sql = 'count(*) AS "cnt" FROM nfo_files';
         $res = $db->select_query($sql, $limit);
         if (!isset($res[0]['cnt'])) {
             $status = QUEUE_FINISHED;
@@ -2134,10 +2131,9 @@ function do_getnfo(DatabaseConnection $db, action $item)
             $time_b = microtime(TRUE);
             $status = QUEUE_RUNNING;
             $perc = ceil(((float) $cnt * 100) / $totalcount);
+            $time_left = 0;
             if ($perc != 0 && $cnt > 0) {
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
-            } else {
-                $time_left = 0;
             }
             update_queue_status($db, $item->get_dbid(), $status, $time_left , $perc, 'Getting nfo files');
             $db->delete_query('nfo_files', '"id" in ( ' . (str_repeat('?,', count($ids) - 1)). '? )', $ids);
@@ -2255,7 +2251,6 @@ function do_getspot_images(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     try {
-        $like = $db->get_pattern_search_command('LIKE');
         $pathu = my_realpath(dirname(__FILE__));
         $image_cache_dir = get_dlpath($db) . IMAGE_CACHE_PATH;
         add_dir_separator($image_cache_dir);
@@ -2272,6 +2267,7 @@ function do_getspot_images(DatabaseConnection $db, action $item)
         $nntp = connect_nntp($db, $server_id);
 
         $image_count = 0;
+        $like = $db->get_pattern_search_command('LIKE');
         while (TRUE) {
             $sql = "\"image\", \"spotid\" FROM spot_images WHERE \"fetched\" = 0 AND \"image\" $like 'articles:%'";
             $res = $db->select_query($sql, 50);

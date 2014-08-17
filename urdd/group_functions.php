@@ -124,7 +124,7 @@ function add_parts(DatabaseConnection $db, array $tables, $groupID)
             if ($x % DatabaseConnection::MAX_INSERT_PARTS == 0) {
                 // Remove the last , before running the query:
                 $db->update_query_2("binaries_$groupID ", array('dirty'=> DatabaseConnection::DIRTY), '"binaryID" IN ( ' . 
-                        str_repeat('?,', count($binarieslist)-1) . '? )', $binarieslist);
+                        str_repeat('?,', count($binarieslist) - 1) . '? )', $binarieslist);
                 $binarieslist = array();
                 $x = (int) 1;
             }
@@ -203,8 +203,8 @@ function update_binary_data(DatabaseConnection $db, $groupID, $id)
 
         // Step 2: Updating:
         // Max for subject and fromname are needed to ensure we always get the same result, not a random one
-        $sql = 'SUM("size") AS totalsize, "binaryID", COUNT(*) AS parttotal, MAX("subject") AS subject, MAX("fromname") AS fromname,'
-            . "MIN(\"date\") AS mindate FROM parts_$groupID WHERE \"binaryID\" IN ($binary_list) GROUP BY \"binaryID\"";
+        $sql = 'SUM("size") AS totalsize, "binaryID", COUNT(*) AS parttotal, MAX("subject") AS subject, MAX("fromname") AS fromname, MIN("date") AS mindate '
+            . " FROM parts_$groupID WHERE \"binaryID\" IN ($binary_list) GROUP BY \"binaryID\"";
 
         $res = $db->select_query($sql, $l);
         $vals = $vals_nfo = array();
@@ -310,7 +310,7 @@ function update_set_data(DatabaseConnection $db, $groupID, $id, $minsetsize, $ma
             $l[] = $row['setID'];
         }
         $binary_str = str_repeat('?,', count($l) -1) . '?';
-        $db->delete_query('setdata', "\"ID\" IN ($binary_str) AND \"groupID\" = ?", array_merge( $l, array($groupID)));
+        $db->delete_query('setdata', "\"ID\" IN ($binary_str) AND \"groupID\" = ?", array_merge($l, array($groupID)));
         $sql = '"setID", count("binaryID") AS bins, MIN("subject") AS subject, MIN("date") AS date, SUM("bytes") AS totalsize ' .
             "FROM \"binaries_$groupID\" WHERE \"setID\" IN ($binary_str) GROUP BY \"setID\"";
         $res = $db->select_query($sql, $l);
@@ -416,7 +416,7 @@ function quick_expire(DatabaseConnection $db, $groupid)
     $input_arr = array($expire);
     if ($keep_int_cfg) {
         $keep_int = " AND \"binaryID\" NOT IN (SELECT \"binaryID\" FROM usersetinfo JOIN binaries_$groupid AS bin ON bin.\"setID\" = usersetinfo.\"setID\" "
-            . ' WHERE "type" = ? AND "statusint" = ?) ';
+            . ' WHERE "type"=? AND "statusint"=?) ';
         array_push($input_arr, $type, $marking_on);
     }
     $dw->delete_query("parts_$groupID", "\"date\" < ? $keep_int", $input_arr);
@@ -441,7 +441,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     $keep_int = '';
     $input_arr = array($expire);
     if ($prefs['keep_interesting']) {
-        $keep_int = " AND \"setID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\"=? AND \"statusint\"=?) ";
+        $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
         $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
     }
 
@@ -458,7 +458,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
 
     $keep_int = '';
     if ($prefs['keep_interesting']) {
-        $keep_int = " AND \"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"type\"=? AND \"statusint\"=?) ";
+        $keep_int = ' AND "ID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
     }
     // first clean all the sets we want to remove
     $Qcomplete = '';
@@ -528,9 +528,9 @@ function purge_binaries(DatabaseConnection $db, $groupID)
     echo_debug('Deleting all posts', DEBUG_DATABASE);
 
     $type = USERSETTYPE_GROUP;
-    $res = $db->delete_query('usersetinfo', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type" = ?', array($groupID, $type));
-    $res = $db->delete_query('extsetdata', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type" = ?', array($groupID, $type));
-    $res = $db->delete_query('merged_sets', '"new_setid" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type" = ?', array($groupID, $type));
+    $res = $db->delete_query('usersetinfo', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type"=?', array($groupID, $type));
+    $res = $db->delete_query('extsetdata', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type"=?', array($groupID, $type));
+    $res = $db->delete_query('merged_sets', '"new_setid" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type"=?', array($groupID, $type));
     $res = $db->delete_query('setdata', '"groupID"=?', array($groupID));
     if ($active === TRUE) {
         $db->truncate_table("parts_$groupID");

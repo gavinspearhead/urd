@@ -106,6 +106,9 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $c = str_replace("\n", '<br/>', $c);
         $comment['comment'] = insert_wbr($c);
         $comment['stamp'] = date($LN['dateformat2'] . ' ' . $LN['timeformat2'], $comment['stamp']);
+        if ($comment['user_avatar'] != '') {
+            $comment['user_avatar'] = 'data:image/png;base64,' .$comment['user_avatar'];
+        }
     }
     $url = trim(strip_tags($row['url']));
     /// too quick and dirty --- clean up XXX

@@ -261,6 +261,7 @@ function get_default_config()
     $prefArray_root['spots_reports_group']      = SPOTS_GROUPS::REPORTS; // group where spots reports are to be loaded from
     $prefArray_root['spots_comments_group']     = SPOTS_GROUPS::COMMENTS; // group where spots comments are to be loaded from
     $prefArray_root['ftd_group']                = SPOTS_GROUPS::NZBS; // group where NZBs from spots are to be loaded from
+    $prefArray_root['download_comment_avatar']  = 0;
     $prefArray_root['download_spots_comments']  = 0;
     $prefArray_root['download_spots_reports']   = 1;
     $prefArray_root['download_spots_images']    = 1;

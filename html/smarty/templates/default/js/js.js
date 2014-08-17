@@ -5525,6 +5525,7 @@ function load_prefs()
             current_tab: current_tab
         }
     }).done( function(html) {
+            console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();

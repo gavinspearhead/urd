@@ -486,22 +486,22 @@ function check_all_dl_done(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     $dlid = $item->get_args();
-    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" < ?';
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID"=? AND "status" < ?';
     $queued = $db->select_query($sql, array($dlid, DOWNLOAD_FINISHED));
     if (!isset($queued[0]['counter'])) {
         throw new exception_db('Database error @ queued');
     }
-    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" = ?';
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID"=? AND "status"=?';
     $failed = $db->select_query($sql, array($dlid, DOWNLOAD_FAILED));
     if (!isset($failed[0]['counter'])) {
         throw new exception_db('Database error @ failed');
     }
-    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" = ?';
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID"=? AND "status"=?';
     $done = $db->select_query($sql, array($dlid, DOWNLOAD_FINISHED));
     if (!isset($done[0]['counter'])) {
         throw new exception_db('Database error @ done');
     }
-    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID" = ? AND "status" = ?';
+    $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID"=? AND "status"=?';
     $par_files = $db->select_query($sql, array($dlid,DOWNLOAD_IS_PAR_FILE ));
     if (!isset($par_files[0]['counter'])) {
         throw new exception_db('Database error @ par_files');

@@ -693,6 +693,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('from', 'VARCHAR(128)', '', TRUE, 'utf8', ''));
         $t->add_column(new urd_column('stamp', 'BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('userid', 'VARCHAR(32)', '0', TRUE, 'utf8', ''));
+        $t->add_column(new urd_column('user_avatar', 'TEXT', '', TRUE, 'utf8', ''));
         $t->add_index(new urd_index('spotc_prim', 'PRIMARY', array('id')));
         $t->add_index(new urd_index('spotc_stamp', '', array('stamp')));
         $t->add_index(new urd_index('spotc_spotid', '', array('spotid')));

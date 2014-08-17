@@ -100,11 +100,16 @@
 
 {foreach $comments as $comment}
 <tr class="comment_poster"><td colspan="2">
-<div class="floatleft">{$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape})&nbsp; </div>
+<div class="floatleft">
+{if $comment.user_avatar != ''}<img class="floatleft" src="{$comment.user_avatar}"/>&nbsp; {/if}
+{$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape})&nbsp; </div>
 <div class="floatright"> @ {$comment.stamp|escape}</div>
 <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:add_blacklist('{$comment.userid|escape:javascript}', 'spotterid');" {urd_popup type="small" text=$LN_quickmenu_addblacklist }></div>
 </td></tr>
-<tr class="comment"><td colspan="2">{$comment.comment}</td></tr>
+<tr class="comment"><td colspan="2">
+
+{$comment.comment}
+</td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
 {/foreach}
 

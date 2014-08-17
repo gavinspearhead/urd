@@ -367,7 +367,7 @@ class server_data { // lots of cleaning up to do
     public function reload_scheduled_jobs(DatabaseConnection $db)
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
-        $query = '* FROM schedule WHERE 1=1';
+        $query = '* FROM schedule';
         $res = $db->select_query($query);
         if ($res === FALSE) {
             return;
@@ -816,9 +816,8 @@ class server_data { // lots of cleaning up to do
             echo_debug('Found a preview thread... should always start ' . $item->get_preferred_server(), DEBUG_SERVER);
 
             return $item;
-        } else {
-            return FALSE;
-        }
+        } 
+        return FALSE;
     }
 
     protected function check_db_intensive(action $item)
@@ -853,9 +852,8 @@ class server_data { // lots of cleaning up to do
 
                 if ($item->db_intensive() === TRUE) {
                     return $this->check_db_intensive($item);
-                } else {
-                    return $item;
-                }
+                } 
+                return $item;
             } else {
                 $not_these = array(); // the ones we already tried
                 while (1) {

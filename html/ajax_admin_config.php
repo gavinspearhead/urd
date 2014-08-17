@@ -137,7 +137,8 @@ function show_config(DatabaseConnection $db, $userid)
     $follow_link_msg = $shaping_msg = $auto_expire_msg = $urdd_restart_msg = $nntp_useauth_msg = $auto_reg_msg = $register_msg = $hiddenfiles_msg = $urdd_daemonise_msg = $nntp_all_servers_msg = '';
     $sendmail_msg = $webdownload_msg = $auto_download_msg = $check_nntp_connections_msg = $user_scripts_msg = $global_scripts_msg = $download_spots_comments_msg = $download_spots_reports_msg = '';
     $parse_nfo_msg = $keep_int_msg = $compress_nzb_msg = $webeditfile_msg = $config_viewfiles_msg = $auto_getnfo_msg = $allow_robots_msg = $clickjack_msg = $download_spots_images_msg = '';
-    $config_groups_msg = $config_makenzb_msg = $config_usenzb_msg = $config_post_msg = $config_rss_msg = $config_sync_msg = $config_download_msg = $need_challenge_msg = $use_encrypted_passwords_msg = '';
+    $config_groups_msg = $config_makenzb_msg = $config_usenzb_msg = $config_post_msg = $config_rss_msg = $config_sync_msg = $config_download_msg = $need_challenge_msg = $use_encrypted_passwords_msg =
+    $config_download_comment_avatar_msg = '';
 
     $module_msg = array(
             urd_modules::URD_CLASS_GENERIC      => '',
@@ -737,15 +738,15 @@ function show_config(DatabaseConnection $db, $userid)
             $sendmail_msg, $prefArray_root['sendmail'], '$(\'#hide_maa\').toggleClass(\'hidden\');$(\'#hide_macta\').toggleClass(\'hidden\');$(\'#hide_mad\').toggleClass(\'hidden\');$(\'#hide_mds\').toggleClass(\'hidden\');$(\'#hide_mnis\').toggleClass(\'hidden\');$(\'#hide_mnp\').toggleClass(\'hidden\');$(\'#hide_mnu\').toggleClass(\'hidden\');$(\'#hide_mpr\').toggleClass(\'hidden\');');
 
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_account_activated'], 'mail_account_activated', $LN['config_mail_account_activated_msg'],
-            $mail_account_activated_msg, $mail_templates, $prefArray_root['mail_account_activated'], NULL, 'hide_maa',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_account_activated_msg, $mail_templates, $prefArray_root['mail_account_activated'], NULL, 'hide_maa', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_activate_account'], 'mail_activate_account', $LN['config_mail_activate_account_msg'],
-            $mail_activate_account_msg, $mail_templates, $prefArray_root['mail_activate_account'], NULL, 'hide_macta',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_activate_account_msg, $mail_templates, $prefArray_root['mail_activate_account'], NULL, 'hide_macta', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_account_disabled'], 'mail_account_disabled', $LN['config_mail_account_disabled_msg'],
-            $mail_account_disabled_msg, $mail_templates, $prefArray_root['mail_account_disabled'], NULL, 'hide_mad',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_account_disabled_msg, $mail_templates, $prefArray_root['mail_account_disabled'], NULL, 'hide_mad', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_download_status'], 'mail_download_status', $LN['config_mail_download_status_msg'],
-            $mail_download_status_msg, $mail_templates, $prefArray_root['mail_download_status'], NULL, 'hide_mds',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_download_status_msg, $mail_templates, $prefArray_root['mail_download_status'], NULL, 'hide_mds', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_new_interesting_sets'], 'mail_new_interesting_sets', $LN['config_mail_new_interesting_sets_msg'],
-            $mail_new_interesting_sets_msg, $mail_templates, $prefArray_root['mail_new_interesting_sets'], NULL, 'hide_mnis',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_new_interesting_sets_msg, $mail_templates, $prefArray_root['mail_new_interesting_sets'], NULL, 'hide_mnis', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_new_preferences'], 'mail_new_preferences', $LN['config_mail_new_preferences_msg'],
             $mail_new_preferences_msg, $mail_templates, $prefArray_root['mail_new_preferences'], NULL, 'hide_mnp',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_new_user'], 'mail_new_user', $LN['config_mail_new_user_msg'],
@@ -838,7 +839,14 @@ function show_config(DatabaseConnection $db, $userid)
         $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_images'], 'download_spots_images', $LN['config_download_spots_images_msg'],
                 $download_spots_images_msg, $prefArray_root['download_spots_images']);
         $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_download_spots_comments'], 'download_spots_comments', $LN['config_download_spots_comments_msg'],
-                $download_spots_comments_msg, $prefArray_root['download_spots_comments']);
+                $download_spots_comments_msg, $prefArray_root['download_spots_comments'], '$(\'#hide_cmt_avt\').toggleClass(\'hidden\');');
+        $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, 
+                $LN['config_download_comment_avatar'], 
+                'download_comment_avatar', 
+                $LN['config_download_comment_avatar_msg'],
+                $config_download_comment_avatar_msg, 
+                $prefArray_root['download_comment_avatar'], 
+                NULL, 'hide_cmt_avt', $prefArray_root['download_spots_comments'] == 1 ? NULL:'hidden');
         $set_updating[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots_blacklist'], $LN['config_period_getspots_blacklist_msg'],
                 $getspots_blacklist_msg, 'period_getspots_blacklist', $prefArray_root['period_getspots_blacklist'], 'time1_getspots_blacklist',
                 $prefArray_root['time1_getspots_blacklist'], 'time2_getspots_blacklist', $prefArray_root['time2_getspots_blacklist']);
