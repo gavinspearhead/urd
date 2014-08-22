@@ -3025,15 +3025,15 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
     $input_arr = array();
     if ($source !== NULL) {
         $input_arr[] = $source;
-        $Qsource = ' AND "source" = ? ';
+        $Qsource = ' AND "source"=? ';
     }
     if ($status !== NULL) {
         $input_arr[] = $status;
-        $Qstatus = ' AND "status" = ?';
+        $Qstatus = ' AND "status"=?';
     }
     if ($global === TRUE) {
         $input_arr[] = user_status::SUPER_USERID;
-        $Quserid = ' AND "userid" = ?';
+        $Quserid = ' AND "userid"=?';
     }
     elseif ($global === FALSE) {
         $input_arr[] = user_status::SUPER_USERID;

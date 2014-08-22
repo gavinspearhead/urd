@@ -845,7 +845,7 @@ class urd_spots
                             echo_debug(DEBUG_SERVER, 'Rejected - Invalid category');
                             continue;
                         }
-                        $spot_data['body'] = implode("\n", $spot_data['body']);
+                        $spot_data['body'] = utf8_encode(implode("\n", $spot_data['body']));
                         if (strlen($spot_data['body']) > (self::SPOT_BODY_SIZE_LIMIT)) { // we skip extremely large spots
                             echo_debug(DEBUG_SERVER, 'Rejected - spot too large');
                             continue;

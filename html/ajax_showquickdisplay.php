@@ -63,6 +63,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $row = $res[0];
     $show_image = get_pref($db, 'show_image', $userid, FALSE);
     $description = db_decompress($row['description']);
+//    var_dump($description);
     $description = strip_tags($description);
     $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
     $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
@@ -151,7 +152,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $smarty->assign('age',          $age);
     $smarty->assign('filesize',     $filesize);
     $smarty->assign('comments',     $comments);
-    $smarty->assign('description',  (html_entity_decode($description, ENT_QUOTES, 'UTF-8')));
+    $smarty->assign('description',  (html_entity_decode(utf8_encode($description), ENT_QUOTES, 'UTF-8')));
     $smarty->assign('binarytype',   $binarytype); // Binarytype
     $smarty->assign('binarytypes',  $binarytypes);  // All
     $smarty->assign('display',      $display);      // All values
