@@ -1239,23 +1239,23 @@ function load_quick_status()
 
 function update_activity_status()
 {
-    // call ajax, restart in 4 seconds
+    // call ajax, restart in 5 seconds
     load_activity_status();
-    setInterval(load_activity_status, 4000);
+    setInterval(load_activity_status, 5000);
 }
 
 function update_disk_status()
 {
     // call ajax, restart in 10 seconds
     load_disk_status();
-    setInterval(load_disk_status, 10000);
+    setInterval(load_disk_status, 15000);
 }
 
 function update_quick_status()
 {
-    // call ajax, restart in 4 seconds
+    // call ajax, restart in 5 seconds
     load_quick_status();
-    setInterval(load_quick_status, 4000);
+    setInterval(load_quick_status, 5000);
 }
 
 function urd_search()
@@ -1891,7 +1891,7 @@ function show_popup_remote(referrer, command)
         if (x.error != 0) {
             set_message('message_bar', x.error, 5000);
         } else {
-            show_overlayed_content_1(html, 'popup525x300');
+            show_overlayed_content_1(x.contents, 'popup525x300');
             upload_handler(url, function(xmlHttp2) {
                 if (xmlHttp2.responseText == 'OK') {
                     hide_overlayed_content();
@@ -2594,8 +2594,8 @@ function show_quick_display(srctype, subject, e, type)
             var height = Math.floor($(window).height() * 0.9);
             var used_height = $('#td_sets').get(0).scrollHeight;
             var max_height = $('#td_sets').css('max-height').replace('px', '');
-
-            if ((used_height > max_height && height > max_height)) {
+            console.log(used_height, height, max_height);
+            if ((used_height > max_height && height > max_height) || height < used_height) {
                 var width = Math.floor($(window).width() * 0.75);
                 $('#overlay_content').css('width', width);
                 $('#overlay_content').css('height', height);

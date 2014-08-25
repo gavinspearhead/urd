@@ -788,7 +788,8 @@ function decompress(DatabaseConnection $db, $type, $dir, pr_list $files, $passwo
                     $pw_opt = $archive_types[$type][3];
                 }
                 $cmd_line = "nice -$niceval $cmd $options $pw_opt ./$filename >>$log_file 2>&1";
-                exec ($cmd_line, $output, $rv);
+                echo $cmd_line;
+                exec($cmd_line, $output, $rv);
                 if ($rv == 0 || $rv == 1) {
                     $succ++;
                     break;
