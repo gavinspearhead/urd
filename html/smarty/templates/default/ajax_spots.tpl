@@ -203,6 +203,7 @@
 {if $rating == ""}{$linkpic="followicon"}{/if}
 
     <div class="inline">{$setdesc}</div>
+    </div>
     </td>
     <td class="width20">
     {if $set.reports gt 0}{$spamreports=$set.reports}<div {urd_popup type="small" text="$spamreports $LN_spam_reports"} class="highlight_spam inline center width15">{$set.reports}</div>{/if}

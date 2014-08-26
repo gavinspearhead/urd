@@ -27,7 +27,7 @@
 <thead>
 <tr>
 <th class="left head round_left">{$LN_transfers_head_started}</th>
-<th class="left head">{$LN_transfers_head_subject}</th>
+<th class="left head" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
 <th class="left head">{$LN_transfers_head_progress}</th>
 <th class="center head">{$LN_size}</th>
 <th class="center head">{$LN_transfers_head_speed}</th>
@@ -91,7 +91,11 @@
 
 	<tr class="even" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 		<td>{$a->startdate}</td>
-		<td><b>{$a->name|truncate:$maxstrlen:'...':TRUE:TRUE|escape:htmlall}</b></td>
+		<td class="bold">
+        <div class="donotoverflowdamnit inline">
+        {$a->name|escape:htmlall}
+        </div>
+        </td>
 		<td>
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" background="grey" classes="down2" text="{$a->progress}%"}
         </td>

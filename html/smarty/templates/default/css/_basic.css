@@ -140,6 +140,12 @@ td.fixwidth8, th.fixwidth8
     width: 130px;
     text-align: right;
 }
+td.fixwidth8a, th.fixwidth8a
+{
+    width: 150px;
+    text-align: right;
+}
+
 td.fixwidth8c, th.fixwidth8c
 {
     width: 130px;

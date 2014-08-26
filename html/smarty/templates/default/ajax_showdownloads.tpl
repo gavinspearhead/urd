@@ -26,9 +26,9 @@
 <table class="transfers {if $active_tab != 'downloads'}hidden{/if}" id="downloads_tab">
 <thead>
 <tr>
-<th class="head round_left">{$LN_transfers_head_started}</th>
-<th class="head">{$LN_transfers_head_dlname}</th>
-<th class="head">{$LN_transfers_head_progress}</th>
+<th class="head round_left fixwidth8">{$LN_transfers_head_started}</th>
+<th class="head" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
+<th class="head fixwidth8a">{$LN_transfers_head_progress}</th>
 <th class="head">{$LN_size}</th>
 <th class="head">{$LN_transfers_head_speed}</th>
 <th class="head">{$LN_eta}</th>
@@ -42,8 +42,7 @@
 {function name=display_status status='' infoarray=''}
 {$stat=$infoarray[0]->status|replace:' ':'_'}
 <tr class="transferstatus">
-<td colspan="{if $isadmin neq 0}7{else}6{/if}">{$status}</td>
-<td>
+<td colspan="{if $isadmin neq 0}8{else}7{/if}">{$status}
     <div class="black floatright iconsize noborder buttonlike">
     <div id="{$stat}down" class="inline iconsize noborder buttonlike {if $transfer_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if}" onclick="javascript:fold_transfer('{$stat}', 'down');">
     </div>
@@ -103,12 +102,14 @@
 {/strip}
 {/capture}
 
-	<tr class="even" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+	<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 		<td>{$a->startdate}</td>
-		<td><b>{$a->name|truncate:$maxstrlen:'...':TRUE:TRUE|escape:htmlall}</b></td>
+		<td class="bold">
+        <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
+        </td>
 		<td>
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}</td>
-		<td class="right">{$a->done_size} / {$a->size}</td>
+		<td class="right nowrap">{$a->done_size} / {$a->size}</td>
 		<td class="right">{$a->speed}</td>
 		<td class="center">{$a->ETA}</td>
 {if $isadmin neq 0}

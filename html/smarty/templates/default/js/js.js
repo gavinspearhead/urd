@@ -583,7 +583,7 @@ function load_transfers()
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'transfersdiv');
-            update_search_bar_height();
+            update_widths('browsesubjecttd');
         } else {
             set_message('message_bar', x.error, 5000);
         }
@@ -4416,16 +4416,18 @@ function update_rss_url()
 function update_widths(the_id)
 {
     var oritextwidth = $('#' + the_id).outerWidth();
+    console.log($('#' + the_id).css('padding'));
     // First set all elements to the CURRENT width, this increases the TD size because of padding:
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth + 'px'); });
+    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth); });
 
     // Can determine the padding by comparing new size with original size:
     var newtextwidth = $('#' + the_id).outerWidth();
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
+    console.log(padding, oritextwidth, newtextwidth, correctedtextwidth);
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(correctedtextwidth + 'px'); });
+    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(correctedtextwidth); });
 }
 
 function wordwrap(msg)

@@ -171,8 +171,8 @@
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
     <td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_GROUP}, event);" id="td_set_{$set.sid}">
-<div class="donotoverflowdamnit">{$bintype} {$setdesc}</div>
-</td>
+    <div class="donotoverflowdamnit inline">{$bintype} {$setdesc}</div>
+    </td>
 {$rating=$set.rating * 10}
 {$imdbpic="ratingicon_$rating"}
 {if $rating == ""}{$imdbpic="followicon"}{/if}

@@ -221,7 +221,8 @@ table.preferences
 table.transfers
 {
     border-collapse: collapse;
-    width: 100%;
+    border-spacing:0;
+    width: 99%;
     font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
@@ -230,7 +231,7 @@ table.newsgroups
 {
     margin-top: 1px;
     border-collapse: collapse;
-    width: 100%;
+    width: 99%;
     font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
@@ -239,7 +240,7 @@ table.tasks
 {
     margin-top: -1px;
     border-collapse: collapse;
-    width: 100%;
+    width: 99%;
     font-size: x-small;
     font-family: verdan, Arial, Helvetica, Sans-Serifa;
 }
