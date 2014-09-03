@@ -19,7 +19,8 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: statistics.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 <h3 class="title">{$title}</h3>
 
 {capture assign=selector}
@@ -58,4 +59,4 @@ $(document).ready(function() {
 });
 </script>
 
-{include file="foot.tpl"}
+{/block}

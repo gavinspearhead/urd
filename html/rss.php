@@ -66,7 +66,7 @@ require_once "$pathhtmli/../functions/web_functions.php";
 require_once "$pathhtmli/../functions/fix_magic.php";
 
 load_language(get_config($db, 'default_language', 'dutch'));
-
+$input_arr = array();
 $limit = min(50, get_request('limit', 0));
 $groupID = get_request('groupID', FALSE, 'is_numeric');
 $categoryID = get_request('categoryID', FALSE, 'is_numeric');
@@ -96,7 +96,7 @@ if ($type === FALSE || !is_numeric($type)) {
     throw new exception('No type selected');
 }
 
-$url = $prefs['url'];
+$url = $prefs['baseurl'];
 
 if (!is_numeric($maxage)) {
     throw new exception('Maxage must be numeric');
@@ -111,12 +111,6 @@ if ($type == USERSETTYPE_GROUP && !is_numeric($groupID)) {
     throw new exception('GroupID must be numeric');
 }
 
-$db->escape($groupID, FALSE);
-$db->escape($subcatID, FALSE);
-$db->escape($categoryID, FALSE);
-$db->escape($feedid, FALSE);
-$db->escape($maxage, FALSE);
-$db->escape($limit, FALSE);
 if ($type == USERSETTYPE_GROUP) {
     $group = '';
     if ($groupID != 0) {
@@ -161,12 +155,12 @@ RSS;
 $Qsearch = $Qsize = $Qage = $Qgroup = $Qfeed = $Qcategory = $Qsubcat = '';
 
 if (is_numeric($minsize)) {
-    $db->escape($minsize, FALSE);
-    $Qsize = " AND \"size\" > ( $minsize) ";
+    $Qsize = ' AND "size" > ( :minsize) ';
+    $input_arr [':minsize'] = $minsize;
 }
 if (is_numeric($maxsize)) {
-    $db->escape($maxsize, FALSE);
-    $Qsize .= " AND \"size\" < ($maxsize) ";
+    $Qsize .= ' AND "size" < (:maxsize) ';
+    $input_arr [':maxsize'] = $maxsize;
 }
 
 $search = trim(str_replace('*', ' ', $search));
@@ -175,7 +169,7 @@ function make_search_query_part($search, $type, $search_type)
 {
     $Qsearch = $Qsearch1 = $Qsearch2 = '';
     $keywords = explode(' ', $search);
-    foreach ($keywords as $keyword) {
+    foreach ($keywords as $idx => $keyword) {
         if (isset($keyword[0]) && $keyword[0] == '-') {
             $not = 'NOT';
             $keyword = ltrim($keyword, '-');
@@ -184,14 +178,21 @@ function make_search_query_part($search, $type, $search_type)
         }
         if ($keyword != '') {
             if ($type == USERSETTYPE_GROUP) {
-                $Qsearch1 .= " $not \"subject\" $search_type '%{$keyword}%' AND "; // nasty: like is case sensitive in psql, insensitive in mysql
-                $Qsearch2 .= " $not extsetdata2.\"value\" $search_type '%{$keyword}%' AND ";
+                $Qsearch1 .= " $not \"subject\" $search_type :keyword_2_$idx AND "; // nasty: like is case sensitive in psql, insensitive in mysql
+                $Qsearch2 .= " $not extsetdata2.\"value\" $search_type :keyword_1_$idx AND ";
+                $input_arr[":keyword_1_$idx"] = "%$keyword%";
+                $input_arr[":keyword_2_$idx"] = "%$keyword%";
+
             } elseif ($type == USERSETTYPE_RSS) {
-                $Qsearch1 .= " $not rss_sets.\"setname\" $search_type '%{$keyword}%' AND "; // nasty: like is case sensitive in psql, insensitive in mysql
-                $Qsearch2 .= " $not extsetdata2.\"value\" $search_type '%{$keyword}%' AND ";
+                $Qsearch1 .= " $not rss_sets.\"setname\" $search_type :keyword_2_$idx AND "; // nasty: like is case sensitive in psql, insensitive in mysql
+                $Qsearch2 .= " $not extsetdata2.\"value\" $search_type :keyword_1_$idx AND ";
+                $input_arr[":keyword_1_$idx"] = "%$keyword%";
+                $input_arr[":keyword_2_$idx"] = "%$keyword%";
             } elseif ($type == USERSETTYPE_SPOT) {
-                $Qsearch1 .= " $not \"title\" $search_type '%{$keyword}%' AND "; // nasty: like is case sensitive in psql, insensitive in mysql
-                $Qsearch2 .= " $not spots.\"tag\" $search_type '%{$keyword}%' AND ";
+                $Qsearch1 .= " $not \"title\" $search_type :keyword_1_$idx AND "; // nasty: like is case sensitive in psql, insensitive in mysql
+                $Qsearch2 .= " $not spots.\"tag\" $search_type :keyword_2_$idx  AND ";
+                $input_arr[":keyword_1_$idx"] = "%$keyword%";
+                $input_arr[":keyword_2_$idx"] = "%$keyword%";
             }
         }
     }
@@ -213,7 +214,8 @@ if ($type == USERSETTYPE_GROUP) {
             $Qgroup .= ')';
         }
     } elseif ($groupID != 0) {
-        $Qgroup = " AND \"groupID\" = $groupID ";
+        $Qgroup = ' AND "groupID" = :groupid ';
+        $input_arr [':groupid'] = $groupID;
     }
 } elseif ($type == USERSETTYPE_RSS) {
     verify_access($db, urd_modules::URD_CLASS_RSS, FALSE, '', $userid, FALSE);
@@ -226,7 +228,8 @@ if ($type == USERSETTYPE_GROUP) {
             $Qfeed .= ')';
         }
     } elseif ($feedid != 0) {
-        $Qfeed = " AND rss_sets.\"rss_id\" = $feedid ";
+        $Qfeed = ' AND rss_sets."rss_id" = :feedid ';
+        $input_arr [':feedid'] = $feedID;
     }
 } elseif ($type == USERSETTYPE_SPOT) {
     verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE,'',  $userid, FALSE);
@@ -238,58 +241,64 @@ if ($type == USERSETTYPE_GROUP) {
     }
 
     if ($categoryID != '') {
-        $db->escape($categoryID, TRUE);
-        $Qcategory = " AND spots.\"category\" = $categoryID";
+        $Qcategory = " AND spots.\"category\" = :category";
+        $input_arr [':category'] = $categoryID;
     }
 
     if ($subcatID != '') {
         $sc = $subcatID[0];
-        $Qsubcat = " AND ( \"subcat$sc\" $search_type '%$subcatID|%') ";
+        $input_arr [':subcat'] = "%$subcatID|%";
+        $Qsubcat = " AND ( \"subcat$sc\" $search_type :subcatID) ";
     }
 }
 
 if ($maxage > 0) {
     $maxage = $maxage * 3600 * 24;
+    $input_arr [':maxage'] = $maxage;
     if ($type == USERSETTYPE_GROUP) {
-        $Qage = 'AND (('. time() . " - \"date\")) <= $maxage ";
+        $Qage = 'AND (('. time() . ' - "date")) <= :maxage ';
     } elseif ($type == USERSETTYPE_RSS) {
-        $Qage = 'AND (('. time() . " - \"timestamp\")) <= $maxage ";
+        $Qage = 'AND (('. time() . ' - "timestamp")) <= :maxage ';
     } elseif ($type == USERSETTYPE_SPOT) {
-        $Qage = 'AND (('. time() . " - \"stamp\")) <= $maxage ";
+        $Qage = 'AND (('. time() . ' - "stamp")) <= :maxage ';
     }
 }
 
 $Qflag = '';
 if ($flag == 'interesting' && $userid != 0) {
-    $Qflag = ' AND usersetinfo."statusint"=1 ';
+    $Qflag = ' AND usersetinfo."statusint" = 1 ';
 }
 
 $now = time();
 
+$input_arr [':userid'] = $userid;
 if ($type == USERSETTYPE_GROUP) {
    $GREATEST = $db->get_greatest_function();
     $sql = "*, (100 * \"binaries\" / $GREATEST(1,articlesmax)) AS complete,
         ($now - date) AS age
         FROM setdata LEFT
-        JOIN usersetinfo ON (usersetinfo.\"setID\" = setdata.\"ID\") AND (usersetinfo.\"userID\" = $userid) AND (usersetinfo.\"type\" = '" . USERSETTYPE_GROUP . "')
-        LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = setdata.\"ID\" AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = '" . USERSETTYPE_GROUP . "' )
+        JOIN usersetinfo ON (usersetinfo.\"setID\" = setdata.\"ID\") AND (usersetinfo.\"userID\" = :userid) AND (usersetinfo.\"type\" = :type1)
+        LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = setdata.\"ID\" AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = :type2 )
         WHERE 1=1 $Qgroup $Qsearch $Qage $Qsize $Qflag
         ORDER BY \"date\" DESC";
+    $input_arr[':type1'] = $input_arr[':type2'] = USERSETTYPE_GROUP;
 
 } elseif ($type == USERSETTYPE_RSS) {
     $sql = "\"setname\" AS \"subject\", rss_sets.\"setid\" AS \"ID\", 100 as \"complete\", \"timestamp\" AS \"date\", ($now - \"timestamp\") AS \"age\", \"size\", \"rss_id\"
         FROM rss_sets
-        LEFT JOIN usersetinfo ON (usersetinfo.\"setID\" = rss_sets.\"setid\") AND (usersetinfo.\"userID\" = $userid) AND (usersetinfo.\"type\" = '" . USERSETTYPE_RSS . "')
-        LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = rss_sets.\"setid\") AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = '" . USERSETTYPE_RSS . "'
+        LEFT JOIN usersetinfo ON (usersetinfo.\"setID\" = rss_sets.\"setid\") AND (usersetinfo.\"userID\" = :userid) AND (usersetinfo.\"type\" = :type1)
+        LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = rss_sets.\"setid\") AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = :type2
         WHERE 1=1 $Qfeed $Qsearch $Qage $Qsize $Qflag
         ORDER BY \"timestamp\" DESC";
+    $input_arr[':type1'] = $input_arr[':type2'] = USERSETTYPE_RSS;
 } elseif ($type == USERSETTYPE_SPOT) {
     $sql = "\"title\" AS subject, spots.\"size\", spots.\"spotid\" AS \"ID\", ($now - \"stamp\") AS \"age\", \"stamp\" AS \"date\", " .
     '"category", "subcat", "subcata", "subcatb", "subcatc", "subcatd"' .
     ' FROM spots ' .
-    " LEFT JOIN usersetinfo ON ((usersetinfo.\"setID\" = spots.\"spotid\") AND (usersetinfo.\"userID\" = $userid)) AND (usersetinfo.\"type\" = '" . USERSETTYPE_SPOT . "') " .
-    " WHERE (1=1 $Qsearch $Qsize $Qcategory $Qflag $Qsubcat) " .
+    " LEFT JOIN usersetinfo ON ((usersetinfo.\"setID\" = spots.\"spotid\") AND (usersetinfo.\"userID\" = :userid)) AND (usersetinfo.\"type\" = :type) " .
+    " WHERE (1=1 $Qsearch $Qsize $Qcategory $Qage $Qflag $Qsubcat) " .
     ' ORDER BY "stamp" DESC';
+    $input_arr[':type'] = USERSETTYPE_SPOT;
 }
 
 function subcat2str($subcata)
@@ -304,8 +313,7 @@ function subcat2str($subcata)
 
     return rtrim($_subcata, ' ,'). '<br/>';
 }
-
-$res = $db->select_query($sql, $limit);
+$res = $db->select_query($sql, $limit, $input_arr);
 if (!is_array($res)) {
     die($rss. '</rss>');
 } else {

@@ -73,6 +73,7 @@ function insert_default_buttons(DatabaseConnection $db)
         new button('IMDB',                      'https://www.google.com/search?btnI&amp;q=site:imdb.com%20%22$q%22'),
         new button('MetalArchives',             'http://www.metal-archives.com/search.php?string=$q&searchfrom=main&type=band'),
         new button('Movie Meter',               'http://www.moviemeter.nl/film/search/$q#results'),
+        new button('MovieDB',                   'http://www.themoviedb.org/search?query=$q'),
         new button('MusicBrainz',               'https://musicbrainz.org/search/textsearch.html?query=$q&type=artist&an=1&as=1'),
         new button('NzbIndex',                  'https://www.nzbindex.com/search/?q=$q'),
         new button('Nzb.cc',                    'https://www.nzb.cc/#$q'),

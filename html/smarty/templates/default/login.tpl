@@ -18,9 +18,12 @@
  * $Rev: 3094 $
  * $Author: gavinspearhead@gmail.com $
  * $Id: login.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $ *}
-{include file="barehead.tpl" title=$title}
+
+{extends file="barehead.tpl"}
+{block name=contents}
+
 <div id="logindiv" class="light">
-<div class="urdlogo2 floatleft noborder buttonlike down3" onclick="javascript:jump('http://www.urdland.com');"></div>
+<div class="urdlogo2 floatleft noborder buttonlike down3" id="urd_logo"></div>
 <!-- javascript enabled check -->
 <noscript><div id="nojs">{$LN_login_jserror}</div></noscript>
 <form method="post" id="urd_login_form">
@@ -36,7 +39,7 @@
 {/if}
 <tr><td>{$LN_username}</td><td><input type="text" name="username" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
 <tr><td >{$LN_password}</td><td><input type="password" id="pass" name="pass" placeholder="{$LN_password}" required/>&nbsp;&nbsp; 
-    <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('pass');"></div></td></tr>
+    <div class="floatright iconsizeplus sadicon buttonlike" id="pw_button"></div></td></tr>
 <tr><td colspan="2"></td></tr>
 <tr><td>{$LN_login_remember}</td><td>
 <select name="period">
@@ -54,7 +57,7 @@
 <tr><td colspan="2"></td></tr>
 <tr><td colspan="1"><input type="submit" value="{$LN_login_login}" class="submit"/></td>
 <td>
-<select name="language_name" id="language_select" onchange="javascript:submit_language_login();" >
+<select name="language_name" id="language_select">
 {html_options options=$languages selected=$curr_language}
 </select>
 </td>
@@ -64,7 +67,15 @@
 <td><a href="register.php">{$LN_login_register}</a></td></tr>
 {/if}
 </table>
+
+<script>
+$(document).ready(function() {
+    $('#pw_button').click( function() { toggle_show_password('pass');});
+    $('#urd_logo').click( function() { jump('http://www.urdland.com'); });
+    $('#language_select').change( function() { submit_language_login(); });
+});
+</script>
 </form>
 </div>
 
-{include file="barefoot.tpl"}
+{/block}

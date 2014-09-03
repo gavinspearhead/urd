@@ -226,7 +226,6 @@ class socket
     {
         if (!$this->is_readable()) {
             echo_debug('Read timeout occurred', DEBUG_MAIN);
-            var_dump(stream_get_meta_data($this->fp));
             $this->force_disconnect();
             throw new exception_nntp_connect('Read timeout occurred');
         }
@@ -271,7 +270,6 @@ class socket
                 $timeout = max(0, $timeout - (time() - $start_time));
                 continue;
             } else {
-                if (count($r) == 0) var_dump($r, $rv);
                 return (count($r) > 0) ? TRUE : FALSE;
             }
         }

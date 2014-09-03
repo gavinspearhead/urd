@@ -20,8 +20,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: rsssets.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title rssurl=$rssurl}
 
+{extends file="head.tpl"}
+{block name=contents}
 {* Search form *}
 {capture assign="searchform"}
 <form id="searchform" method="get">
@@ -117,6 +118,8 @@
 <input type="hidden" id="maxratinglimit" value="{$maxratinglimit}"/>
 <input type="hidden" id="minagelimit" value="{$minagelimit}"/>
 <input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
+<input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
+<input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 
 {* Load basket: *}
 <script type="text/javascript">
@@ -148,12 +151,8 @@ $(document).ready(function() {
         $('#next_search').click( function () { select_next_search('saved_search',1); } );
         $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
         $('#saved_search').change( function () { update_browse_searches(null); } );
-
     });
 });
 </script>
 
-<input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
-<input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
-
-{include file="foot.tpl"}
+{/block}

@@ -56,8 +56,25 @@ class DatabaseConnection_sqlite extends DatabaseConnection
     public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
         $this->uri = 'sqlite:' . $database;
-        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database,  $dbengine);
+        parent::__construct('sqlite', $hostname, $port, $user, $pass, $database,  $dbengine);
     }
+    public function connect()
+    {
+        echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
+        try {
+            if ($this->databasename == '') {
+                throw new exception('Database name must be provided');
+            }
+            $this->DB = new PDO($this->uri);
+            $this->DB->_create_function('REGEXP', 'sqlite_regexp', 2); // XXX What to do with these
+            $this->DB->_create_function('EXTRACT', 'sqlite_extract', 2); //  XXX What to do with these
+            $this->execute_query('PRAGMA synchronous=OFF');
+        } catch (exception $e) {
+            throw new exception('Could not connect to database: ' . $e->getMessage());
+        }
+    }
+
+
     public function get_dow_timestamp($from)
     {
         return "strftime('%w', time($from), 'unixepoch')";  // needs to check TODO
@@ -144,22 +161,6 @@ class DatabaseConnection_sqlite extends DatabaseConnection
         // todo
     }
 
-    public function connect()
-    {
-        echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
-        try {
-            if ($this->databasename == '') {
-                throw new exception('Database name must be provided');
-            }
-            $this->DB = ADONewConnection('pdo');
-            $this->DB->NConnect($this->uri);
-            $this->DB->_create_function('REGEXP', 'sqlite_regexp', 2);
-            $this->DB->_create_function('EXTRACT', 'sqlite_extract', 2);
-            $this->execute_query('PRAGMA synchronous=OFF');
-        } catch (exception $e) {
-            throw new exception('Could not connect to database: ' . $e->getMessage());
-        }
-    }
     public function start_transaction()
     {
         $this->execute_query('BEGIN EXCLUSIVE TRANSACTION');
@@ -179,9 +180,8 @@ class DatabaseConnection_sqlite extends DatabaseConnection
     {
         return $this->execute_query('COMMIT TRANSACTION');
     }
-    public function get_last_id()
+  /*  public function get_last_id()
     {
         return $this->DB->Insert_ID();
-    }
-
+    }*/
 }

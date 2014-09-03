@@ -19,32 +19,15 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: register.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  *}
-{include file="barehead.tpl" title=$title}
 
+{extends file="barehead.tpl"}
+{block name=contents}
 <div id="logindiv" class="light">
-<div class="urdlogo2 floatleft noborder buttonlike down3" onclick="javascript:jump('http://www.urdland.com');"></div>
+<div class="urdlogo2 floatleft noborder buttonlike down3" id="urd_logo"></div>
 <!-- javascript enabled check -->
 <noscript><div id="nojs">{$LN_login_jserror}</div></noscript>
 
 <table class="logintable">
-<script>
-$(document).ready(function() {
-        {if $subpage == 'activated' }
-        $('#pending').hide();
-        $('#sent').hide();
-        $('#form').hide();
-        {else if $subpage == 'pending' }
-        $('#sent').hide();
-        $('#form').hide();
-        $('#activated').hide();
-        {else} 
-        $('#sent').hide();
-        $('#activated').hide();
-        $('#pending').hide();
-        handle_passwords_register('pass1', 'pass2', 'username');
-        {/if}
- });
-</script>
 
 <tbody id="form">
 <tr><td colspan="2"><h3 class="title">{$LN_reg_form}</h3></td></tr>
@@ -53,7 +36,7 @@ $(document).ready(function() {
 <tr><td>{$LN_email}</td><td><input name="email" type="email" size="40" id="email" placeholder="Email address" required/></td></tr>
 <tr><td valign="top">{$LN_password}</td><td><input name="password1" type="password" size="40" id="pass1" placeholder="Password" required/>
  &nbsp;&nbsp; 
-    <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('pass1');toggle_show_password('pass2');"></div> 
+    <div class="floatright iconsizeplus sadicon buttonlike" id="pw_button"></div> 
     <span id="pwweak"><br>{$LN_password_weak}</span>
     <span id="pwmedium"><br>{$LN_password_medium}</span>
     <span id="pwstrong"><br>{$LN_password_strong}</span>
@@ -70,7 +53,7 @@ $(document).ready(function() {
     <img src="captcha.php" alt="captcha image"/>
     <input type="text" name="register_captcha" size="3" maxlength="3" id="captcha" required/></td></tr>
 {/if}
-<tr><td></td><td><input type='button' value="{$LN_register}" class="submitsmall floatright" onclick="javascript:submit_registration();"/></td></tr>
+<tr><td></td><td><input type='button' value="{$LN_register}" id="register_button" class="submitsmall floatright"/></td></tr>
 </tbody>
 <tbody id="pending">
 <tr><td><h3 class="title">{$LN_reg_status}</h3></td></tr>
@@ -88,4 +71,27 @@ $(document).ready(function() {
 </tbody>
 </table>
 </div>
-{include file="barefoot.tpl"}
+
+<script>
+$(document).ready(function() {
+    {if $subpage == 'activated' }
+        $('#pending').hide();
+        $('#sent').hide();
+        $('#form').hide();
+    {else if $subpage == 'pending' }
+        $('#sent').hide();
+        $('#form').hide();
+        $('#activated').hide();
+    {else} 
+        $('#sent').hide();
+        $('#activated').hide();
+        $('#pending').hide();
+        handle_passwords_register('pass1', 'pass2', 'username');
+    {/if}
+    $('#register_button').click( function() { submit_registration(); });
+    $('#pw_button').click( function() { toggle_show_password('pass1');toggle_show_password('pass2');});
+    $('#urd_logo').click( function() { jump('http://www.urdland.com'); });
+});
+</script>
+
+{/block}

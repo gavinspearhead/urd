@@ -116,7 +116,7 @@ try{
     set_config($db, 'admin_email', $urdemail);
     set_config($db, 'urdd_path', get_session('urdd'));
     set_config($db, 'url', get_session('url'));
-    set_config($db, 'default_language', detect_language());
+    set_config($db, 'default_language', detect_language() . '.php');
 
     set_config($db, 'yydecode_path', get_session('yydecode'));
     set_config($db, 'subdownloader_path', get_session('subdownloader'));

@@ -240,11 +240,11 @@ $settings['PHP_version'] = phpversion() . ' (should be at least 5.1.2)';
 $settings['Loaded php.ini file'] = php_ini_loaded_file();
 $settings['Browser agent'] = $_SERVER['HTTP_USER_AGENT'];
 $settings['database type'] = $db->get_databasetype();
-$db_srv_info = $db->get_database_server_info();
-$settings['database description'] = isset($db_srv_info['description']) ? $db_srv_info['description'] : '';
-$settings['database version'] = $db_srv_info['version'];
+$db_srv_version = $db->get_database_server_version();
+$db_srv_driver = $db->get_database_server_driver();
+$settings['database driver'] = $db_srv_driver;
+$settings['database version'] = $db_srv_version;
 $settings['URD Database version'] = $prefs['db_version'];
-$settings['ADODB version'] = $ADODB_vers;
 $settings['Smarty version'] = Smarty::SMARTY_VERSION;
 
 debug_dump_str_key($settings);

@@ -19,19 +19,24 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_users.tpl 2972 2013-12-07 16:40:41Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$title}</h3>
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:return submit_enter(event, show_blacklist);"/>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
 <select id="status" name="status">
 <option value="all" {if $status == ''}selected="selected"{/if}>{$LN_all}</option>
 <option value="active" {if $status == 'active'}selected="selected"{/if}>{$LN_active}</option>
 <option value="nonactive" {if $status == 'nonactive'}selected="selected"{/if}>{$LN_nonactive}</option>
 <option value="disabled" {if $status == 'disabled'}selected="selected"{/if}>{$LN_disabled}</option>
 </select>
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_blacklist();"/></div>
+<input type="button" value="{$LN_search}" id="search_button" class="submitsmall"/></div>
 </div>
+
+<input type="hidden" id="perpage" value="{$perpage|escape}"/>
+<input type="hidden" id="which" value=""/>
+<input type="hidden" name="offset" id="offset" value="{$offset|escape}"/>
 
 <div id="usersdiv">
 <script type="text/javascript">
@@ -40,12 +45,10 @@ $(document).ready(function() {
     show_blacklist({ 'which':'spots_blacklist'});
     $('#searchbar').html( $('#searchformdiv').html());
     $('#searchformdiv').html('');
+    $('#search').keypress( function(e) { return submit_enter(e, show_blacklist); });
+    $('#search_button').click( function() { show_blacklist(); });
 });
 </script>
 </div>
 
-<input type="hidden" id="perpage" value="{$perpage|escape}"/>
-<input type="hidden" id="which" value=""/>
-<input type="hidden" name="offset" id="offset" value="{$offset|escape}"/>
-
-{include file="foot.tpl"}
+{/block}

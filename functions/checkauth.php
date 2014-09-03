@@ -35,9 +35,8 @@ function reset_failed_login(DatabaseConnection $db, $username)
 function increase_failed_login(DatabaseConnection $db, $username)
 {
     $time = time();
-    $db->escape($time, TRUE);
-    $sql = "UPDATE users SET \"failed_login_count\"=\"failed_login_count\" + 1, \"failed_login_time\" = $time WHERE \"name\"=?";
-    $db->execute_query($sql, array($username));
+    $sql = 'UPDATE users SET "failed_login_count"="failed_login_count" + 1, "failed_login_time" = :time WHERE "name"=:name';
+    $db->execute_query($sql, array(':name'=>$username, ':time'=>$time));
 }
 
 function set_session_cookie($username, $password, $period, $token)
@@ -79,11 +78,11 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
         // maybe the value isn't in the database yet, we chose to disable it
         $max_login_count = 0;
     }
-    $input_arr= array($username, user_status::USER_ACTIVE);
-    $sql = '* FROM users WHERE "name"=? AND "active"=?';
+    $input_arr = array(':username' => $username, ':status'=>user_status::USER_ACTIVE);
+    $sql = '* FROM users WHERE "name"=:username AND "active"=:status';
     if ($max_login_count > 0) {
-        $sql .= ' AND "failed_login_count" < ?';
-        $input_arr[] = $max_login_count;
+        $sql .= ' AND "failed_login_count" < :failed_login_count';
+        $input_arr[':failed_login_count'] = $max_login_count;
     }
     $res = $db->select_query($sql, 1, $input_arr);
     if ($res === FALSE) { // no valid user found
@@ -92,11 +91,11 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
     }
     $salt_db = $res[0]['salt'];
     $password_db = $res[0]['pass'];
-    if ($md5pass != '') { // check if the md5 stuff still matches... if not, we set the new pasword with salt
+    /*if ($md5pass != '') { // check if the md5 stuff still matches... if not, we set the new pasword with salt
         if ($plain_password != '' && $md5pass == md5($token. $res[0]['pass'] . $token)) {
             set_password($db, $res[0]['ID'], $plain_password, FALSE);
-            $sql = '* FROM users WHERE "name" = ? AND "active" = ?';
-            $res = $db->select_query($sql, 1, array($username, user_status::USER_ACTIVE));
+            $sql = '* FROM users WHERE "name"=:username AND "active"=:status';
+            $res = $db->select_query($sql, 1, array(':username' =>$username, ':status'=>user_status::USER_ACTIVE));
             if ($res === FALSE) {// no valid user found
 
                 return FALSE;
@@ -110,8 +109,8 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
     if ($salt_db == '') {
         if ($plain_password != '' && $password == hash('sha256', $token . $password_db . $token)) {// set the salt in de db
             set_password($db, $res[0]['ID'], $plain_password, FALSE);
-            $sql = '* FROM users WHERE "name" = ? AND "active" = ?';
-            $res = $db->select_query($sql, 1, array($username, user_status::USER_ACTIVE));
+            $sql = '* FROM users WHERE "name"=:username AND "active"=:status';
+            $res = $db->select_query($sql, 1, array(':username' =>$username,':status'=> user_status::USER_ACTIVE));
             if ($res === FALSE) {// no valid user found
 
                 return FALSE;
@@ -123,7 +122,7 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
         } else {
             return FALSE;
         }
-    }
+    }*/
 
     $pw_hash = hash('sha256', $token . $password_db . $token);
 
@@ -144,6 +143,7 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
 try {
     $pathca = realpath(dirname(__FILE__));
     session_name('URD_WEB'. md5($pathca)); // add the hashed path so we can have more than 1 session to different urds in one browser
+    session_set_cookie_params(0, '/', '', FALSE, TRUE);
     @session_start();
     require_once "$pathca/config_functions.php";
     require_once "$pathca/user_functions.php";
@@ -187,7 +187,7 @@ try {
             case 4: $period = mktime(23, 59, 59, 12, 31, 2037);break;
             default: $period = NULL; break;
             }
-
+            session_regenerate_id();
             // Set cookie variable for the current context
             set_session_cookie($username, $password, $period, $token);
         } catch (exception $e) {

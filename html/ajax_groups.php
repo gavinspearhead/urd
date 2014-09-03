@@ -41,7 +41,7 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
     $order_options = array ('name', 'postcount', 'active', 'last_updated', 'expire', 'refresh_time', 'refresh_period', 'category', 'adult');
     $order_dirs = array ('desc', 'asc', '');
     $minngsize = get_pref($db, 'minngsize', $userid);
-    $cnt = count_active_ng($db);
+    $group_count = count_active_ng($db);
     $perpage = get_maxperpage($db, $userid);
     $search = utf8_decode(trim(get_request('search')));
 
@@ -55,31 +55,32 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
         $order_dir = '';
     }
     //$showall = get_request('unsubscribed', '0');
-    $unsubscribed = ($cnt == 0 || $search != '') ? TRUE : FALSE;
+    $unsubscribed = ($group_count == 0 || $search != '') ? TRUE : FALSE;
     $retvals[0] = $unsubscribed;
 
     // Search google style:
     $Qsearch = '';
-    $search = str_replace('*', ' ', $search);
+    $input_arr = array();
+    $search = trim(str_replace('*', ' ', $search));
     $keywords = explode(' ', $search);
     $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
-    foreach ($keywords as $keyword) {
+    foreach ($keywords as $idx => $keyword) {
         $keyword = trim($keyword);
-        if ($keyword == '') {
-            continue;
-        }
-        $k = "%{$keyword}%";
-        $db->escape($k, TRUE);
-        $Qsearch .= " AND \"name\" $search_type $k ";
+        if ($keyword == '') { continue; }
+        $Qsearch .= " AND \"name\" $search_type :keyword_$idx ";
+        $input_arr[":keyword_$idx"] = "%{$keyword}%";
     }
     // Default = we show only active groups:
-    if ($cnt != 0 && $search == '') {
-        $Qsearch .= ' AND "active"=\'1\' ';
+    if ($search == '' && $group_count > 0) {
+        $Qsearch .= ' AND "active" = :active ';
+        $input_arr[':active'] = newsgroup_status::NG_SUBSCRIBED;
     } elseif ($minngsize > 0 && $search_all == 1) {
-        $Qsearch .= " AND \"postcount\" > '$minngsize' ";
+        $Qsearch .= ' AND "postcount" > :minngsize ';
+        $input_arr[':minngsize'] = $minngsize;
     }
     if (!$adult && !$admin) {
-        $Qsearch .= " AND \"adult\" != 1";
+        $Qsearch .= ' AND "adult" != :adult';
+        $input_arr[':adult'] = ADULT_ON;
     }
 
     //$time = time();
@@ -87,10 +88,12 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
         'groups."minsetsize" AS admin_minsetsize, ' .
         'groups."maxsetsize" AS admin_maxsetsize, ' .
         '"last_updated" AS timestamp ' .
-        "FROM groups LEFT JOIN usergroupinfo ON groups.\"ID\" = \"groupid\" AND \"userid\" = '$userid' " .
+        'FROM groups LEFT JOIN usergroupinfo ON groups."ID" = "groupid" AND "userid" = :userid ' .
         "WHERE 1=1 $Qsearch " .
         "ORDER BY $order $order_dir";
-    $res = $db->select_query($query, $perpage, $offset);
+    $input_arr[':userid'] = $userid;
+
+    $res = $db->select_query($query, $perpage, $offset, $input_arr);
     if ($res === FALSE) {
         $res = array();
     }
@@ -103,7 +106,7 @@ function build_newsgroup_query_total(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     global $LN;
     $minngsize = get_pref($db, 'minngsize', $userid);
-    $cnt = count_active_ng($db);
+    $group_count = count_active_ng($db);
     $search = utf8_decode(trim(get_request('search')));
     $adult = urd_user_rights::is_adult($db, $userid);
     $admin =  urd_user_rights::is_admin($db, $userid);
@@ -112,28 +115,31 @@ function build_newsgroup_query_total(DatabaseConnection $db, $userid)
 
     // Search google style:
     $Qsearch = '';
-    $search = str_replace('*', ' ', $search);
+    $input_arr = array();
+    $search = trim(str_replace('*', ' ', $search));
     $keywords = explode(' ', $search);
     $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
-    foreach ($keywords as $keyword) {
+    foreach ($keywords as $idx => $keyword) {
+        $keyword = trim($keyword);
         if ($keyword == '') { continue; }
-        $k = "%{$keyword}%";
-        $db->escape($k, TRUE);
-        $Qsearch .= " AND \"name\" $search_type $k ";
+        $Qsearch .= " AND \"name\" $search_type :keyword_$idx ";
+        $input_arr[":keyword_$idx"] = "%{$keyword}%";
     }
     // Default = we show only active groups:
-    if ($cnt != 0 && $search == '') {
-        $Qsearch .= ' AND "active"=1 ';
+    if ($search == '' && $group_count > 0) {
+        $Qsearch .= ' AND "active" = :active ';
+        $input_arr[':active'] = newsgroup_status::NG_SUBSCRIBED;
     } elseif ($minngsize > 0 && $search_all != '0') {
-        $Qsearch .= " AND \"postcount\" > $minngsize ";
+        $Qsearch .= ' AND "postcount" > :minngsize ';
+        $input_arr[':minngsize'] = $minngsize;
     }
     if (!$adult && !$admin) {
-        $Qsearch .= " AND \"adult\" != 1";
+        $Qsearch .= ' AND "adult" != :adult ';
+        $input_arr[':adult'] = ADULT_ON;
     }
 
     $query = "COUNT(\"name\") AS cnt FROM groups WHERE 1=1 $Qsearch";
-
-    $res = $db->select_query($query);
+    $res = $db->select_query($query, $input_arr);
     if ($res === FALSE || !isset($res[0]['cnt'])) {
         return FALSE;
     }
@@ -184,7 +190,7 @@ function subscribe_group(DatabaseConnection $db, urdd_client $uc, $userid, $id, 
     if ($expire == '' || $expire == 0) {
         $expire = $def_expire;
     }
-    verify_expire($expire, $name);
+    verify_expire($db, $expire, $name);
     try { 
         $admin_minsetsize = unformat_size($admin_minsetsize, 1024, 'm');
         $admin_maxsetsize = unformat_size($admin_maxsetsize, 1024, 'm');
@@ -231,23 +237,132 @@ function set_ng_value(DatabaseConnection $db, $group_id, $option, $value)
     $db->update_query_2('groups', array($option=>$value), '"ID"=?', array($group_id));
 }
 
-try {
+function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
+{
+    global $periods, $LN, $smarty, $prefs;
     $offset = get_request('offset', 0);
     if (!is_numeric($offset)) {
         $offset = 0;
     }
 
+  
+    $categories = get_categories($db, $userid);
+    $allgroups = array();
+    $res = build_newsgroup_query($db, $userid, $offset, $retvals);
+    $unsubscribed = $retvals[0];
+    $order = get_request('order', 'name');
+    if ($order == '') { 
+        $order = 'name'; 
+    }
+    $order_dir = get_post('order_dir', '');
+    $page_tab = get_post('page_tab', $isadmin ? 'admin' : 'user');
+    $search = utf8_decode(trim(get_request('search', '')));
+    $search_all = get_post('search_all', '');
+
+    list ($pages, $currentpage, $lastpage) = build_newsgroup_skipper($db, $userid, $offset);
+    $def_exp = get_config($db, 'default_expire_time');
+    $number = $offset;
+    $hidden_groups = SPOTS_GROUPS::get_hidden_groups();
+
+    foreach ($res as $row) {
+        $thisng = array();
+        $id = $row['ID'];
+        $active = $row['active'];
+        if (in_array($row['name'], $hidden_groups) && ($search != $row['name'])) {
+            continue;
+        }
+
+        $description = trim (str_replace('?', '', $row['description']));
+        $thisng['id'] = $id;
+        $thisng['active_val'] = $active;
+        $thisng['category'] = utf8_encode($row['category']);
+        $thisng['description'] = $description;
+        list($val, $suf) = format_size($row['admin_minsetsize'], 'h', '');
+        $thisng['admin_minsetsize'] =  $val . $suf;
+        list($val, $suf) = format_size($row['admin_maxsetsize'], 'h', '');
+        $thisng['admin_maxsetsize'] =  $val . $suf;
+
+        $thisng['name'] = shorten_newsgroup_name ($row['name'], 0);
+        $thisng['long_name'] = $row['name'];
+        if ($active == 0) {
+            $thisng['expire'] = $def_exp;
+        } else {
+            $thisng['expire'] = $row['expire'];
+        }
+        list($postcount, $suffix) = format_size($row['postcount'], 'h', '', 1000);
+        $thisng['postcount'] = $postcount . $suffix;
+        $lastupdated = $row['timestamp'];
+        $refresh_time = $row['refresh_time'];
+        $refresh_period = $row['refresh_period'];
+
+        $time1 = $time2 = NULL;
+        if ($refresh_period > 0) {
+            $time1 = floor($refresh_time / 60);
+            $time2 = floor($refresh_time % 60);
+        }
+
+        $select = $refresh_period;
+
+        if ($lastupdated == 0) {
+            $lastupdated = '-';
+        } else {
+            $lastupdated = time() - $lastupdated;
+            $lastupdated = readable_time($lastupdated, 'largest_two');
+        }
+        $thisng['lastupdated'] = $lastupdated;
+
+        $thisng['select'] = $select;
+        $thisng['adult'] = $row['adult'] == ADULT_ON ? 1 : 0;
+        $thisng['number'] = ++$number;
+        $thisng['time1'] = $time1;
+        $thisng['time2'] = $time2;
+        $thisng['visible'] = $row['visible'] === NULL ? 1 : $row['visible'];
+        $thisng['minsetsize'] = $row['minsetsize'] === NULL ? 0: $row['minsetsize'];
+        list($val, $suf) = format_size($thisng['minsetsize'], 'h', '');
+        $thisng['minsetsize'] =  $val . $suf;
+        $thisng['maxsetsize'] = $row['maxsetsize'] === NULL ? 0: $row['maxsetsize'];
+        list($val, $suf) = format_size($thisng['maxsetsize'], 'h', '');
+        $thisng['maxsetsize'] =  $val . $suf;
+        $allgroups[] = $thisng;
+    }
+
+    list($pkeys, $ptexts) = $periods->get_periods();
+
+    $urdd_online = $uc->is_connected();
+    $message = '';
+    if ($isadmin && !$urdd_online) {
+        $message = $LN['enableurddfirst'];
+    }
+    $uc->disconnect();
+
+    init_smarty('', 0);
+
+    $smarty->assign('urdd_online',	    (int) $urdd_online);
+    $smarty->assign('periods_texts',	$ptexts);
+    $smarty->assign('periods_keys',		$pkeys);
+    $smarty->assign('categories',		$categories);
+    $smarty->assign('NG_SUBSCRIBED', 	newsgroup_status::NG_SUBSCRIBED);
+    $smarty->assign('sort',		        $order);
+    $smarty->assign('sort_dir',		    $order_dir);
+    $smarty->assign('isadmin',		    (int) $isadmin);
+    $smarty->assign('page_tab',         $page_tab);
+    $smarty->assign('unsubscribed',		$unsubscribed);
+    $smarty->assign('pages',		    $pages);
+    $smarty->assign('currentpage',		$currentpage);
+    $smarty->assign('lastpage',		    $lastpage);
+    $smarty->assign('offset',		    $offset);
+    $smarty->assign('allgroups', 		$allgroups);
+    $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
+    $smarty->assign('referrer', 		basename(__FILE__, '.php'));
+
+    $contents = $smarty->fetch('ajax_groups.tpl');
+    return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message'=>$message));
+}
+
+try {
+    $cmd = get_request('cmd');
     $uprefs = load_config($db);
     $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'],$userid);
-    $urdd_online = $uc->is_connected();
-    $categories = get_categories($db, $userid);
-
-    $max_expire = $uprefs['maxexpire'];
-    $cmd = get_request('cmd');
-
-
-    $minsetsize_pref = get_pref($db, 'minsetsize', $userid, 0);
-    $maxsetsize_pref = get_pref($db, 'maxsetsize', $userid, 0);
 
     $message = '';
     switch ($cmd) {
@@ -290,7 +405,7 @@ try {
                 $option = get_post('option');
                 $value = get_post('value');
                 if ($option == 'expire') {
-                    verify_expire($value, $name);
+                    verify_expire($db, $value, $name);
                 }
                 set_ng_value($db, $group_id, $option, $value);
                 $message = $LN['saved'];
@@ -376,7 +491,7 @@ try {
                 $time2 = get_request('time2');
                 $adult = get_request('adult');
                 $expire = get_request('expire');
-                verify_expire($expire, $name);
+                verify_expire($db, $expire, $name);
                 $admin_minsetsize = get_request('admin_minsetsize');
                 $admin_maxsetsize = get_request('admin_maxsetsize');
                 subscribe_group($db, $uc, $userid, $groupid, $period, $time1, $time2, $adult, $expire, $admin_minsetsize, $admin_maxsetsize);
@@ -395,114 +510,7 @@ try {
             }
             break;
         case 'show':
-            $allgroups = array();
-            $res = build_newsgroup_query($db, $userid, $offset, $retvals);
-            $unsubscribed = $retvals[0];
-            $order = get_request('order', 'name');
-            if ($order == '') { 
-                $order = 'name'; 
-            }
-            $order_dir = get_post('order_dir', '');
-            $page_tab = get_post('page_tab', $isadmin ? 'admin' : 'user');
-            $search = utf8_decode(trim(get_request('search', '')));
-            $search_all = get_post('search_all', '');
-
-            list ($pages, $currentpage, $lastpage) = build_newsgroup_skipper($db, $userid, $offset);
-            $def_exp = get_config($db, 'default_expire_time');
-            $number = $offset;
-            $hidden_groups = SPOTS_GROUPS::get_hidden_groups();
-
-            foreach ($res as $row) {
-                $thisng = array();
-                $id = $row['ID'];
-                $active = $row['active'];
-                if (in_array($row['name'], $hidden_groups) && ($search != $row['name'])) {
-                    continue;
-                }
-
-                $description = trim (str_replace('?', '', $row['description']));
-                $thisng['id'] = $id;
-                $thisng['active_val'] = $active;
-                $thisng['category'] = utf8_encode($row['category']);
-                $thisng['description'] = $description;
-                list($val, $suf) = format_size($row['admin_minsetsize'], 'h', '');
-                $thisng['admin_minsetsize'] =  $val . $suf;
-                list($val, $suf) = format_size($row['admin_maxsetsize'], 'h', '');
-                $thisng['admin_maxsetsize'] =  $val . $suf;
-
-                $thisng['name'] = shorten_newsgroup_name ($row['name'], 0);
-                if ($active == 0) {
-                    $thisng['expire'] = $def_exp;
-                } else {
-                    $thisng['expire'] = $row['expire'];
-                }
-                list($postcount, $suffix) = format_size($row['postcount'], 'h', '', 1000);
-                $thisng['postcount'] = $postcount . $suffix;
-                $lastupdated = $row['timestamp'];
-                $refresh_time = $row['refresh_time'];
-                $refresh_period = $row['refresh_period'];
-
-                $time1 = $time2 = NULL;
-                if ($refresh_period > 0) {
-                    $time1 = floor($refresh_time / 60);
-                    $time2 = floor($refresh_time % 60);
-                }
-
-                $select = $refresh_period;
-
-                if ($lastupdated == 0) {
-                    $lastupdated = '-';
-                } else {
-                    $lastupdated = time() - $lastupdated;
-                    $lastupdated = readable_time($lastupdated, 'largest_two');
-                }
-                $thisng['lastupdated'] = $lastupdated;
-
-                $thisng['select'] = $select;
-                $thisng['adult'] = $row['adult'] == ADULT_ON ? 1 : 0;
-                $thisng['number'] = ++$number;
-                $thisng['time1'] = $time1;
-                $thisng['time2'] = $time2;
-                $thisng['visible'] = $row['visible'] === NULL ? 1 : $row['visible'];
-                $thisng['minsetsize'] = $row['minsetsize'] === NULL ? 0: $row['minsetsize'];
-                list($val, $suf) = format_size($thisng['minsetsize'], 'h', '');
-                $thisng['minsetsize'] =  $val . $suf;
-                $thisng['maxsetsize'] = $row['maxsetsize'] === NULL ? 0: $row['maxsetsize'];
-                list($val, $suf) = format_size($thisng['maxsetsize'], 'h', '');
-                $thisng['maxsetsize'] =  $val . $suf;
-                $allgroups[] = $thisng;
-            }
-
-            list($pkeys, $ptexts) = $periods->get_periods();
-
-            $message = '';
-            if ($isadmin && !$urdd_online) {
-                $message = $LN['enableurddfirst'];
-            }
-            $uc->disconnect();
-
-            init_smarty('', 0);
-
-            $smarty->assign('urdd_online',	    (int) $urdd_online);
-            $smarty->assign('periods_texts',	$ptexts);
-            $smarty->assign('periods_keys',		$pkeys);
-            $smarty->assign('categories',		$categories);
-            $smarty->assign('NG_SUBSCRIBED', 	newsgroup_status::NG_SUBSCRIBED);
-            $smarty->assign('sort',		        $order);
-            $smarty->assign('sort_dir',		    $order_dir);
-            $smarty->assign('isadmin',		    (int) $isadmin);
-            $smarty->assign('page_tab',         $page_tab);
-            $smarty->assign('unsubscribed',		$unsubscribed);
-            $smarty->assign('pages',		    $pages);
-            $smarty->assign('currentpage',		$currentpage);
-            $smarty->assign('lastpage',		    $lastpage);
-            $smarty->assign('offset',		    $offset);
-            $smarty->assign('allgroups', 		$allgroups);
-            $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
-            $smarty->assign('referrer', 		basename(__FILE__, '.php'));
-
-            $contents = $smarty->fetch('ajax_groups.tpl');
-            return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message'=>$message));
+            show_groups($db, $uc, $userid, $isadmin);
             break;
         default:
             throw new exception($LN['error_invalidaction'] );

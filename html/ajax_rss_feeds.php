@@ -53,28 +53,27 @@ function build_rss_query(DatabaseConnection $db, $userid, $offset, &$retvals = N
     $retvals[0] = $unsubscribed;
 
     // Search google style:
+    $input_arr = array();
     $Qsearch = '';
-    $search = str_replace('*', ' ', $search);
+    $search = trim(str_replace('*', ' ', $search));
     $keywords = explode(' ', $search);
-    $input_arr = array($userid);
     $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
-    foreach ($keywords as $keyword) {
+    foreach ($keywords as $idx => $keyword) {
         $keyword = trim($keyword);
-        if ($keyword == '') {
-            continue;
-        }
-        $input_arr[] = "%{$keyword}%";
-        $Qsearch .= " AND \"name\" $search_type ? ";
+        if ($keyword == '') { continue; }
+        $Qsearch .= " AND \"name\" $search_type :keyword_$idx ";
+        $input_arr[":keyword_$idx"] = "%{$keyword}%";
     }
     // Default = we show only active groups:
     if ($search_all != '0') {
-        $Qsearch .= ' AND "subscribed"=\'1\' ';
+        $Qsearch .= ' AND "subscribed" = :subscribed ';
+        $input_arr[':subscribed'] = rssfeed_status::RSS_SUBSCRIBED;
     }
-    //$time = time();
     $query = '*, rss_urls."id" AS rss_id, "last_updated" AS timestamp ' .
-        'FROM rss_urls LEFT JOIN userfeedinfo ON rss_urls."id" = "feedid" AND "userid" = ? ' .
+        'FROM rss_urls LEFT JOIN userfeedinfo ON rss_urls."id" = "feedid" AND "userid" = :userid ' .
         "WHERE 1=1 $Qsearch " .
         "ORDER BY $order $order_dir";
+    $input_arr[':userid'] = $userid;
     $res = $db->select_query($query, $perpage, $offset, $input_arr);
     if ($res === FALSE) {
         $res = array();
@@ -96,17 +95,19 @@ function build_rss_query_total(DatabaseConnection $db, $userid)
     $keywords = explode(' ', $search);
     $inputarr = array();
     $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
-    foreach ($keywords as $keyword) {
-        $inputarr[] = "%{$keyword}%";
-        $Qsearch .= " AND \"name\" $search_type ? ";
+    foreach ($keywords as $idx => $keyword) {
+        $keyword = trim($keyword);
+        if ($keyword == '') { continue; }
+        $Qsearch .= " AND \"name\" $search_type :keyword_$idx ";
+        $input_arr[":keyword_$idx"] = "%{$keyword}%";
     }
     // Default = we show only active groups:
     if ($search_all != '0') {
-        $Qsearch .= ' AND "subscribed"=1 ';
+        $Qsearch .= ' AND "subscribed" = :subscribed ';
+        $input_arr[':subscribed'] = rssfeed_status::RSS_SUBSCRIBED;
     }
-
-    $query = "COUNT(\"name\") AS cnt FROM rss_urls WHERE 1=1 $Qsearch";
-    $res = $db->select_query($query, $inputarr);
+    $query = "COUNT(*) AS cnt FROM rss_urls WHERE 1=1 $Qsearch";
+    $res = $db->select_query($query, $input_arr);
     if ($res === FALSE || !isset($res[0]['cnt'])) {
         return FALSE;
     }
@@ -160,14 +161,14 @@ function subscribe_feed(DatabaseConnection $db, urdd_client $uc, $userid, $feedi
     if ($expire == '' || $expire == 0) {
         $expire = $def_expire;
     }
-    verify_expire($expire, $name);
+    verify_expire($db, $expire, $name);
     $period = $periods->get($period);
     if ($period === FALSE) {
         throw new exception($name . ': ' . $LN['error_invalidupdatevalue']);
     }
     remove_schedule($db, $uc, $feedid, urdd_protocol::COMMAND_UPDATE);
     if ($period->get_interval() !== NULL) {
-                // Sanity checks:
+        // Sanity checks:
         verify_time($time1, $time2);
         $time1 %= 24;
         $time2 %= 60;
@@ -189,7 +190,10 @@ function unsubscribe_feed(DatabaseConnection $db, urdd_client $uc, $feedid)
     remove_rss_schedule($db, $uc, $feedid, urdd_protocol::COMMAND_UPDATE_RSS );
 }
 
-try {
+function show_feeds(DatabaseConnection $db, $userid, $isadmin)
+{
+    global $periods, $LN, $smarty, $prefs;
+
     $offset = get_request('offset', 0);
     if (!is_numeric($offset)) {
         $offset = 0;
@@ -201,8 +205,101 @@ try {
 
     $categories = get_categories($db, $userid);
 
-    $minsetsize_pref = get_pref($db, 'minsetsize', $userid, 0);
-    $maxsetsize_pref = get_pref($db, 'maxsetsize', $userid, 0);
+    $allfeeds = array();
+    $res = build_rss_query($db, $userid, $offset, $retvals);
+    $unsubscribed = $retvals[0];
+    $order = get_post('order', 'name');
+    if ($order == '') { $order = 'name'; }
+    $page = get_post('page_tab', $isadmin ? 'admin':'user');
+    $order_dir = get_post('order_dir', '');
+    $search = utf8_decode(trim(get_request('search', '')));
+    $search_all = get_post('search_all', '');
+
+    list ($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
+    $number = $offset;
+    foreach ($res as $row) {
+        $this_rss = array();
+        $id = $row['rss_id'];
+        $active = $row['subscribed'];
+        $this_rss['id'] = $id;
+        $this_rss['active_val'] = $active;
+        $this_rss['url'] = $row['url'];
+        $this_rss['name'] = $row['name'];
+        $this_rss['adult'] = $row['adult'] == ADULT_ON ? 1 : 0;
+        $this_rss['category'] = $row['category'];
+        $this_rss['expire'] = $row['expire'];
+        $this_rss['feedcount'] = $row['feedcount'];
+        $this_rss['authentication'] = ($row['password'] != '' && $row['username'] != '') ? 1 : 0;
+        $lastupdated = $row['timestamp'];
+        $refresh_time = $row['refresh_time'];
+
+        $refresh_period = $row['refresh_period'];
+
+        if ($refresh_period > 0) {
+            $time1 = floor($refresh_time / 60);
+            $time2 = floor($refresh_time % 60);
+        } else {
+            $time1 = $time2 = NULL;
+        }
+        $select = $refresh_period;
+
+        if ($lastupdated == 0) {
+            $lastupdated = '-';
+        } else {
+            $lastupdated = time() - $lastupdated;
+            $lastupdated = readable_time($lastupdated, 'largest_two');
+        }
+        $this_rss['lastupdated'] = $lastupdated;
+
+        $this_rss['select'] = $select;
+        $this_rss['number'] = ++$number;
+        $this_rss['time1'] = $time1;
+        $this_rss['time2'] = $time2;
+        $this_rss['visible'] = $row['visible'] === NULL ? 1 : $row['visible'];
+        $this_rss['minsetsize'] = $row['minsetsize'] === NULL ? 0: $row['minsetsize'];
+        list($val, $suf) = format_size($this_rss['minsetsize'], 'h', '');
+        $this_rss['minsetsize'] =  $val . $suf;
+
+        $this_rss['maxsetsize'] = $row['maxsetsize'] === NULL ? 0: $row['maxsetsize'];
+        list($val, $suf) = format_size($this_rss['maxsetsize'], 'h', '');
+        $this_rss['maxsetsize'] =  $val . $suf;
+
+        $allfeeds[] = $this_rss;
+    }
+
+    list($pkeys, $ptexts) = $periods->get_periods();
+
+    $message = '';
+    if ($isadmin && !$urdd_online) {
+        $message = $LN['enableurddfirst'];
+    }
+
+    init_smarty('', 0);
+    $smarty->assign('periods_texts',	$ptexts);
+    $smarty->assign('categories',		$categories);
+    $smarty->assign('urdd_online',	    (int) $urdd_online);
+    $smarty->assign('periods_keys',		$pkeys);
+    $smarty->assign('RSS_SUBSCRIBED', 	rssfeed_status::RSS_SUBSCRIBED);
+    $smarty->assign('sort',	    	    $order);
+    $smarty->assign('sort_dir',		    $order_dir);
+    $smarty->assign('search',		    $search);
+    $smarty->assign('page_tab',         $page);
+    $smarty->assign('message',		    $message);
+    $smarty->assign('isadmin',		    (int) $isadmin);
+    $smarty->assign('unsubscribed',		$unsubscribed);
+    $smarty->assign('pages',		    $pages);
+    $smarty->assign('currentpage',		$currentpage);
+    $smarty->assign('lastpage',		    $lastpage);
+    $smarty->assign('offset',		    $offset);
+    $smarty->assign('allfeeds', 		$allfeeds);
+    $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
+    $smarty->assign('referrer', 		basename(__FILE__, '.php'));
+
+    $contents = $smarty->fetch('ajax_rss_feeds.tpl');
+    return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message' => $message));
+}
+
+try {
     $cmd = get_request('cmd');
     $message = '';
     switch($cmd) {
@@ -242,7 +339,7 @@ try {
                 $time2 = get_request('time2');
                 $adult = get_request('adult');
                 $expire = get_request('expire');
-                verify_expire($expire, $name);
+                verify_expire($db, $expire, $name);
                 subscribe_feed($db, $uc, $userid, $feedid, $period, $time1, $time2, $adult, $expire);
                 $message = $LN['saved'];
             } else {
@@ -338,7 +435,7 @@ try {
                     $time = $time1 * 60 + $time2; // Used to display the update time, is in mins after 0:00
                     $nicetime = $time1 . ':' . $time2;
 
-                    remove_rss_schedule($db, $uc, $feed_id, urdd_protocol::COMMAND_UPDATE_RSS );
+                    remove_rss_schedule($db, $uc, $feed_id, urdd_protocol::COMMAND_UPDATE_RSS);
                 }
                 set_period_rss($uc, $db, $feed_id, $nicetime, $period->get_interval(), $time, $period->get_id());
                 $message = $LN['saved'];
@@ -348,98 +445,8 @@ try {
             break;
 
         case 'show':
-            $allfeeds = array();
-            $res = build_rss_query($db, $userid, $offset, $retvals);
-            $unsubscribed = $retvals[0];
-            $order = get_post('order', 'name');
-            if ($order == '') { $order = 'name'; }
-            $page = get_post('page_tab', $isadmin ? 'admin':'user');
-            $order_dir = get_post('order_dir', '');
-            $search = utf8_decode(trim(get_request('search', '')));
-            $search_all = get_post('search_all', '');
-
-            list ($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
-            $number = $offset;
-            foreach ($res as $row) {
-                $this_rss = array();
-                $id = $row['rss_id'];
-                $active = $row['subscribed'];
-                $this_rss['id'] = $id;
-                $this_rss['active_val'] = $active;
-                $this_rss['url'] = $row['url'];
-                $this_rss['name'] = $row['name'];
-                $this_rss['adult'] = $row['adult'] == ADULT_ON ? 1 : 0;
-                $this_rss['category'] = $row['category'];
-                $this_rss['expire'] = $row['expire'];
-                $this_rss['feedcount'] = $row['feedcount'];
-                $this_rss['authentication'] = ($row['password'] != '' && $row['username'] != '') ? 1 : 0;
-                $lastupdated = $row['timestamp'];
-                $refresh_time = $row['refresh_time'];
-
-                $refresh_period = $row['refresh_period'];
-
-                if ($refresh_period > 0) {
-                    $time1 = floor($refresh_time / 60);
-                    $time2 = floor($refresh_time % 60);
-                } else {
-                    $time1 = $time2 = NULL;
-                }
-                $select = $refresh_period;
-
-                if ($lastupdated == 0) {
-                    $lastupdated = '-';
-                } else {
-                    $lastupdated = time() - $lastupdated;
-                    $lastupdated = readable_time($lastupdated, 'largest_two');
-                }
-                $this_rss['lastupdated'] = $lastupdated;
-
-                $this_rss['select'] = $select;
-                $this_rss['number'] = ++$number;
-                $this_rss['time1'] = $time1;
-                $this_rss['time2'] = $time2;
-                $this_rss['visible'] = $row['visible'] === NULL ? 1 : $row['visible'];
-                $this_rss['minsetsize'] = $row['minsetsize'] === NULL ? 0: $row['minsetsize'];
-                list($val, $suf) = format_size($this_rss['minsetsize'], 'h', '');
-                $this_rss['minsetsize'] =  $val . $suf;
-
-                $this_rss['maxsetsize'] = $row['maxsetsize'] === NULL ? 0: $row['maxsetsize'];
-                list($val, $suf) = format_size($this_rss['maxsetsize'], 'h', '');
-                $this_rss['maxsetsize'] =  $val . $suf;
-
-                $allfeeds[] = $this_rss;
-            }
-
-            list($pkeys, $ptexts) = $periods->get_periods();
-            init_smarty('', 0);
-
-            $message = '';
-            if ($isadmin && !$urdd_online) {
-                $message = $LN['enableurddfirst'];
-            }
-
-            $smarty->assign('periods_texts',	$ptexts);
-            $smarty->assign('categories',		$categories);
-            $smarty->assign('urdd_online',	    (int) $urdd_online);
-            $smarty->assign('periods_keys',		$pkeys);
-            $smarty->assign('RSS_SUBSCRIBED', 	rssfeed_status::RSS_SUBSCRIBED);
-            $smarty->assign('sort',	    	    $order);
-            $smarty->assign('sort_dir',		    $order_dir);
-            $smarty->assign('search',		    $search);
-            $smarty->assign('page_tab',         $page);
-            $smarty->assign('message',		    $message);
-            $smarty->assign('isadmin',		    (int) $isadmin);
-            $smarty->assign('unsubscribed',		$unsubscribed);
-            $smarty->assign('pages',		    $pages);
-            $smarty->assign('currentpage',		$currentpage);
-            $smarty->assign('lastpage',		    $lastpage);
-            $smarty->assign('offset',		    $offset);
-            $smarty->assign('allfeeds', 		$allfeeds);
-            $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
-            $smarty->assign('referrer', 		basename(__FILE__, '.php'));
-
-            $contents = $smarty->fetch('ajax_rss_feeds.tpl');
-            return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message'=>$message));
+            show_feeds($db, $userid, $isadmin);
+            break;
         default:
             throw new exception($LN['error_invalidaction']);
     }

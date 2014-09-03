@@ -19,7 +19,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_usenet_servers.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+
+{extends file="head.tpl"}
+{block name=contents}
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$title}</h3>
 
@@ -28,20 +30,24 @@
 <input type="hidden" name="action" id="action" value=""/></div>
 
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:return submit_enter(event, show_usenet_servers);"/>
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_usenet_servers();"/></div>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
+<input type="button" value="{$LN_search}" id="search_button" class="submitsmall"/></div>
 </div>
 
 <div id="usenetserversdiv">
-<script type="text/javascript">
-$(document).ready(function() {
-    show_usenet_servers();
-    $('#searchbar').html( $('#searchformdiv').html());
-});
-</script>
 </div>
 <div><br/></div>
 
 <p>&nbsp;</p>
 
-{include file="foot.tpl"}
+<script type="text/javascript">
+$(document).ready(function() {
+    show_usenet_servers();
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
+    $('#search').keypress( function(e) { return submit_enter(e, show_usenet_servers); });
+    $('#search_button').click( function() { show_usenet_servers(); });
+});
+</script>
+{/block}
+

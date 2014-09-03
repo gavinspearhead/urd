@@ -20,7 +20,8 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_log.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_log_title|capitalize}</h3>
@@ -34,7 +35,7 @@
 <select name="log_level" id="log_level">
 {html_options options=$log_str selected=$log_level}
 </select>
-<input type="submit" name="submit_button" value="{$LN_search}" class="vbot submitsmall" onclick="javascript:show_logs();"/>
+<input type="submit" name="submit_button" value="{$LN_search}" id="search_button" class="vbot submitsmall"/>
 </div>
 </div>
 
@@ -45,8 +46,8 @@
 $(document).ready(function() {
         show_logs();
         $('#searchbar').html( $('#searchformdiv').html());
+        $('#search_button').click( function() { show_logs(); });
+        $('#search').keypress( function(e) { return submit_enter(e, show_logs); });
 });
 </script>
-
-
-{include file="foot.tpl"}
+{/block}

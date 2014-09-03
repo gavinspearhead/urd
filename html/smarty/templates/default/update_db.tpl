@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {* Smarty *}{*
  *  vim:ts=4:expandtab:cindent
  *  This file is part of Urd.
@@ -20,7 +21,7 @@
  * $Author: gavinspearhead $
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html>
 <head>
 <link rel="stylesheet" href="{$CSSDIR}/_basic.css" type="text/css"/>
 <link rel="stylesheet" href="{$CSSDIR}/{if $stylesheet != ''}{$stylesheet|replace:".css":""}/{$stylesheet}.css{else}light/light.css{/if}" type="text/css"/>
@@ -40,13 +41,16 @@
 <div id="topcontent">
 <div id="contentout">
 <div id="textcontent">
-<div class="closebutton buttonlike noborder fixedright down5" onclick="javascript:history.go(-1);"></div>
+<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
 <h3 class="title">{$LN_update_database}</h3>
 <div id="updatedbdiv">
 {$LN_loading}
 </div>
 <script type="text/javascript">
-start_updatedb();
+$(document).ready(function() {
+    start_updatedb();
+    $('#close_button').click(function() { history.go(-1); });
+});
 </script>
 </div>
 </div>

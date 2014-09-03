@@ -364,11 +364,11 @@ try {
 
             $search = $o_search = (trim(get_request('search', '')));
             $Qsearch = '';
+            $input_arr = array();
             if ($search != '') {
-                $search = "%$search%";
-                $db->escape($search, TRUE);
                 $like = $db->get_pattern_search_command('LIKE');
-                $Qsearch = " WHERE \"name\" $like $search ";
+                $Qsearch = " WHERE \"name\" $like :search ";
+                $input_arr[':search'] = "%$search%";
             }
             if (!in_array($sort, array('name', 'connection', 'authentication', 'username', 'posting', 'priority', 'threads'))) {
                 $sort = 'name';
@@ -378,7 +378,7 @@ try {
             }
 
             $sql = "* FROM usenet_servers $Qsearch ORDER BY $sort $sort_dir";
-            $res = $db->select_query($sql);
+            $res = $db->select_query($sql, $input_arr);
             if ($res == FALSE) {
                 $res = array();
             }

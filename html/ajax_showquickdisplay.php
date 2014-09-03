@@ -28,26 +28,6 @@ $pathqd = realpath(dirname(__FILE__));
 
 require_once "$pathqd/../functions/ajax_includes.php";
 
-function link_to_url($description)
-{
-    $position = 0;
-    while (preg_match('|https?:\/\/[-a-z0-9_:./&%!@#$?^()+=\\;]+|i', $description, $matches, PREG_OFFSET_CAPTURE, $position)) {
-        list($url, $urlposition) = $matches[0];
-        $d1 = substr($description, 0, $urlposition);
-        $l = strlen($url);
-        $d2 = substr($description, $urlposition + $l);
-        $new_url = $url;
-        if ((strpos(substr($d1, -10), '[url]') === FALSE) && (strpos(substr($d2, 0, 10), '[/url]') === FALSE)) {
-            $new_url = '[url]' . $url . '[/url]';
-        }
-        $new_l = strlen($new_url);
-        $description = $d1 . $new_url . $d2;
-        $position = $urlposition + $new_l;
-    }
-
-    return $description;
-}
-
 function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binarytype, $binarytypes)
 {
     assert(is_numeric($userid));
@@ -63,7 +43,6 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $row = $res[0];
     $show_image = get_pref($db, 'show_image', $userid, FALSE);
     $description = db_decompress($row['description']);
-//    var_dump($description);
     $description = strip_tags($description);
     $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
     $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
@@ -100,7 +79,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
             continue;
         }
         $c = db_decompress($comment['comment']);
-        $c = htmlentities(strip_tags($c));
+        $c = htmlentities(strip_tags($c), ENT_IGNORE, 'UTF-8', FALSE);
         $c = link_to_url($c);
         $ubb = new UbbParse($c);
         $c = $ubb->parse();

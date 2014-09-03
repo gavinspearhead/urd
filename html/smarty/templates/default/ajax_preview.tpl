@@ -20,9 +20,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_preview.tpl 3116 2014-06-25 22:01:04Z gavinspearhead@gmail.com $
  *}
-{* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$title_str}</div>
+{extends file="popup.tpl"}
+{block name=title}{$title_str}{/block}
+{block name=contents}
     <div class="centered">
 {if $finished == 0}
     <div class="waitingimg centered"></div>
@@ -46,7 +46,7 @@
         <input type="hidden" value="{$do_reload|escape}" id="do_reload"/>
 		<input type="hidden" value="{$filetype|escape}" id="filetype"/>
 		<input type="hidden" value="{$path|escape}{$file|escape}" id="file"/>
-		{if $isnzb eq 0}
+		{if $filetype != 'nzb'}
             <p>
 			{$LN_preview_autodisp}<br/>
             </p>
@@ -59,7 +59,7 @@
                 <span class="buttonlike" onclick="javascript:jump('getfile.php?preview=1&amp;file={$path|escape}{$file|escape}')";>{$file_utf8}</span>
             {/if}
             <input type="hidden" id="title_str" value="{$title_str|escape}"/>
-		{else }
+		{else}
 			{$LN_preview_view}:<br/>
 			<span class="buttonlike" onclick="javascript:jump('getfile.php?preview=1&amp;file={$path|escape}{$file|escape}')";>{$file_utf8}</span><br/>
 			<p>
@@ -80,6 +80,5 @@
     </div>
 {/if}
 <p>
-
 </p>
-</div>
+{/block}

@@ -440,6 +440,7 @@ $LN['ng_tooltip_admin_maxsetsize']    = 'La taille maximum qu&#39;un set peut av
 $LN['ng_admin_minsetsize']  = 'Limite basse contre le spam';
 $LN['ng_tooltip_admin_minsetsize']    = 'Taille minimum qu&#39;un ensemble doit avoir pour &ecirc;tre ajout&eacute; &agrave; la base - ajoutez le suffixe k, M, G, par ex. 100k ou 25G (contr&ocirc;le de spam)';
 $LN['ng_hide_empty']    = 'Cacher les groupes vides';
+$LN['ng_edit_group']        = 'Edit group';
 $LN['ng_adult']             = '18+';
 $LN['ng_tooltip_adult']     = 'Accessible uniquement lorsque l&#39;utilisateur a r&eacute;gl&eacute; le mode 18+';
 $LN['failed']           = 'erreur';

@@ -19,18 +19,19 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: transfers.tpl 2823 2013-04-27 22:55:09Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 <br/>
 {capture assign=selector}
 <div class="pref_selector">{strip}
 <ul class="tabs">
 {if $show_download neq 0 } 
-<li onclick="javascript:select_tab_transfers('downloads', 'transfers', 'downloads')" class="tab{if $active_tab == 'downloads'} tab_selected{/if}" id="downloads_bar">{$LN_transfers_downloads}
+<li class="tab{if $active_tab == 'downloads'} tab_selected{/if}" id="downloads_bar">{$LN_transfers_downloads}
 <input type="hidden" name="tabs" value="downloads"/>
 </li>
 {/if}
 {if ($poster neq 0 || $isadmin neq 0) && $show_post neq 0 }
-<li onclick="javascript:select_tab_transfers('uploads', 'transfers', 'uploads')" class="tab{if $active_tab == 'uploads'} tab_selected{/if}" id="uploads_bar">{$LN_transfers_posts}
+<li class="tab{if $active_tab == 'uploads'} tab_selected{/if}" id="uploads_bar">{$LN_transfers_posts}
 <input type="hidden" name="tabs" value="uploads"/>
 </li>
 {/if}
@@ -40,6 +41,12 @@
 </div>
 {/capture}
 
+<div id="searchformdiv" class="hidden">
+
+<input type="text" name="_search" placeholder="{$LN_search}" id="transfer_search"/>
+<input type="button" id="search" value="{$LN_search}" class="submitsmall"/>
+</div>
+
 {$selector}
 <div id="transfersdiv" class="prefix_transfers">
 </div>
@@ -47,7 +54,12 @@
 <script type="text/javascript">
 $(document).ready(function() {
     update_transfers();
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#uploads_bar').click(function() { select_tab_transfers('uploads', 'transfers', 'uploads'); });
+    $('#downloads_bar').click(function() { select_tab_transfers('downloads', 'transfers', 'downloads'); });
+    $('#search').click(function() { load_transfers(); } );
+    $('#transfer_search').keypress(function(e) { return submit_enter(e, load_transfers); } );
 });
 </script>
 
-{include file="foot.tpl"}
+{/block}

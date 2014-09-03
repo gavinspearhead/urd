@@ -349,16 +349,16 @@ try {
                 $sort_dir = 'asc';
             }
             $Qsearch = '';
+            $input_arr = array();
             if ($search != '') {
-                $search = "%$search%";
-                $db->escape($search, TRUE);
                 $like = $db->get_pattern_search_command('LIKE');
-                $Qsearch = " AND \"name\" $like $search ";
+                $Qsearch = " AND \"name\" $like :search ";
+                $input_arr[':search'] = "%$search%";
             }
 
             // Display:
             $sql = "* FROM users WHERE \"ID\" > 0 $Qsearch ORDER BY \"$sort\" $sort_dir";
-            $res = $db->select_query($sql);
+            $res = $db->select_query($sql, $input_arr);
             if (!is_array($res)) {
                 $res = array();
             }

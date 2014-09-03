@@ -1352,7 +1352,7 @@ function do_download(DatabaseConnection $db, action $item)
 function do_optimise(DatabaseConnection $db, action $item)
 {
     try {
-        $fetch_mode = $db->set_fetch_mode(ADODB_FETCH_NUM);
+        $fetch_mode = $db->set_fetch_mode(PDO::FETCH_NUM);
         $res = $db->get_tables();
         $total_rows = count($res);
         $cntr = $mtime = 0;

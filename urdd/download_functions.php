@@ -403,9 +403,8 @@ function update_dlinfo(DatabaseConnection $db, $dlid, $bytes)
 {
     assert(is_numeric($dlid));
     assert(is_numeric($bytes));
-    $db->escape($bytes, TRUE);
-    $sql = "UPDATE downloadinfo SET \"done_size\" = \"done_size\" + $bytes WHERE \"ID\" = ?";
-    $db->execute_query($sql, array($dlid));
+    $sql = 'UPDATE downloadinfo SET "done_size" = "done_size" + :bytes WHERE "ID" = :dlid';
+    $db->execute_query($sql, array(':dlid'=>$dlid, ':bytes'=>$bytes));
 }
 
 function complete_download(DatabaseConnection $db, server_data &$servers, action $item, $status)
@@ -465,7 +464,6 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
                         write_log('Could not send message', LOG_WARNING);
                     }
                 }
-
             }
         } elseif ($status == DOWNLOAD_CANCELLED) {
             $done_status = DOWNLOAD_CANCELLED; // a cancel is permanent

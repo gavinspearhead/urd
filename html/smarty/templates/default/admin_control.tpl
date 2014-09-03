@@ -19,20 +19,20 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_control.tpl 2823 2013-04-27 22:55:09Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
-
+{extends file="head.tpl"}
+{block name=contents}
 <div id="controlcontent">
-<div class="urdlogo2 floatright noborder buttonlike" onclick="javascript:jump('index.php');"></div>
+<div class="urdlogo2 floatright noborder buttonlike" id="urd_logo"></div>
 <h3 class="title">{$LN_control_title}</h3>
 <div id="controldiv" class="minsize100">
+</div>
 </div>
 
 <script type="text/javascript">
 $(document).ready(function() {
     update_control();
+    $('#urd_logo').click( function() { jump('index.php'); });
 });
 </script>
+{/block}
 
-</div>
-
-{include file="foot.tpl"}

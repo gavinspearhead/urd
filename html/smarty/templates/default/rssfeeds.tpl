@@ -20,8 +20,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: rssfeeds.tpl 3127 2014-06-27 22:14:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
 
+{extends file="head.tpl"}
+{block name=contents}
 <div id="searchformdiv" class="hidden">
 {strip}
 <h3 class="title">{$LN_feeds_rss|escape}</h3>
@@ -44,6 +45,11 @@
 
 <div id="rss_feeds_div"></div>
 
+<p>&nbsp;</p>
+<input type="hidden" name="type" id="type" value="rss"/>
+<input type="hidden" id="ln_saved" value="{$LN_pref_saved}"/>
+<input type="hidden" id="ln_failed" value="{$LN_failed}"/>
+
 <script type="text/javascript">
 $(document).ready(function() {
     load_rss_feeds();
@@ -53,10 +59,4 @@ $(document).ready(function() {
     $('#newsearch').keypress( function(e) { return submit_enter(e, load_rss_feeds); } );
 });
 </script>
-
-<p>&nbsp;</p>
-<input type="hidden" name="type" id="type" value="rss"/>
-<input type="hidden" id="ln_saved" value="{$LN_pref_saved}"/>
-<input type="hidden" id="ln_failed" value="{$LN_failed}"/>
-
-{include file="foot.tpl"}
+{/block}

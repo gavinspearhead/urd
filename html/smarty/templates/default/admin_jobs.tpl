@@ -19,7 +19,8 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_jobs.tpl 2972 2013-12-07 16:40:41Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_jobs_title}</h3>
@@ -32,7 +33,8 @@
 $(document).ready(function() {
     update_jobs();
     $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
 });
 </script>
 
-{include file="foot.tpl"}
+{/block}

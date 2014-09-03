@@ -20,45 +20,45 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_editfile.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
-
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">
+{extends file="popup.tpl"}
+{block name=title}
 {if $new_file}
-{$LN_viewfiles_newfile}
+    {$LN_viewfiles_newfile}
 {else}
-{$LN_edit_file} - {$filename|escape:htmlall|truncate:$maxstrlen:'...':false:true}
+    {$LN_edit_file} - {$filename|escape:htmlall|truncate:$maxstrlen:'...':false:true}
 {/if}
-</div>
-<div class="light padding10">
+
+{/block}
+{block name=contents}
+
+<div class="padding10">
 {if isset($message) && $message != ''}
-{$message}
+    {$message}
 {else}
-<br/>
-<table>
-{if $new_file}
-<tr>
-<td>{$LN_filename}:
-</td>
-<td >
-<input type="text" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile" required placeholder="{$LN_filename}" size="40"/>
-{urd_checkbox name="newdir" id="newdir" post_js="toggle_textarea('filecontents_editfile', 'newdir');"} {$LN_post_directory}
-<input type="hidden" value="new" name="newfile" id="newfile"/>
-<input type="hidden" value="{$LN_error_needfilenames}" name="filename_err" id="filename_err"/>
-</td></tr>
-<tr>
-<td colspan="2">
-{else}
-<tr>
-<td colspan="2">
-<input type="hidden" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile"/>
-{/if}
-<input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
-<textarea class="filecontents" name="filecontents" id="filecontents_editfile" required >{$file_contents}</textarea>
-</td></tr>
-<tr><td colspan="2"><input type="button" class="submitsmall floatright" value="{$LN_viewfiles_savefile}" onclick="javascript:save_file();"/>
-</td>
-</tr>
-
-</table>
-</div>
-{/if}
+    <br/>
+    <table>
+    <tr>
+    {if $new_file}
+        <td>{$LN_filename}: </td>
+        <td >
+        <input type="text" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile" required placeholder="{$LN_filename}" size="40"/>
+        {urd_checkbox name="newdir" id="newdir" post_js="toggle_textarea('filecontents_editfile', 'newdir');"} {$LN_post_directory}
+        <input type="hidden" value="new" name="newfile" id="newfile"/>
+        <input type="hidden" value="{$LN_error_needfilenames}" name="filename_err" id="filename_err"/>
+        </td></tr>
+        <tr>
+        <td colspan="2">
+    {else}
+        <td colspan="2">
+        <input type="hidden" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile"/>
+        {/if}
+        <input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
+        <textarea class="filecontents" name="filecontents" id="filecontents_editfile" required >{$file_contents}</textarea>
+        </td></tr>
+        <tr><td colspan="2"><input type="button" class="submitsmall floatright" value="{$LN_viewfiles_savefile}" onclick="javascript:save_file();"/>
+        </td>
+        </tr>
+        </table>
+        </div>
+    {/if}
+{/block}

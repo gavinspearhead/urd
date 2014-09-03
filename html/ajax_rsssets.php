@@ -84,25 +84,34 @@ class feed_viewer
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
+        $this->input_arr = array();
         $this->Qnewfeed1 = ' userfeedinfo."feedid" = rss_sets."rss_id" ';
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
 
     private function get_basic_browse_query()
     {
+        $type = USERSETTYPE_RSS;
         $basic_browse_query =  ' FROM rss_sets ' .
-            " LEFT JOIN userfeedinfo ON ({$this->Qnewfeed1} AND userfeedinfo.\"userid\" = {$this->userID}) " .
+            " LEFT JOIN userfeedinfo ON ({$this->Qnewfeed1} AND userfeedinfo.\"userid\" = :userid1) " .
             " LEFT JOIN rss_urls ON (rss_urls.\"id\" = rss_sets.\"rss_id\") " .
-            " LEFT JOIN usersetinfo ON (usersetinfo.\"setID\" = rss_sets.\"setid\") AND (usersetinfo.\"userID\" = {$this->userID} ) AND (usersetinfo.\"type\" = '" . USERSETTYPE_RSS . "')" .
-            " LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = rss_sets.\"setid\") AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = '" . USERSETTYPE_RSS . "' " .
-            " LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1.\"setID\" = rss_sets.\"setid\") AND extsetdata1.\"name\" = 'link' AND extsetdata1.\"type\" = '" . USERSETTYPE_RSS . "' " .
-            " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = rss_sets.\"setid\") AND extsetdata3.\"name\" = 'score' AND extsetdata3.\"type\" = '" . USERSETTYPE_RSS . "' " .
-            " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = rss_sets.\"setid\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = '" . USERSETTYPE_RSS . "' ) ";
+            " LEFT JOIN usersetinfo ON (usersetinfo.\"setID\" = rss_sets.\"setid\") AND (usersetinfo.\"userID\" = :userid2 ) AND (usersetinfo.\"type\" = :type1)" .
+            " LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = rss_sets.\"setid\" AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = :type2) " .
+            " LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1.\"setID\" = rss_sets.\"setid\" AND extsetdata1.\"name\" = 'link' AND extsetdata1.\"type\" = :type3) " .
+            " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = rss_sets.\"setid\" AND extsetdata3.\"name\" = 'score' AND extsetdata3.\"type\" = :type4) " .
+            " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = rss_sets.\"setid\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = :type5) ";
         if ($this->Qsetid == '') {
             $basic_browse_query .= " WHERE (1=1 {$this->Qnewfeed2} {$this->Qfeed_id} {$this->Qsearch} {$this->Qflag} {$this->Qsize} {$this->Qkill} {$this->Qrating} ) AND (1=1 {$this->Qage} {$this->Qadult}) ";
         } else {
             $basic_browse_query .= " WHERE 1=1 {$this->Qsetid}";
         }
+        $this->input_arr[':userid1'] = $this->userID;
+        $this->input_arr[':userid2'] = $this->userID;
+        $this->input_arr[':type1'] = $type;
+        $this->input_arr[':type2'] = $type;
+        $this->input_arr[':type3'] = $type;
+        $this->input_arr[':type4'] = $type;
+        $this->input_arr[':type5'] = $type;
 
         return $basic_browse_query;
     }
@@ -132,7 +141,7 @@ class feed_viewer
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }
-        $res = $this->db->select_query($sql);
+        $res = $this->db->select_query($sql, $this->input_arr);
         if (!isset($res[0]['cnt'])) {
             throw new exception ($LN['error_setsnumberunknown']);
         }
@@ -154,7 +163,7 @@ class feed_viewer
         $setres = array();
         if ($offset <= $this->int_sets) {
             $sql1 = $this->get_sets(TRUE);
-            $setres = $this->db->select_query($sql1, $perpage, $offset);
+            $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if ($setres === FALSE) {
                 $setres = array();
             }
@@ -163,7 +172,7 @@ class feed_viewer
         $setres_count = count($setres);
         if ($setres_count < $perpage) {
             $sql2 = $this->get_sets(FALSE);
-            $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets);
+            $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if ($setres2 === FALSE) {
                 $setres2 = array();
             }
@@ -251,15 +260,15 @@ class feed_viewer
         }
 
         if (is_numeric($ominsetsize)) {
-            $this->db->escape($ominsetsize, TRUE);
-            $this->Qsize = " AND (rss_sets.\"size\" >= $ominsetsize) ";
+            $this->input_arr[':minsetsize'] = $ominsetsize;
+            $this->Qsize = ' AND (rss_sets."size" >= :minsetsize) ';
         } else {
             $this->Qsize = ' AND (rss_sets."size" >= ((SELECT CASE WHEN userfeedinfo."minsetsize" IS NULL THEN 0 ELSE userfeedinfo."minsetsize" END) ))';
         }
 
         if (is_numeric($omaxsetsize)) {
-            $this->db->escape($omaxsetsize, TRUE);
-            $this->Qsize .= " AND (rss_sets.\"size\" <= $omaxsetsize ) ";
+            $this->input_arr[':maxsetsize'] = $omaxsetsize;
+            $this->Qsize .= ' AND (rss_sets."size" <= :maxsetsize ) ';
         } else {
             $this->Qsize .= ' AND (userfeedinfo."maxsetsize" = 0 OR userfeedinfo."maxsetsize" IS NULL OR rss_sets."size" <= (userfeedinfo."maxsetsize")) ';
         }
@@ -295,18 +304,20 @@ class feed_viewer
     public function set_qrating($minrating, $maxrating)
     {
         if (is_numeric($minrating) && $minrating > 0 && $minrating < 10) {
-            $this->Qrating .= " AND (CAST(extsetdata3.\"value\" AS DECIMAL(5, 2)) >= $minrating) ";
+            $this->input_arr[':minrating'] = $minrating;
+            $this->Qrating .= ' AND (CAST(extsetdata3."value" AS DECIMAL(5, 2)) >= :minrating) ';
         }
         if (is_numeric($maxrating) && $maxrating < 10 && $maxrating > 0) {
-            $this->Qrating .= " AND (CAST(extsetdata3.\"value\" AS DECIMAL(5, 2)) <= $maxrating) ";
+            $this->input_arr[':maxrating'] = $maxrating;
+            $this->Qrating .= ' AND (CAST(extsetdata3."value" AS DECIMAL(5, 2)) <= :maxrating) ';
         }
     }
 
     public function set_qsetid($setid)
     {
         if ($setid != '') {
-            $this->db->escape($setid, TRUE);
-            $this->Qsetid = " AND rss_sets.\"setid\"=$setid ";
+            $this->input_arr[':setid'] = $setid;
+            $this->Qsetid = ' AND rss_sets."setid" = :setid ';
         }
     }
 
@@ -314,13 +325,13 @@ class feed_viewer
     {
         if (is_numeric($maxage) && $maxage > 0) {
             $this->maxage = $maxage;
-            $maxage = $this->now - ($maxage * 3600 * 24);
-            $this->Qage .= " AND \"timestamp\" >= $maxage";
+            $this->input_arr[':maxage'] = $this->now - ($maxage * 3600 * 24);
+            $this->Qage .= ' AND "timestamp" >= :maxage';
         }
         if (is_numeric($minage) && $minage > 0) {
             $this->minage = $minage;
-            $minage = $this->now - ($minage * 3600 * 24);
-            $this->Qage .= " AND \"timestamp\" <= $minage";
+            $this->input_arr[':minage'] = $this->now - ($minage * 3600 * 24);
+            $this->Qage .= ' AND "timestamp" <= :minage';
         }
 
     }
@@ -375,17 +386,21 @@ class feed_viewer
             $this->categoryID = 0;
         }
         if ($this->feed_id != 0 && $this->feed_id != '') {
-            $this->Qfeed_id = "AND \"rss_id\" = {$this->feed_id} ";
+
+            $this->input_arr[':feed_id'] =  $this->feed_id;
+
+            $this->Qfeed_id = 'AND "rss_id" = :feed_id ';
         } elseif ($this->categoryID != 0 && $this->categoryID != '') {
-            $this->Qfeed_id .= " AND rss_sets.\"rss_id\" IN (";
+            $this->Qfeed_id .= ' AND rss_sets."rss_id" IN (';
             $feeds = get_feeds_by_category($this->db, $this->userID, $this->categoryID);
             $count = 0;
-            foreach ($feeds as $gr) {
-                $this->Qfeed_id .= " $gr,";
+            foreach ($feeds as $feed) {
                 $count++;
+                $this->input_arr[":feed_id_$count" ] = $feedgr;
+                $this->Qfeed_id .= " :feed_id_$count,";
             }
-            $this->Qfeed_id = rtrim($this->Qfeed_id, ',');
-            $this->Qfeed_id .= ')';
+            $this->Qfeed_id = rtrim($this->Qfeed_id, ', ');
+            $this->Qfeed_id .= ') ';
             if ($count == 0) {
                 $this->Qfeed_id = '';
             }
@@ -393,7 +408,7 @@ class feed_viewer
         if ($this->Qfeed_id == '') {
             $this->Qfeed_id = ' ';
             // Display all groups, except the ones that this user has marked invisible
-            $this->Qnewfeed2 = " AND (userfeedinfo.\"visible\" = 1 OR userfeedinfo.\"visible\" IS NULL) ";
+            $this->Qnewfeed2 = ' AND (userfeedinfo."visible" = 1 OR userfeedinfo."visible" IS NULL) ';
         }
     }
 
@@ -416,8 +431,7 @@ class feed_viewer
     public function set_qsearch($search)
     {
         $this->search = $search;
-        $this->db->escape($search);
-        $this->Qsearch = parse_search_string($search, 'rss_sets."setname"', 'extsetdata2."value"', '' ,$this->search_type);
+        $this->Qsearch = parse_search_string($search, 'rss_sets."setname"', 'extsetdata2."value"', '', $this->search_type, $this->input_arr);
     }
 
     public function get_rss_url($perpage)

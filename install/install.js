@@ -20,32 +20,34 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: js.js 2660 2012-09-08 22:59:41Z gavinspearhead@gmail.com $
  */
-"use strict";
+
+'use strict';
+
 function LoadPage(pagenumber)
 {
-	var installform = document.forms[0];
-	var pagenr = document.getElementById('page');
-	pagenr.value = pagenumber;
-	installform.submit();
+    var installform = document.forms[0];
+    var pagenr = document.getElementById('page');
+    pagenr.value = pagenumber;
+    installform.submit();
 }
 
 function toggle_show_password(id)
 {
-	var pass = document.getElementById(id);
-    if (pass.type == "password") { 
-        pass.type = "text"; 
-    } else { 
-        pass.type = "password";
-    } 
+    var pass = document.getElementById(id);
+    if (pass.type == 'password') {
+        pass.type = 'text';
+    } else {
+        pass.type = 'password';
+    }
 }
 
 function update_database_input_fields()
 {
     var dbt = document.getElementById('dbtype');
-    var type = dbt.options[dbt.selectedIndex].value; 
+    var type = dbt.options[dbt.selectedIndex].value;
     type = type.toLowerCase();
     change_display_dbengine(type);
-    if (type=='pdo_sqlite') {
+    if (type == 'pdo_sqlite' || type == 'sqllite') {
         hide_data_for_sqlite();
     } else {
         show_data_for_sqlite();
@@ -63,79 +65,79 @@ function change_display_dbengine(type)
 
 function show_data_for_sqlite()
 {
-    $("#hostname").show();
-    $("#port").show();
-    $("#dbusername").show();
-    $("#dbpassword").show();
-    $("#dbroot").show();
-    $("#dbrootpw").show();
-    $("#dbmysqlreset").show();
+    $('#hostname').show();
+    $('#port').show();
+    $('#dbusername').show();
+    $('#dbpassword').show();
+    $('#dbroot').show();
+    $('#dbrootpw').show();
+    $('#dbmysqlreset').show();
 }
 
 function hide_data_for_sqlite()
 {
-    $("#dbhost").val('');
-    $("#dbname").val('');
-    $("#dbport").val('');
-    $("#dbuser").val('');
-    $("#dbpass").val('');
-    $("#dbruser").val('');
-    $("#dbrpass").val('');
-    $("#hostname").hide();
-    $("#port").hide();
-    $("#dbusername").hide();
-    $("#dbpassword").hide();
-    $("#dbroot").hide();
-    $("#dbrootpw").hide();
-    $("#dbmysqlreset").hide();
+    $('#dbhost').val('');
+    $('#dbname').val('');
+    $('#dbport').val('');
+    $('#dbuser').val('');
+    $('#dbpass').val('');
+    $('#dbruser').val('');
+    $('#dbrpass').val('');
+    $('#hostname').hide();
+    $('#port').hide();
+    $('#dbusername').hide();
+    $('#dbpassword').hide();
+    $('#dbroot').hide();
+    $('#dbrootpw').hide();
+    $('#dbmysqlreset').hide();
 }
 
 function hide_button(id)
 {
     var div = document.getElementById(id);
-    div.style.display = "none";
+    div.style.display = 'none';
 }
 
 function show_message(msg)
 {
     var div = document.getElementById('message');
-    div.style.display = "block";
+    div.style.display = 'block';
     div.innerHTML = msg;
 }
 
-function GeneratePassword(length) 
+function GeneratePassword(length)
 {
-    var sPassword = "", i;
+    var sPassword = '', i;
 
-    for (i=0; i < length; i++) {
+    for (i = 0; i < length; i++) {
         var numI = getRandomNum();
-        while (checkPunc(numI)) { numI = getRandomNum(); } 
+        while (checkPunc(numI)) { numI = getRandomNum(); }
         sPassword = sPassword + String.fromCharCode(numI);
     }
     return sPassword;
 }
 
 function getRandomNum() {
-        
+
     // between 0 - 1
     var rndNum = Math.random();
 
-    // rndNum from 0 - 1000    
+    // rndNum from 0 - 1000
     rndNum = parseInt(rndNum * 1000);
 
-    // rndNum from 33 - 127        
+    // rndNum from 33 - 127
     rndNum = (rndNum % 94) + 33;
-            
+
     return rndNum;
 }
 
 function checkPunc(num) {
-    
-    if ((num >=33) && (num <=47)) { return true; }
-    if ((num >=58) && (num <=64)) { return true; }    
-    if ((num >=91) && (num <=96)) { return true; }
-    if ((num >=123) && (num <=126)) { return true; }
-    
+
+    if ((num >= 33) && (num <= 47)) { return true; }
+    if ((num >= 58) && (num <= 64)) { return true; }
+    if ((num >= 91) && (num <= 96)) { return true; }
+    if ((num >= 123) && (num <= 126)) { return true; }
+
     return false;
 }
 
@@ -162,7 +164,7 @@ function fill_in_usenet_form()
 {
     var server_id = document.getElementById('server_id');
     server_id = server_id.options[server_id.selectedIndex].value;
-    var server_data = get_value_from_id('server_'+server_id, '');
+    var server_data = get_value_from_id('server_' + server_id, '');
     if (server_data != '') {
         var arr = server_data.split('|');
         var name = arr[0];
@@ -176,12 +178,12 @@ function fill_in_usenet_form()
         var serverid = document.getElementById('serverid');
         host_id.value = host;
         serverid = server_id;
-        if (conn == "off") {
+        if (conn == 'off') {
             port_id.value = port;
         } else {
             port_id.value = sport;
-        }    
-        for (var i=0; i<conn_id.length; i++) {
+        }
+        for (var i = 0; i < conn_id.length; i++) {
             if (conn_id.options[i].value.toLowerCase() == conn.toLowerCase()) {
                 conn_id.selectedIndex = i;
                 continue;
@@ -193,13 +195,13 @@ function fill_in_usenet_form()
 function levenshtein(s1, s2) 
 {
     // http://kevin.vanzonneveld.net
-    // +            original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
-    // +            bugfixed by: Onno Marsman
-    // +             revised by: Andrea Giammarchi (http://webreflection.blogspot.com)
+    // +   original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
+    // +   bugfixed by: Onno Marsman
+    // +   revised by: Andrea Giammarchi (http://webreflection.blogspot.com)
     // + reimplemented by: Brett Zamir (http://brett-zamir.me)
     // + reimplemented by: Alexander M Beedie
-    // *                example 1: levenshtein('Kevin van Zonneveld', 'Kevin van Sommeveld');
-    // *                returns 1: 3
+    // *  example 1: levenshtein('Kevin van Zonneveld', 'Kevin van Sommeveld');
+    // *  returns 1: 3
     if (s1 == s2) {
         return 0;
     }
@@ -262,26 +264,25 @@ function levenshtein(s1, s2)
     return v0[s1_len];
 }
 
-
 function check_weak_pw(password, username)
 {
     if (password.length < 6) { return 0; }
     if (password.length < 8) { return 1; }
     var score = 0;
-    if (password.length >= 8) { score ++; }
-    if (password.length >= 10) { score ++; }
-    if (password.length >= 15) { score ++; }
-    if (password.length >= 20) { score ++; }
+    if (password.length >= 8) { score++; }
+    if (password.length >= 10) { score++; }
+    if (password.length >= 15) { score++; }
+    if (password.length >= 20) { score++; }
     if (levenshtein(password, username) <= 6) { return 0; }
     var numcount = password.match(/\d+/g);
     numcount = (numcount) ? numcount.length : 0;
-    
+
     score += numcount;
 
     var smcount = password.match(/[a-z]+/g);
     smcount = (smcount) ? smcount.length : 0;
     score += smcount;
-        
+
     var capcount = password.match(/[A-Z]+/g);
     capcount = (capcount) ? capcount.length : 0;
     score += capcount;
@@ -300,7 +301,7 @@ function check_password_strength(npw_id1, npw_id2, username_id)
         var npw1 = $('#' + npw_id1).val();
         var npw2 = $('#' + npw_id2).val();
         var pwd = $('#' + npw_id2);
-        if (npw2 == ''){
+        if (npw2 == '') {
             pwd.removeClass('passwordincorrect');
             pwd.removeClass('passwordcorrect');
             $('#password_incorrect').html('');
@@ -330,7 +331,7 @@ function check_password_strength(npw_id1, npw_id2, username_id)
                 pw.removeClass('passwordstrong');
                 pw.addClass('passwordmedium');
                 $('#urdd_pass_weak').html('<i>Password strength: Medium</i>');
-            }                
+            }
             else if (weak_pw > 7) {
                 pw.removeClass('passwordweak');
                 pw.removeClass('passwordmedium');

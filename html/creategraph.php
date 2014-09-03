@@ -586,8 +586,8 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
     assert(is_numeric($year));
     $ystr = $db->get_extract('year', '"timestamp"');
     $monthstr = $db->get_extract('month', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=? AND $ystr=? GROUP BY $monthstr ORDER BY \"month\" DESC";
-    $res = $db->select_query($qry, array($type, $year));
+    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=:type AND $ystr=:year GROUP BY $monthstr ORDER BY \"month\" DESC";
+    $res = $db->select_query($qry, array(':type'=>$type, ':year'=>$year));
     $years = array();
 
     if (is_array($res)) {
@@ -604,8 +604,8 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
 function get_sets_stats_date(DatabaseConnection $db, $type)
 {
     $ystr = $db->get_extract('year', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE \"action\"=? GROUP BY $ystr ORDER BY \"year\" DESC";
-    $res = $db->select_query($qry, array($type));
+    $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE \"action\"=:type GROUP BY $ystr ORDER BY \"year\" DESC";
+    $res = $db->select_query($qry, array(':type'=>$type));
     $years = array();
 
     if (is_array($res)) {
@@ -868,22 +868,22 @@ function get_stats_by_year(DatabaseConnection $db, $userid, $type, $admin, $from
     $ystr = $db->get_extract('year', '"timestamp"');
 
     $max_cnt = 0;
-    $safetype = $type;
-    $db->escape($safetype, TRUE);
     $quser = '';
+    $input_arr =  array( ':fromyear2'=>$fromyear, ':fromyear1'=>$fromyear, ':type1'=>$type, ':type2'=>$type);
     if (!$admin) {
-        $quser = " AND users.\"ID\" = '$userid' ";
+        $input_arr[':userid'] = $userid;
+        $quser = ' AND users."ID" = :userid ';
     }
     $qry = <<<QRY1
         * FROM (SELECT sum("value") AS "total", count("action") AS "counter",
                 (CASE WHEN users."name" IS NULL OR users."name" = '' THEN '__anonymous' ELSE users."name" END) AS "name" ,
                 $ystr AS "year" FROM stats LEFT JOIN users ON users."ID" = stats."userid"
-                WHERE $ystr > $fromyear
-                AND "action" = $safetype $quser GROUP BY "name", $ystr
-                UNION  SELECT sum("value") AS "total", count("action") AS "counter", '__total' AS "name", $ystr AS "year" FROM stats WHERE $ystr > $fromyear
-                AND "action" = $safetype GROUP BY $ystr) AS "val" ORDER BY year, "name"
+                WHERE $ystr > :fromyear1
+                AND "action" = :type2 $quser GROUP BY "name", $ystr
+                UNION  SELECT sum("value") AS "total", count("action") AS "counter", '__total' AS "name", $ystr AS "year" FROM stats WHERE $ystr > :fromyear2
+                AND "action" = :type1 GROUP BY $ystr) AS "val" ORDER BY year, "name"
 QRY1;
-    $res = $db->select_query($qry);
+    $res = $db->select_query($qry, $input_arr);
     if (!is_array($res)) {
         $res = array();
     }
@@ -1004,7 +1004,6 @@ function move_total_to_users(&$stats)
     }
 }
 
-
 function get_stats_by_month(DatabaseConnection $db, $userid, $type, $admin, $year=NULL, OverallMonthStats &$overallmonthstats, $types)
 {
     assert(is_numeric($userid));
@@ -1012,18 +1011,18 @@ function get_stats_by_month(DatabaseConnection $db, $userid, $type, $admin, $yea
 
     $ystr = $db->get_extract('year', '"timestamp"');
     $mstr = $db->get_extract('month', '"timestamp"');
-
+    $input_arr = array( ':type1' => $type, ':type2' => $type);
     if ($year !== NULL) {
-        $db->escape($year, TRUE);
-        $qyear = "$ystr = $year";
+        $input_arr[':year1'] = $input_arr[':year2'] = $year;
+        $qyear1 = "$ystr = :year1";
+        $qyear2 = "$ystr = :year2";
     } else {
         $qyear = '1=1';
     }
-    $safetype = $type;
-    $db->escape($safetype, TRUE);
     $quser = '';
     if (!$admin) {
-        $quser = " AND users.\"ID\" = '$userid' ";
+        $input_arr[':userid'] = $userid;
+        $quser = ' AND users."ID" = :userid ';
     }
 
     $qry = <<<QRY1
@@ -1031,17 +1030,16 @@ function get_stats_by_month(DatabaseConnection $db, $userid, $type, $admin, $yea
                 $mstr AS "month", $ystr AS "year"
                 FROM stats
                 LEFT JOIN users ON users."ID" = stats."userid"
-                WHERE $qyear AND "action" = $safetype $quser
+                WHERE $qyear1 AND "action" = :type2 $quser
                 GROUP BY "name", $mstr, $ystr
                 UNION
                 SELECT sum("value") AS "total", count("action") AS "counter", '__total' AS "name", $mstr AS "month", $ystr AS "year"
                 FROM stats
-                WHERE $qyear AND "action" = $safetype
+                WHERE $qyear2 AND "action" = :type1
                 GROUP BY $mstr, $ystr ) AS "val"
         ORDER BY "name", month, year
 QRY1;
-    $res = $db->select_query($qry);
-
+    $res = $db->select_query($qry, $input_arr);
     if (!is_array($res)) {
         $res = array();
     }
@@ -1130,20 +1128,19 @@ function get_stats_by_day(DatabaseConnection $db, $userid, $type, $admin, $year,
     if ($month === NULL) {
         $month = date('m', time());
     }
-
+    $input_arr = array(':type1'=>$type, ':type2'=>$type, ':year1'=>$year, ':year2'=>$year, ':month1'=>$month, ':month2'=>$month);
     $timestamp = strtotime("$year/$month/1 00:00");
     $max_month = date('t', $timestamp);
+    
+    $qyear1 = "$ystr = :year1";
+    $qyear2 = "$ystr = :year2";
+    $qmonth1 = "$mstr = :month1";
+    $qmonth2 = "$mstr = :month2";
 
-    $db->escape($year, TRUE);
-    $qyear = "$ystr = $year";
-    $db->escape($month, TRUE);
-    $qmonth = "$mstr = $month";
-
-    $safetype = $type;
-    $db->escape ($safetype, TRUE);
     $quser = '';
     if (!$admin) {
-        $quser = " AND users.\"ID\" = '$userid' ";
+        $input_arr[':userid'] = $userid;
+        $quser = ' AND users."ID" = :userid ';
     }
 
     $qry = <<<QRY1
@@ -1151,16 +1148,16 @@ function get_stats_by_day(DatabaseConnection $db, $userid, $type, $admin, $year,
                 $mstr AS "month", $ystr AS "year", $dstr AS "day"
                 FROM stats
                 LEFT JOIN users ON users."ID" = stats."userid"
-                WHERE $qyear AND $qmonth AND "action" = $safetype $quser
+                WHERE $qyear1 AND $qmonth1 AND "action" = :type1 $quser
                 GROUP BY $dstr, "name", $mstr, $ystr
                 UNION
-                SELECT sum("value") AS "total", count("action") AS "counter", '__total' AS "name", $mstr AS "month", $ystr AS "year" , $dstr AS "day"
+                SELECT sum("value") AS "total", count("action") AS "counter", '__total' AS "name", $mstr AS "month", $ystr AS "year", $dstr AS "day"
                 FROM stats
-                WHERE $qyear AND $qmonth  AND "action" = $safetype
+                WHERE $qyear2 AND $qmonth2 AND "action" = :type2
                 GROUP BY $dstr, $mstr, $ystr ) AS "val"
         ORDER BY "name", month, year
 QRY1;
-    $res = $db->select_query($qry);
+    $res = $db->select_query($qry, $input_arr);
 
     if (!is_array($res)) {
         $res = array();
@@ -1318,7 +1315,7 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     $plot->SetDataColors(array('color1','color2','color3','color4','color5','color6','color7','color8','color9'));
 
     $plot->SetImageBorderType('plain');
-    $font_path = $pathstat.'/../functions/libs/phplot/';
+    $font_path = $pathstat .  '/../functions/libs/phplot/';
     $plot->SetFontTTF('title', $font_path . 'LiberationSans-Regular.ttf', 12);
     $plot->SetFontTTF('y_label',$font_path . 'LiberationSans-Regular.ttf', 8);
     $plot->SetFontTTF('legend', $font_path . 'LiberationSans-Regular.ttf', 8);

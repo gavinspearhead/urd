@@ -20,10 +20,10 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_edit_searchoptions.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
+{extends file="popup.tpl"}
+{block name=title}{if $id eq 'new'}{$LN_buttons_addbutton}{else}{$LN_buttons_editbutton}{/if}{/block}
+{block name=contents}
 
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{if $id eq 'new'}{$LN_buttons_addbutton}{else}{$LN_buttons_editbutton}{/if} </div>
-<div class="light">
 <br/>
 <br/>
 <input type="hidden" name="id" id="id" value="{$id|escape:htmlall}"/>
@@ -48,4 +48,4 @@
 </td>
 </tr>
 </table>
-</div>
+{/block}

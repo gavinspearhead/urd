@@ -20,8 +20,6 @@
  * $Author: gavinspearhead $
  * $Id: formatsetname.tpl 2245 2011-07-04 21:51:30Z gavinspearhead $
  *}
-{* Ajax page, doesn't need a head/foot tpl *}
-
 
 {* Icon images: (Global variable ish) *}
 {$btmovie="<img class=\"binicon\" src=\"$IMGDIR/bin_movie.png\">"}

@@ -505,14 +505,18 @@ function check_deprecated_db()
     global $db;
     $dbtype = $db->get_databasetype(); 
     switch($dbtype) { 
-        case 'mysql':
+        case 'pdo_mysql':
         case 'mysqli':
-            write_log("Database type {$dbtype} is deprecated. Please change the setting \$config['databasetype'] to pdo_mysql in dbconfig.php", LOG_WARNING);
+            write_log("Database type {$dbtype} is deprecated. Please change the setting \$config['databasetype'] to mysql in dbconfig.php", LOG_WARNING);
             break;
+        case 'pdo_pgsql':
         case 'postgres9':
         case 'postgres8':
         case 'postgres7':
-            write_log("Database type {$dbtype} is deprecated. Please change the setting \$config['databasetype'] to pdo_pgsql in dbconfig.php", LOG_WARNING);
+            write_log("Database type {$dbtype} is deprecated. Please change the setting \$config['databasetype'] to postgres in dbconfig.php", LOG_WARNING);
+            break;
+        case 'pdo_sqlite':
+            write_log("Database type {$dbtype} is deprecated. Please change the setting \$config['databasetype'] to sqlite in dbconfig.php", LOG_WARNING);
             break;
     }
 }

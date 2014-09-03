@@ -20,9 +20,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: getfile.tpl 2701 2012-09-29 22:55:22Z gavinspearhead@gmail.com $
  *}
-
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$title|escape:htmlall} ({$size}) {$current + 1}/{$lastidx + 1}</div>
+{extends file="popup.tpl"}
+{block name=title}{$title|escape:htmlall} ({$size}) {$current + 1}/{$lastidx + 1}{/block}
+{block name=contents}
 
 <div class="center down3">
 <img src="{$url}" id="overlay_image" alt="" {if $width gt 0}width="{$width}"{/if} {if $height gt 0}height="{$height}"{/if} onclick="javascript:jump('{$url}');" class="buttonlike noborder"/>
@@ -48,3 +48,4 @@
 </div>
 </div>
 
+{/block}

@@ -164,6 +164,7 @@ function create_usenet_servers(DatabaseConnection $db)
     add_usenet_server($db, 'Usenet4u (3)', 'news3.usenet4u.nl', 119, 443, 4, 'ssl', 1, '', '', 0, 0, 1);
     add_usenet_server($db, 'VoordeligUsenet', 'reader.voordeligusenet.nl', 119, 443, 4, 'ssl', 1, '', '', 0, 0, 1);
     add_usenet_server($db, 'Web Africa', 'news.webafrica.co.za', 119, 0, 3, 'off', 1, '', '', 0, 0, 0);
+    add_usenet_server($db, 'Wondernews', 'reader.wondernews.eu', 119, 563, 3, 'tls', 1, '', '', 0, 0, 0);
     add_usenet_server($db, 'XLNED', 'news.xlned.com', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XLusenet', 'ssl-news.eu.xlusenet.nl', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS usenet', 'reader.xsusenet.com', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);

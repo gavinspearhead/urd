@@ -327,7 +327,7 @@ function insert_queue_status(DatabaseConnection $db, $id, $description, $status,
     $time = time();
     $restart = ($restart === TRUE) ? 1 : 0;
     $cols = array ('status', 'description', 'lastupdate', 'starttime', 'paused', 'username', 'userid', 'progress', 'ETA', 'urdd_id', 'comment', 'priority', 'command_id', 'restart');
-    $vals = array ($status, $description, $time, $time, $paused, '', $userid, 0, 0, $id, $comments === NULL? '':$comments, $priority, $command_id, $restart);
+    $vals = array ($status, $description, $time, $time, $paused, '', $userid, 0, 0, $id, ($comments === NULL ? '' : $comments), $priority, $command_id, $restart);
 
     try {
         return $db->insert_query('queueinfo', $cols, $vals, TRUE);
@@ -391,12 +391,8 @@ function store_ETA(DatabaseConnection $db, $eta, $percentage, $speed, $dbid)
     assert(is_numeric($eta) && is_numeric($percentage) && is_numeric($dbid));
     $eta = max(0, floor($eta));
     $time = time();
-    $db->escape($eta, FALSE);
-    $db->escape($percentage, TRUE);
-    $db->escape($speed, TRUE);
-    $db->escape($time, TRUE);
-    $qry = "UPDATE queueinfo SET \"ETA\"=(($eta + \"ETA\") / 2), \"progress\"=$percentage, \"comment\"=$speed, \"lastupdate\"=$time WHERE \"ID\"=?";
-    $db->execute_query($qry, array($dbid));
+    $qry = 'UPDATE queueinfo SET "ETA"=((:eta + "ETA") / 2), "progress"=:percentage, "comment"=:speed, "lastupdate"=:time WHERE "ID"=:dbid';
+    $db->execute_query($qry, array(':dbid'=>$dbid, ':eta'=>$eta, ':percentage'=>$percentage, ':speed'=>$speed, ':time'=>$time));
 }
 
 function add_schedule(DatabaseConnection $db, $cmd, $stime, $repeat, $userid)
@@ -1149,7 +1145,7 @@ function get_download_destination(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"destination" FROM downloadinfo WHERE "ID"=?', 1, array($id));
+    $res = $db->select_query('"destination" FROM downloadinfo WHERE "ID"=:id', 1, array(':id'=>$id));
     if ($res === FALSE) {
         throw new exception($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
@@ -1306,9 +1302,8 @@ function get_binary_size(DatabaseConnection $db, $pbin_id, $pgroup_id)
 function add_download_size(DatabaseConnection $db, $dlid, $totalsize)
 {
     assert(is_numeric($dlid) && is_numeric($totalsize));
-    $db->escape($totalsize, TRUE);
-    $sql = "UPDATE downloadinfo SET \"size\"=\"size\" + $totalsize WHERE \"ID\" = ?";
-    $db->execute_query($sql, array($dlid));
+    $sql = 'UPDATE downloadinfo SET "size" = "size" + :totalsize WHERE "ID" = :dlid';
+    $db->execute_query($sql, array(':dlid'=>$dlid, ':totalsize'=>$totalsize));
 }
 
 function set_download_size(DatabaseConnection $db, $dlid, $totalsize)
@@ -1435,7 +1430,7 @@ function get_group_by_name(DatabaseConnection $db, $name)
     assert(is_string($name));
 
     $search_type = $db->get_pattern_search_command('LIKE');
-    $res = $db->select_query("\"ID\" FROM groups WHERE \"active\" = ? AND \"name\" $search_type ?", 1, array(newsgroup_status::NG_SUBSCRIBED, $name));
+    $res = $db->select_query("\"ID\" FROM groups WHERE \"active\"=? AND \"name\" $search_type ?", 1, array(newsgroup_status::NG_SUBSCRIBED, $name));
 
     if (!isset($res[0]['ID'])) {
         throw new exception($LN['error_groupnotfound']. ": $name", ERR_GROUP_NOT_FOUND);
@@ -1448,7 +1443,7 @@ function get_group_info(DatabaseConnection $db, $groupid)
 {
     global $LN;
     assert(is_numeric($groupid));
-    $res = $db->select_query('* FROM groups WHERE "active" = ? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
+    $res = $db->select_query('* FROM groups WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
 
     if (!isset($res[0])) {
         throw new exception($LN['error_groupnotfound']. ": $groupid", ERR_GROUP_NOT_FOUND);
@@ -1624,8 +1619,8 @@ function get_all_spots_blacklist(DatabaseConnection $db, $userid=NULL)
     $inputarr = array();
     if (!is_null($userid)) {
         assert (is_numeric($userid));
-        $sql .= ' WHERE "userid" = ? ';
-        $inputarr[] = $userid;
+        $sql .= ' WHERE "userid"=:userid ';
+        $inputarr[':userid'] = $userid;
     }
     
     $sql .= ' ORDER BY "spotter_id" ASC';
@@ -1643,8 +1638,8 @@ function get_all_spots_whitelist(DatabaseConnection $db, $userid=NULL)
     $inputarr = array();
     if (!is_null($userid)) {
         assert (is_numeric($userid));
-        $inputarr[] = $userid;
-        $sql .= ' WHERE "userid" = ? ';
+        $inputarr[':userid'] = $userid;
+        $sql .= ' WHERE "userid" = :userid ';
     }
     
     $sql .= ' ORDER BY "spotter_id" ASC';
@@ -1681,11 +1676,13 @@ function get_rss_info(DatabaseConnection $db, $id, $subscribed=TRUE)
 {
     global $LN;
     assert(is_numeric($id) && is_bool($subscribed));
-    $qry = '* FROM rss_urls WHERE "id" = ?';
+    $qry = '* FROM rss_urls WHERE "id" = :id';
+    $inputarr = array(':id'=> $id);
     if ($subscribed) {
-        $qry .= ' AND "subscribed" = \'' . rssfeed_status::RSS_SUBSCRIBED . "'";
+        $qry .= ' AND "subscribed" = :subscribed';
+        $inputarr[':subscribed'] = rssfeed_status::RSS_SUBSCRIBED;
     }
-    $res = $db->select_query($qry, 1, array($id));
+    $res = $db->select_query($qry, 1, $inputarr);
     if (!isset($res[0])) {
         throw new exception($LN['error_feednotfound'], ERR_RSS_NOT_FOUND);
     }
@@ -1813,9 +1810,8 @@ function update_dlstats(DatabaseConnection $db, $stat_id, $value)
     if ($stat_id == 0) {
         return;
     }
-    $db->escape($value, TRUE);
-    $sql = "UPDATE stats SET \"value\"= \"value\" + $value WHERE \"id\"=?";
-    $db->execute_query($sql, array($stat_id));
+    $sql = 'UPDATE stats SET "value"= "value" + :value WHERE "id" = :statid';
+    $db->execute_query($sql, array(':statid' => $stat_id, ':value'=>$value));
 }
 
 function get_groupid_for_set(DatabaseConnection $db, $setid)
@@ -2533,7 +2529,6 @@ function get_extsetdata(DatabaseConnection $db, $setid, $name)
 
 function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $userid, $dlname, $type = 'DOWNLOAD', $setID = NULL, $category='')
 {
-    //var_dump(  $preview, $groupid, $dltype, $userid, $dlname, $type, $setID, $category);
     assert(is_numeric($groupid) && is_numeric($userid));
     $dlname = sanitise_download_name($db, $dlname);
 

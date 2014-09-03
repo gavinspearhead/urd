@@ -21,10 +21,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_edit_users.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
-{* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{if $id eq 'new'}{$LN_users_addnew}{else}{$LN_users_edit}{/if}</div>
-<div class="light">
+{extends file="popup.tpl"}
+{block name=title}{if $id eq 'new'}{$LN_users_addnew}{else}{$LN_users_edit}{/if}{/block}
+{block name=contents}
 <br/>
 <div>
 <input type="hidden" name="id" id="id" value="{$id|escape}"/></td>
@@ -92,6 +91,5 @@
 </td>
 </tr>
 
-
 </table>
-</div>
+{/block}

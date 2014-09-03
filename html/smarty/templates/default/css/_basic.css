@@ -161,6 +161,10 @@ td.fixwidth9c, th.fixwidth9c
     width: 190px;
     text-align: center;
 }
+td.width100p
+{
+    width:60%;
+}
 
 #stats_div
 {
@@ -789,4 +793,18 @@ div.sets_inner
 {
     min-height: 22px;
     padding-top: 2px;
+}
+
+div.pref_selector
+{
+    width: 1%;
+    white-space: nowrap;
+    display: table-cell;
+    border-collapse: collapse;
+    padding-right: 30px;
+    padding-left: 10px;
+    padding-bottom: 1px;
+    margin: 0;
+    vertical-align: bottom;
+    padding-bottom: 1px;
 }

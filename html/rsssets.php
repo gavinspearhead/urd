@@ -140,7 +140,6 @@ $minrating  = get_request('minrating', 0, 'is_numeric');
 $setid      = get_request('setid', '');
 
 $subscribedfeeds = subscribed_feeds_select($db, $feed_id, $categoryID, $categories, $userid);
-
 $killflag = FALSE;
 if ($flag == 'kill') {
     $killflag = TRUE;

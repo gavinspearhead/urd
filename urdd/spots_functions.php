@@ -467,7 +467,6 @@ class urd_spots
                     break;
                 case 'x-user-avatar':
                     $res['user-avatar'] .= trim($line[1]);
-
                     break;
             }
         }
@@ -480,10 +479,8 @@ class urd_spots
         foreach($ratings as $spotid => $rating) {
             $cnt = count($rating);
             $sum = array_sum($rating);
-            $db->escape($cnt, FALSE);
-            $db->escape($sum, FALSE);
-            $sql = "UPDATE spots SET \"rating_count\" = \"rating_count\" + $cnt, \"rating\" = (\"rating\" + $sum) / (rating_count + $cnt) WHERE \"spotid\" = ?";
-            $db->execute_query($sql, array($spotid));
+            $sql = "UPDATE spots SET \"rating_count\" = \"rating_count\" + :cnt1, \"rating\" = (\"rating\" + :sum) / (rating_count + :cnt2) WHERE \"spotid\" = :spotid";
+            $db->execute_query($sql, array(':cnt1'=> $cnt,':cnt2'=> $cnt, ':sum'=> $sum, ':spotid'=>$spotid));
         }
     }
 
@@ -634,8 +631,7 @@ class urd_spots
                     }
                     if ($spotid != '1') { // don't need to get the comment yet, as we haven't the spot 
                         $body = $nzb->get_article($msg_id);
-                        $body = $comment['body'] = array_map('utf8_encode', $body);
-                        $body = implode("\n", $body);
+                        $body = $comment['body'] = utf8_encode(implode("\n", $body));
                         if (strlen($body) > self::SPOT_COMMENT_SIZE_LIMIT) { 
                             $body = substr($body, 0, self::SPOT_COMMENT_SIZE_LIMIT); // body can only be 10kB long
                         }
@@ -793,7 +789,6 @@ class urd_spots
         if (!isset($res[0]['cnt'])) {
             $status = QUEUE_FINISHED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spots');
-
             return NO_ERROR;
         }
         $totalcount = $res[0]['cnt'];

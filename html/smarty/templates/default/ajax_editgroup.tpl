@@ -22,10 +22,10 @@
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
+{extends file="popup.tpl"}
+{block name=title}{$LN_ng_edit_group}{/block}
+{block name=contents}
 
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{if $id eq 'new'}{$LN_feeds_addfeed}{else}{$LN_feeds_editfeed}{/if}</div>
-<div class="light">
 <br/>
 <input type="hidden" name="id" id="id" value="{$id|escape:htmlall}"/>
 <table class="renametransfer hmid">
@@ -49,4 +49,5 @@
 	<input type="button" onclick="update_group();" {urd_popup type="small" text=$LN_apply } name="submit_button" value="{$LN_apply}" class="submit"/> 
 </td></tr>
 </table>
-</div>
+
+{/block}

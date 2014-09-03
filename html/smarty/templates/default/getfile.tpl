@@ -19,17 +19,21 @@
  * $Rev: 3089 $
  * $Author: gavinspearhead@gmail.com $
  * $Id: getfile.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $ 
-*}{include file=$header title=$title|escape:htmlall}
+*}
+
+{extends file="head.tpl"}
+{block name=contents}
 <div id="textcontent">
 </div>
-<script type="text/javascript">
-$(document).ready(function() {
-    show_image("{$file|escape:javascript}", "{$idx|escape:javascript}");
-});
-</script>
+
 <input type="hidden" id="filename" value="{$file|escape}}"/>
 <input type="hidden" id="preview" value="{$preview|escape}}"/>
 <input type="hidden" id="idx" value="{$idx|escape}}"/>
 <br/>
 
-{include file=$footer}
+<script type="text/javascript">
+$(document).ready(function() {
+    show_image("{$file|escape:javascript}", "{$idx|escape:javascript}");
+});
+</script>
+{/block}

@@ -87,6 +87,7 @@ class group_viewer
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
+        $this->input_arr = array();
         $this->Qnewgroup1 = 'usergroupinfo."groupid" = setdata."groupID"';
         $this->Qnewgroup3 = 'groups."ID" = setdata."groupID"';
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
@@ -95,19 +96,27 @@ class group_viewer
 
     private function get_basic_browse_query()
     {
+        $type = USERSETTYPE_GROUP;
         $basic_browse_query =
             ' FROM setdata ' .
-            " LEFT JOIN usergroupinfo ON ({$this->Qnewgroup1} AND (usergroupinfo.\"userid\" = {$this->userID})) " .
+            " LEFT JOIN usergroupinfo ON ({$this->Qnewgroup1} AND (usergroupinfo.\"userid\" = :userid1)) " .
             " LEFT JOIN groups ON ({$this->Qnewgroup3}) " .
-            " LEFT JOIN usersetinfo ON ((usersetinfo.\"setID\" = setdata.\"ID\") AND (usersetinfo.\"userID\" = {$this->userID})) AND (usersetinfo.\"type\" = '" . USERSETTYPE_GROUP . "') " .
-            " LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = setdata.\"ID\" AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
-            " LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1.\"setID\" = setdata.\"ID\" AND extsetdata1.\"name\" = 'link' AND extsetdata1.\"type\" = '" . USERSETTYPE_GROUP . "') " .
-            " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = setdata.\"ID\" AND extsetdata3.\"name\" = 'score' AND extsetdata3.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
-            " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = setdata.\"ID\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
-            " LEFT JOIN extsetdata AS extsetdata5 ON (extsetdata5.\"setID\" = setdata.\"ID\" AND extsetdata5.\"name\" = 'binarytype' AND extsetdata5.\"type\" = '" . USERSETTYPE_GROUP . "' ) " .
+            ' LEFT JOIN usersetinfo ON ((usersetinfo."setID" = setdata."ID") AND (usersetinfo."userID" = :userid2)) AND (usersetinfo."type" = :type1) ' .
+            ' LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2."setID" = setdata."ID" AND extsetdata2."name" = \'setname\' AND extsetdata2."type" = :type2) ' .
+            ' LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1."setID" = setdata."ID" AND extsetdata1."name" = \'link\' AND extsetdata1."type" = :type3) ' .
+            ' LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3."setID" = setdata."ID" AND extsetdata3."name" = \'score\' AND extsetdata3."type" = :type4) ' .
+            ' LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4."setID" = setdata."ID" AND extsetdata4."name" = \'xrated\' AND extsetdata4."type" = :type5) ' .
+            ' LEFT JOIN extsetdata AS extsetdata5 ON (extsetdata5."setID" = setdata."ID" AND extsetdata5."name" = \'binarytype\' AND extsetdata5."type" = :type6) ' .
             " WHERE (1=1 {$this->Qnewgroup2} {$this->Qsearch} {$this->Qsize} {$this->Qsetid} {$this->Qgroup} {$this->Qkill} {$this->Qflag} {$this->Qrating}) " .
             " AND (1=1 {$this->Qage} {$this->Qadult} {$this->Qcomplete}) ";
-
+        $this->input_arr[':userid1'] = $this->userID;
+        $this->input_arr[':userid2'] = $this->userID;
+        $this->input_arr[':type1'] = $type;
+        $this->input_arr[':type2'] = $type;
+        $this->input_arr[':type3'] = $type;
+        $this->input_arr[':type4'] = $type;
+        $this->input_arr[':type5'] = $type;
+        $this->input_arr[':type6'] = $type;
         return $basic_browse_query;
     }
     private function get_sets($interesting_only)
@@ -118,7 +127,7 @@ class group_viewer
             'usersetinfo."statusnzb" AS "nzbcreated", usersetinfo."statusread" AS "alreadyread", extsetdata2."value" AS "bettername", extsetdata1."value" AS "imdblink", ' .
             '(CASE WHEN extsetdata3."value" IS NULL THEN \'0\' ELSE extsetdata3."value" END) AS "rating", ' .
             '(CASE WHEN extsetdata2."value" IS NULL OR extsetdata2."value" = \'\' THEN setdata."subject" ELSE extsetdata2."value" END) AS "better_subject", ' .
-            '(CASE WHEN extsetdata5."value" IS NULL OR extsetdata5."value" = \'\' THEN 0 ELSE extsetdata5."value" END) AS "binary_type" ';
+            '(CASE WHEN extsetdata5."value" IS NULL OR extsetdata5."value" = \'\' THEN \'0\' ELSE extsetdata5."value" END) AS "binary_type" ';
         $sql .=	$this->get_basic_browse_query();
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1 ';
@@ -136,7 +145,7 @@ class group_viewer
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }
-        $res = $this->db->select_query($sql);
+        $res = $this->db->select_query($sql, $this->input_arr);
         if (!isset($res[0]['cnt'])) {
             throw new exception($LN['error_setsnumberunknown']);
         }
@@ -162,7 +171,7 @@ class group_viewer
         $setres = array();
         if ($offset <= $this->int_sets) {
             $sql1 = $this->get_sets(TRUE);
-            $setres = $this->db->select_query($sql1, $perpage, $offset);
+            $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if (!is_array($setres)) {
                 $setres = array();
             }
@@ -171,7 +180,7 @@ class group_viewer
 
         if ($setres_count < $perpage) {
             $sql2 = $this->get_sets(FALSE);
-            $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets);
+            $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if (!is_array($setres2)) {
                 $setres2 = array();
             }
@@ -259,7 +268,7 @@ class group_viewer
             $order = $def_sort;
         }
         if ($order == 'rating') {
-                $order = 'extsetdata3.value IS NULL, CAST(extsetdata3."value" AS decimal(5, 2))';
+            $order = 'extsetdata3.value IS NULL, CAST(extsetdata3."value" AS decimal(5, 2))';
         }
         if (!empty($order)) {
             $this->Qorder = $order;
@@ -299,8 +308,7 @@ class group_viewer
     public function set_qsearch($search)
     {
         $this->search = $search;
-        $this->db->escape($search);
-        $this->Qsearch = parse_search_string($search, '"subject"', 'extsetdata2."value"', '', $this->search_type);
+        $this->Qsearch = parse_search_string($search, '"subject"', 'extsetdata2."value"', '', $this->search_type, $this->input_arr);
     }
 
     public function set_qgroup($groupID)
@@ -328,17 +336,20 @@ class group_viewer
 
         if ($this->groupID != 0 && $this->groupID != '') {
             // Display this group only
-            $this->Qgroup = " AND setdata.\"groupID\" = {$this->groupID} ";
+            $this->Qgroup = ' AND setdata."groupID" = :groupid ';
+            $this->input_arr[':groupid'] = $this->groupID;
         } elseif ($this->categoryID != 0 && $this->categoryID != '') {
-            $this->Qgroup .= " AND setdata.\"groupID\" IN (";
+            $this->Qgroup .= ' AND setdata."groupID" IN (';
             $groups = get_groups_by_category($this->db, $this->userID, $this->categoryID);
             $count = 0;
             foreach ($groups as $gr) {
-                $this->Qgroup .= " $gr,";
                 $count++;
+                $this->input_arr[":groupid_$count" ] = $gr;
+                $this->Qgroup .= " :groupid_$count,";
+
             }
-            $this->Qgroup = rtrim($this->Qgroup, ',');
-            $this->Qgroup .= ')';
+            $this->Qgroup = rtrim($this->Qgroup, ', ');
+            $this->Qgroup .= ') ';
             if ($count == 0) {
                 $this->Qgroup = '';
             }
@@ -383,15 +394,15 @@ class group_viewer
             $omaxsetsize = NULL;
         }
         if (is_numeric($ominsetsize)) {
-            $this->db->escape($ominsetsize, TRUE);
-            $this->Qsize = " AND (setdata.\"size\" >= $ominsetsize) ";
+            $this->input_arr[':minsetsize'] = $ominsetsize;
+            $this->Qsize = ' AND (setdata."size" >= :minsetsize) ';
         } else {
             $this->Qsize = ' AND (setdata."size" >= ((SELECT CASE WHEN usergroupinfo."minsetsize" IS NULL THEN 0 ELSE usergroupinfo."minsetsize" END)))';
         }
 
         if (is_numeric($omaxsetsize)) {
-            $this->db->escape($omaxsetsize, TRUE);
-            $this->Qsize .= " AND (setdata.\"size\" <= $omaxsetsize) ";
+            $this->input_arr[':maxsetsize'] = $omaxsetsize;
+            $this->Qsize .= ' AND (setdata."size" <= :maxsetsize) ';
         } else {
             $this->Qsize .= ' AND (usergroupinfo."maxsetsize" = 0 OR usergroupinfo."maxsetsize" IS NULL OR setdata."size" <= ( usergroupinfo."maxsetsize")) ';
         }
@@ -400,24 +411,25 @@ class group_viewer
     public function set_qadult($is_adult)
     {
         if (!$is_adult) {
-            $this->Qadult = ' AND "adult" != \'' . ADULT_ON . '\' AND (extsetdata4."value" != \'1\' OR extsetdata4."value" IS NULL)';
+            $this->Qadult = ' AND "adult" != :adult AND (extsetdata4."value" != \'1\' OR extsetdata4."value" IS NULL)';
+             $this->input_arr[':adult'] = ADULT_ON;
         }
     }
 
     public function set_qflags($flag)
     {
         if ($flag == 'read') {
-            $this->Qflag = ' AND usersetinfo."statusread"=1 ';
+            $this->Qflag = ' AND usersetinfo."statusread" = 1 ';
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
         } elseif ($flag == 'kill') {
             $this->killflag = TRUE;
-            $this->Qkill = ' AND usersetinfo."statuskill"=1 ';
+            $this->Qkill = ' AND usersetinfo."statuskill" = 1 ';
         } elseif ($flag == 'interesting') {
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
             $this->Qflag = ' AND usersetinfo."statusint"=1 ';
             $this->rss_flag = "&amp;flag=interesting&amp;userid={$this->userID}";
         } elseif ($flag == 'nzb') {
-            $this->Qflag = ' AND usersetinfo."statusnzb"=1 ';
+            $this->Qflag = ' AND usersetinfo."statusnzb" = 1 ';
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
         } else {
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
@@ -427,17 +439,19 @@ class group_viewer
     public function set_qrating($minrating, $maxrating)
     {
         if (is_numeric($minrating) && $minrating > 0 && $minrating < 10) {
-            $this->Qrating .= " AND (CAST(extsetdata3.\"value\" AS DECIMAL(5, 2)) >= $minrating) ";
+            $this->input_arr[':minrating'] = $minrating;
+            $this->Qrating .= ' AND (CAST(extsetdata3."value" AS DECIMAL(5, 2)) >= :minrating) ';
         }
         if (is_numeric($maxrating) && $maxrating < 10 && $maxrating > 0) {
-            $this->Qrating .= " AND (CAST(extsetdata3.\"value\" AS DECIMAL(5, 2)) <= $maxrating) ";
+            $this->input_arr[':maxrating'] = $maxrating;
+            $this->Qrating .= ' AND (CAST(extsetdata3."value" AS DECIMAL(5, 2)) <= :maxrating) ';
         }
     }
     public function set_qsetid($setid)
     {
         if ($setid != '') {
-            $this->db->escape($setid, TRUE);
-            $this->Qsetid = " AND setdata.\"ID\"=$setid ";
+            $this->input_arr[':setid'] = $setid;
+            $this->Qsetid = ' AND setdata."ID" = :setid ';
         }
     }
 
@@ -449,15 +463,16 @@ class group_viewer
         $setcompleteness = get_pref($this->db, 'setcompleteness', $this->userID, 0);
         if (is_numeric($mincomplete) || is_numeric($maxcomplete)) {
             if (is_numeric($mincomplete) && $mincomplete < 100 && $mincomplete > 0) {
-                $this->db->escape($mincomplete);
-                $this->Qcomplete .= " AND (\"articlesmax\"=0 OR floor(\"binaries\" * 100 / {$this->GREATEST}(1, \"articlesmax\")) >= $mincomplete ) ";
+                $this->input_arr[':mincomplete'] = $mincomplete;
+                $this->Qcomplete .= " AND (\"articlesmax\" = 0 OR floor(\"binaries\" * 100 / {$this->GREATEST}(1, \"articlesmax\")) >= :mincomplete ) ";
             }
             if (is_numeric($maxcomplete) && $maxcomplete < 100 && $maxcomplete > 0) {
-                $this->db->escape($maxcomplete);
-                $this->Qcomplete .= " AND (\"articlesmax\"=0 OR floor(\"binaries\" * 100 / {$this->GREATEST}(1, \"articlesmax\")) <= $maxcomplete ) ";
+                $this->input_arr[':maxcomplete'] = $maxcomplete;
+                $this->Qcomplete .= " AND (\"articlesmax\" = 0 OR floor(\"binaries\" * 100 / {$this->GREATEST}(1, \"articlesmax\")) <= :maxcomplete ) ";
             }
         } elseif ($setcompleteness > 0) {
-            $this->Qcomplete = " AND (\"articlesmax\"=0 OR floor(\"binaries\" * 100 / {$this->GREATEST}(1, \"articlesmax\")) >= $setcompleteness)";/// euah ... the horror... but it is ansi sql compliant... no refers to as fields in where clauses ...
+            $this->input_arr[':setcompleteness'] = $setcompleteness;
+            $this->Qcomplete = " AND (\"articlesmax\" = 0 OR floor(\"binaries\" * 100 / {$this->GREATEST}(1, \"articlesmax\")) >= :setcompleteness)";/// euah ... the horror... but it is ansi sql compliant... no refers to as fields in where clauses ...
         }
 
     }
@@ -465,13 +480,13 @@ class group_viewer
     {
         if (is_numeric($maxage) && $maxage > 0) {
             $this->maxage = $maxage;
-            $maxage = $this->now - ($maxage * 3600 * 24);
-            $this->Qage .= " AND \"date\" >= $maxage";
+            $this->input_arr[':maxage'] = $this->now - ($maxage * 3600 * 24);
+            $this->Qage .= ' AND "date" >= :maxage';
         }
         if (is_numeric($minage) && $minage > 0) {
             $this->minage = $minage;
-            $minage = $this->now - ($minage * 3600 * 24);
-            $this->Qage .= " AND \"date\" <= $minage";
+            $this->input_arr[':minage'] = $this->now - ($minage * 3600 * 24);
+            $this->Qage .= ' AND "date" <= :minage';
         }
 
     }

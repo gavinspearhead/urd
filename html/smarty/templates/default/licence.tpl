@@ -19,7 +19,8 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: licence.tpl 2955 2013-11-22 22:41:14Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 
 <div id="textcontent">
 <div class="urdlogo2 floatright noborder buttonlike" onclick="javascript:jump('index.php');"></div>
@@ -655,10 +656,8 @@ copy of the Program in return for a fee.</p>
 <br/>
 <script>
 $(document).ready(function() {
-        update_search_bar_height();
-    }
-);
+    update_search_bar_height();
+});
 </script>
 
-
-{include file="foot.tpl"}
+{/block}

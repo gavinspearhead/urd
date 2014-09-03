@@ -20,7 +20,7 @@
  * $LastChangedDate: 2012-09-11 14:39:24 +0200 (di, 11 sep 2012) $
  * $Rev: 2662 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: getfile.php 2662 2012-09-11 12:39:24Z gavinspearhead@gmail.com $
+ * $Id: .php 2662 2012-09-11 12:39:24Z gavinspearhead@gmail.com $
  */
 
 @define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);

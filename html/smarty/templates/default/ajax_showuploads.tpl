@@ -22,23 +22,6 @@
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
-{if ($poster neq 0 || $isadmin neq 0) && $show_post neq 0}
-<table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
-<thead>
-<tr>
-<th class="left head round_left">{$LN_transfers_head_started}</th>
-<th class="left head" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
-<th class="left head">{$LN_transfers_head_progress}</th>
-<th class="center head">{$LN_size}</th>
-<th class="center head">{$LN_transfers_head_speed}</th>
-<th class="left head">{$LN_eta}</th>
-{if $isadmin neq 0}
-<th class="left head">{$LN_transfers_head_username}</th>
-{/if}
-<th class="right head round_right">{$LN_transfers_head_options}</th>
-</tr>
-</thead>
-
 {function name=display_status status='' infoarray=''}
 
 {$stat=$infoarray[0]->status|replace:' ':'_'}
@@ -90,19 +73,17 @@
 {/capture}
 
 	<tr class="even" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
-		<td>{$a->startdate}</td>
-		<td class="bold">
-        <div class="donotoverflowdamnit inline">
-        {$a->name|escape:htmlall}
-        </div>
+		<td class="bold nowrap">
+        <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
         </td>
-		<td>
+		<td class="nowrap fixwidth8a">
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" background="grey" classes="down2" text="{$a->progress}%"}
         </td>
-		<td class="right">{$a->size}</td>
-		<td class="right">{$a->speed}</td>
-		<td class="center">{$a->ETA}</td>
-{if $isadmin neq 0}
+		<td class="right nowrap">{$a->size}</td>
+		<td class="right nowrap">{$a->speed}</td>
+		<td class="center nowrap">{$a->ETA}</td>
+		<td class="nowrap right">{$a->startdate}</td>
+{if $isadmin}
 		<td>{$a->username|escape:htmlall}</td>
 {/if}
 		<td class="rightbut">{$options}</td>
@@ -110,6 +91,23 @@
 {/foreach}
 </tbody>
 {/function}
+
+{if ($poster neq 0 || $isadmin neq 0) && $show_post neq 0}
+<table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
+<thead>
+<tr>
+<th class="left nowrap head round_left" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
+<th class="left nowrap head fixwidth8a">{$LN_transfers_head_progress}</th>
+<th class="center nowrap head">{$LN_size}</th>
+<th class="center nowrap head">{$LN_transfers_head_speed}</th>
+<th class="left nowrap head">{$LN_eta}</th>
+<th class="left nowrap head ">{$LN_transfers_head_started}</th>
+{if $isadmin}
+<th class="left nowrap head">{$LN_transfers_head_username}</th>
+{/if}
+<th class="right head nowrap round_right">{$LN_transfers_head_options}</th>
+</tr>
+</thead>
 
 {if isset($infoarray_upload['active'])}{display_status status=$LN_transfers_status_postactive infoarray=$infoarray_upload['active']}{/if}
 {if isset($infoarray_upload['rarred'])}{display_status status=$LN_transfers_status_rarred infoarray=$infoarray_upload['rarred']}{/if}

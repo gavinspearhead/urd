@@ -19,12 +19,13 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: viewfiles.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_viewfilesheading}: <span id="directory_top">{$directory|escape:htmlall|truncate:$maxstrlen:'...':false:true}</span></h3>
 <div>
 <input type="text" name="search" size="30" placeholder="{$LN_search}" id="search"/>
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_files_clean();"/>
+<input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 </div>
 </div>
 <div id="viewfilesdiv">
@@ -34,21 +35,23 @@
 
 <h3 class="centered">{$LN_loading_files}</h3>
 </div>
+</div>
+
+{if $show_usenzb}
+<div id="uploadnzbdiv" class="uploadnzboff"></div>
+{/if}
+
+<input type="hidden" id="perpage" value="{$perpage|escape}"/>
+
 <script type="text/javascript">
 $(document).ready(function() {
     show_files( { 'curdir':'{$directory|escape:javascript}' } );
     set_scroll_handler('#contentout', show_files);
     $('#searchbar').html( $('#searchformdiv').html());
     $('#searchformdiv').html('');
+    $('#search_button').click( function() { show_files_clean(); });
+    $('#search').keypress( function(e) { return submit_enter(e, show_files_clean); });
 });
 </script>
-</div>
 
-{if $show_usenzb}
-<div id="uploadnzbdiv" class="uploadnzboff">
-</div>
-{/if}
-
-<input type="hidden" id="perpage" value="{$perpage|escape}"/>
-
-{include file="foot.tpl"}
+{/block}

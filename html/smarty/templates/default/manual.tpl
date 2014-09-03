@@ -19,10 +19,11 @@
  * $Rev: 2955 $
  * $Author: gavinspearhead@gmail.com $
  * $Id: manual.tpl 2955 2013-11-22 22:41:14Z gavinspearhead@gmail.com $ *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 
 <div id="textcontent">
-<div class="urdlogo2 floatright noborder buttonlike" onclick="javascript:jump('index.php');"></div>
+<div class="urdlogo2 floatright noborder buttonlike" id="urd_logo"></div>
 <h3 class="title">{$title}</h3>
 
 {$i="1"}
@@ -36,9 +37,8 @@
 <br/>
 <script>
 $(document).ready(function() {
-        update_search_bar_height();
-    }
-);
+    update_search_bar_height();
+    $('#urd_logo').click( function() { jump('index.php'); });
+});
 </script>
-
-{include file="foot.tpl"}
+{/block}

@@ -37,10 +37,11 @@
 
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
-{if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10"}
-{else}<br/>
-{/if}
+    {if count($pages) > 1}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10"}
+    {else}
+        <br/>
+    {/if}
 {/if}
 {/strip}
 {/capture}
@@ -48,32 +49,32 @@
 {* Making a 'top' and a 'bottom' skipper: *}
 {capture assign=bottomskipper}{strip}
 {if $only_rows == 0}
-{if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10"}
-{else}<br/>
-{/if}
+    {if count($pages) > 1}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10"}
+    {else}
+        <br/>
+    {/if}
 {/if}
 {/strip}
 {/capture}
 
 {capture assign=unmark_int_all}{strip}
 {if $killflag}
-<div class="inline iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
+    <div class="inline iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
 {else}
-<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
+    <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset }></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset} ></div>
-{/if}
-{if $isadmin}
-<div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
+    <div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint }></div>
 {/if}
 {/strip}
 {/capture}
 
 {* And display it here and at the bottom: *}
 
-{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
+{$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort.order == "title"} {if $sort.direction=='desc'}{$title_sort=$up} {else}{$title_sort=$down} {/if} {else}{$title_sort=""} {/if}
 {if $sort.order == "stamp"} {if $sort.direction=='desc'}{$stamp_sort=$up} {else}{$stamp_sort=$down} {/if} {else}{$stamp_sort=""} {/if}
 {if $sort.order == "size"} {if $sort.direction=='desc'}{$size_sort=$up} {else}{$size_sort=$down} {/if} {else}{$size_sort=""} {/if}
@@ -135,39 +136,39 @@
 {capture assign=subcats}{strip}
 <table>
 {foreach $set.subcata as $k=>$val1}
-<tr><td>{$k}:&nbsp;</td><td>
-{foreach $val1 as $val2}
-{$val2.0}{if not $val2@last}; {/if}
-{/foreach}
-</td></tr>
+    <tr><td>{$k}:&nbsp;</td><td>
+    {foreach $val1 as $val2}
+        {$val2.0}{if not $val2@last}; {/if}
+    {/foreach}
+    </td></tr>
 {/foreach}
 {foreach $set.subcatb as $k=>$val1}
-<tr><td>{$k}:&nbsp;</td><td>
-{foreach $val1 as $val2}
-{$val2.0}{if not $val2@last}; {/if}
-{/foreach}
-</td></tr>
+    <tr><td>{$k}:&nbsp;</td><td>
+    {foreach $val1 as $val2}
+        {$val2.0}{if not $val2@last}; {/if}
+    {/foreach}
+    </td></tr>
 {/foreach}
 {foreach $set.subcatc as $k=>$val1}
-<tr><td>{$k}:&nbsp;</td><td>
-{foreach $val1 as $val2}
-{$val2.0}{if not $val2@last}; {/if}
-{/foreach}
-</td></tr>
+    <tr><td>{$k}:&nbsp;</td><td>
+    {foreach $val1 as $val2}
+        {$val2.0}{if not $val2@last}; {/if}
+    {/foreach}
+    </td></tr>
 {/foreach}
 {foreach $set.subcatd as $k=>$val1}
-<tr><td>{$k}:&nbsp;</td><td>
-{foreach $val1 as $val2}
-{$val2.0}{if not $val2@last}; {/if}
-{/foreach}
-</td></tr>
+    <tr><td>{$k}:&nbsp;</td><td>
+    {foreach $val1 as $val2}
+        {$val2.0}{if not $val2@last}; {/if}
+    {/foreach}
+    </td></tr>
 {/foreach}
 {foreach $set.subcatz as $k=>$val1}
-<tr><td>{$k}:&nbsp;</td><td>
-{foreach $val1 as $val2}
-{$val2.0} {if not $val2@last}; {/if}
-{/foreach}
-</td></tr>
+    <tr><td>{$k}:&nbsp;</td><td>
+    {foreach $val1 as $val2}
+        {$val2.0} {if not $val2@last}; {/if}
+    {/foreach}
+    </td></tr>
 {/foreach}
 
 </table>

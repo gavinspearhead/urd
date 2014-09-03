@@ -1,5 +1,5 @@
 <?php
-
+/// XXX is this still used????
 /*
  *  This file is part of Urd.
  *
@@ -44,11 +44,7 @@ function exception_handler(exception $exception)
         } else {
             $__message = DEFAULT_MSG;
         }
-        init_smarty($LN['fatal_error_title'], 1);
-        $smarty->assign('msg', $__message);
-        $smarty->assign('closelink', 'back');
-        $smarty->assign('link', NULL);
-        $smarty->display('fatal_error.tpl');
+        fatal_error($__message, NULL, NULL, 'back');
     } else {
         // Ajax script, output bare html
         if (debug_match(DEBUG_CLIENT, $config['urdd_debug_level'])) {
@@ -56,7 +52,7 @@ function exception_handler(exception $exception)
          } else {
             $__message[] = DEFAULT_MSG;
         }
-        die_html(':error:' . $LN['error'] . ': ' . implode ("<br/>\n", $__message));
+        return_result(array('error' => $LN['error'] . ': ' . implode ("<br/>\n", $__message)));
     }
     die();
 }

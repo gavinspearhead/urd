@@ -63,17 +63,20 @@ function get_cookie($var, $default='', $verify_fn=NULL)
 function get_request($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
-    if (!isset($_REQUEST[$var])) {
+    if (!isset($_POST[$var]) && !isset($_GET[$var])) {
         return $default;
     }
 
     if (function_exists($verify_fn)) {
-        if (!$verify_fn($_REQUEST[$var])) {
+        if (!$verify_fn($_POST[$var]) && !$verify_fn($_GET[$var])) {
             return $default;
         }
     }
-    
-    return $_REQUEST[$var];
+    if (isset($_POST[$var])) { 
+        return $_POST[$var];
+    } else {
+        return $_GET[$var];
+    }
 }
 
 function get_session($var, $default='', $verify_fn=NULL)
@@ -1077,10 +1080,9 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
             $Qgroups = '';
         }
     }
-    $db->escape($userid, TRUE);
-    $sql = "groups.\"ID\", groups.\"name\", groups.\"setcount\" FROM groups LEFT JOIN usergroupinfo ON groups.\"ID\" = \"groupid\" AND \"userid\" = $userid " .
+    $sql = 'groups."ID", groups."name", groups."setcount" FROM groups LEFT JOIN usergroupinfo ON groups."ID" = "groupid" AND "userid" = :userid ' .
         ' WHERE "active" = \'' . newsgroup_status::NG_SUBSCRIBED . "' AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
-    $res = $db->select_query($sql);
+    $res = $db->select_query($sql, array(':userid'=>$userid));
     if (!is_array($res)) {
         $res = array();
     }
@@ -1699,6 +1701,16 @@ function is_text_file($ext)
     return in_array(strtolower($ext), array('htm', 'html', 'nfo', 'log', 'txt', URDD_SCRIPT_EXT));
 }
 
+function is_nzb_file($ext)
+{
+    return in_array(strtolower($ext), array('nzb'));
+}
+function is_nfo_file($ext)
+{
+    return in_array(strtolower($ext), array('nfo'));
+}
+
+
 function insert_wbr($str, $size = 64)
 {
     assert(is_numeric($size));
@@ -1732,7 +1744,7 @@ function insert_wbr($str, $size = 64)
     return $str_new;
 }
 
-function parse_search_string($search, $column1, $column2, $column3, $search_type)
+function parse_search_string($search, $column1, $column2, $column3, $search_type, &$input_arr)
 {
     $Qsearch = '';
     // Search google style:
@@ -1742,6 +1754,7 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
         $keywords = explode(' ', $search);
         $Qsearch1 = $Qsearch2 = $Qsearch3 = '';
         $next = $not = '';
+        $cnt = 0;
         foreach ($keywords as $keyword) {
             $keyword = trim($keyword);
             if ($keyword == '') { continue; }
@@ -1764,13 +1777,16 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
 
             if ($keyword != '') {
                 if ($column1 != '') {
-                    $Qsearch1 .= " $qand $not $column1 $search_type '%{$keyword}%' "; // nasty: like is case sensitive in psql, insensitive in mysql
+                    $input_arr[":keyword_1_$cnt"] = "%{$keyword}%";
+                    $Qsearch1 .= " $qand $not $column1 $search_type :keyword_1_$cnt "; // nasty: like is case sensitive in psql, insensitive in mysql
                 }
                 if ($column2 != '') {
-                    $Qsearch2 .= " $qand $not $column2 $search_type '%{$keyword}%' ";
+                    $input_arr[":keyword_2_$cnt"] = "%{$keyword}%";
+                    $Qsearch2 .= " $qand $not $column2 $search_type :keyword_2_$cnt ";
                 }
                 if ($column3 != '') {
-                    $Qsearch3 .= " $qand $not $column3 $search_type '%{$keyword}%' ";
+                    $input_arr[":keyword_3_$cnt"] = "%{$keyword}%";
+                    $Qsearch3 .= " $qand $not $column3 $search_type :keyword_3_$cnt ";
                 }
             }
         }
@@ -1786,7 +1802,6 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
         }
         $Qsearch .= ')';
     }
-
     return $Qsearch;
 }
 
@@ -2027,15 +2042,15 @@ function verify_time($time1, $time2, $name)
         }
 }
 
-function verify_expire($expire, $name)
+function verify_expire(DatabaseConnection $db, $expire, $name)
 {
-    global $uprefs, $LN;
-    $max_expire = $uprefs['maxexpire'];
+    global  $LN;
+    $max_expire = get_config($db, 'maxexpire');
     if (!is_numeric($expire)) {
         throw new exception($name . ': ' . $LN['error_invalidvalue'] . ': ' . $LN['ng_expire_time'] . ' ' . htmlentities($expire));
     }
     if ($expire > $max_expire || $expire < 1) {
-        throw new exception($name . ': ' . $LN['error_bogusexptime']);
+        throw new exception($name . ': ' . $LN['error_bogusexptime'] . ': ' . htmlentities($expire) . ' XXX ' . $max_expire);
     }
 }
 
@@ -2124,5 +2139,25 @@ function return_result(array $vars=array())
      //   $vars['contents'] = preg_replace('/[[:cntrl:]]+/u', '', $vars['contents']);
     }
     die(json_encode($vars));
+}
+
+function link_to_url($description)
+{
+    $position = 0;
+    while (preg_match('|https?:\/\/[-a-z0-9_:./&%!@#$?^()+=\\;]+|i', $description, $matches, PREG_OFFSET_CAPTURE, $position)) {
+        list($url, $urlposition) = $matches[0];
+        $d1 = substr($description, 0, $urlposition);
+        $l = strlen($url);
+        $d2 = substr($description, $urlposition + $l);
+        $new_url = $url;
+        if ((strpos(substr($d1, -10), '[url]') === FALSE) && (strpos(substr($d2, 0, 10), '[/url]') === FALSE)) {
+            $new_url = '[url]' . $url . '[/url]';
+        }
+        $new_l = strlen($new_url);
+        $description = $d1 . $new_url . $d2;
+        $position = $urlposition + $new_l;
+    }
+
+    return $description;
 }
 

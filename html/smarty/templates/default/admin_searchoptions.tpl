@@ -19,7 +19,8 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_searchoptions.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_buttons_title}</h3>
 
@@ -28,18 +29,19 @@
 <input type="button" value="{$LN_search}" class="submitsmall" id="searchbutton"/></div>
 </div>
 
-<script type="text/javascript">
-$(document).ready(function() {
-    show_buttons(); 
-    $('#searchbar').html( $('#searchformdiv').html());
-    $('#search').keypress(function(e) { return submit_enter(e, show_buttons); });
-    $('#searchbutton').click(function(e) { show_buttons(); });
-});
-</script>
-
 <div id="buttonsdiv">
 </div>
 
 <div><br/></div>
 
-{include file="foot.tpl"}
+<script type="text/javascript">
+$(document).ready(function() {
+    show_buttons(); 
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
+    $('#search').keypress(function(e) { return submit_enter(e, show_buttons); });
+    $('#searchbutton').click(function(e) { show_buttons(); });
+});
+</script>
+{/block}
+

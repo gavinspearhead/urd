@@ -19,10 +19,11 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: forgot_password.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  *}
-{include file="barehead.tpl" title=$title}
 
+{extends file="barehead.tpl"}
+{block name=contents}
 <div id="logindiv" class="light">
-<div class="urdlogo2 floatleft noborder buttonlike down3" onclick="javascript:jump('http://www.urdland.com');"></div>
+<div class="urdlogo2 floatleft noborder buttonlike down3" id="urd_logo"></div>
 <div><input type="hidden" name="challenge" value="{$challenge}"/>
 <table class="logintable" id="form_table">
 <tbody id="error">
@@ -33,7 +34,7 @@
 <tr><td>{$LN_username}</td><td><input type="text" name="username" id="username" size="40" placeholder="Username" required/></td></tr>
 <tr><td>{$LN_email}</td><td><input type="email" name="email" id="email" size="40" placeholder="Email address" required/></td></tr>
 <tr><td>&nbsp;</td></tr>
-<tr><td colspan="2"><input type="button" value="{$LN_forgot_mail}" class="submitsmall floatright" onclick="submit_forgot_password();"/></td></tr>
+<tr><td colspan="2"><input type="button" value="{$LN_forgot_mail}" class="submitsmall floatright" id="forgot_button"/></td></tr>
 </tbody>
 </table>
 </div>
@@ -47,10 +48,10 @@
 </div>
 <script>
 $(document).ready(function() {
-        $("#sent_table").hide();
-        $("#error_msg").hide();
-    }
-);
-
+    $("#sent_table").hide();
+    $("#error_msg").hide();
+    $('#urd_logo').click( function() { jump('http://www.urdland.com'); });
+    $('#forgot_button').click( function() { submit_forgot_password(); });
+});
 </script>
-{include file="barefoot.tpl"}
+{/block}

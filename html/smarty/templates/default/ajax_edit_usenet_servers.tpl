@@ -20,13 +20,12 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_edit_usenet_servers.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
-{* Ajax page, doesn't need a head/foot tpl *}
+{extends file="popup.tpl"}
+{block name=title}{if $id eq 'new'}{$LN_usenet_addserver}{else}{$LN_usenet_editserver}{/if}{/block}
+{block name=contents}
 
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{if $id eq 'new'}{$LN_usenet_addserver}{else}{$LN_usenet_editserver}{/if}</div>
 {if $only_auth}{$auth_class="hidden"}{else}{$auth_class=""}{/if}
 
-<div class="light">
 <br/>
 <input type="hidden" name="id" id="id" value="{$id|escape:htmlall}"/></td>
 <table class="hmid">
@@ -94,5 +93,4 @@
 </tr>
 </table>
 
-</div>
-
+{/block}

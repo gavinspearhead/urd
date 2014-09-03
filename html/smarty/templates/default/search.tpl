@@ -20,8 +20,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: search.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
 
+{extends file="head.tpl"}
+{block name=contents}
 {* Search form *}
 <div id="textcontent">
 <div class="urdlogo2 floatright noborder buttonlike" onclick="javascript:jump('index.php');"></div>
@@ -68,7 +69,6 @@
 </div>
 {/foreach}
 {/capture}
-
 
 <h3 class="title">{$LN_menuspotssearch}</h3>
 <form id="searchform3" action="spots.php" method="post">
@@ -280,24 +280,24 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-{if $show_spots eq 1} 
+    {if $show_spots eq 1} 
        init_slider({$spotminsetsizelimit}, {$spotmaxsetsizelimit}, "#spotsetsize", "#spotminsetsize", "#spotmaxsetsize");
        init_slider({$spotminagelimit}, {$spotmaxagelimit}, "#spotsetage", "#spotminage", "#spotmaxage");
        init_slider({$spotminratinglimit}, {$spotmaxratinglimit}, "#spotrating", "#spotminrating", "#spotmaxrating");
-{/if}
-{if $show_rss eq 1} 
+    {/if}
+    {if $show_rss eq 1} 
        init_slider({$rssminsetsizelimit}, {$rssmaxsetsizelimit}, "#rsssetsize", "#rssminsetsize", "#rssmaxsetsize");
        init_slider({$rssminagelimit}, {$rssmaxagelimit}, "#rsssetage", "#rssminage", "#rssmaxage");
        init_slider({$rssminratinglimit}, {$rssmaxratinglimit}, "#rsssetrating", "#rssminrating", "#rssmaxrating");
-{/if}
-{if $show_groups eq 1} 
+    {/if}
+    {if $show_groups eq 1} 
        init_slider({$groupminsetsizelimit}, {$groupmaxsetsizelimit}, "#groupsetsize", "#groupminsetsize", "#groupmaxsetsize");
        init_slider({$groupminagelimit}, {$groupmaxagelimit}, "#groupsetage", "#groupminage", "#groupmaxage");
        init_slider({$groupminratinglimit}, {$groupmaxratinglimit}, "#groupsetrating", "#groupminrating", "#groupmaxrating");
        init_slider({$groupmincompletelimit}, {$groupmaxcompletelimit}, "#groupsetcomplete", "#groupmincomplete", "#groupmaxcomplete");
-{/if}
+    {/if}
 });
 
 </script>
 
-{include file="foot.tpl"}
+{/block}

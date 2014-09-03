@@ -21,10 +21,11 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_edittransfers.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_transfers_details}</div>
-<div class="light padding10">
+{extends file="popup.tpl"}
+{block name=title}{$LN_transfers_details}{/block}
+{block name=contents}
+
+<div class="padding10">
 <br/>
 <input type="hidden" name="dlid" id="dlid" value="{$id|escape:htmlall}" />
 <table class="renametransfer hmid">
@@ -33,7 +34,7 @@
 <tr><td>{$LN_browse_download_dir}:</td><td>
 
 <span id="dl_dir_span">
-    <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}"  class="width300" {if $dldir_noedit eq 1}readonly="readonly"{/if}/>&nbsp;</div>
+    <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300" {if $dldir_noedit eq 1}readonly="readonly"{/if}/>&nbsp;</div>
     {if $dldir_noedit != 1}<div class="foldericon iconsize floatleft" onclick="$('#dir_select_span').toggleClass('hidden'); $('#dl_dir_span').toggleClass('hidden');"></div>{/if}
 </span>
 <span id="dir_select_span" class="hidden">
@@ -69,4 +70,5 @@
 </div>
 <div id="calendardiv" class="calendaroff">
 </div>
+{/block}
 

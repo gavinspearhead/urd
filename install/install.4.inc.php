@@ -45,8 +45,6 @@ $keystore_path = get_request('keystore_path');
 $encryption_key = get_request('encryption_key');
 $reuse_keystore = get_request('reuse_keystore');
 
-
-
 if ($dbpass == '') {
     $dbpass = generate_password(32);
 }
@@ -82,9 +80,9 @@ if ($dbruser != '' && $dbtype != 'pdo_sqlite') { // = we need to log in as root 
         if ($dbname == '') { 
             throw new exception('Database name must be provided');
         }
-        if ($dbtype == 'mysql' || $dbtype == 'mysqli'|| $dbtype == 'mysqlt' || $dbtype == 'pdo_mysql') {
+        if ($dbtype == 'mysql') {
             $db = new DatabaseConnection_mysql($dbtype, $dbhost, $dbport, $dbruser, $dbrpass, '', TRUE);
-        } elseif ($dbtype == 'postgres9' || $dbtype == 'postgres8' || $dbtype == 'postgres7' || $dbtype == 'pdo_pgsql') {
+        } elseif ($dbtype == 'postgres') {
             $db = new DatabaseConnection_psql($dbtype, $dbhost, $dbport, $dbruser, $dbrpass, '', TRUE);
         } else {
             throw new exception('Wrong database type');
@@ -205,7 +203,7 @@ if ($dbruser != '' && $dbtype != 'pdo_sqlite') { // = we need to log in as root 
 }
 
 
-if ($dbtype == 'pdo_sqlite') {
+if ($dbtype == 'sqlite') {
     $OUT .= '<tr><td class="install2">Database creation</td>';
     try {
         unlink($dbname);
@@ -227,11 +225,11 @@ if ($db_created) {
     $OUT .= '<tr><td class="install2">Database user connection</td>';
 
     try {
-        if ($dbtype == 'mysql' || $dbtype == 'mysqli'|| $dbtype == 'mysqlt' || $dbtype == 'pdo_mysql') {
+        if ($dbtype == 'mysql') {
             $db = new DatabaseConnection_mysql($dbtype, $dbhost, $dbport, $dbuser, $dbpass, $dbname, TRUE);
-        } elseif ($dbtype == 'postgres9' || $dbtype == 'postgres8' || $dbtype == 'postgres7' || $dbtype == 'pdo_pgsql') {
+        } elseif ($dbtype == 'postgres' ) {
             $db = new DatabaseConnection_psql($dbtype, $dbhost, $dbport, $dbuser, $dbpass, $dbname, TRUE);
-        } elseif ($dbtype == 'pdo_sqlite') {
+        } elseif ($dbtype == 'sqlite') {
             $db = new DatabaseConnection_sqlite($dbtype, $dbhost, $dbport, $dbuser, $dbpass, $dbname, TRUE);
         } else {
             throw new exception ('Wrong database type');

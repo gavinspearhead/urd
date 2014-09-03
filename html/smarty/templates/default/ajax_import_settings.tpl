@@ -34,6 +34,7 @@
 <input type="file" name="filename" id="files" size="1" class="hidden" onchange="$('#_files').val($(this).val());"/>
 <input type="text" name="_filename" id="_files" placeholder="{$LN_settings_filename}" required size="30"/>
 <input type="button" class="submitsmall" value="{$LN_browse}" onclick="$('#files').click();"/>
+<progress id="progress_import"></progress>
 </td>
 </tr>
 <tr><td>&nbsp;</td></tr>

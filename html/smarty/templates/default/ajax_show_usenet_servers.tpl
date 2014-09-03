@@ -37,7 +37,6 @@
 {if $sort == "username"}{if $sort_dir=='desc'}{$username_sort=$up}{else}{$username_sort=$down}{/if}{else}{$username_sort=""}{/if}
 {if $sort == "indexing"}{if $sort_dir=='desc'}{$indexing_sort=$up}{else}{$indexing_sort=$down}{/if}{else}{$indexing_sort=""}{/if}
 
-
 <table class="newsservers">
 <tr>
 <th onclick="javascript:submit_search_usenet_servers('priority', 'desc');" class="buttonlike uwider fixwidth3c head round_left">{$LN_usenet_priority} {$priority_sort}</th>

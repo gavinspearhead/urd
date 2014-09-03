@@ -22,10 +22,10 @@
  * $Id: ajax_editcategories.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_editcategories} </div>
+{extends file="popup.tpl"}
+{block name=title}{$LN_editcategories}{/block}
+{block name=contents}
 
-<div class="light">
 
 <br/>
 <table class="hmid">
@@ -47,5 +47,4 @@
 </tr>
 
 </table>
-</div>
-</div>
+{/block}

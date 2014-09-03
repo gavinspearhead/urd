@@ -21,9 +21,10 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: fatal_error.tpl 3131 2014-06-28 21:05:24Z gavinspearhead@gmail.com $
  *}
+{extends file="head.tpl"}
 {if $showmenu != 0} 
-{include file="head.tpl" title=$title}
 {/if}
+{block name=contents}
 
 <div class="light">
 {if $link neq NULL and $link_msg neq NULL}
@@ -32,8 +33,8 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-        show_alert("{$msg|escape:javascript}");
-        });
+    show_alert("{$msg|escape:javascript}");
+});
 </script>
 {if isset($__message) && is_array($__message) && count($__message) > 0 }
 
@@ -44,11 +45,14 @@ $(document).ready(function() {
 <div id="hideoverlay"></div>
 
 <div id="messagecontent" class="light">
+{foreach $__message as $m}
+{$m}<br>
+{/foreach}
 </div>
 </div>
 </div>
 {/if}
 
+{/block}
 {if $showmenu != 0} 
-{include file="foot.tpl"}
 {/if}

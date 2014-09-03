@@ -113,7 +113,7 @@ try {
                     array($userid, $groupid, $subject, $email, $poster, $message, $headers), TRUE);
             $uc->post_message($post_id);
             $uc->disconnect();
-            return_resurt(array('message'=>$LN['taskpostmessage']));
+            return_result(array('message'=>$LN['taskpostmessage']));
             break;
 
         case 'show':

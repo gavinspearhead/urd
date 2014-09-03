@@ -232,7 +232,7 @@ function load_config(DatabaseConnection $db, $force = FALSE)
         }
     }
 
-    $res = $db->select_query('"option", "value" FROM preferences WHERE "userID"=?', array(user_status::SUPER_USERID));
+    $res = $db->select_query('"option", "value" FROM preferences WHERE "userID"=:userid', array(':userid'=>user_status::SUPER_USERID));
     if (!is_array($res)) {
         $res = array();
     }
@@ -256,9 +256,9 @@ function load_prefs(DatabaseConnection $db, $userid, $force = FALSE)
             return $val;
         }
     }
-    $query = '"userID", "option", "value" FROM preferences WHERE "userID"=?';
+    $query = '"userID", "option", "value" FROM preferences WHERE "userID"=:userid';
 
-    $res = $db->select_query($query, array($userid));
+    $res = $db->select_query($query, array(':userid' => $userid));
     if (!is_array($res)) {
         $res = array();
     }
@@ -360,7 +360,7 @@ function set_config(DatabaseConnection $db, $name, $value)
 {
     assert($name !== '');
     config_cache::clear(user_status::SUPER_USERID);
-    $res = $db->select_query('"value", "userID" FROM preferences WHERE "option"=? AND "userID"=?', 1, array($name, user_status::SUPER_USERID));
+    $res = $db->select_query('"value", "userID" FROM preferences WHERE "option"=:option AND "userID"=:userid', 1, array(':option'=>$name, ':userid'=>user_status::SUPER_USERID));
     if ($res !== FALSE) {
         $db->update_query_2('preferences', array('value'=>$value), '"option"=? AND "userID"=?', array($name, user_status::SUPER_USERID));
     } else {

@@ -870,18 +870,6 @@ div.ng_selector
     vertical-align: bottom;
 }
 
-div.pref_selector
-{
-    width: 1%;
-    white-space: nowrap;
-    display: table-cell;
-    border-collapse: collapse;
-    margin: 0;
-    vertical-align: bottom;
-    padding-right: 10px;
-    padding-left: 10px;
-}
-
 div.prefix_transfers
 {
     margin-top: -2px;
@@ -891,7 +879,6 @@ div.prefix_prefs
 {
     margin-top: -2px;
 }
-
 
 .advanced_search 
 {

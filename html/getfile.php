@@ -35,31 +35,31 @@ $closelink = ($preview ? 'close' : 'back');
 
 $is_admin = urd_user_rights::is_admin($db, $userid);
 
-    $file = get_request('file', FALSE);
-    if ($file !== FALSE) {
-        $basename =  basename($file);
-        $path = my_realpath(dirname($file));
-        add_dir_separator($path);
-        $file = $path . $basename;
-    }
-    if ($file === FALSE) {
-        throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
-    }
+$file = get_request('file', FALSE);
+if ($file !== FALSE) {
+    $basename =  basename($file);
+    $path = my_realpath(dirname($file));
+    add_dir_separator($path);
+    $file = $path . $basename;
+}
+if ($file === FALSE) {
+    throw new exception($LN['error_filenotfound'] . htmlentities(": '$file'", ENT_QUOTES, 'UTF-8'));
+}
 
-    $dlpath = get_dlpath($db);
-    $done_path = $dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
-    $preview_path = $dlpath . PREVIEW_PATH . $username . DIRECTORY_SEPARATOR;
-    $cache_path = $dlpath . CACHE_PATH . DIRECTORY_SEPARATOR;
+$dlpath = get_dlpath($db);
+$done_path = $dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
+$preview_path = $dlpath . PREVIEW_PATH . $username . DIRECTORY_SEPARATOR;
+$cache_path = $dlpath . CACHE_PATH . DIRECTORY_SEPARATOR;
 
-    if ($is_admin) {
-        if (substr($file, 0, strlen($dlpath)) != $dlpath) {
-            throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
-        }
-    } else {
-        if (substr($file, 0, strlen($done_path)) != $done_path && substr($file, 0, strlen($preview_path)) != $preview_path && substr($file, 0, strlen($cache_path)) != $cache_path) {
-            throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'), NULL, NULL, $closelink);
-        }
+if ($is_admin) {
+    if (substr($file, 0, strlen($dlpath)) != $dlpath) {
+        throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
     }
+} else {
+    if (substr($file, 0, strlen($done_path)) != $done_path && substr($file, 0, strlen($preview_path)) != $preview_path && substr($file, 0, strlen($cache_path)) != $cache_path) {
+        throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'), NULL, NULL, $closelink);
+    }
+}
 if (!file_exists($file) || !is_readable($file)) {
     throw new exception($LN['error_filenotfound'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
 }
@@ -106,9 +106,9 @@ if ($is_text && $size < (1024 * 1024)) {
         $line = htmlentities($line, ENT_QUOTES);
         if (preg_match('|(http://[\w.+/?\-&;%=]*/?)|', $line, $matches) == 1) {
             $url = trim($matches[1]);
-            $line = str_replace($url, "<a href=\"$url\">$url</a>", $line);
-        }
-        echo $line;
+        $line = str_replace($url, "<a href=\"$url\">$url</a>", $line);
+    }
+    echo $line;
     }
     echo '</pre></body></html>';
 } elseif ($is_image && $raw === FALSE) {
@@ -116,8 +116,6 @@ if ($is_text && $size < (1024 * 1024)) {
     init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
 
     $smarty->assign('preview', 0);
-    $smarty->assign('header', 'head.tpl');
-    $smarty->assign('footer', 'foot.tpl');
 
     list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
 

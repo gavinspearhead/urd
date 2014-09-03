@@ -31,12 +31,11 @@ $pathdbc = realpath(dirname(__FILE__));
 
 require_once "$pathdbc/file_functions.php";
 require_once "$pathdbc/db/urd_db_structure.php";
-require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
-require_once "$pathdbc/libs/adodb/adodb.inc.php";
+//require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
+//require_once "$pathdbc/libs/adodb/adodb.inc.php";
 require_once "$pathdbc/db_mysql.php";
 require_once "$pathdbc/db_psql.php";
 require_once "$pathdbc/db_sqlite.php";
-
 
 function connect_db($check_db=TRUE)
 {
@@ -58,19 +57,21 @@ function connect_db($check_db=TRUE)
     try {
         switch ($config['databasetype']) {
         case 'mysql':
-        case 'mysqli':
-        case 'pdo_mysql':
+        case 'mysqli': // only for old db_configs
+        case 'pdo_mysql': // only for old db_configs
             $db = new DatabaseConnection_mysql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
                     $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
-        case 'postgres9':
-        case 'postgres8':
-        case 'postgres7':
-        case 'pdo_pgsql':
+        case 'postgres':
+        case 'postgres9': // only for old db_configs
+        case 'postgres8': // only for old db_configs
+        case 'postgres7': // only for old db_configs
+        case 'pdo_pgsql': // only for old db_configs
             $db = new DatabaseConnection_psql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
                     $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
-        case 'pdo_sqlite':
+        case 'sqlite':
+        case 'pdo_sqlite': // only for old db_configs
             $db = new DatabaseConnection_sqlite($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
                     $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
@@ -122,13 +123,13 @@ abstract class DatabaseConnection
         $this->databaseengine = $dbengine;
         $this->databasename = $database;
         $this->hostname = $hostname;
-        $this->port = $port;
+        $this->port = (int) $port;
         $this->username = $user;
         $this->password = $pass;
         // We do store the sensitive information.  ;-)
         $this->connect();
-        $this->DB->bulkBind = TRUE;
-        $this->DB->SetFetchMode(ADODB_FETCH_ASSOC); // don't do $res[0][0], but only $res[0]['name'];
+        $this->DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->DB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
     public function __destruct()
     {
@@ -161,20 +162,31 @@ abstract class DatabaseConnection
     }
     public function get_database_server_info()
     {
-        return $this->DB->ServerInfo();
+        return $this->DB->getAttribute(PDO::ATTR_SERVER_INFO);
     }
+    public function get_database_server_version()
+    {
+        return $this->DB->getAttribute(PDO::ATTR_SERVER_VERSION);
+    }
+    public function get_database_server_driver()
+    {
+        return $this->DB->getAttribute(PDO::ATTR_DRIVER_NAME);
+    }
+
     public function disconnect()
     {
-        $this->DB->close();
+        $this->DB = NULL;
     }
     public function is_connected()
     {
-       return (is_a($this->DB, 'ADOConnection') && $this->DB->isConnected());
+       return (is_a($this->DB, 'PDO'));
     }
 
-    public function set_fetch_mode($mode = ADODB_FETCH_DEFAULT)
+    public function set_fetch_mode($mode = PDO::FETCH_ASSOC)
     {
-        return $this->DB->SetFetchMode($mode);
+        $rv = $this->DB->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+        $this->DB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, $mode);
+        return $rv;
     }
 
     abstract public function truncate_table($table);
@@ -196,11 +208,38 @@ abstract class DatabaseConnection
     abstract public function get_tables();
     abstract public function connect();
     abstract protected function execute_if_exists($table, $qry);
+    //abstract protected function select_limit($sql, $num_rows=-1, $offset=-1, $inputarr=FALSE);
 
     public function get_error_code()
     {
          return $this->error_code;
     }
+    protected function select_limit($sql, $num_rows=-1, $offset=-1, $inputarr=FALSE)
+    {
+        if (is_numeric($num_rows) && $num_rows > 0) {
+            $sql .= " LIMIT $num_rows";
+            if (is_numeric($offset) && $offset > 0) {
+                $sql .= " OFFSET $offset";
+            }
+        }
+        return $this->execute_query($sql, $inputarr);
+    }
+        
+    private function _execute($query, $values=FALSE)
+    {
+        if (is_array($values)) {
+               if (is_array(reset($values))) {  // get the first element; if it is an array, we assume we are doing bulk inserts
+                   foreach ($values as $v) {
+                       $query->execute($v);
+                   }
+               } else { // otherwise its justa  bind set
+                   $query->execute($values);
+               }
+            } else { // or no bound parameters are given anyway
+                $query->execute();
+            }
+    }
+
     public function execute_query($sql, $values=FALSE)
     {
         $this->error_code = 0;
@@ -213,11 +252,10 @@ abstract class DatabaseConnection
         }
         $query = $this->DB->prepare($sql);
         try {
-            $this->result = $this->DB->Execute($query, $values);
+            $this->_execute($query, $values);
         } catch (exception $e) {
-            $sql = is_array($query) ? $query[0] : $query;
             $errCode = $e->getCode();
-            $this->error_code= $errCode;
+            $this->error_code = $errCode;
             //echo_debug("Database problem: $errCode - " . $e->getMessage(), DEBUG_MAIN);
             // MySQL error codes (http://dev.mysql.com/doc/refman/5.1/en/error-messages-client.html)
             // 1062: Insert failed, duplicate key
@@ -232,20 +270,20 @@ abstract class DatabaseConnection
 
             // If connection was lost, try to reconnect and then do query again:
             $dbtype = $this->databasetype;
-            if ((($dbtype == 'mysql' || $dbtype == 'mysqli' || $dbtype == 'pdo_mysql') && ($errCode == 2006 || $errCode == 2013)) ||
-                (($dbtype == 'postgres7' || $dbtype == 'postgres8' || $dbtype == 'postgres9') && ($errCode != -5)) ||
+            if ((($dbtype == 'mysql') && ($errCode == 2006 || $errCode == 2013)) ||
+                (($dbtype == 'postgres' ) && ($errCode != -5)) ||
                 (($dbtype == 'pdo_pgsql') && ($errCode != 7))) {// sqlite should not lose connections
                 write_log("Database problem: ( $errCode ) " . $e->getMessage(), LOG_WARNING);
                 echo_debug_trace($e, DEBUG_DATABASE);
                 try {
                     $this->connect(TRUE);
-                    $this->result = $this->DB->Execute($query, $values);
+                    $this->_execute($query, $values);
                 } catch (exception $e1) {
                     write_log("Database problem: ($errCode) " . $e1->getMessage(), LOG_ERR);
                     echo_debug_trace($e1, DEBUG_DATABASE);
                     throw new exception("Could not execute SQL query \"$sql\" " . $e1->getMessage());
                 }
-            } elseif ((($dbtype == 'mysql' || $dbtype == 'mysqli' || $dbtype == 'pdo_mysql') && ($errCode == 1062)) ||(strpos($e->getMessage(),'duplicate key value violates unique constraint') !== FALSE)) {
+            } elseif ((($dbtype == 'mysql') && ($errCode == 1062 || $errCode == 23000)) ||(strpos($e->getMessage(),'duplicate key value violates unique constraint') !== FALSE)) {
                 // ignore duplicate key error messages, they'll happen with inserting group data :/
                 echo_debug("Database problem: ($errCode) " . $e->getMessage(), DEBUG_DATABASE);
                 return FALSE;
@@ -257,13 +295,16 @@ abstract class DatabaseConnection
         if (defined('QUERY_LOG')) {
             echo_debug_file(self::QUERY_LOG_FILE, 'done', FALSE, ORIGINAL_PAGE);
         }
-        if ($this->result->RecordCount() == 0) {
+        try {
+            $rv = $query->fetchAll();
+            if ($rv == array()) {
+                return FALSE;
+            }
+        } catch(exception $e) {
             return FALSE;
-        } else {
-            $this->result->Move(0); // just to be sure
-
-            return $this->result->GetArray();
         }
+        return $rv;
+        
     }
 
     public function update_query($table, array $columns, array $values, $where='', $input_arr=FALSE)
@@ -335,6 +376,7 @@ abstract class DatabaseConnection
                 return FALSE;
             }
         } catch (exception $e) {
+            write_log("Could not execute SQL query \"$sql\" " . $e->getMessage(), LOG_INFO);
             throw new exception("Could not execute SQL query \"$sql\" " . $e->getMessage());
         }
     }
@@ -381,24 +423,17 @@ abstract class DatabaseConnection
                 $this->escape($item, $quoted);
             }
         } else {
-            $object = $this->DB->qstr($object);
+            $object = $this->DB->quote($object);
             if (!$quoted) {
                 $object = substr($object, 1, -1);
             }
         }
     }
 
-    public function num_rows($result = FALSE)
+    public function get_last_id()
     {
-        if ($result === FALSE) {
-            return $this->result->RecordCount();
-        } else {
-            return $result->RecordCount();
-        }
+        return $this->DB->lastInsertId(); 
     }
-
-    abstract public function get_last_id();
-
 
     public function select_query($qry, $num_rows=-1, $offset=-1, $inputarr=FALSE)
     {
@@ -417,11 +452,11 @@ abstract class DatabaseConnection
         if (defined('QUERY_LOG')) {
             echo_debug_file(self::QUERY_LOG_FILE, $sql . " ($num_rows, $offset) ", FALSE, ORIGINAL_PAGE);
         }
-        if (!$this->DB->isConnected()) {
+        if (!$this->is_connected()) {
             $this->connect();
         }
         try {
-            $this->result = $this->DB->SelectLimit($sql, $num_rows, $offset, $inputarr);
+            $this->result = $this->select_limit($sql, $num_rows, $offset, $inputarr);
         } catch (exception $e) {
             $errCode = $e->getCode();
             write_log("Database problem: $errCode - " . $e->getMessage(), LOG_INFO);
@@ -437,14 +472,11 @@ abstract class DatabaseConnection
             // If connection was lost, try to reconnect and then do query again:
             $dbtype = $this->databasetype;
             if ((($dbtype == 'mysql' || $dbtype == 'mysqli' || $dbtype == 'pdo_mysql') && ($errCode == 2006 || $errCode == 2013)) ||
-                (($dbtype == 'postgres7' || $dbtype == 'postgres8' || $dbtype == 'postgres9'|| $dbtype == 'pdo_pgsql') && ($errCode != -5))) {// sqlite should not lose connections
+                (($dbtype == 'postgres7' || $dbtype == 'postgres8' || $dbtype == 'postgres9' || $dbtype == 'pdo_pgsql') && ($errCode != -5))) {// sqlite should not lose connections
                 write_log("Database problem: ( $errCode ) " . $e->getMessage(), LOG_WARNING);
                 try {
                     $this->connect(TRUE);
-                    $this->result = $this->DB->SelectLimit($sql, $num_rows, $offset, $inputarr);
-                    if ($this->result === FALSE) {
-                        throw new exception('No results returned');
-                    }
+                    $this->result = $this->select_limit($sql, $num_rows, $offset, $inputarr);
                 } catch (exception $e) {
                     write_log("Database problem: ( $errCode ) " . $e->getMessage(), LOG_ERR);
                     throw new exception("Could not execute SQL select query \"$sql\" " . $e->getMessage());
@@ -453,19 +485,10 @@ abstract class DatabaseConnection
                 throw new exception("Could not execute SQL select query \"$sql\" " . $e->getMessage());
             }
         }
-        if ($this->result === FALSE) {
-            throw new exception('No results returned');
-        }
         if (defined('QUERY_LOG')) {
             echo_debug_file(self::QUERY_LOG_FILE, 'done', FALSE, ORIGINAL_PAGE);
         }
-        if ($this->result->RecordCount() == 0) {
-            return FALSE;
-        } else {
-            $this->result->Move(0); // just to be sure
-
-            return $this->result->GetArray();
-        }
+        return $this->result;
     }
 
     public function delete_query($table, $where='', $input_arr=FALSE)

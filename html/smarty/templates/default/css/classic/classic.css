@@ -809,19 +809,6 @@ div.ng_selector
     vertical-align: bottom;
 }
 
-div.pref_selector
-{
-    width: 1%;
-    white-space: nowrap;
-    display: table-cell;
-    border-collapse: collapse;
-    padding-right: 10px;
-    padding-left: 10px;
-    padding-bottom: 1px;
-    margin: 0;
-    vertical-align: bottom;
-}
-
 div.prefix_transfers
 {
     margin-top: -2px;

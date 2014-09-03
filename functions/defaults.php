@@ -95,7 +95,7 @@ function get_default_config()
     $prefArray_root['unzip_path']    = '/usr/bin/unzip';
     $prefArray_root['gzip_path']     = '/bin/gzip';
     $prefArray_root['unace_path']    = '/usr/bin/ace';
-    $prefArray_root['tar_path']      = '/usr/bin/tar';
+    $prefArray_root['tar_path']      = '/bin/tar';
     $prefArray_root['unarj_path']    = '/usr/bin/arj';
     $prefArray_root['subdownloader_path'] = '/usr/bin/subdownloader';
     $prefArray_root['file_path']     = '/usr/bin/file';
@@ -119,7 +119,7 @@ function get_default_config()
     if (isset($_SESSION['yydecode'])) { $prefArray_root['yydecode_path']    = $_SESSION['yydecode']; }
     if (isset($_SESSION['yyencode'])) { $prefArray_root['yyencode_path']    = $_SESSION['yyencode']; }
     if (isset($_SESSION['trickle'])) { $prefArray_root['trickle_path']      = $_SESSION['trickle']; }
-    if (isset($_SESSION['subdownloader'])) {  $prefArray_root['subdownloader_path']  = $_SESSION['subdownloader']; }
+    if (isset($_SESSION['subdownloader'])) { $prefArray_root['subdownloader_path']  = $_SESSION['subdownloader']; }
 
     $prefArray_root['urdd_path'] = $pathc . 'urdd.sh'; // location where urdd is stored
     if (isset($_SESSION['urdd'])) {

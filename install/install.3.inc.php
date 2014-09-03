@@ -77,24 +77,13 @@ $OUT .= '<tr><td colspan="2" class="install1">Database settings</td></tr>' . "\n
 $dbs = array();
    
 if (extension_loaded('pdo_mysql')) {
-    $dbs[] = array ('pdo_mysql', 'Mysql (PDO)');
-}
-if (extension_loaded('mysqli')) {
-    $dbs[] = array ('mysqli', 'MySQL Improved (deprecated');
-}
-if (extension_loaded('mysql')) {
-    $dbs[] = array ('mysql', 'MySQL (deprecated');
+    $dbs[] = array ('mysql', 'Mysql');
 }
 if (extension_loaded('pdo_pgsql')) {
-    $dbs[] = array ('pdo_pgsql', 'Postgresql (PDO)');
-}
-if (extension_loaded('pgsql')) {
-    $dbs[] = array ('postgres9', 'Postgres 9 (deprecated)');
-    $dbs[] = array ('postgres8', 'Postgres 8 (deprecated');
-    $dbs[] = array ('postgres7', 'Postgres 7 (deprecated');
+    $dbs[] = array ('postgres', 'Postgresql');
 }
 if (extension_loaded('pdo_sqlite')) {
-    $dbs[] = array ('pdo_sqlite', 'SQLite (PDO)');
+    $dbs[] = array ('sqlite', 'SQLite');
 }
 
 if ($dbs == array()) {
@@ -108,7 +97,7 @@ SELECTDB;
 foreach($dbs as $l) {
 	$OUT .= '<option ' . (($l[0] == $dbtype) ? 'selected="selected"' : '') . " value=\"{$l[0]}\">{$l[1]}</option>\n";
 } 
-$showdbe = (in_array(strtolower($dbtype) , array('mysql', 'mysqli', 'pdo_mysql'))) ? '' : " style=\"display:hidden\" ";
+$showdbe = (in_array(strtolower($dbtype), array('mysql'))) ? '' : ' style="display:hidden" ';
 $dbinno = ($dbengine == 'innodb') ? 'selected="selected"' : '';
 $dbmyisam = ($dbengine == 'myisam') ? 'selected="selected"' : '';
 $dbdef = ($dbengine != 'myisam' && $dbengine != 'innodb') ? 'selected="selected"' : '';

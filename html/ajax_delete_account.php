@@ -25,8 +25,8 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
 $pathda = realpath(dirname(__FILE__));
 
-verify_access($db, urd_modules::URD_CLASS_GENERIC, FALSE, '', $userid);
 require_once "$pathda/../functions/ajax_includes.php";
+verify_access($db, urd_modules::URD_CLASS_GENERIC, FALSE, '', $userid);
 
 try { 
     if (!(isset($_POST['delete_account']) && $_POST['delete_account'] == 1)) {
@@ -34,7 +34,7 @@ try {
     }
     challenge::verify_challenge($_POST['challenge']);
     delete_user($db, $userid);
-    return_result('message' => $LN['account_deleted']));
+    return_result(array('message' => $LN['account_deleted']));
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

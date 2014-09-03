@@ -23,19 +23,17 @@
 
 {* Capture the skipper: *}
 {capture assign=topskipper}
-{if $lastpage neq 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=submit_viewfiles_page extra_class="margin10"}
-{else}<br/>
-{/if}
-
+    {if $lastpage neq 1}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=submit_viewfiles_page extra_class="margin10"}
+    {else}<br/>
+    {/if}
 {/capture}
 
 {capture assign=bottomskipper}
-{if $lastpage neq 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=submit_viewfiles_page extra_class="margin10"}
-{else}<br/>
-{/if}
-
+    {if $lastpage neq 1}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=submit_viewfiles_page extra_class="margin10"}
+    {else}<br/>
+    {/if}
 {/capture}
 
 {$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
@@ -63,7 +61,6 @@
 <th class="head round_right right fixwidth8">{$LN_actions}</th>
 </tr>
 {/capture}
-
 
 {if $only_rows == 0}
 {* And display it here and at the bottom: *}

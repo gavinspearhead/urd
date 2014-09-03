@@ -40,6 +40,7 @@ $default_locations = array (
 // functions we don't really need in the installer
 if(!function_exists('echo_debug')) { function echo_debug(){}; }
 if(!function_exists('echo_debug_function')) { function echo_debug_function(){}; }
+if(!function_exists('echo_debug_trace')) { function echo_debug_trace(){}; }
 if(!function_exists('echo_debug_file')) { function echo_debug_file(){}; }
 if(!function_exists('write_log')) { function write_log(){}; }
 
@@ -301,7 +302,7 @@ function CheckPHPCURL()
 	return extension_loaded('curl');
 }	
 
-function CheckAdodb()
+/*function CheckAdodb()
 {
 	@include_once '../functions/libs/adodb/adodb-exceptions.inc.php';
 	@include_once '../functions/libs/adodb/adodb.inc.php';
@@ -309,7 +310,7 @@ function CheckAdodb()
         return TRUE;
     }
 	return FALSE;
-}
+}*/
 
 function CheckYydecode()
 {

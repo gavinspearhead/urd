@@ -1,35 +1,27 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>{$title}</title>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-
-{if !$allow_robots}
-<meta name="robots" content="noindex, nofollow"/>
-{/if}
-
-<link id="basic_css" rel="stylesheet" href="{$CSSDIR}/_basic.css" type="text/css"/>
-<link id="urd_css" rel="stylesheet" href="{$CSSDIR}/{if $stylesheet != ''}{$stylesheet|replace:".css":""}/{$stylesheet}.css{else}light/light.css{/if}" type="text/css"/>
-<link id="jquery_css" rel="stylesheet" href="{$CSSDIR}/{if $stylesheet != ''}{$stylesheet|replace:".css":""}{else}/light{/if}/jquery-ui.css" type="text/css"/>
-<!--[if IE]>
-<link rel="stylesheet" id="iehacks_css" href="{$CSSDIR}/_iehacks.css" type="text/css"/>
-<![endif]--> 
-<link id="icon" rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-{if isset($rssurl) && $rssurl neq ""}
-<link rel="alternate" type="application/rss+xml" href="{$rssurl}" title="URD"/> 
-{/if}
-<script type="text/javascript" src="{$JSDIR}/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
-<script type="text/javascript" src="{$JSDIR}/js.js"></script>
-</head>
-{urd_flush}
-<body>
-<noscript><div id="nojs" class="centered_nojs down100">{$LN_login_jserror}</div></noscript>
-
-<div id="message_bar" class="Message hidden">
-    <div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
-    <div id="message_content" class="inline"></div>
-</div>
+{* Smarty *}
+{*
+ *  This file is part of Urd.
+ *  vim:ts=4:expandtab:cindent
+ *
+ *  Urd is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *  Urd is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. See the file "COPYING". If it does not
+ *  exist, see <http://www.gnu.org/licenses/>.
+ *
+ * $LastChangedDate: 2010-12-26 19:09:56 +0100 (zo, 26 dec 2010) $
+ * $Rev: 1965 $
+ * $Author: gavinspearhead $
+ * $Id: newsgroups.tpl 1965 2010-12-26 18:09:56Z gavinspearhead $
+ *}
 
 {capture assign=urdmenu}
 <div id="scrollmenuright" class="buttonlike white">&gt;</div>
@@ -94,6 +86,38 @@
 </div>
 {/capture}
 
+
+<html>
+<head>
+<title>{$title}</title>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+
+{if !$allow_robots}
+<meta name="robots" content="noindex, nofollow"/>
+{/if}
+
+<link id="basic_css" rel="stylesheet" href="{$CSSDIR}/_basic.css" type="text/css"/>
+<link id="urd_css" rel="stylesheet" href="{$CSSDIR}/{if $stylesheet != ''}{$stylesheet|replace:".css":""}/{$stylesheet}.css{else}light/light.css{/if}" type="text/css"/>
+<link id="jquery_css" rel="stylesheet" href="{$CSSDIR}/{if $stylesheet != ''}{$stylesheet|replace:".css":""}{else}/light{/if}/jquery-ui.css" type="text/css"/>
+<!--[if IE]>
+<link rel="stylesheet" id="iehacks_css" href="{$CSSDIR}/_iehacks.css" type="text/css"/>
+<![endif]--> 
+<link id="icon" rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+{if isset($rssurl) && $rssurl neq ""}
+<link rel="alternate" type="application/rss+xml" href="{$rssurl}" title="URD"/> 
+{/if}
+<script type="text/javascript" src="{$JSDIR}/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
+<script type="text/javascript" src="{$JSDIR}/js.js"></script>
+</head>
+{urd_flush}
+<body>
+<noscript><div id="nojs" class="centered_nojs down100">{$LN_login_jserror}</div></noscript>
+
+<div id="message_bar" class="Message hidden">
+    <div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
+    <div id="message_content" class="inline"></div>
+</div>
 {$urdmenu}
 
 {*this is for the small tooltip thingie *}
@@ -126,6 +150,33 @@
 <div id="searchbar"></div>
 <div id="topcontent">
 <div id="contentout">
-<div id="sbdiv" onclick="javascript:show_sidebar();"><span id="sidebar_button"></span></div>
+<div id="sbdiv" class="buttonlike"><span id="sidebar_button"></span></div>
 <div id="content" class="down3">
 <input type="hidden" name="urdd_message" id="urdd_message" value="{$offline_message}"/>
+
+{block name="contents"}
+{/block}
+
+<div>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+</div>
+
+</div>
+</div>
+
+<script type="text/javascript">
+$(document).ready( function() { 
+    init(); 
+    $('#sbdiv').click( function() { show_sidebar(); });
+});
+</script>
+</div>
+</body>
+
+<!-- URD v{$VERSION} -->
+
+</html>

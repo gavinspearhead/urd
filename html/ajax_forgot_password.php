@@ -77,7 +77,6 @@ try {
             $sender = get_config($db, 'admin_email');
             urd_mail::mail_pw($db, $fullname, $username, $email, $newpw, $sender);
         }
-        throw new exception($sql);
     } else {
         $err_msg = '';
         if (!isset($_POST['username']) ||$_POST['username'] == '') {

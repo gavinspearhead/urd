@@ -104,9 +104,8 @@ class urdd_rss
     public function update_feedcount(DatabaseConnection $db, $rss_id)
     {
         assert(is_numeric($rss_id));
-        $db->escape($rss_id, TRUE);
-        $sql = "UPDATE rss_urls SET \"feedcount\"= (SELECT COUNT(\"id\") FROM rss_sets WHERE \"rss_id\"= $rss_id) WHERE \"id\"=$rss_id";
-        $db->execute_query($sql);
+        $sql = 'UPDATE rss_urls SET "feedcount"= (SELECT COUNT(*) FROM rss_sets WHERE "rss_id"= :rss_id1 ) WHERE "id"=:rss_id2';
+        $db->execute_query($sql, array(':rss_id1'=>$rss_id, ':rss_id2'=>$rss_id));
     }
 
     public function rss_update(DatabaseConnection $db, array $rss_info)
@@ -159,7 +158,7 @@ class urdd_rss
         $rss_info = get_rss_info($db, $rss_id);
         $type = USERSETTYPE_RSS;
 
-        $qry = 'count("id") AS cnt FROM rss_sets WHERE "rss_id"=?';
+        $qry = 'count(*) AS cnt FROM rss_sets WHERE "rss_id"=?';
         $res = $db->select_query($qry, array($rss_id));
         if (!isset($res[0]['cnt'])) {
             throw new exception_db ('DB Error');
@@ -208,24 +207,27 @@ class urdd_rss
         $expire = time() - $expire;
         $type = USERSETTYPE_RSS;
         $marking_on = sets_marking::MARKING_ON;
-        $db->escape($rss_id, TRUE);
-        $db->escape($expire, TRUE);
         $prefs = load_config($db);
         $keep_int = '';
+        $input_arr = array();
         if ($prefs['keep_interesting']) {
-            $keep_int = " AND \"setid\" NOT IN ( SELECT \"setID\" FROM usersetinfo WHERE \"type\" = '$type' AND \"statusint\" = '$marking_on') ";
+            $keep_int = ' AND "setid" NOT IN ( SELECT "setID" FROM usersetinfo WHERE "type" = :type AND "statusint" = :marking) ';
+            $input_arr[':type'] = $type;
+            $input_arr[':marking'] = $marking_on;
         }
 
         $cnt = 0;
-        $qry = "count(\"id\") AS cnt FROM rss_sets WHERE \"rss_id\" = $rss_id AND \"timestamp\" < $expire $keep_int";
-        $res = $db->select_query($qry);
+        $qry = "count(*) AS cnt FROM rss_sets WHERE \"rss_id\" = :rss_id AND \"timestamp\" < :expire $keep_int";
+        $input_arr[':rss_id'] = $rss_id;
+        $input_arr[':expire'] = $expire;
+        $res = $db->select_query($qry, $input_arr);
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
         }
         update_queue_status ($db, $dbid, NULL, 0, 1);
         // first delete everything we want to remove
-        $qry = "\"rss_id\" = $rss_id AND \"timestamp\" < $expire $keep_int";
-        $res = $db->delete_query('rss_sets', $qry);
+        $qry = "\"rss_id\" = :rss_id AND \"timestamp\" < :expire $keep_int";
+        $res = $db->delete_query('rss_sets', $qry, $input_arr);
         update_queue_status ($db, $dbid, NULL, 0, 30);
 
         // then rm all usersetinfo that has a set id of a set we already removed

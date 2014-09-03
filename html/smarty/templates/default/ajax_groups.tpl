@@ -99,21 +99,21 @@
 <table class="newsgroups" id="groupstable">
 <tr>
 <th class="general head round_left">&nbsp;</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_active } class="general buttonlike head" onclick="javascript:load_groups( { order: 'active', defsort: 'desc' } );">&nbsp;{$active_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_name } class="general buttonlike head" onclick="javascript:load_groups( { order: 'name', defsort: 'desc' } );">{$LN_name} {$name_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_category } class="{$user_hidden} center user buttonlike head" onclick="javascript:load_groups( { order : 'category', defsort: 'asc' } );">{$LN_category} {$category_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_posts } class="center general buttonlike head" onclick="javascript:load_groups( { order : 'postcount', defsort: 'desc' } );">{$LN_ng_posts} {$postcount_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_adult } class="{$admin_hidden} admin buttonlike center head" onclick="javascript:load_groups( { order: 'adult', defsort: 'desc' } );">{$LN_ng_adult} {$adult_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_lastupdated } class="center general buttonlike head" onclick="javascript:load_groups( { order : 'last_updated', defsort: 'desc' } );">{$LN_ng_lastupdated} {$last_updated_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_expire } class="{$admin_hidden} center admin buttonlike head" onclick="javascript:load_groups( { order : 'expire', defsort: 'desc' } );">{$LN_ng_expire_time} {$expire_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_admin_minsetsize } class="{$admin_hidden} center admin head buttonlike" onclick="javascript:load_groups( { order : 'admin_minsetsize', defsort: 'desc' } );">{$LN_ng_admin_minsetsize} {$admin_minsetsize_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_admin_maxsetsize } class="{$admin_hidden} center admin head buttonlike {if $isadmin == 0 or $urdd_online == 0 }round_right{/if}" onclick="javascript:load_groups( { order : 'admin_maxsetsize', defsort: 'desc' } );">{$LN_ng_admin_maxsetsize} {$admin_maxsetsize_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_visible } class="{$user_hidden} center user buttonlike head" onclick="javascript:load_groups( { order : 'visible', defsort: 'desc' } );">{$LN_ng_visible} {$visible_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_minsetsize } class="{$user_hidden} center user buttonlike head round_right" onclick="javascript:load_groups( { order : 'minsetsize', defsort: 'desc' } );">{$LN_ng_minsetsize} {$minsetsize_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_active } class="general buttonlike head nowrap" onclick="javascript:load_groups( { order: 'active', defsort: 'desc' } );">&nbsp;{$active_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_name } id="browsesubjecttd" style="width:100%" class="general buttonlike head nowrap" onclick="javascript:load_groups( { order: 'name', defsort: 'desc' } );">{$LN_name} {$name_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_category } class="{$user_hidden} center user buttonlike head nowrap" onclick="javascript:load_groups( { order : 'category', defsort: 'asc' } );">{$LN_category} {$category_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_posts } class="center general buttonlike head nowrap" onclick="javascript:load_groups( { order : 'postcount', defsort: 'desc' } );">{$LN_ng_posts} {$postcount_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_adult } class="{$admin_hidden} admin buttonlike center nowrap head" onclick="javascript:load_groups( { order: 'adult', defsort: 'desc' } );">{$LN_ng_adult} {$adult_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_lastupdated } class="center general buttonlike head nowrap" onclick="javascript:load_groups( { order : 'last_updated', defsort: 'desc' } );">{$LN_ng_lastupdated} {$last_updated_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_expire } class="{$admin_hidden} center admin buttonlike nowrap head" onclick="javascript:load_groups( { order : 'expire', defsort: 'desc' } );">{$LN_ng_expire_time} {$expire_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_admin_minsetsize } class="{$admin_hidden} center admin head nowrap buttonlike" onclick="javascript:load_groups( { order : 'admin_minsetsize', defsort: 'desc' } );">{$LN_ng_admin_minsetsize} {$admin_minsetsize_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_admin_maxsetsize } class="{$admin_hidden} center admin head buttonlike nowrap {if $isadmin == 0 or $urdd_online == 0 }round_right{/if}" onclick="javascript:load_groups( { order : 'admin_maxsetsize', defsort: 'desc' } );">{$LN_ng_admin_maxsetsize} {$admin_maxsetsize_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_visible } class="{$user_hidden} center user buttonlike head nowrap" onclick="javascript:load_groups( { order : 'visible', defsort: 'desc' } );">{$LN_ng_visible} {$visible_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_minsetsize } class="{$user_hidden} center user buttonlike head nowrap round_right" onclick="javascript:load_groups( { order : 'minsetsize', defsort: 'desc' } );">{$LN_ng_minsetsize} {$minsetsize_sort}</th>
 {if $isadmin neq 0 and $urdd_online neq 0 }
-<th {urd_popup type="small" text=$LN_ng_tooltip_autoupdate } class="{$admin_hidden} admin buttonlike head" onclick="javascript:load_groups( { order : 'refresh_period', defsort: 'desc' } );">{$LN_ng_autoupdate} {$refresh_period_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_time } class="{$admin_hidden} admin buttonlike head" onclick="javascript:load_groups( { order : 'refresh_time', defsort: 'desc' } );">@ {$LN_time} {$refresh_time_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_action } class="{$admin_hidden} admin head round_right">{$LN_actions}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_autoupdate } class="{$admin_hidden} admin buttonlike head nowrap" onclick="javascript:load_groups( { order : 'refresh_period', defsort: 'desc' } );">{$LN_ng_autoupdate} {$refresh_period_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_time } class="{$admin_hidden} admin buttonlike head fixwidth5 nowrap" onclick="javascript:load_groups( { order : 'refresh_time', defsort: 'desc' } );">@ {$LN_time} {$refresh_time_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_action } class="{$admin_hidden} admin head round_right fixwidth8 nowrap">{$LN_actions}</th>
 {/if}
 </tr>
 
@@ -127,13 +127,13 @@
 </td>
 {if $group.description neq ''}
 {$space='<br/>'}
-{$tooltip="`$group.name``$space``$group.description`" }
+{$tooltip="`$group.long_name``$space``$group.description`" }
 {else}
-{$tooltip=''}
+{$tooltip="`$group.long_name`"}
 {/if}
-<td {if $tooltip neq ''}{urd_popup text=$tooltip|escape }{/if} class="general" > 
+<td {if $tooltip neq ''}{urd_popup text=$tooltip|escape }{/if} class="general" > <div class="donotoverflowdamnit inline">
 <span {if $group.active_val eq $NG_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('browse.php?groupID=group_{$group.id}');"{/if}>
-{$group.name|escape:htmlall}</span>
+{$group.name|escape:htmlall}</span></div>
 </td>
 <td class="{$user_hidden} user center">
 <select name="category[{$group.id}]" id="category_{$group.id}" onchange="javascript:update_category('groups', {$group.id});">
@@ -168,7 +168,7 @@
 <td class="nowrap {$admin_hidden} admin center">@ <input type="text" id="time1_{$group.id}" name="time1[{$group.id}]" value="{$group.time1|escape:htmlall}" class="time" onchange="javascript:update_ng_time('groups', {$group.id});"/>:<input type="text" id="time2_{$group.id}" class="time" name="time2[{$group.id}]" value="{if isset($group.time2) }{$group.time2|string_format:"%02d"}{/if}" onchange="javascript:update_ng_time('groups', {$group.id});"/>
 </td>
 {if $group.active_val eq $NG_SUBSCRIBED and $isadmin neq 0 and $urdd_online neq 0} 
-<td class="{$admin_hidden} right admin">
+<td class="{$admin_hidden} right admin nowrap">
 <div>
 <div class="floatright">
 <div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_feeds_edit } onclick="javascript:edit_group({$group.id});"></div>

@@ -436,6 +436,7 @@ $LN['ng_tooltip_visible']   = 'Den h&auml;r gruppen &auml;r synlig';
 $LN['ng_tooltip_minsetsize']    = 'Minsta respektive st&ouml;rsta antalet MB i ett set att visa f&ouml;r den h&auml;r Usenet-gruppen (0 = ingen begr&auml;nsning)';
 $LN['ng_hide_empty']        = 'G&ouml;m tomma Usenet-grupper';
 $LN['ng_adult']             = '18+';
+$LN['ng_edit_group']        = 'Edit group';
 $LN['ng_tooltip_adult']     = 'Only accessible when user has 18+ flag set';
 $LN['failed']               = 'misslyckad';
 $LN['success']              = 'startad';

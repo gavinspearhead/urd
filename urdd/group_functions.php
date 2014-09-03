@@ -181,8 +181,8 @@ function update_binary_data(DatabaseConnection $db, $groupID, $id)
         // Step 1: Selecting:
         // PS: No need to keep track of how many we select, next run these will not have the dirty flag anymore
         //     so we just keep selecting dirty binaries until they are all gone
-        $sql = "DISTINCT \"binaryID\" FROM binaries_$groupID WHERE \"dirty\" = ?";
-        $res = $db->select_query($sql, $stepsize, array(DatabaseConnection::BINARYCHANGED));
+        $sql = "DISTINCT \"binaryID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
+        $res = $db->select_query($sql, $stepsize, array(':dirty' => DatabaseConnection::BINARYCHANGED));
         if (!is_array($res)) {
             echo_debug("Processed $cnt binaries.", DEBUG_SERVER);
 
@@ -195,7 +195,6 @@ function update_binary_data(DatabaseConnection $db, $groupID, $id)
         foreach ($res as $row) {
             $l[] = $row['binaryID'];
         }
-
         $binary_list = str_repeat('?,', count($l) - 1) . '?';
         // Delete all the binaries, then recreate (because inserting in batches is faster? and easier than updating binaries 1 by 1
         $db->delete_query("binaries_$groupID", "\"binaryID\" IN ( $binary_list )", $l);
@@ -293,8 +292,8 @@ function update_set_data(DatabaseConnection $db, $groupID, $id, $minsetsize, $ma
     $total = $res[0]['total'];
     $s_time = microtime(TRUE);
     while (1) {
-        $sql = "DISTINCT \"setID\" FROM binaries_$groupID WHERE \"dirty\" = ?";
-        $res = $db->select_query($sql, $stepsize, array(DatabaseConnection::SETCHANGED));
+        $sql = "DISTINCT \"setID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
+        $res = $db->select_query($sql, $stepsize, array(':dirty' => DatabaseConnection::SETCHANGED));
         if (!is_array($res) && $offset == 0) {
             write_log("No new binaries found for group with id $groupID!", LOG_NOTICE);
 

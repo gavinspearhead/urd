@@ -20,8 +20,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: browse.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title rssurl=$rssurl stylesheet=$stylesheet}
 
+{extends file="head.tpl"}
+{block name=contents}
 {* Search form *}
 {capture assign="searchform"}
 <form id="searchform" method="get">
@@ -46,14 +47,14 @@
     <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} id="next_group"/>&nbsp;
     &nbsp;
 
-<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" _onkeypress="javascript:return submit_enter(event, load_sets, { 'offset':'0', 'setid':'', 'category':'' } );"/>&nbsp;
+<input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/>&nbsp;
 <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 &nbsp;
 &nbsp;
 &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} _onclick="javascript:select_next_search('saved_search',-1);"/> 
+<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"}/> 
 <span id="save_search_span">
 <select id="saved_search">
 <option value=""></option>
@@ -62,7 +63,7 @@
 {/foreach}
 </select>
 </span> 
-<input type="button"  id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} _onclick="javascript:select_next_search('saved_search',1);"/>
+<input type="button"  id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
 </span> 
 
 <div id="minibasketdiv" class="hidden"></div>
@@ -158,4 +159,4 @@ $(document).ready(function() {
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 
-{include file="foot.tpl"}
+{/block}

@@ -411,6 +411,7 @@ $LN['ng_searchtext']        = 'Zoek in alle beschikbare nieuwsgroepen';
 $LN['ng_newsgroups']        = 'Nieuwsgroepen';
 $LN['ng_adult']             = '18+';
 $LN['ng_tooltip_adult']     = 'Alleen toegankelijk wanneer de gebruiker als 18+ is aangemeld';
+$LN['ng_edit_group']        = 'Bewerk nieuwsgroup';
 
 $LN['ng_subscribed']        = 'Geabonneerd';
 $LN['ng_tooltip_name']      = 'De naam van de nieuwsgroep';

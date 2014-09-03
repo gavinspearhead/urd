@@ -158,12 +158,12 @@ function insert_spot_post(DatabaseConnection $db, $userid)
         'userid' => $userid,
         'poster_name' => $poster_name,
         'category' => $cat,
-        'subcat' => '',
+        'subcat' => '0',
         'subcats' => $subcats,
         'nzb_file' => '',
         'image_file' => '',
-        'image_width' => '',
-        'image_height' => '',
+        'image_width' => '0',
+        'image_height' => '0',
         'subject' => trim($subject),
         'tag' => trim($tag),
         'description' => $description,
@@ -231,7 +231,7 @@ try {
             $subcats = SpotCategories::get_subcats($cat, $adult);
             $smarty->assign('subcats',    	    $subcats);
             $content = $smarty->fetch('ajax_subcats_info.tpl');
-            return_result(array('contents' => $contents));
+            return_result(array('content' => $content));
             break;
         case 'start_post' :
             start_post_spot($db, $userid);
@@ -242,7 +242,7 @@ try {
         case 'post' :
             // image file and nzbfile
             $post_id = insert_spot_post($db, $userid);
-            return_result(array('post_id' => $post_id, 'message'=>$LN['spots_post_started'])));
+            return_result(array('post_id' => $post_id, 'message'=>$LN['spots_post_started']));
             break;
         case 'show':
             init_smarty('', 0);
@@ -275,8 +275,8 @@ try {
             $smarty->assign('poster_email',    	$poster_email);
             $smarty->assign('categories',	    $categories);
 
-            $content = $smarty->fetch('ajax_post_spot.tpl');
-            return_result(array('contents' => $contents));
+            $contents = $smarty->fetch('ajax_post_spot.tpl');
+            return_result(array('content' => $contents));
             break;
         default:
             throw new exception($LN['error_novalidaction']);

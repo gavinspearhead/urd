@@ -35,13 +35,23 @@ class DatabaseConnection_mysql extends DatabaseConnection
 {
     public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
-        if ($databasetype == 'pdo_mysql') {
-            $this->uri = "mysql:host=$hostname;dbname=$database;" . (($port != '') ? "port=$port;" : '');
-        } else {
-            $this->uri .= $hostname . (($port != '') ? ":$port" : '');
-        }
-        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine);
+        $this->uri = "mysql:host=$hostname;dbname=$database;" . (($port != '') ? "port=$port;" : '');
+        parent::__construct('mysql', $hostname, $port, $user, $pass, $database, $dbengine);
     }
+    public function connect()
+    {
+        echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
+
+        try {
+            ini_set('mysql.connect_timeout', 240);
+            $this->DB = new PDO($this->uri, $this->username, $this->password);
+            $this->execute_query("SET sql_mode='ANSI_QUOTES'"); //Needed so we can use the same queries on postgres and mysql
+            $this->execute_query('SET CHARACTER SET UTF8');
+        } catch (exception $e) {
+            throw new exception('Could not connect to database: ' . $e->getMessage());
+        }
+    }
+    
     public function get_dow_timestamp($from)
     {
         return "FROM_UNIXTIME($from, '%w')";
@@ -71,19 +81,21 @@ class DatabaseConnection_mysql extends DatabaseConnection
     }
     public function drop_database($dbase)
     {
+        $this->escape($dbase, FALSE);
         $sql = "DROP DATABASE IF EXISTS \"$dbase\"";
         $this->execute_query($sql);
     }
 
     public function drop_table($table)
     {
+        $this->escape($table, FALSE);
         $sql = "DROP TABLE IF EXISTS \"$table\"";
         $this->execute_query($sql);
     }
     public function drop_user($user, $host='localhost')
     {
         $host = ($host == 'localhost') ? 'localhost' : '%';
-        $sql = 'User FROM mysql.user WHERE "User" = ? AND "Host" = ?';
+        $sql = 'User FROM mysql.user WHERE "User"=? AND "Host"=?';
         $res = $this->select_query($sql, array($user, $host));
         if (isset($res[0]['User'])) {
             $this->escape($user);
@@ -94,6 +106,7 @@ class DatabaseConnection_mysql extends DatabaseConnection
 
     public function truncate_table($table)
     {
+        $this->escape($table, FALSE);
         $sql = "TRUNCATE TABLE \"$table\"";
         $res = $this->execute_query($sql);
     }
@@ -129,6 +142,7 @@ class DatabaseConnection_mysql extends DatabaseConnection
 
     public function optimise_table($table)
     {
+        $this->escape($table, FALSE);
         $sql = 'OPTIMIZE TABLE "' . $table . '"';
         $this->execute_query($sql);
         $sql = 'ANALYZE TABLE "' . $table . '"';
@@ -144,27 +158,7 @@ class DatabaseConnection_mysql extends DatabaseConnection
         return $this->execute_query('SHOW TABLES');
     }
 
-    public function connect()
-    {
-        echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
-
-        try {
-            ini_set('mysql.connect_timeout', 240);
-            $databasename = $this->databasename;
-            if ($this->databasetype == 'pdo_mysql') {
-                $this->DB = ADONewConnection('pdo');
-                $databasename = '';
-            } else {
-                $this->DB = ADONewConnection($this->databasetype);
-            }
-            $this->DB->NConnect($this->uri, $this->username, $this->password, $databasename);
-            $this->execute_query("SET sql_mode='ANSI_QUOTES'"); //Needed so we can use the same queries on postgres and mysql
-            $this->execute_query('SET CHARACTER SET UTF8');
-        } catch (exception $e) {
-            throw new exception('Could not connect to database: ' . $e->getMessage());
-        }
-    }
-    public function start_transaction()
+        public function start_transaction()
     {
         $this->execute_query('START TRANSACTION');
     }
@@ -188,9 +182,5 @@ class DatabaseConnection_mysql extends DatabaseConnection
     {
         return $this->execute_query('UNLOCK TABLE');
     }
-    public function get_last_id()
-    {
-        return $this->DB->Insert_ID();
-    }
-
+   
 }

@@ -84,15 +84,20 @@ function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, 
             // Everything cool, put all preview files into $files:
             if ($handle = @opendir($preview_data->path)) {
                 while (FALSE !== ($file = readdir($handle))) {
+                    
                     if (!in_array($file, array('.', '..', URDD_DOWNLOAD_LOCKFILE))) {
-                        $preview_data->files[] = $file;
                         $ext = strtolower(ltrim(strrchr($file, '.'), '.'));
-                        $is_image = is_image_file($ext);
-                        $is_text = is_text_file($ext);
-                        if ($is_image) { $preview_data->filetype = 'image'; } elseif ($is_text) { $preview_data->filetype = 'text'; } else { $preview_data->filetype = 'other'; }
-                        if ($ext == 'nzb') {
-                            $preview_data->isnzb++;
-                        } elseif ($ext == '.nfo' && get_config($db, 'parse_nfo') != 0) {
+                        if (is_image_file($ext)) { 
+                            $filetype = 'image'; 
+                        } elseif (is_text_file($ext)) { 
+                            $filetype = 'text'; 
+                        } elseif (is_nzb_file($ext)) {
+                            $filetype = 'nzb';
+                        } else { 
+                            $filetype = 'other'; 
+                        }
+                        $preview_data->files[] = array('file'=>$file, 'filetype'=>$filetype);
+                        if (is_nfo_file($ext) && get_config($db, 'parse_nfo') != 0) {
                             if ($binary_id != '' && $group_id != 0) {
                                 try {
                                     urd_extsetinfo::do_magic_nfo_extsetinfo_file($db, $preview_data->path, $file, $binary_id, $group_id, $userid);
@@ -104,6 +109,28 @@ function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, 
                     }
                 }
                 closedir($handle);
+                $filename = '';
+                $filetype = '';
+                $isnzb = 0;
+                foreach($preview_data->files as $file) {
+                    if ($file['filetype'] == 'nzb') { // we always prefer nzb files;
+                        $filename = $file['file'];
+                        $filetype = 'nzb';
+                        break;
+                    } elseif ($file['filetype'] == 'image') {
+                        $filetype = 'image';
+                        $filename = $file['file'];
+                    } elseif ($file['filetype'] == 'text' && ($filename == '' || $filetype == 'other')) {
+                        $filetype = 'text';
+                        $filename = $file['file'];
+                    } elseif ($filename == '') {
+                        $filetype = 'other';
+                        $filename = $file['file'];
+                    }
+                }
+                $preview_data->filename = $filename;
+                $preview_data->filetype = $filetype;
+                $preview_data->isnzb = $isnzb;
             }
         } else {
             // Downloaded file has not yet been moved from /tmp to /preview:
@@ -112,7 +139,6 @@ function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, 
             $preview_data->files = array();
             write_log('Reached preview page while download was not yet moved to /preview', LOG_NOTICE);
         }
-        $preview_data->filename = isset($preview_data->files[0]) ? $preview_data->files[0] : '';
     }
 
     return $preview_data;
@@ -129,7 +155,6 @@ try {
     $smarty->assign('finished',	    $preview_data->finished);
     $smarty->assign('path',		    $preview_data->path);
     $smarty->assign('filetype',		$preview_data->filetype);
-    $smarty->assign('isnzb', 	    $preview_data->isnzb);
     $smarty->assign('file',		    $preview_data->filename);
     $smarty->assign('title_str',	$preview_data->title_str);
     $smarty->assign('dlsize',	    $preview_data->size);

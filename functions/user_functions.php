@@ -51,7 +51,7 @@ class urd_user_rights
         $seteditorrights = "%$rights%";
         $search_type = $db->get_pattern_search_command('LIKE'); // postgres doesn't like regexp, but uses similar .... I just love standards
 
-        $qry = "\"rights\" FROM users WHERE \"id\"=? AND \"rights\" $search_type ?";
+        $qry = "\"rights\" FROM users WHERE \"ID\"=? AND \"rights\" $search_type ?";
         $rv = $db->select_query($qry, array($userid, $seteditorrights));
 
         return ($rv === FALSE) ? FALSE : TRUE;
@@ -292,7 +292,7 @@ function delete_user(DatabaseConnection $db, $userid)
     }
 
     $db->delete_query('users', '"ID"=?', array($userid));
-    $db->delete_query('preferences', '"userid"=?', array($userid));
+    $db->delete_query('preferences', '"userID"=?', array($userid));
     $db->delete_query('usergroupinfo', '"userid"=?', array($userid));
     $db->delete_query('userfeedinfo', '"userid"=?', array($userid));
     $db->delete_query('usersetinfo', '"userID"=?', array($userid));

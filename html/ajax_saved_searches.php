@@ -189,7 +189,7 @@ try {
             $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
             $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
             $contents = $smarty->fetch('ajax_savename.tpl');
-            return_result(array('contents' => $content));
+            return_result(array('contents' => $contents));
     }
     return_result();
 } catch (exception $e) {

@@ -919,5 +919,4 @@ function post_binary_data(DatabaseConnection $db, $postername, $poster_email, $g
         $articles[] = $nntp->post_article(array($header, $article));
     }
     return $articles;
-
 }

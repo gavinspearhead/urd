@@ -22,27 +22,10 @@
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
-{if $show_download neq 0} 
-<table class="transfers {if $active_tab != 'downloads'}hidden{/if}" id="downloads_tab">
-<thead>
-<tr>
-<th class="head round_left fixwidth8">{$LN_transfers_head_started}</th>
-<th class="head" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
-<th class="head fixwidth8a">{$LN_transfers_head_progress}</th>
-<th class="head">{$LN_size}</th>
-<th class="head">{$LN_transfers_head_speed}</th>
-<th class="head">{$LN_eta}</th>
-{if $isadmin neq 0}
-<th class="head">{$LN_transfers_head_username}</th>
-{/if}
-<th class="right head round_right">{$LN_transfers_head_options}</th>
-</tr>
-</thead>
-
 {function name=display_status status='' infoarray=''}
 {$stat=$infoarray[0]->status|replace:' ':'_'}
 <tr class="transferstatus">
-<td colspan="{if $isadmin neq 0}8{else}7{/if}">{$status}
+<td colspan="{if $isadmin}8{else}7{/if}">{$status}
     <div class="black floatright iconsize noborder buttonlike">
     <div id="{$stat}down" class="inline iconsize noborder buttonlike {if $transfer_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if}" onclick="javascript:fold_transfer('{$stat}', 'down');">
     </div>
@@ -101,18 +84,18 @@
 </td>
 {/strip}
 {/capture}
-
-	<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
-		<td>{$a->startdate}</td>
+<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
 		<td class="bold">
         <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
         </td>
-		<td>
-            {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}</td>
+		<td class="nowrap">
+            {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}
+        </td>
 		<td class="right nowrap">{$a->done_size} / {$a->size}</td>
 		<td class="right">{$a->speed}</td>
 		<td class="center">{$a->ETA}</td>
-{if $isadmin neq 0}
+		<td class="right nowrap">{$a->startdate}</td>
+{if $isadmin}
 		<td>{$a->username|escape:htmlall}</td>
 {/if}
 		<td class="rightbut"><div class="floatright">{$prio_button} {$options}</div></td>
@@ -120,6 +103,23 @@
 {/foreach}
 </tbody>
 {/function}
+
+{if $show_download} 
+<table class="transfers {if $active_tab != 'downloads'}hidden{/if}" id="downloads_tab">
+<thead>
+<tr>
+<th class="head round_left nowrap" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
+<th class="head nowrap fixwidth8a">{$LN_transfers_head_progress}</th>
+<th class="head nowrap fixwidth8">{$LN_size}</th>
+<th class="head nowrap">{$LN_transfers_head_speed}</th>
+<th class="head nowrap">{$LN_eta}</th>
+<th class="head nowrap fixwidth8">{$LN_transfers_head_started}</th>
+{if $isadmin}
+<th class="head nowrap">{$LN_transfers_head_username}</th>
+{/if}
+<th class="right nowrap head round_right fixwidth8">{$LN_transfers_head_options}</th>
+</tr>
+</thead>
 
 {if isset($infoarray_download['active'])}{display_status status=$LN_transfers_status_active infoarray=$infoarray_download['active']}{/if}
 {if isset($infoarray_download['ready'])}{display_status status=$LN_transfers_status_ready infoarray=$infoarray_download['ready']}{/if}

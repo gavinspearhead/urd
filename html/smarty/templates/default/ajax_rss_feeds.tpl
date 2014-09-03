@@ -97,7 +97,7 @@
 <tr>
 <th class="general head round_left">&nbsp;</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_active } class="general buttonlike head" onclick="javascript:submit_rss_search('subscribed', 'desc');">&nbsp;</th>
-<th {urd_popup type="small" text=$LN_feeds_tooltip_name } class="fixwidth20p center general buttonlike head" onclick="javascript:submit_rss_search('name', 'asc');" >{$LN_name} {$name_sort}</th>
+<th {urd_popup type="small" text=$LN_feeds_tooltip_name } id="browsesubjecttd" class="fixwidth20p center general buttonlike head" onclick="javascript:submit_rss_search('name', 'asc');" >{$LN_name} {$name_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_category} class="{$user_hidden} center user buttonlike head" onclick="javascript:submit_rss_search('category', 'asc');" >{$LN_category|capitalize} {$category_sort}</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_url } class="{$admin_hidden} center admin buttonlike head" onclick="javascript:submit_rss_search('url', 'asc');" >{$LN_feeds_url} {$url_sort}</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_auth } class="{$admin_hidden} center admin buttonlike head" onclick="javascript:submit_rss_search('auth', 'asc');" >{$LN_feeds_auth} {$auth_sort}</th>
@@ -124,9 +124,11 @@
 {urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_rss('{$feed.id}');"} 
 <input type="hidden" id="ng_id_{$feed.id}" value="{$feed.name|escape}"/>
 </td>
-<td class="general"> 
+<td class="general"> <div class="donotoverflowdamnit inline">
+
 <span {if $feed.active_val eq $RSS_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('rsssets.php?feed_id=feed_{$feed.id}');"{/if}>
-{$feed.name|escape|truncate:$maxstrlen}</span>
+{$feed.name|escape:htmlall}</span>
+</div>
 
 </td>
 <td class="{$user_hidden} user center">
@@ -138,8 +140,7 @@
     </select>
     </td>
 
-<td class="{$admin_hidden} admin"> 
-<span class="buttonlike" onclick="javascript:jump('{$feed.url}', 1);">{$feed.url|escape|truncate:$maxstrlen}</span>
+<td class="{$admin_hidden} admin"> <span class="buttonlike" onclick="javascript:jump('{$feed.url}', 1);">{$feed.url|escape:htmlall|truncate:$maxstrlen}</span>
 </td>
 
 <td class="{$admin_hidden} admin center" {if $feed.authentication == 1 }{urd_popup type="small" text=$LN_usenet_needsauthentication }{/if}>

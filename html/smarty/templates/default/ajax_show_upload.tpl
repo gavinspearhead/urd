@@ -75,7 +75,7 @@
 <select id="dir_select" onchange="select_dir('dir_select', 'dl_dir');" class="width300">
 <option value=""></option>
 {foreach $directories as $directory}
-<option value="{$directory|escape:htmlall}">{$directory|escape:htmlall}</option>
+    <option value="{$directory|escape:htmlall}">{$directory|escape:htmlall}</option>
 {/foreach}
 </select>
 </div>

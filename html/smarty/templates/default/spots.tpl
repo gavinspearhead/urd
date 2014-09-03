@@ -20,7 +20,8 @@
  * $Author: gavinspearhead $
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
-{include file="head.tpl" title=$title rssurl=$rssurl stylesheet=$stylesheet}
+{extends file="head.tpl"}
+{block name=contents}
 {* Search form *}
 {capture assign="searchform"}
 <div>
@@ -103,7 +104,6 @@
 <input type="hidden" id="perpage" value="{$perpage}"/>
 
 <script type="text/javascript">
-
 $(document).ready(function() {
    load_side_bar( function() {
        {if ($categoryID == '') && ($_saved_search != '')}
@@ -131,10 +131,10 @@ $(document).ready(function() {
    $('#searchformdiv').html('');
    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
    $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
-   $('#next_search').click( function () { select_next_search('saved_search',1); } );
-   $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
+   $('#next_search').click( function () { select_next_search('saved_search', 1); } );
+   $('#prev_search').click( function () { select_next_search('saved_search', -1); } );
    $('#saved_search').change( function () { update_spot_searches(null); } );
 });
 </script>
 
-{include file="foot.tpl"}
+{/block}

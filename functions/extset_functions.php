@@ -522,7 +522,7 @@ class urd_extsetinfo
         if ($res === FALSE) {
             $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, 'setname', $newsetname, 0, $type));
         } else {
-            $db->update_query_2('extsetdata', array('value'=>$newsetname, 'committed'=>ESI_NOT_COMMITTED),  '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
+            $db->update_query_2('extsetdata', array('value'=>$newsetname, 'committed'=>ESI_NOT_COMMITTED), '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
         }
 
         return $newsetname;
@@ -533,7 +533,7 @@ class urd_extsetinfo
         //	here we try to guess ext set info from the nfo file
         assert (is_numeric($group_id) && $binary_id != '' && is_numeric($userid));
         $db->escape($group_id, FALSE);
-        $sql = "\"setID\" FROM binaries_$group_id WHERE \"binaryID\" =?";
+        $sql = "\"setID\" FROM binaries_$group_id WHERE \"binaryID\"=?";
         $rv = $db->select_query($sql, 1, array($binary_id));
         if ($rv === FALSE) {
             return;
@@ -588,7 +588,7 @@ class urd_extsetinfo
         if ($val == 0) {
             $key = self::guess_type_by_size($size);
         }
-        $dont_follow = (get_config($db, 'follow_link') == 0 )? TRUE : FALSE;
+        $dont_follow = (get_config($db, 'follow_link') == 0 ) ? TRUE : FALSE;
         //$dont_follow = FALSE;
         $save = nfo_parser::find_info($contents, $key, $dont_follow);
         self::guess_more_data($val, $key, '', $groupname, $match, $save, $origin_type);

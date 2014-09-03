@@ -36,7 +36,6 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
 
 verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE, '', $userid, TRUE);
 
-
 class spot_viewer
 {
     private static $sort_orders = array (
@@ -84,25 +83,32 @@ class spot_viewer
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
+        $this->input_arr = array();
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
 
     private function get_basic_browse_query($do_count = FALSE)
     {
         $type = USERSETTYPE_SPOT;
-        $superuserid = user_status::SUPER_USERID;
         $basic_browse_query = ' FROM spots ';
         if (!$do_count) { 
-            $basic_browse_query .= " LEFT JOIN spot_whitelist ON (spots.\"spotter_id\" = spot_whitelist.\"spotter_id\" AND spot_whitelist.\"userid\" IN ({$this->userID},  $superuserid) AND spot_whitelist.\"status\" = " . whitelist::ACTIVE . ')';
+            $basic_browse_query .= ' LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id" AND spot_whitelist."userid" IN (:userid, :superuserid) AND spot_whitelist."status" = :wlstatus)';
+            $this->input_arr[':userid'] = $this->userID;
+            $this->input_arr[':superuserid'] = user_status::SUPER_USERID;
+            $this->input_arr[':wlstatus'] = whitelist::ACTIVE;
         }
-         $basic_browse_query .=  " LEFT JOIN spot_blacklist ON (spots.\"spotter_id\" = spot_blacklist.\"spotter_id\" AND spot_blacklist.\"userid\" IN ({$this->userID}, $superuserid) AND spot_blacklist.\"status\" = " . blacklist::ACTIVE . ')' .
-            " LEFT JOIN usersetinfo ON ((usersetinfo.\"setID\" = spots.\"spotid\") AND (usersetinfo.\"userID\" = {$this->userID})) AND (usersetinfo.\"type\" = '$type') " .
-            " LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2.\"setID\" = spots.\"spotid\" AND extsetdata2.\"name\" = 'setname' AND extsetdata2.\"type\" = '$type') " .
-            " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = spots.\"spotid\" AND extsetdata3.\"name\" = 'xrated' AND extsetdata3.\"type\" = '$type') " .
-            " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = spots.\"spotid\" AND extsetdata4.\"name\" = 'score' AND extsetdata4.\"type\" = '$type') " .
+        $basic_browse_query .= ' LEFT JOIN spot_blacklist ON (spots."spotter_id" = spot_blacklist."spotter_id" AND spot_blacklist."userid" IN (:userid1, :superuserid1) AND spot_blacklist."status" =  :blstatus)' .
+            ' LEFT JOIN usersetinfo ON ((usersetinfo."setID" = spots."spotid") AND (usersetinfo."userID" = :userid2)) AND (usersetinfo."type" = :type1) ' .
+            ' LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2."setID" = spots."spotid" AND extsetdata2."name" = \'setname\' AND extsetdata2."type" = :type2) ' .
+            ' LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3."setID" = spots."spotid" AND extsetdata3."name" = \'xrated\' AND extsetdata3."type" = :type3) ' .
+            ' LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4."setID" = spots."spotid" AND extsetdata4."name" = \'score\' AND extsetdata4."type" = :type4) ' .
             " WHERE (1=1 {$this->Qsearch} {$this->Qsize} {$this->Qcategory} {$this->Qkill} {$this->Qflag} {$this->Qsubcat} {$this->Qspotid} {$this->Qposter} " .
-            "  {$this->Qspamlimit} {$this->Qrating} {$this->Qage} {$this->Qadult} AND spot_blacklist.\"spotter_id\" IS NULL)";
- 
+            " {$this->Qspamlimit} {$this->Qrating} {$this->Qage} {$this->Qadult} AND spot_blacklist.\"spotter_id\" IS NULL)";
+        $this->input_arr[':userid1'] = $this->input_arr[':userid2'] = $this->userID;
+        $this->input_arr[':superuserid1'] = user_status::SUPER_USERID;
+        $this->input_arr[':type1'] = $this->input_arr[':type2'] = $this->input_arr[':type3'] = $this->input_arr[':type4'] = $type;
+        $this->input_arr[':blstatus'] =  blacklist::ACTIVE;
+
         return $basic_browse_query;
     }
     private function get_spots($interesting_only)
@@ -133,7 +139,9 @@ class spot_viewer
             $sql .= ' AND usersetinfo."statusint" = 1';
         }
         //echo "select " . $sql .";<br><br>";
-        $res = $this->db->select_query($sql);
+        //print_r($sql); print_r($this->input_arr);
+        $res = $this->db->select_query($sql, $this->input_arr);
+        //print_r($res);
         if (!isset($res[0]['cnt'])) {
             throw new exception($LN['error_setsnumberunknown']);
         }
@@ -158,7 +166,7 @@ class spot_viewer
         $setres = array();
         if ($offset <= $this->int_sets) {
             $sql1 = $this->get_spots(TRUE);
-            $setres = $this->db->select_query($sql1, $perpage, $offset);
+            $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if (!is_array($setres)) {
                 $setres = array();
             }
@@ -167,7 +175,7 @@ class spot_viewer
 
         if ($setres_count < $perpage) {
             $sql2 = $this->get_spots(FALSE);
-            $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets);
+            $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if (!is_array($setres2)) {
                 $setres2 = array();
             }
@@ -249,8 +257,7 @@ class spot_viewer
     public function set_qsearch($search)
     {
         $this->search = $search;
-        $this->db->escape($search);
-        $this->Qsearch = parse_search_string($search, '"title"', 'spots."tag"', 'extsetdata2."value"', $this->search_type);
+        $this->Qsearch = parse_search_string($search, '"title"', 'spots."tag"', 'extsetdata2."value"', $this->search_type, $this->input_arr);
     }
     public function set_qsize($ominsetsize, $omaxsetsize)
     {
@@ -273,19 +280,19 @@ class spot_viewer
         $this->minsetsize = $ominsetsize;
         $this->maxsetsize = $omaxsetsize;
         if (is_numeric($ominsetsize) && $ominsetsize > 0) {
-            $this->db->escape($ominsetsize, TRUE);
-            $this->Qsize = " AND (spots.\"size\" >= $ominsetsize) ";
+            $this->input_arr[':minsetsize'] = $ominsetsize;
+            $this->Qsize = ' AND (spots."size" >= :minsetsize) ';
         } elseif ($minsetsize > 0) {
-            $this->db->escape($minsetsize, TRUE);
-            $this->Qsize = " AND (spots.\"size\" >= $minsetsize) ";
+            $this->input_arr[':minsetsize'] = $minsetsize;
+            $this->Qsize = ' AND (spots."size" >= :minsetsize) ';
         }
 
         if (is_numeric($omaxsetsize) && $omaxsetsize > 0) {
-            $this->db->escape($omaxsetsize, TRUE);
-            $this->Qsize .= " AND (spots.\"size\" <= $omaxsetsize) ";
+            $this->input_arr[':maxsetsize'] = $omaxsetsize;
+            $this->Qsize .= ' AND (spots."size" <= :maxsetsize) ';
         } elseif ($maxsetsize > 0) {
-            $this->db->escape($maxsetsize, TRUE);
-            $this->Qsize .= " AND (spots.\"size\" <= $maxsetsize) ";
+            $this->input_arr[':maxsetsize'] = $maxsetsize;
+            $this->Qsize .= ' AND (spots."size" <= :maxsetsize) ';
         }
     }
 
@@ -293,8 +300,8 @@ class spot_viewer
     {
         $this->categoryID = $categoryID;
         if ($categoryID != '') {
-            $this->db->escape($categoryID, TRUE);
-            $this->Qcategory = " AND spots.\"category\" = $categoryID";
+            $this->input_arr[':categoryid'] = $categoryID;
+            $this->Qcategory = ' AND spots."category" = :categoryid';
         }
     }
 
@@ -309,9 +316,9 @@ class spot_viewer
         } elseif ($flag == 'interesting') {
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
             $this->Qflag = ' AND usersetinfo."statusint" = 1 ';
-            $this->rss_flag = "&amp;flag=interesting&amp;userid={$this->userID}";
+            $this->rss_flag = '&amp;flag=interesting&amp;userid=' . urlencode((int)$this->userID);
         } elseif ($flag == 'nzb') {
-            $this->Qflag = ' AND usersetinfo."statusnzb"=1 ';
+            $this->Qflag = ' AND usersetinfo."statusnzb" = 1 ';
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
         } else {
             $this->Qkill = ' AND (usersetinfo."statuskill" != 1 OR usersetinfo."statuskill" IS NULL)';
@@ -329,7 +336,8 @@ class spot_viewer
                     if (!isset($subcat_subqry[$sc])) {
                         $subcat_subqry[$sc] = '';
                     }
-                    $subcat_subqry[$sc] .= ' OR ' . "( \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
+                    $subcat_subqry[$sc] .= ' OR ' . "( \"subcat$sc\" {$this->search_type} :$sci ) ";
+                    $this->input_arr[':' . $sci] = "%$sci|%";
                 }
             }
             foreach ($subcat_subqry as $key=> $sc) {
@@ -339,12 +347,13 @@ class spot_viewer
             }
         }
         if ($not_subcats != array() ) {
-            $this->Qsubcat .= " AND NOT ( 0 = 1 ";
+            $this->Qsubcat .= ' AND NOT ( 0 = 1 ';
             foreach ($not_subcats as $s) {
                 if ($s[0] == $this->categoryID) {
                     $sc = $s[1];
                     $sci = $s[1] . $s[2];
-                    $this->Qsubcat .= ' OR ' . "( \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
+                    $this->Qsubcat .= ' OR ' . "( \"subcat$sc\" {$this->search_type} :n$sci ) ";
+                    $this->input_arr[':n' . $sci] = "%$sci|%";
                 }
             }
             $this->Qsubcat .= ')';
@@ -354,24 +363,23 @@ class spot_viewer
     public function set_qspotid($spotid)
     {
         if ($spotid != '') {
-            $this->db->escape($spotid, TRUE);
-            $this->Qspotid = " AND spots.\"spotid\"=$spotid ";
+            $this->input_arr[':spotid'] = $spotid;
+            $this->Qspotid = ' AND spots."spotid"=:spotid ';
         }
     }
     public function set_qposter($poster)
     {
         if ($poster != '') {
-            $this->db->escape($poster, FALSE);
-            $this->Qposter = " AND spots.\"poster\" {$this->search_type} '%{$poster}%' ";
+            $this->input_arr[':poster'] = "%$poster%";
+            $this->Qposter = " AND spots.\"poster\" {$this->search_type} :poster ";
         }
     }
     public function set_qspamlimit()
     {
         global $prefs;
         if (isset($prefs['spot_spam_limit']) && ($prefs['spot_spam_limit'] > 0)) {
-            $spam_limit = $prefs['spot_spam_limit'];
-            $this->db->escape($spam_limit, FALSE);
-            $this->Qspamlimit = " AND (spots.\"reports\" < $spam_limit) ";
+            $this->input_arr[':spam_limit'] = $prefs['spot_spam_limit'];
+            $this->Qspamlimit = ' AND (spots."reports" < :spam_limit) ';
         }
     }
     public function set_qorder($order)
@@ -398,10 +406,14 @@ class spot_viewer
     public function set_qrating($minrating, $maxrating)
     {
         if (is_numeric($minrating) && $minrating > 0 && $minrating < 10) {
-            $this->Qrating .= " AND ((CAST(extsetdata4.\"value\" AS DECIMAL(5, 2)) >= $minrating) OR (spots.\"rating\" >= $minrating))";
+            $this->input_arr[':minrating1'] = $minrating;
+            $this->input_arr[':minrating2'] = $minrating;
+            $this->Qrating .= ' AND ((CAST(extsetdata4."value" AS DECIMAL(5, 2)) >= :minrating1) OR (spots."rating" >= :minrating2))';
         }
         if (is_numeric($maxrating) && $maxrating < 10 && $maxrating > 0) {
-            $this->Qrating .= " AND ((CAST(extsetdata4.\"value\" AS DECIMAL(5, 2)) <= $maxrating) OR (spots.\"rating\" <= $maxrating))";
+            $this->input_arr[':maxrating1'] = $maxrating;
+            $this->input_arr[':maxrating2'] = $maxrating;
+            $this->Qrating .= ' AND ((CAST(extsetdata4."value" AS DECIMAL(5, 2)) <= :maxrating1) OR (spots."rating" <= :maxrating2))';
         }
     }
 
@@ -410,12 +422,14 @@ class spot_viewer
         if (is_numeric($maxage) && $maxage > 0) {
             $this->maxage = $maxage;
             $maxage = $this->now - ($maxage * 3600 * 24);
-            $this->Qage .= " AND \"stamp\" >= $maxage";
+            $this->input_arr[':maxage'] = $maxage;
+            $this->Qage .= ' AND "stamp" >= :maxage';
         }
         if (is_numeric($minage) && $minage > 0) {
             $this->minage = $minage;
             $minage = $this->now - ($minage * 3600 * 24);
-            $this->Qage .= " AND \"stamp\" <= $minage";
+            $this->input_arr[':minage'] = $minage;
+            $this->Qage .= ' AND "stamp" <= :minage';
         }
     }
 

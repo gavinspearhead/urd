@@ -77,12 +77,12 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
     if (!in_array($sort_dir, array('asc', 'desc'))) {
         $sort_dir = 'asc';
     }
+    $input_arr = array();
     $Qsearch = '';
     if ($search != '') {
-        $search = "%$search%";
-        $db->escape($search, TRUE);
+        $input_arr[':search'] = "%$search%";
         $like = $db->get_pattern_search_command('LIKE');
-        $Qsearch = " AND \"spotter_id\" $like $search ";
+        $Qsearch = " AND \"spotter_id\" $like :search ";
     }
 
     // Display:
@@ -109,20 +109,23 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
     }
     if ($show_status == 'all') {
         $Qstatus = '';
-    } else if ($show_status == 'active') {
-        $Qstatus = 'AND status = ' . $list_status_active;
-    } else if ($show_status == 'nonactive') {
-        $Qstatus = 'AND status = ' . $list_status_nonactive;
-    } else if ($show_status == 'disabled') {
-        $Qstatus = 'AND status = ' . $list_status_disabled;
+    } else {
+        $Qstatus = 'AND "status" = :status';
+        if ($show_status == 'active') {
+            $input_arr[':status'] = $list_status_active;
+        } else if ($show_status == 'nonactive') {
+            $input_arr[':status'] = $list_status_nonactive;
+        } else if ($show_status == 'disabled') {
+            $input_arr[':status'] = $list_status_disabled;
+        }
     }
-    $sql = "*, users.\"name\" AS \"username\" FROM $table LEFT JOIN users ON $table.\"userid\" = users.\"id\" WHERE 1=1 $Qsearch $Qstatus ORDER BY \"$sort\" $sort_dir";
-    $res = $db->select_query($sql, $perpage, $offset);
+    $sql = "*, users.\"name\" AS \"username\" FROM $table LEFT JOIN users ON $table.\"userid\" = users.\"ID\" WHERE 1=1 $Qsearch $Qstatus ORDER BY \"$sort\" $sort_dir";
+    $res = $db->select_query($sql, $perpage, $offset, $input_arr);
     if (!is_array($res)) {
         $res = array();
     }
-    $cnt_sql = "COUNT(*) AS \"cnt\" FROM $table LEFT JOIN users ON $table.\"userid\" = users.\"id\" WHERE 1=1 $Qsearch $Qstatus";
-    $cnt_res = $db->select_query($cnt_sql, 1);
+    $cnt_sql = "COUNT(*) AS \"cnt\" FROM $table LEFT JOIN users ON $table.\"userid\" = users.\"ID\" WHERE 1=1 $Qsearch $Qstatus";
+    $cnt_res = $db->select_query($cnt_sql, 1, $input_arr);
     $cnt = 0;
     if (isset($cnt_res[0]['cnt'])) {
         $cnt = $cnt_res[0]['cnt'];

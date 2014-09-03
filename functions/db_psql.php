@@ -35,14 +35,21 @@ class DatabaseConnection_psql extends DatabaseConnection
 {
     public function __construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
-        if ($databasetype == 'pdo_pgsql') {
-            if ($database == '') { $database = 'postgres'; }
-            $this->uri = "pgsql:host=$hostname;dbname=$database;" . (($port != '') ? "port=$port;" : '');
-        } else {
-            $this->uri .= $hostname . (($port != '') ? ":$port" : '');
-        }
-        parent::__construct($databasetype, $hostname, $port, $user, $pass, $database, $dbengine);
+        if ($database == '') { $database = 'postgres'; }
+        $this->uri = "pgsql:host=$hostname;dbname=$database;" . (($port != '') ? "port=$port;" : '');
+        parent::__construct('postgres', $hostname, $port, $user, $pass, $database, $dbengine);
     }
+    
+    public function connect()
+    {
+        echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
+        try {
+            $this->DB = new PDO($this->uri, $this->username, $this->password); 
+        } catch (exception $e) {
+            throw new exception('Could not connect to database: ' . $e->getMessage());
+        }
+    }
+
     public function get_dow_timestamp($from)
     {
         return "EXTRACT(DOW FROM to_timestamp($from))"; // todo check
@@ -78,7 +85,7 @@ class DatabaseConnection_psql extends DatabaseConnection
         $res = $this->execute_query($sql);
         if (isset($res[0]['cnt']) && ($res[0]['cnt'] > 0)) {
             $sql = "DROP DATABASE \"$dbase\"";
-            $this->DB->execute($sql);
+            $this->execute_query($sql);
         }
     }
 
@@ -152,33 +159,6 @@ class DatabaseConnection_psql extends DatabaseConnection
     {
         return array (0 => array(0 => '__ALL__')); // postfix doesn't have a show tables equivalent. We use a trick here: we return all and for optimising we run the vacuum full without a table name. Nasty? yes. Works? yes.
     }
-
-    public function connect()
-    {
-        echo_debug("Connecting to {$this->databasetype}: {$this->databasename} @ {$this->uri}", DEBUG_DATABASE);
-        try {
-            switch (strtolower($this->databasetype)) {
-                case 'postgres7':
-                case 'postgres8':
-                case 'postgres9':
-                    $this->DB = NewADOConnection($this->databasetype);
-                    $this->DB->NConnect($this->uri, $this->username, $this->password, $this->databasename); 
-                    break;
-                case 'pdo_pgsql':
-                    $this->DB = ADONewConnection('pdo');
-                    $this->DB->NConnect($this->uri, $this->username, $this->password); 
-                    break;
-                case 'postgres':
-                case 'postgres64':
-                default :
-                    throw new exception ("Database type {$this->databasetype} not yet supported");
-                    break;
-            }
-        } catch (exception $e) {
-            throw new exception('Could not connect to database: ' . $e->getMessage());
-        }
-    }
-
     public function start_transaction()
     {
         $this->execute_query('BEGIN WORK');
@@ -200,7 +180,7 @@ class DatabaseConnection_psql extends DatabaseConnection
     {
         return $this->execute_query('COMMIT WORK');
     }
-    public function get_last_id()
+    public function get_last_id() // some how lastinstertid in pdo doesn't seem to work :(
     {
         $res = $this->execute_query('SELECT lastval() AS lv');
         if (isset($res[0]['lv'])) {
@@ -208,5 +188,4 @@ class DatabaseConnection_psql extends DatabaseConnection
         }
         return FALSE;
     }
-
 }

@@ -442,6 +442,7 @@ $LN['ng_tooltip_admin_maxsetsize']    = 'The maximum size a set can have to be a
 $LN['ng_tooltip_admin_minsetsize']    = 'The minimum size a set must have to be added to the database - add k, M, G as suffix, e.g. 100k or 25G (spam control)';
 $LN['ng_hide_empty']        = 'Hide empty groups';
 $LN['ng_adult']             = '18+';
+$LN['ng_edit_group']        = 'Edit group';
 $LN['ng_tooltip_adult']     = 'Only accessible when user has 18+ flag set';
 
 $LN['failed']           = 'failed';

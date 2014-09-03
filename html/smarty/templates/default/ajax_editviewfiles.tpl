@@ -22,10 +22,9 @@
  * $Id: ajax_editviewfiles.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_edit_file} - {$filename|escape:htmlall|truncate:$maxstrlen:'...':false:true}</div>
-<div class="light">
-<br/>
+{extends file="popup.tpl"}
+{block name=title}{$LN_edit_file} - {$filename|escape:htmlall|truncate:$maxstrlen:'...':false:true}{/block}
+{block name=contents}
 <table>
 <tr>
 <td>{$LN_filename}:
@@ -45,7 +44,7 @@
 <tr>
 <td>{$LN_group}:
 </td>
-<td> {html_options name="group" id="group_editfile" options=$groups selected=$group }
+<td>{html_options name="group" id="group_editfile" options=$groups selected=$group }
 </td>
 </tr>
 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -56,4 +55,4 @@
 </tr>
 
 </table>
-</div>
+{/block}

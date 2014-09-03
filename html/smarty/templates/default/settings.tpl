@@ -19,18 +19,19 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: settings.tpl 2874 2013-07-13 23:12:10Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
 {* used for both prefs and admin_config !! *}
+{extends file="head.tpl"}
+{block name=contents}
 
 <h3 class="title">{$heading}</h3>
+
+<input type="hidden" id="source" name="source" value="{$source}"/>
+<div id="settingsdiv"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
     load_prefs();
 });
-    
 </script>
-<input type="hidden" id="source" name="source" value="{$source}"/>
-<div id="settingsdiv"></div>
 
-{include file="foot.tpl"}
+{/block}

@@ -98,7 +98,6 @@
 </tr>
 </table>
 
-
 {else if $type == 'supply'}
     {if $period == 'month'}
         {$cnt=0}

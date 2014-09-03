@@ -827,7 +827,6 @@ try {
         $quiet = TRUE;
         require($pathu . '/../install/update_db.php');
     }
-
     $db = connect_db(TRUE);
     check_deprecated_db();
 

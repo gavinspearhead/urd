@@ -8,7 +8,7 @@
 - Added new search options, and changed some to https
 - Added displaying of Avatars to comments
 - Save the NZB file of uploaded content
-- Deprecated database settings not relying on PDO (i.e. mysql, mysqli, postgres[789] - only pdo_mysql, pdo_pgsql and pdo_sqlite are supported)
+- Deprecated database settings not relying on PDO (i.e. mysql, mysqli, postgres[789] - only pdo access to the database is now supported
 - Speed up of downloading spots, spot comments and spot reports
 - Fixed some handling of selecting multiple sets at once
 - Fixed bug in saving some settings
@@ -20,6 +20,8 @@
 - Fixed a bug in setting admin config time values (thanx to Reab4)
 - Fixed a bug not expiring extsetdata when expiring spots
 - Fixed an odd bug not showing some statistics
+- Fixed a bug in previewing files, not always displaying the right file or displaying the file right
+- Fixed a bug not setting the default languages correctly in the installer
 - Cleanup stylesheets and replaced images by css
 - Updated smarty to 3.1.19
 - Updated to jquery 2.1.1 - note IE 6-8 are no longer supported

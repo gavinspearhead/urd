@@ -36,6 +36,7 @@ switch($config['databasetype']) {
         $db = new DatabaseConnection_mysql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''), 
                 $config['db_user'], $config['db_password'], $config['database'], FALSE, FALSE);
         break;
+    case 'postgres' :
     case 'pdo_pgsql':
     case 'postgres9':
     case 'postgres8':
@@ -44,12 +45,13 @@ switch($config['databasetype']) {
                 $config['db_user'], $config['db_password'], $config['database'], FALSE, FALSE);
         break;
     case 'pdo_sqlite':
+    case 'sqlite':
         $db = new DatabaseConnection_sqlite($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''), 
                 $config['db_user'], $config['db_password'], $config['database'], FALSE, FALSE);
         break;
     case 'mysqlt':
     default:
-        throw new exception ('Database type not supported');
+        throw new exception ('Database type not supported y');
 }
 
 if (!isset($quiet) ) { 

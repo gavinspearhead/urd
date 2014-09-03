@@ -19,12 +19,13 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_users.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+{extends file="head.tpl"}
+{block name=contents}
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$title}</h3>
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30" onkeypress="javascript:return submit_enter(event, show_users);"/>
-<input type="button" value="{$LN_search}" class="submitsmall" onclick="javascript:show_users();"/></div>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
+<input type="button" value="{$LN_search}" id="search_button" class="submitsmall"/></div>
 </div>
 
 <div id="usersdiv">
@@ -32,8 +33,11 @@
 $(document).ready(function() {
     show_users();
     $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
+    $('#search_button').click( function() { show_users(); });
+    $('#search').keypress( function(e) { return submit_enter(e, show_users); });
 });
 </script>
 </div>
 
-{include file="foot.tpl"}
+{/block}

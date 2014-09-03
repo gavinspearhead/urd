@@ -1011,7 +1011,9 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
         case 'log_level':
             $log_levels = get_log_levels_array();
             $rv = verify_array($value, array_keys($log_levels));
-            $uc->set('log_level', $log_levels[$value]);
+            if ($uc->is_connected()) {
+                $uc->set('log_level', $log_levels[$value]);
+            }
 
             return $rv;
         case 'scheduler':

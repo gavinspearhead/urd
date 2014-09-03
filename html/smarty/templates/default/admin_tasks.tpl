@@ -19,7 +19,9 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: admin_tasks.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
-{include file="head.tpl" title=$title}
+
+{extends file="head.tpl"}
+{block name=contents}
 
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_tasks_title}</h3>
@@ -42,11 +44,12 @@
 $(document).ready(function() {
     update_tasks();
     $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
     $('#search').click(function() { load_tasks_no_offset(null, null); } );
-    $('#tasksearch').keypress(function() { return submit_enter(event, load_tasks_no_offset); } );
+    $('#tasksearch').keypress(function(e) { return submit_enter(e, load_tasks_no_offset); } );
 });
 </script>
 
 <p>&nbsp;</p>
 
-{include file="foot.tpl"}
+{/block}

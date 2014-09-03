@@ -20,14 +20,14 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: getfile.tpl 2701 2012-09-29 22:55:22Z gavinspearhead@gmail.com $
  *}
-
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered" id="text_title">{$title|escape:htmlall} ({$size})</div>
+{extends file="popup.tpl"}
+{block name=title}{$title|escape:htmlall} ({$size}){/block}
+{block name=contents}
 
 <div class="overflow" id="inner_content">
 <pre>
 {$output}
 </pre>
 </div>
-</div>
 
+{/block}

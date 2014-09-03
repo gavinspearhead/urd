@@ -26,3 +26,9 @@
 <div id="overlay_back">
 <div id="overlay_content"></div>
 </div>
+{block name="contents"}
+{/block}
+
+</body>
+<!-- URD v{$VERSION} -->
+</html>

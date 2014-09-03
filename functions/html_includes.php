@@ -39,6 +39,7 @@ $process_name = 'urd_web'; // needed for message format in syslog and logging
 
 $pathhtmli = realpath(dirname(__FILE__));
 require_once $pathhtmli . '/defines.php';
+require_once $pathhtmli . '/error_codes.php';
 require_once $pathhtmli . '/../config.php';
 
 if (isset($config['urdweb_logfile'])) {

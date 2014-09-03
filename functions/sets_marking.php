@@ -110,11 +110,11 @@ class sets_marking
             if ($type == USERSETTYPE_GROUP) {
                 $qry = 'setdata."ID" FROM setdata LEFT JOIN usersetinfo AS usi '
                     . ' ON usi."setID" = setdata."ID" WHERE usi."userID" = ? AND setdata."groupID"=? AND "type"=? AND usi."setID" IN ( ' . str_repeat('?,', count($sets) - 1) . '?)';
-                $input_arr = array($userid, $groupid, $type);
+                $input_arr = array($userid, $groupid, $type, array_merge($input_arr, $sets));
             } elseif ($type == USERSETTYPE_SPOT) {
                 $qry = 'spots."spotid" FROM spots LEFT JOIN usersetinfo AS usi '
                     . ' ON usi."setID" = spots."spotid" WHERE usi."userID" = ? AND "type"=? AND usi."setID" IN ( ' . str_repeat('?,', count($sets) - 1) . '?)';
-                $input_arr = array($userid, $type);
+                $input_arr = array($userid, $type, array_merge($input_arr, $sets));
             } elseif ($type == USERSETTYPE_RSS) { // feed
                 $qry = 'rss_sets."setid" AS "ID" FROM rss_sets LEFT JOIN usersetinfo AS usi '
                     . ' ON usi."setID" = rss_sets."setid" WHERE usi."userID" = ? AND rss_sets."rss_id"=? AND "type"=? AND usi."setID" IN ( ' . str_repeat('?,', count($sets) - 1) . '?)';
@@ -136,44 +136,54 @@ class sets_marking
         if ($element != 'statuskill' && $element != 'statusread') {
             $element = 'statusint';
         }
-
+        $input_arr = array();
         if (!is_numeric($userid)) {
             throw new exception ($LN['error_invaliduserid'], ERR_INVALID_USERID);
         }
-        $orig_userid = $userid;
-        $db->escape($userid, TRUE);
         $sets_str = $grp = $qint = '';
-        foreach ($sets as $setid) {
-            $sets_str .= ", '$setid'";
+        foreach ($sets as $idx => $setid) {
+            $sets_str .= ", :setid_$idx";
+            $input_arr[":setid_$idx"] = $setid;
         }
         $sets_str = ltrim($sets_str, ', ');
 
         if ($skip_interesting) {
-            $qint = " OR \"statusint\" = '". self::MARKING_ON ."' ";
+            $qint = ' OR "statusint" = :markon ';
+            $input_arr[':markon'] = self::MARKING_ON;
         }
         if ($type == USERSETTYPE_GROUP) {
             if (is_numeric($groupid)) {
-                $db->escape($groupid, TRUE);
-                $grp = " AND \"groupID\" = $groupid ";
+                $grp = ' AND "groupID" = :groupid ';
+                $input_arr[':groupid'] = $groupid;
             }
 
-            $qry = "SELECT * FROM setdata WHERE \"ID\" NOT IN ( SELECT \"setID\" FROM usersetinfo  " .
-                " WHERE (\"$element\" = '$marking' $qint) AND \"userID\" = $userid AND \"type\"='" . $type . "' ) AND \"ID\" IN ($sets_str) $grp";
+            $qry = '* FROM setdata WHERE "ID" NOT IN ( SELECT "setID" FROM usersetinfo ' .
+                " WHERE (\"$element\" = :marking $qint) AND \"userID\" = :userid AND \"type\" = :type ) AND \"ID\" IN ($sets_str) $grp";
+            $input_arr[':userid'] = $userid;
+            $input_arr[':marking'] = $marking;
+            $ipnut_arr[':type'] = $type;
+
         } elseif ($type == USERSETTYPE_RSS) { // feed
             if (is_numeric($groupid)) {
-                $db->escape($groupid, TRUE);
-                $grp = " AND \"feedid\" = $groupid ";
+                $grp = ' AND "feedid" = :feedid ';
+                $input_arr[':feedid'] = $groupid;
             }
 
-            $qry = "SELECT \"setid\" AS \"ID\" FROM rss_sets WHERE \"setid\" NOT IN (SELECT \"setID\" FROM usersetinfo  " .
-                " WHERE (\"$element\" = '$marking' $qint) AND \"userID\" = $userid AND \"type\"='" . $type . "' ) AND \"setid\" IN ($sets_str) $grp";
+            $qry = ' "setid" AS "ID" FROM rss_sets WHERE "setid" NOT IN (SELECT "setID" FROM usersetinfo ' .
+                " WHERE (\"$element\" = :marking $qint) AND \"userID\" = :userid AND \"type\" = :type ) AND \"setid\" IN ($sets_str) $grp";
+            $input_arr[':userid'] = $userid;
+            $input_arr[':marking'] = $marking;
+            $ipnut_arr[':type'] = $type;
         } elseif ($type == USERSETTYPE_SPOT) {
-            $qry = "SELECT \"spotid\" AS \"ID\" FROM spots WHERE \"spotid\" NOT IN (SELECT \"setID\" FROM usersetinfo " .
-                " WHERE (\"$element\" = '$marking' $qint) AND \"userID\" = $userid AND \"type\"='" . $type . "' ) AND \"spotid\" IN ($sets_str) ";
+            $qry = ' "spotid" AS "ID" FROM spots WHERE "spotid" NOT IN (SELECT "setID" FROM usersetinfo ' .
+                " WHERE (\"$element\" = :marking $qint) AND \"userID\" = :userid AND \"type\" = :type) AND \"spotid\" IN ($sets_str) ";
+            $input_arr[':userid'] = $userid;
+            $input_arr[':marking'] = $marking;
+            $ipnut_arr[':type'] = $type;
         }
-        $res = $db->execute_query($qry);
+        $res = $db->select_query($qry, $input_arr);
         if ($res !== FALSE) {
-            self::mark_sets($db, $res, $orig_userid, $type, $marking, $element, $manual);
+            self::mark_sets($db, $res, $userid, $type, $marking, $element, $manual);
         }
     }
 
@@ -223,30 +233,35 @@ class sets_marking
         if (!is_numeric($userid)) {
             throw new exception ($LN['error_invaliduserid'], ERR_INVALID_USERID);
         }
-        $orig_userid = $userid;
-        $db->escape($userid, TRUE);
+        $input_arr = array();
         if ($type == USERSETTYPE_GROUP) {
             $grp = '';
             if (is_numeric($groupid)) {
-                $db->escape($groupid, TRUE);
-                $grp = " AND \"groupID\" = $groupid ";
+                $grp = ' AND "groupID" = :groupid ';
+                $input_arr[':groupid'] = $groupid;
             }
 
-            $qry = 'SELECT * FROM setdata WHERE "ID" NOT IN ( SELECT "setID" FROM usersetinfo ' . 
-                   "WHERE \"$element\" = '$marking' AND \"userID\" = $userid AND \"type\"='" . $type . "') $grp";
+            $qry = ' * FROM setdata WHERE "ID" NOT IN ( SELECT "setID" FROM usersetinfo ' . 
+                   "WHERE \"$element\" = :marking AND \"userID\" = :userid AND \"type\" = :type) $grp";
+            $input_arr[':userid'] = $userid;
+            $input_arr[':marking'] = $marking;
+            $ipnut_arr[':type'] = $type;
         } else {
             $grp = '';
             if (is_numeric($groupid)) {
-                $db->escape($groupid, TRUE);
-                $grp = " AND \"feed_id\" = $groupid ";
+                $grp = ' AND "feed_id" = :feedid ';
+                $input_arr[':feedid'] = $groupid;
             }
 
-            $qry = 'SELECT "setid" AS "ID" FROM rss_sets WHERE "setid" NOT IN (SELECT "setID" FROM usersetinfo ' .
-                   "WHERE \"$element\" = '$marking' AND \"userID\" = $userid AND \"type\"='" . $type . "') $grp";
+            $qry = ' "setid" AS "ID" FROM rss_sets WHERE "setid" NOT IN (SELECT "setID" FROM usersetinfo ' .
+                   "WHERE \"$element\" = :marking' AND \"userID\" = :userid AND \"type\"= :type) $grp";
+            $input_arr[':userid'] = $userid;
+            $input_arr[':marking'] = $marking;
+            $ipnut_arr[':type'] = $type;
         }
-        $res = $db->execute_query($qry);
+        $res = $db->select_query($qry, $input_arr);
         if ($res !== FALSE) {
-            self::mark_sets($db, $res, $orig_userid, $type, $marking, $element, $manual);
+            self::mark_sets($db, $res, $userid, $type, $marking, $element, $manual);
         }
     }
 
@@ -273,14 +288,14 @@ class sets_marking
         next($fields);
         $table2 = key($fields);
         $column2 = current($fields);
-        foreach ($terms as $term) {
+        foreach ($terms as $idx1 => $term) {
             $term = trim($term);
             if ($term == '') {
                 continue;
             }
             $words = explode(' ', $term);
             $like1 = $like2 = '1=1';
-            foreach ($words as $word) {
+            foreach ($words as $idx2 => $word) {
                 $word = trim($word);
                 if ($word == '') {
                     continue;
@@ -542,10 +557,8 @@ class sets_marking
         if ($feed_id === NULL) {
             $feed = '';
         } elseif (is_numeric($feed_id)) {
-            $res = $db->select_query('"id" FROM rss_urls WHERE subscribed = ? AND "id"=?', 1, array(rssfeed_status::RSS_SUBSCRIBED, $feed_id));
-            if ($res === FALSE) {
-                throw new exception($LN['error_feednotfound'], ERR_RSS_NOT_FOUND);
-            }
+            get_feed_by_id($db, $feed_id);
+            $db->escape($feed_id, TRUE);
             $feed = " AND rss_sets.\"rss_id\"=$feed_id ";
         } else {
             throw new exception ($LN['error_invalidfeedid'], ERR_RSS_NOT_FOUND);
@@ -592,7 +605,6 @@ class sets_marking
         return $sql;
     }
 
-
     private static function add_download_sets(DatabaseConnection $db, $userid, $sql, $type)
     {
         assert(is_numeric($userid) && is_string($sql));
@@ -613,7 +625,6 @@ class sets_marking
             }
             $start += $stepsize;
         } while (TRUE);
-
     }
 
     private static function auto_download_group(DatabaseConnection $db, $userid, $groupid=NULL)
@@ -644,11 +655,8 @@ class sets_marking
         if ($groupid === NULL) {
             $group = '';
         } elseif (is_numeric($groupid)) {
+            get_group_by_id($db, $groupid);
             $db->escape($groupid, TRUE);
-            $res = $db->select_query('"ID" FROM groups WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
-            if ($res === FALSE) {
-                throw new exception($LN['error_groupnotfound'], ERR_GROUP_NOT_FOUND);
-            }
             $group = " AND setdata.\"groupID\"=$groupid ";
         } else {
             throw new exception ($LN['error_invalidgroupid'], ERR_GROUP_NOT_FOUND);
@@ -677,11 +685,11 @@ class sets_marking
         $Qsize = " AND ( setdata.\"size\" >= ((SELECT CASE WHEN \"minsetsize\" IS NULL THEN $minsetsize ELSE minsetsize END) ))";
 
         if ($maxsetsize == 0) {
-            $Qsize .= " AND (usergroupinfo.\"maxsetsize\" = 0 OR maxsetsize IS NULL OR setdata.size <= ( maxsetsize)) ";
+            $Qsize .= ' AND (usergroupinfo."maxsetsize" = 0 OR maxsetsize IS NULL OR setdata.size <= ( maxsetsize)) ';
         } else {
             $Qsize .= " AND (usergroupinfo.\"maxsetsize\" = 0 OR (setdata.size <= ((SELECT CASE WHEN maxsetsize IS NULL THEN $maxsetsize ELSE maxsetsize END)))) ";
         }
-        $Qvisible = " AND (usergroupinfo.visible IS NULL OR usergroupinfo.visible = 1)";
+        $Qvisible = ' AND (usergroupinfo.visible IS NULL OR usergroupinfo.visible = 1)';
 
         $sql  = "setdata.\"ID\", setdata.\"size\", extsetdata.\"value\", setdata.\"subject\", setdata.\"groupID\" AS \"groupID\" FROM setdata ";
         $sql .= "LEFT JOIN usersetinfo ON setdata.\"ID\" = usersetinfo.\"setID\" AND usersetinfo.\"type\"='$type' and usersetinfo.\"userID\" = '$userid'";
