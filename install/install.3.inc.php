@@ -43,7 +43,6 @@ $dbengine = isset($_SESSION['dbengine']) ? $_SESSION['dbengine'] : '';
 $keystore_default_path = isset($_SESSION['keystore_path']) ? $_SESSION['keystore_path'] : realpath('../');
 $reuse_keystore = isset($_SESSION['reuse_keystore']) ? $_SESSION['reuse_keystore'] : '';
 
-
 // If this is an upgrade, we have a dbconfig.php... use these values instead:
 @include('dbconfig.php');
 if (isset($config['databasetype'])) {
@@ -90,60 +89,60 @@ if ($dbs == array()) {
     $OUT .= '<tr><td class="install2">No database driver installed (try sudo apt-get install php5-mysql)</td>';
 	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">' . $refreshpic . '</a></td></tr>';
 } else {
-$OUT .= <<<SELECTDB
-<tr><td class="install2">Select your database:</td><td class="install3">
-<select name="dbtype" id="dbtype" onchange="javascript:update_database_input_fields();">
+    $OUT .= <<<SELECTDB
+    <tr><td class="install2">Select your database:</td><td class="install3">
+    <select name="dbtype" id="dbtype" onchange="javascript:update_database_input_fields();">
 SELECTDB;
-foreach($dbs as $l) {
-	$OUT .= '<option ' . (($l[0] == $dbtype) ? 'selected="selected"' : '') . " value=\"{$l[0]}\">{$l[1]}</option>\n";
-} 
-$showdbe = (in_array(strtolower($dbtype), array('mysql'))) ? '' : ' style="display:hidden" ';
-$dbinno = ($dbengine == 'innodb') ? 'selected="selected"' : '';
-$dbmyisam = ($dbengine == 'myisam') ? 'selected="selected"' : '';
-$dbdef = ($dbengine != 'myisam' && $dbengine != 'innodb') ? 'selected="selected"' : '';
+    foreach($dbs as $l) {
+        $OUT .= '<option ' . (($l[0] == $dbtype) ? 'selected="selected"' : '') . " value=\"{$l[0]}\">{$l[1]}</option>\n";
+    } 
+    $showdbe = (in_array(strtolower($dbtype), array('mysql'))) ? '' : ' style="display:hidden" ';
+    $dbinno = ($dbengine == 'innodb') ? 'selected="selected"' : '';
+    $dbmyisam = ($dbengine == 'myisam') ? 'selected="selected"' : '';
+    $dbdef = ($dbengine != 'myisam' && $dbengine != 'innodb') ? 'selected="selected"' : '';
 
-$OUT .= <<<SELECTDB2
-</select></td></tr>
-<tr id="dbengine" $showdbe><td class="install2">Database Engine (MyIsam typically has best performance with URD)</td><td class="install3">
-<select name="dbengine">
-<option value="" $dbdef>Default</option>
-<option value="innodb" $dbmyisam>InnoDB</option>
-<option value="myisam" $dbdef>MyIsam</option>
-</select></td>
-</tr>
-<tr id="hostname"><td class="install2">Database hostname:</td><td class="install3">
-<input type="text" id="dbhost" name="dbhost" value="$dbhost"></td></tr>
-<tr id="port"><td class="install2">Database port number (blank for default):</td><td class="install3">
-<input type="text" name="dbport" id="dbport" value="$dbport"></td></tr>
-<tr><td class="install2">Database name (or filename in case of SQLite):</td><td class="install3">
-<input type="text" name="dbname" id="dbname" value="$dbname"></td></tr>
-<tr id="dbusername"><td class="install2">Database username:</td><td class="install3">
-<input type="text" name="dbuser" id="dbuser" value="$dbuser"></td></tr>
-<tr id="dbpassword"><td class="install2">Database password (leave blank to generate one):</td><td class="install3">
-<input id="dbpass" type="password" name="dbpass" id="dbpass" value="$dbpass"> <span onclick="javascript:toggle_show_password('dbpass');">$showpasspic</span>
-<br></td></tr>
-<tr><td colspan="2"></td></tr>
-<tr><td colspan="2"></td></tr>
-<tr id="dbmysqlreset"><td></td><td>Instructions to reset password for <a target="_new" href="https://dev.mysql.com/doc/refman/5.0/en/resetting-permissions.html">Mysql</a>.</tr>
-<tr id="dbroot"><td class="install2">Database administrator (root) username:</td><td class="install3">
-<input type=text name="dbruser" id="dbruser" value="$dbruser"></td></tr>
-<tr id="dbrootpw"><td class="install2">Database administrator (root) password:</td><td class="install3">
-<input type="password" name="dbrpass" id="dbrpass" value="$dbrpass"> <span onclick="javascript:toggle_show_password('dbrpass');">$showpasspic</span>
-</td></tr>
-<tr><td>&nbsp;</td></tr>
-<tr><td class="install1">In case you overwrite an existing URD installation:</td></tr>
-<tr><td class="install2">Delete existing database:</td><td class="install3">
-<input type="checkbox" name="dbclear" $dbclear></td></tr>
-<tr><td class="install2">Delete existing database user:</td><td class="install3">
-<input type="checkbox" name="dbuserclear" $dbuserclear></td></tr>
-<tr><td colspan="2"><br/></td></tr>
-<tr><td class="install2">Location of the key store for database encryption of passwords</td>
-<td class="install3"><input type="text" name="keystore_path" value="$keystore_default_path" size="60"></td></tr>
-<tr><td colspan="2" class="install1">Setting key for database encryption of passwords</td></tr>
-<tr><td class="install2">Encryption key (leave blank to generate one)</td><td class="install3"><input type="password" name="encryption_key" value="">&nbsp;<span onclick="javascript:toggle_show_password('password');">$showpasspic</span></td></tr></td></tr>
-<tr><td class="install2">Reuse existing keystore:</td><td class="install3">
-<input type="checkbox" name="reuse_keystore" $reuse_keystore></td></tr>
-<tr colspan="3" id="continue_button"><td><a onclick="show_message('Creating database... please wait');LoadPage(4); hide_button('continue_button');">$continuepic</a></td></tr>
+    $OUT .= <<<SELECTDB2
+    </select></td></tr>
+    <tr id="dbengine" $showdbe><td class="install2">Database Engine (MyIsam typically has best performance with URD)</td><td class="install3">
+    <select name="dbengine">
+    <option value="" $dbdef>Default</option>
+    <option value="innodb" $dbmyisam>InnoDB</option>
+    <option value="myisam" $dbdef>MyIsam</option>
+    </select></td>
+    </tr>
+    <tr id="hostname"><td class="install2">Database hostname:</td><td class="install3">
+    <input type="text" id="dbhost" name="dbhost" value="$dbhost"></td></tr>
+    <tr id="port"><td class="install2">Database port number (blank for default):</td><td class="install3">
+    <input type="text" name="dbport" id="dbport" value="$dbport"></td></tr>
+    <tr><td class="install2">Database name (or filename in case of SQLite):</td><td class="install3">
+    <input type="text" name="dbname" id="dbname" value="$dbname"></td></tr>
+    <tr id="dbusername"><td class="install2">Database username:</td><td class="install3">
+    <input type="text" name="dbuser" id="dbuser" value="$dbuser"></td></tr>
+    <tr id="dbpassword"><td class="install2">Database password (leave blank to generate one):</td><td class="install3">
+    <input id="dbpass" type="password" name="dbpass" id="dbpass" value="$dbpass"> <span onclick="javascript:toggle_show_password('dbpass');">$showpasspic</span>
+    <br></td></tr>
+    <tr><td colspan="2"></td></tr>
+    <tr><td colspan="2"></td></tr>
+    <tr id="dbmysqlreset"><td></td><td>Instructions to reset password for <a target="_new" href="https://dev.mysql.com/doc/refman/5.0/en/resetting-permissions.html">Mysql</a>.</tr>
+    <tr id="dbroot"><td class="install2">Database administrator (root) username:</td><td class="install3">
+    <input type=text name="dbruser" id="dbruser" value="$dbruser"></td></tr>
+    <tr id="dbrootpw"><td class="install2">Database administrator (root) password:</td><td class="install3">
+    <input type="password" name="dbrpass" id="dbrpass" value="$dbrpass"> <span onclick="javascript:toggle_show_password('dbrpass');">$showpasspic</span>
+    </td></tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr><td class="install1">In case you overwrite an existing URD installation:</td></tr>
+    <tr><td class="install2">Delete existing database:</td><td class="install3">
+    <input type="checkbox" name="dbclear" $dbclear></td></tr>
+    <tr><td class="install2">Delete existing database user:</td><td class="install3">
+    <input type="checkbox" name="dbuserclear" $dbuserclear></td></tr>
+    <tr><td colspan="2"><br/></td></tr>
+    <tr><td class="install2">Location of the key store for database encryption of passwords</td>
+    <td class="install3"><input type="text" name="keystore_path" value="$keystore_default_path" size="60"></td></tr>
+    <tr><td colspan="2" class="install1">Setting key for database encryption of passwords</td></tr>
+    <tr><td class="install2">Encryption key (leave blank to generate one)</td><td class="install3"><input type="password" name="encryption_key" value="">&nbsp;<span onclick="javascript:toggle_show_password('password');">$showpasspic</span></td></tr></td></tr>
+    <tr><td class="install2">Reuse existing keystore:</td><td class="install3">
+    <input type="checkbox" name="reuse_keystore" $reuse_keystore></td></tr>
+    <tr colspan="3" id="continue_button"><td><a onclick="show_message('Creating database... please wait');LoadPage(4); hide_button('continue_button');">$continuepic</a></td></tr>
 SELECTDB2;
 
 }

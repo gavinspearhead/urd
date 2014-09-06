@@ -47,7 +47,7 @@ function update_database_input_fields()
     var type = dbt.options[dbt.selectedIndex].value;
     type = type.toLowerCase();
     change_display_dbengine(type);
-    if (type == 'pdo_sqlite' || type == 'sqllite') {
+    if (type == 'sqlite') {
         hide_data_for_sqlite();
     } else {
         show_data_for_sqlite();
@@ -56,7 +56,7 @@ function update_database_input_fields()
 
 function change_display_dbengine(type)
 {
-    if (type == 'mysql' || type == 'mysqli' || type == 'pdo_mysql') {
+    if (type == 'mysql') {
         $('#dbengine').show();
     } else {
         $('#dbengine').hide();

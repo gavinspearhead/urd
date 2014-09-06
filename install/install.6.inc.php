@@ -24,7 +24,6 @@
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) { die('This file cannot be accessed directly.'); }
 
-
 // Finish up
 $urduser = get_request('urduser');
 $urdpass1 = get_request('urdpass1');
@@ -46,7 +45,6 @@ $_SESSION['urddownloaddir'] = $urddownloaddir;
 get_urdd_path();
 get_url();
 
-
 // This SHOULD work now:
 $OUT .= '<tr><td class="install2">Connecting to db using stored settings</td>';
 try{
@@ -60,7 +58,6 @@ $OUT .= GenRetVal($rv_cdb);
 if ($rv_cdb == FALSE) {
     $OUT .= ShowHelp($error);
 }
-
 
 // Checking user/password:
 $OUT .= '<tr><td class="install2">Username valid</td>';

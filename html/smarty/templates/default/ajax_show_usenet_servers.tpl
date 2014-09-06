@@ -61,7 +61,7 @@
 <div class="floatleft status_light green buttonlike down2" onclick="javascript:usenet_action('disable_server',{$usenet_server->id})" {urd_popup type="small" text=$LN_usenet_disable|escape }></div>
 {/capture}
 
-<tr class="even content server_{if $usenet_server->priority eq 0}disabled{else}enabled{/if}" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr name="content" class="even content server_{if $usenet_server->priority eq 0}disabled{else}enabled{/if}">
 <td class="uwider">{if $usenet_server->priority eq 0}{$enable}{else}{$disable}{/if}
 {if $usenet_server->priority neq 0}<div class="floatleft">&nbsp;{$usenet_server->priority|escape|truncate:$maxstrlen}</div>{/if}
 </td>

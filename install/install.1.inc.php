@@ -148,7 +148,7 @@ if (!$rv_php9) {
 $OUT .= '<tr><td class="install2">PHP Open base dir setting</td>';
 $OUT .= GenRetVal(check_open_basedir($_SESSION['php_path']), $rv_php_obd);
 if (!$rv_php_obd) {
-    $OUT .= ShowHelp('If the open_basedir variable is set in '. htmlentities($php_ini_path_cli) . 'URD might not work properly.');
+    $OUT .= ShowHelp('If the open_basedir variable is set in ' . htmlentities($php_ini_path_cli) . 'URD might not work properly.');
 }
 
 $OUT .= '<tr><td class="install2">PHP Disabled functions</td>';

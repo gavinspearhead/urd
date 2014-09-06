@@ -72,7 +72,7 @@
 {/strip}
 {/capture}
 
-	<tr class="even" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+	<tr class="even" name="content">
 		<td class="bold nowrap">
         <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
         </td>

@@ -50,6 +50,11 @@ class DatabaseConnection_psql extends DatabaseConnection
         }
     }
 
+    public function create_function($function_name, $callback, $num_args)
+    { 
+        return FALSE;
+        // todo when necessary
+    }
     public function get_dow_timestamp($from)
     {
         return "EXTRACT(DOW FROM to_timestamp($from))"; // todo check

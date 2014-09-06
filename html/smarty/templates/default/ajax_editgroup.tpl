@@ -37,7 +37,7 @@
 <td> {urd_checkbox value="$oldsubscribed" name="group_subscribed" id="group_subscribed" } </td></tr>
 <tr><td>{$LN_ng_adult}:</td><td>{urd_checkbox value="$oldadult" name="group_adult" id="group_adult" }</td></tr>
 <td>{$LN_ng_autoupdate}:</td><td>
-<select name="group_refresh_period" id="group_refresh_period" size="1" class="update" onchange="javascript:display_timebox('group_refresh_period');">
+<select name="group_refresh_period" id="group_refresh_period" size="1" class="update">
 {html_options values=$periods_keys output=$periods_texts selected=$oldrefresh}
 </select>
 </td>
@@ -46,7 +46,7 @@
 
 <tr><td colspan="4" class="right">&nbsp;</td></tr>
 <tr><td colspan="4" class="right">
-	<input type="button" onclick="update_group();" {urd_popup type="small" text=$LN_apply } name="submit_button" value="{$LN_apply}" class="submit"/> 
+	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submit"/> 
 </td></tr>
 </table>
 

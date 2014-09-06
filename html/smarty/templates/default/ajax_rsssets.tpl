@@ -141,20 +141,13 @@
 {capture assign=setdesc}{$setdesc|replace:':_img_unknown:':''}{/capture}
 
 {* Ok now it's time to put it all together: *}	
-<tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" 
-	onmouseover="javascript:$(this).toggleClass('highlight2');" 
-	onmouseout="javascript:$(this).toggleClass('highlight2');">
-	<td class="fixwidth1">{$set.number}
-    
-<input type="hidden" name="set_ids[]" value="{$set.sid|escape}"/>
-    </td>
+<tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" name="content">
+    <td class="fixwidth1">{$set.number} <input type="hidden" name="set_ids[]" value="{$set.sid|escape}"/> </td>
 	<td class="setbuttons">{$smallbuttons}</td>
-	<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_RSS}, event);" id="td_set_{$set.sid}">
-<div class="donotoverflowdamnit">{$setdesc}</div>
-</td>
+	<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_RSS}, event);" id="td_set_{$set.sid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
 	<td class="fixwidth2a nowrap {if $set.new_set neq 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{if $set.size eq 0}?{else}{$set.size}{/if}</td>
-<td class="fixwidth1">
+    <td class="fixwidth1">
     {if $set.imdblink neq ''}
     <div class="floatleft iconsizeplus {$imdbpic} buttonlike" onclick="javascript:jump('{$set.imdblink|escape}', true);" {urd_popup type="small" text=$set.imdblink}></div>
     {elseif $set.rating neq 0}
@@ -188,6 +181,7 @@
 </table>
 
 {$bottomskipper}
+
 <input type="hidden" id="rss_url" value="{$rssurl|escape:quotes}"/>
 <input type="hidden" id="killflag" value="{$killflag|escape}"/>
 

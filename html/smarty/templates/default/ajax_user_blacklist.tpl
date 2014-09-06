@@ -32,10 +32,10 @@
 {capture assign=tab_selector}
 <div class="pref_selector">{strip}
 <ul class="tabs">
-<li onclick="javascript:select_tab_blacklist('blacklist')" class="tab{if $active_tab == 'blacklist'} tab_selected{/if}" id="blacklist_bar">{$LN_user_blacklist}
+<li class="tab{if $active_tab == 'blacklist'} tab_selected{/if}" id="blacklist_bar">{$LN_user_blacklist}
 <input type="hidden" name="tabs" value="blacklist"/>
 </li>
-<li onclick="javascript:select_tab_blacklist('whitelist')" class="tab{if $active_tab == 'whitelist'} tab_selected{/if}" id="whitelist_bar">{$LN_user_whitelist}
+<li class="tab{if $active_tab == 'whitelist'} tab_selected{/if}" id="whitelist_bar">{$LN_user_whitelist}
 <input type="hidden" name="tabs" value="whitelist"/>
 </li>
 </ul>
@@ -82,7 +82,7 @@
 {/if}
 
 {foreach $blacklist as $item}
-<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');" id="item{$item.id}">
+<tr class="even content" name="content" id="item{$item.id}">
 	<td>{$item.number|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>
 {if $active_tab == 'whitelist'}

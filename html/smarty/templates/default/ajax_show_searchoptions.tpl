@@ -34,7 +34,7 @@
 </tr>
 
 {foreach $buttons as $button}
-<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr class="even content" name="content">
 <td>{$button->get_name()|escape|truncate:$maxstrlen}</td>
 <td ><span class="buttonlike" {urd_popup type="small" text=$LN_buttons_clicktest} onclick="javascript:jump('{$button->get_url()|replace:"\$q":"test"|escape:javascript}', true);">{$button->get_url()|escape|truncate:$maxstrlen}</span></td>
 <td>

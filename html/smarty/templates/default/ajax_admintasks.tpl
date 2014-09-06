@@ -66,7 +66,7 @@
 </tr>
 
 {foreach $alltasks as $task}
-<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr class="even content" name="content">
 <td><div class="donotoverflowdamnit" {urd_popup text="`$task.description` `$task.arguments`" type=small}>{$task.description} <b>{$task.arguments}</b></div></td>
 <td class="right">{$task.progress}%</td>
 <td class="right">{$task.eta}</td>

@@ -269,17 +269,17 @@ function get_default_config()
     $prefArray_root['spots_blacklist']          = 'http://jij.haatmij.nl/spotnet/blacklist.txt'; //black list with spotterIds known for spamming etc
     $prefArray_root['spots_whitelist']          = 'http://jij.haatmij.nl/spotnet/whitelist.txt'; //white list with spotterIds known for solid spots
 
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_UNKNOWN ]      = '%T %C %P %n';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_MOVIE ]        = '%T %C %P %n %(y) %m %a %l %s %[x] %N ';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_DOCUMENTARY ]  = '%T %C %P %n %(y) %m %a %l %s %[x] %N ';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_ALBUM ]        = '%T %C %P %n %(y) %f %g %N';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_TVSERIES ]     = '%T %C %P %n %e %m %a %[x] %N ';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_SOFTWARE ]     = '%T %C %P %n %(o) %N';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_GAME ]         = '%T %C %P %n %(o) %N';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_EBOOK ]        = '%T %C %P %n - %A %(y) %f %g ';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_IMAGE ]        = '%T %C %P %n %f %g %[x] %N';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_TVSHOW ]       = '%T %C %P %e %n %m %a %[x] %N ';
-    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_OTHER ]        = '%T %C %P %n';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_UNKNOWN ]      = '%C %P %n';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_MOVIE ]        = '%C %P %n %(y) %m %a %l %s %[x] %N ';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_DOCUMENTARY ]  = '%C %P %n %(y) %m %a %l %s %[x] %N ';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_ALBUM ]        = '%C %P %n %(y) %f %g %N';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_TVSERIES ]     = '%C %P %n %e %m %a %[x] %N ';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_SOFTWARE ]     = '%C %P %n %(o) %N';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_GAME ]         = '%C %P %n %(o) %N';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_EBOOK ]        = '%C %P %n - %A %(y) %f %g ';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_IMAGE ]        = '%C %P %n %f %g %[x] %N';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_TVSHOW ]       = '%C %P %e %n %m %a %[x] %N ';
+    $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_OTHER ]        = '%C %P %n';
 
     $prefArray_root['modules']  =
         urd_modules::URD_CLASS_GENERIC |
@@ -319,7 +319,6 @@ function get_default_config()
 
     return $prefArray_root;
 }
-
 
 class SPOTS_GROUPS
 {

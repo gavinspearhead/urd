@@ -24,13 +24,11 @@
 // This is an include-only file:
 if (!defined('ORIGINAL_PAGE')) { die('This file cannot be accessed directly.'); }
 
-
 $connection_types = array (
     'off', 
     'ssl', 
     'tls'
 );
-
 
 // Finish up
 $hostname       = get_request('hostname');
@@ -97,7 +95,6 @@ if ($connection == 'off') {
     $secure_port = $port; 
     $port = 0; 
 } 
-
 
 // Finish up!
 if ($rv_hn && $rv_pt && $rv_conn && $rv_auth && $rv_cdb) {

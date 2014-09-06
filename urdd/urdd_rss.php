@@ -165,14 +165,14 @@ class urdd_rss
         }
         $cnt = $res[0]['cnt'];
 
-        $sql = '"setID" in (SELECT "setid" FROM rss_sets WHERE "rss_id" = ?) AND "type" = ?';
+        $sql = '"setID" IN (SELECT "setid" FROM rss_sets WHERE "rss_id"=?) AND "type"=?';
         $db->delete_query('usersetinfo', $sql, array($rss_id, $type));
 
         if ($dbid !== NULL) {
             update_queue_status ($db, $dbid, NULL, 0, 30);
         }
 
-        $sql = '"setID" in (SELECT "setid" FROM rss_sets WHERE "rss_id"=?) AND "type"=?';
+        $sql = '"setID" IN (SELECT "setid" FROM rss_sets WHERE "rss_id"=?) AND "type"=?';
         $db->delete_query('extsetdata', $sql, array($rss_id, $type));
 
         if ($dbid !== NULL) {

@@ -66,14 +66,18 @@ class DatabaseConnection_sqlite extends DatabaseConnection
                 throw new exception('Database name must be provided');
             }
             $this->DB = new PDO($this->uri);
-            $this->DB->_create_function('REGEXP', 'sqlite_regexp', 2); // XXX What to do with these
-            $this->DB->_create_function('EXTRACT', 'sqlite_extract', 2); //  XXX What to do with these
+            $this->create_function('REGEXP', 'sqlite_regexp', 2); // XXX What to do with these
+            $this->create_function('EXTRACT', 'sqlite_extract', 2); //  XXX What to do with these
             $this->execute_query('PRAGMA synchronous=OFF');
         } catch (exception $e) {
             throw new exception('Could not connect to database: ' . $e->getMessage());
         }
     }
 
+    public function create_function($function_name, $callback, $num_args)
+    {
+        return $this->DB->sqliteCreateFunction($function_name, $callback, $num_args);
+    }
 
     public function get_dow_timestamp($from)
     {
@@ -107,7 +111,9 @@ class DatabaseConnection_sqlite extends DatabaseConnection
     }
     public function drop_database($dbase)
     {
-        unlink($dbase);
+        if (file_exists($dbase)) {
+            unlink($dbase);
+        }
     }
 
     public function drop_table($table)

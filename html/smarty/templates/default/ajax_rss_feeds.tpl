@@ -60,7 +60,6 @@
 {/strip}
 {/capture}
 
-
 <div id="bar">
 <div id="aform">
 <div id="ng_headerbox">
@@ -116,9 +115,7 @@
 </tr>
 
 {foreach $allfeeds as $feed}
-<tr class="even content"
-	onmouseover="javascript:$(this).toggleClass('highlight2')" 
-	onmouseout="javascript:$(this).toggleClass('highlight2')">
+<tr class="even content" name="content">
 <td class="general">{$feed.number}</td>
 <td class="general">
 {urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_rss('{$feed.id}');"} 

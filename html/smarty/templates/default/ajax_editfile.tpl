@@ -51,14 +51,14 @@
     {else}
         <td colspan="2">
         <input type="hidden" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile"/>
-        {/if}
-        <input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
-        <textarea class="filecontents" name="filecontents" id="filecontents_editfile" required >{$file_contents}</textarea>
-        </td></tr>
-        <tr><td colspan="2"><input type="button" class="submitsmall floatright" value="{$LN_viewfiles_savefile}" onclick="javascript:save_file();"/>
-        </td>
-        </tr>
-        </table>
-        </div>
     {/if}
+    <input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
+    <textarea class="filecontents" name="filecontents" id="filecontents_editfile" required>{$file_contents}</textarea>
+    </td></tr>
+    <tr><td colspan="2"><input type="button" class="submitsmall floatright" id="submit_button" value="{$LN_viewfiles_savefile}"/>
+    </td>
+    </tr>
+    </table>
+    </div>
+{/if}
 {/block}

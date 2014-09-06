@@ -52,6 +52,11 @@ class DatabaseConnection_mysql extends DatabaseConnection
         }
     }
     
+    public function create_function($function_name, $callback, $num_args)
+    {
+        return FALSE;
+        // todo when necessary
+    }
     public function get_dow_timestamp($from)
     {
         return "FROM_UNIXTIME($from, '%w')";

@@ -216,7 +216,7 @@ try {
             switch ($action) {
                 case 'admin':
                     try {
-                        $db->update_query_3('users', array('isadmin'=>$value), '"ID"=?', array($id));
+                        $db->update_query_2('users', array('isadmin'=>$value), '"ID"=?', array($id));
                     } catch (exception $e) {
                         throw new exception($e->getMessage());
                     }

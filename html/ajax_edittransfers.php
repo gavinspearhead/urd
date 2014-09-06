@@ -104,8 +104,8 @@ try {
                 $sql = '"ID" FROM downloadinfo WHERE "userid"=? AND "ID"=?';
                 $res = $db->select_query($sql, array($userid, $dlid));
                 if ($res[0]['ID'] == $dlid) {
-                    $db->delete_query('downloadinfo', '"ID" = ?', array($dlid));
-                    $db->delete_query('downloadarticles', '"downloadID" = ?', array($dlid));
+                    $db->delete_query('downloadinfo', '"ID"=?', array($dlid));
+                    $db->delete_query('downloadarticles', '"downloadID"=?', array($dlid));
                 }
             }
             break;
@@ -170,7 +170,7 @@ try {
             $dl_dir = trim(get_post('dl_dir', ''));
             add_dir_separator($dl_dir);
             $newstarttime = strtotime(trim(get_post('starttime', '')));
-            $sql = '"start_time" FROM downloadinfo WHERE "ID" = ?';
+            $sql = '"start_time" FROM downloadinfo WHERE "ID"=?';
             $res = $db->select_query($sql, 1, array($dlid));
             if (!isset($res[0]['start_time'])) {
                 throw new exception($LN['error_downloadnotfound']);

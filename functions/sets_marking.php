@@ -365,8 +365,8 @@ class sets_marking
 
         $type = USERSETTYPE_RSS;
 
-        $sql = "(SELECT rss_sets.\"setid\" AS \"ID\" FROM rss_sets WHERE $feed (1=0 $like_setdata) AND rss_sets.\"setid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type')) ";
-        $sql .= "UNION (SELECT rss_sets.\"setid\" AS \"ID\" FROM rss_sets, extsetdata WHERE $feed \"type\"='$type' AND rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND (1=0 $like_extsetdata) AND rss_sets.\"setid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type'))";
+        $sql = "SELECT rss_sets.\"setid\" AS \"ID\" FROM rss_sets WHERE $feed (1=0 $like_setdata) AND rss_sets.\"setid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type') ";
+        $sql .= "UNION SELECT rss_sets.\"setid\" AS \"ID\" FROM rss_sets, extsetdata WHERE $feed \"type\"='$type' AND rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND (1=0 $like_extsetdata) AND rss_sets.\"setid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type')";
         $res = $db->execute_query($sql); // query is still incorrect??
         if ($res !== FALSE) {
             self::mark_sets($db, $res, $userid, USERSETTYPE_RSS, self::MARKING_ON, $element, FALSE);
@@ -420,8 +420,8 @@ class sets_marking
         }
 
         $type = USERSETTYPE_GROUP;
-        $sql = "(SELECT setdata.\"ID\" FROM setdata WHERE $group (1=0 $like_setdata) AND setdata.\"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type')) ";
-        $sql .= "UNION (SELECT setdata.\"ID\" FROM setdata, extsetdata WHERE $group \"type\"='$type' AND setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND (1=0 $like_extsetdata) AND setdata.\"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type'))";
+        $sql = "SELECT setdata.\"ID\" FROM setdata WHERE $group (1=0 $like_setdata) AND setdata.\"ID\" NOT IN SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type') ";
+        $sql .= "UNION SELECT setdata.\"ID\" FROM setdata, extsetdata WHERE $group \"type\"='$type' AND setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND (1=0 $like_extsetdata) AND setdata.\"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type')";
 
         $res = $db->execute_query($sql);
         if ($res !== FALSE) {
@@ -461,8 +461,8 @@ class sets_marking
         }
 
         $type = USERSETTYPE_SPOT;
-        $sql = "(SELECT spots.\"spotid\" AS \"ID\" FROM spots WHERE (1=0 $like_setdata) AND spots.\"spotid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type')) ";
-        $res = $db->execute_query($sql);
+        $sql = "spots.\"spotid\" AS \"ID\" FROM spots WHERE (1=0 $like_setdata) AND spots.\"spotid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type') ";
+        $res = $db->select_query($sql);
         if ($res !== FALSE) {
             self::mark_sets($db, $res, $userid, $type, self::MARKING_ON, $element, FALSE);
             if ($mail_interesting_sets && $element == 'statusint') {

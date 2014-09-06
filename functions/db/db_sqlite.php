@@ -341,7 +341,11 @@ class db_update_sqlite extends db_update_abs
         $sql ="SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '$tablename'";
         $res = $this->db->execute_query($sql);
         if (!$res) return array();
-        return $res;
+        $tables = array();
+        foreach($res as $row) {
+            $tables[] = $row['name'];
+        }
+        return $tables;
 
     }
     public function normalise_index(array &$colList)

@@ -52,7 +52,7 @@
 <th class="head round_right right">{$LN_actions}</th>
 </tr>
 {foreach $users as $user}
-<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr class="even content" name="content">
 	<td>{$user->id|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->username|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->fullname|escape:htmlall|truncate:$maxstrlen}</td>

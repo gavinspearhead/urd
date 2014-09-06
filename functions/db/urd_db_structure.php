@@ -710,9 +710,9 @@ class urd_db_structure {
             $t->add_column(new urd_column('date', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
             $t->add_column(new urd_column('partnumber', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
             $t->add_column(new urd_column('size', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
-            $t->add_index(new urd_index('idx_binaries_id_'. $tn, 'PRIMARY', array('ID')));
-            $t->add_index(new urd_index('idx_binaryID_'. $tn, '', array('binaryID')));
-            $t->add_index(new urd_index('idx_date_'. $tn, '', array('date')));
+            $t->add_index(new urd_index('idx_binaries_id_' . $tn, 'PRIMARY', array('ID')));
+            $t->add_index(new urd_index('idx_binaryID_' . $tn, '', array('binaryID')));
+            $t->add_index(new urd_index('idx_date_' . $tn, '', array('date')));
             $t->drop_column('dirty');
             $t->drop_index('dirty_idx');
             $t->drop_index('binaryID_idx');

@@ -23,7 +23,6 @@
  */
 
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
-
 error_reporting(0);
 
 $__auth = 'silent';
@@ -124,7 +123,7 @@ if (!in_array($subtype, $possiblesubtypes)) {
     die_html('Invalid type specified.');
 }
 
-$width =  get_request('width',0);
+$width = get_request('width', 0);
 if (!is_numeric($width) || $width < 400) {
     $width = 400;
 }
@@ -185,21 +184,21 @@ switch ($type) {
         break;
     case 'activity':
         $graphtitle = $LN[$subtype] . ' (' . $LN[$sizeorcount] . ')';
-                if ($period == 'days') {
-                $n_type = NULL;
-                foreach ($nametypes as $key => $v) {
+        if ($period == 'days') {
+            $n_type = NULL;
+            foreach ($nametypes as $key => $v) {
                 if ($v == $subtype) {
-                $n_type = $key;
-                break;
+                    $n_type = $key;
+                    break;
                 }
-                }
-                $month = get_request('month', 1);
-                $graphtitle =  $graphtitle . ' - ' . $LN['month_names'][$month];
-                $daystats = new OverallDayStats($types);
-                $dl = get_stats_by_day($db, $userid, $n_type, $isadmin, $year, $month, $daystats, $types);
-                convert_stat_definitions($daystats);
-                create_graph_days($db, $userid, $graphtitle, $daystats, $subtype, $sizeorcount);
-                } elseif ($period == 'months') {
+            }
+            $month = get_request('month', 1);
+            $graphtitle =  $graphtitle . ' - ' . $LN['month_names'][$month];
+            $daystats = new OverallDayStats($types);
+            $dl = get_stats_by_day($db, $userid, $n_type, $isadmin, $year, $month, $daystats, $types);
+            convert_stat_definitions($daystats);
+            create_graph_days($db, $userid, $graphtitle, $daystats, $subtype, $sizeorcount);
+        } elseif ($period == 'months') {
             $monthstats = new OverallMonthStats($types);
             foreach ($types as $atype) {
                 $dl = get_stats_by_month($db, $userid, $atype, $isadmin, $year, $monthstats, $types);

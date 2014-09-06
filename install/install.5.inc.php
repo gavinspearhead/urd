@@ -71,6 +71,7 @@ $OUT .= <<<USERAC
 <tr><td class="install2">Do you want URD to periodically check for new versions (recommended) ?:</td><td class="install3">
 <input type="checkbox" name="urdupdatecheck" $urdupdatechecked" checked="checked"></td></tr>
 USERAC;
+
 $OUT .= '<tr colspan="2"><td><a onclick="LoadPage(6);">'.$continuepic.'</a></td></tr>';
 $OUT .= <<<PWSCR
 <script>

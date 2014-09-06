@@ -369,7 +369,7 @@ class server_data { // lots of cleaning up to do
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         $query = '* FROM schedule';
         $res = $db->select_query($query);
-        if ($res === FALSE) {
+        if (!isset($res[0])) {
             return;
         }
         foreach ($res as $sched) {

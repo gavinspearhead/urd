@@ -38,7 +38,7 @@
 <td> {urd_checkbox value="$oldsubscribed" name="rss_subscribed" id="rss_subscribed" } </td></tr>
 <tr><td>{$LN_ng_adult}:</td><td>{urd_checkbox value="$oldadult" name="rss_adult" id="rss_adult" }</td></tr>
 <td>{$LN_ng_autoupdate}:</td><td>
-<select name="rss_refresh_period" id="rss_refresh_period" size="1" class="update" onchange="javascript:display_timebox('rss_refresh_period');">
+<select name="rss_refresh_period" id="rss_refresh_period" size="1" class="update">
 {html_options values=$periods_keys output=$periods_texts selected=$oldrefresh}
 </select>
 </td>
@@ -50,12 +50,12 @@
 </td></tr>
 <tr id="authuser" {if !$authentication}class="hidden"{/if}><td>{$LN_username}:</td><td colspan="3"><input type="text" size="40" name="rss_username" id="rss_username" value="{$oldusername|escape:htmlall}"/></td></tr>
 <tr id="authpass" {if !$authentication}class="hidden"{/if}><td>{$LN_password}:</td><td colspan="3"><input type="password" size="40" name="rss_password" id="rss_password" value="{$oldpassword|escape:htmlall}"/>&nbsp;&nbsp; 
-    <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('rss_password');"
+    <div class="floatright iconsizeplus sadicon buttonlike" id="showpass">
 </td></tr>
 
 <tr><td colspan="4" class="right">&nbsp;</td></tr>
 <tr><td colspan="4" class="right">
-	<input type="button" onclick="update_rss();" {urd_popup type="small" text=$LN_apply } name="submit_button" value="{$LN_apply}" class="submit"/> 
+	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submit"/> 
 </td></tr>
 </table>
 {/block}

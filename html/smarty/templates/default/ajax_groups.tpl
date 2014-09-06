@@ -118,7 +118,7 @@
 </tr>
 
 {foreach $allgroups as $group}
-<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr name="content" class="even content">
 
 <td class="general">{$group.number} </td>
 <td class="general">

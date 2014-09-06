@@ -288,7 +288,6 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     return NO_ERROR;
 }
 
-
 function create_make_nzb(DatabaseConnection $db, server_data &$servers, $userid, $priority)
 {
     assert (is_numeric($priority) && is_numeric($userid));
@@ -383,13 +382,13 @@ function regenerate_setnames(DatabaseConnection $db, array $setidarray)
 function update_group_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
-    $db->update_query_2('groups', array('extset_update'=>$timestamp), '"name" LIKE ?', array($name));
+    $db->update_query_2('groups', array('extset_update' => $timestamp), '"name" LIKE ?', array($name));
 }
 
 function update_feed_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
-    $db->update_query_2('rss_urls', array('extset_update'=>$timestamp), '"url" LIKE ?', array($name));
+    $db->update_query_2('rss_urls', array('extset_update' => $timestamp), '"url" LIKE ?', array($name));
 }
 
 function do_check_version(DatabaseConnection $db, action $item)
@@ -696,10 +695,10 @@ function do_cleandb(DatabaseConnection $db, action $item)
         $arg = strtolower($item->get_args());
         if ($arg == 'all') { // do not use truncate as that will reset the autoinc values too
             if ($isadmin) {
-                $db->truncate_table('downloadinfo');
-                $db->truncate_table('downloadarticles');
-                $db->truncate_table('queueinfo');
-                $db->truncate_table('postinfo');
+                $db->delete_query('downloadinfo');
+                $db->delete_query('downloadarticles');
+                $db->delete_query('queueinfo');
+                $db->delete_query('postinfo');
             } else {
                 $db->delete_query('downloadinfo', 'userid = ?', array($userid));
                 $db->delete_query('downloadarticles', '"downloadID" NOT IN (SELECT "ID" FROM downloadinfo)');
@@ -723,7 +722,7 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 $cleandbage = $arg * 24 * 60 * 60;
             } else {
                 $timebased = TRUE;
-                $cleandbage = get_config($db, 'clean_db_age') * 24 * 60 * 60; // db age is saved in days... convert to seconds
+                $cleandbage = get_config($db, 'clean_db_age') * 24 * 3600; // db age is saved in days... convert to seconds
             }
             if ($cleandbage > 0) {// 0 = disabled
                 // Clean up downloadinfo:
@@ -735,7 +734,7 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 }
                 $quser2 = '';
                 if (!$isadmin) {
-                    $quser2 = ' AND userid = ?';
+                    $quser2 = ' AND userid=?';
                     $input_arr[] = $userid;
                 }
                 $qry = "1=1 $quser2 AND \"start_time\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
@@ -800,7 +799,7 @@ function do_clean_users(DatabaseConnection $db)
     if ($age == 0) {
         return TRUE;
     }
-    $timestamp = time() - ($age * 3600 *24);
+    $timestamp = time() - ($age * 3600 * 24);
     $qry = 'count(*) AS "cnt" FROM users WHERE "isadmin" != ? AND "last_active" < ? AND "regtime" < ?';
     $res = $db->select_query($qry, array(user_status::USER_ADMIN, $timestamp, $timestamp));
     $cnt = $res[0]['cnt'];
@@ -1021,8 +1020,7 @@ function do_addspotdata(DatabaseConnection $db, action $item)
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
 
-        $res = $db->select_query('* FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
-        if ($res === FALSE) {
+        if (!download_exists($db, $dlid)) {
             $status = QUEUE_QUEUED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
             throw new exception('Download not found', ERR_DOWNLOAD_NOT_FOUND);
@@ -1134,8 +1132,7 @@ function do_adddata(DatabaseConnection $db, action $item)
         if (get_download_articles_count($db, $dlid) == 0) {
             set_download_size($db, $dlid, 0);
         }
-        $res = $db->select_query('* FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
-        if ($res === FALSE) {
+        if (!download_exists($db, $dlid)) {
             throw new exception('Download not found', ERR_DOWNLOAD_NOT_FOUND);
         }
         $type = $args[1];
@@ -1143,7 +1140,7 @@ function do_adddata(DatabaseConnection $db, action $item)
         case 'set':
             $setid = $args[2];
             $status = DOWNLOAD_READY;
-            $res = $db->select_query('* FROM setdata WHERE "ID"=?', 1, array($setid));
+            $res = $db->select_query('"groupID", "size" FROM setdata WHERE "ID"=?', 1, array($setid));
             if ($res === FALSE) {
                 throw new exception('Invalid Set ID');
             }

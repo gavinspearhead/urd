@@ -31,8 +31,6 @@ $pathdbc = realpath(dirname(__FILE__));
 
 require_once "$pathdbc/file_functions.php";
 require_once "$pathdbc/db/urd_db_structure.php";
-//require_once "$pathdbc/libs/adodb/adodb-exceptions.inc.php";
-//require_once "$pathdbc/libs/adodb/adodb.inc.php";
 require_once "$pathdbc/db_mysql.php";
 require_once "$pathdbc/db_psql.php";
 require_once "$pathdbc/db_sqlite.php";
@@ -207,6 +205,7 @@ abstract class DatabaseConnection
     abstract public function optimise_table($table);
     abstract public function get_tables();
     abstract public function connect();
+    abstract public function create_function($function_name, $callback, $num_args);
     abstract protected function execute_if_exists($table, $qry);
     //abstract protected function select_limit($sql, $num_rows=-1, $offset=-1, $inputarr=FALSE);
 
@@ -228,16 +227,16 @@ abstract class DatabaseConnection
     private function _execute($query, $values=FALSE)
     {
         if (is_array($values)) {
-               if (is_array(reset($values))) {  // get the first element; if it is an array, we assume we are doing bulk inserts
-                   foreach ($values as $v) {
-                       $query->execute($v);
-                   }
-               } else { // otherwise its justa  bind set
-                   $query->execute($values);
-               }
-            } else { // or no bound parameters are given anyway
-                $query->execute();
+            if (is_array(reset($values))) {  // get the first element; if it is an array, we assume we are doing bulk inserts
+                foreach ($values as $v) {
+                    $query->execute($v);
+                }
+            } else { // otherwise its justa  bind set
+                $query->execute($values);
             }
+        } else { // or no bound parameters are given anyway
+            $query->execute();
+        }
     }
 
     public function execute_query($sql, $values=FALSE)
@@ -271,8 +270,7 @@ abstract class DatabaseConnection
             // If connection was lost, try to reconnect and then do query again:
             $dbtype = $this->databasetype;
             if ((($dbtype == 'mysql') && ($errCode == 2006 || $errCode == 2013)) ||
-                (($dbtype == 'postgres' ) && ($errCode != -5)) ||
-                (($dbtype == 'pdo_pgsql') && ($errCode != 7))) {// sqlite should not lose connections
+                (($dbtype == 'postgres' ) && ($errCode != -5))) {// sqlite should not lose connections
                 write_log("Database problem: ( $errCode ) " . $e->getMessage(), LOG_WARNING);
                 echo_debug_trace($e, DEBUG_DATABASE);
                 try {
@@ -471,8 +469,8 @@ abstract class DatabaseConnection
 
             // If connection was lost, try to reconnect and then do query again:
             $dbtype = $this->databasetype;
-            if ((($dbtype == 'mysql' || $dbtype == 'mysqli' || $dbtype == 'pdo_mysql') && ($errCode == 2006 || $errCode == 2013)) ||
-                (($dbtype == 'postgres7' || $dbtype == 'postgres8' || $dbtype == 'postgres9' || $dbtype == 'pdo_pgsql') && ($errCode != -5))) {// sqlite should not lose connections
+            if ((($dbtype == 'mysql' ) && ($errCode == 2006 || $errCode == 2013)) ||
+                (($dbtype == 'postgres') && ($errCode != -5))) {// sqlite should not lose connections
                 write_log("Database problem: ( $errCode ) " . $e->getMessage(), LOG_WARNING);
                 try {
                     $this->connect(TRUE);

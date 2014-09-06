@@ -32,7 +32,7 @@
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
 
 <table class="tasks">
-<tr>
+<tr name="content">
 <th id="descr_td" onclick="javascript:submit_jobs_search('command', 'asc');" class="buttonlike head round_left">{$LN_jobs_command} {$command_sort}</th>
 <th onclick="javascript:submit_jobs_search('username', 'asc');" class="fixwidth8c buttonlike head">{$LN_jobs_user} {$username_sort}</th>
 <th onclick="javascript:submit_jobs_search('at_time', 'asc');" class="fixwidth9 buttonlike head">{$LN_time} {$at_time_sort}</th>
@@ -41,7 +41,7 @@
 </tr>
 
 {foreach $alljobs as $job}
-<tr class="even content" onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr class="even content">
 <td><div class="donotoverflowdamnit">{$job.task} <b>{$job.arg}</b></div></td>
 <td>{$job.user}</td>
 <td class="right">{$job.time}</td>

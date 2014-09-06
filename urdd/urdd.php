@@ -611,7 +611,7 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
     assert(is_bool($restart));
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     try {
-        $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE ? ';
+        $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE ?';
         $res_running = $db->select_query($query, array(QUEUE_RUNNING));
         $query = '"description", "ID", "userid", "status", "restart", "priority" FROM queueinfo WHERE ("status" LIKE ? OR "status" LIKE ?)';
         $res_queued = $db->select_query($query, array(QUEUE_PAUSED, QUEUE_QUEUED));
@@ -626,7 +626,7 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
                     do_command($db, $cmd, $response, $conn_list, NULL, $servers, $userid, $priority, TRUE);
                     $restarted = TRUE;
                 }
-                $res = $db->delete_query('queueinfo', '"ID"=? ', array($row['ID']));
+                $res = $db->delete_query('queueinfo', '"ID"=?', array($row['ID']));
                 if ($restarted === TRUE) {
                     write_log("Restored '$cmd'", LOG_NOTICE);
                 } else {

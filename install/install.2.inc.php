@@ -121,7 +121,5 @@ if (!$rv_subdl) {
     $OUT .= ShowHelp("You COULD install subdownloader. (You can try 'apt-get install subdownloader' as root)");
 }
 
-
 $OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">'.$continuepic.'</a>';
 $OUT .= '<a onclick="LoadPage(2);">'.$refreshpic.'</a></td></tr>';
-

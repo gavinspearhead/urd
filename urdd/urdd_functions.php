@@ -357,7 +357,6 @@ function get_timeout(action $item)
     }
 }
 
-
 function reschedule_locked_item(DatabaseConnection $db, server_data &$servers, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -376,7 +375,6 @@ function reschedule_locked_item(DatabaseConnection $db, server_data &$servers, a
         throw $e;
     }
 }
-
 
 function schedule_locked_item(DatabaseConnection $db, server_data &$servers, action $item)
 {
@@ -421,7 +419,7 @@ function load_whitelist(DatabaseConnection $db, $source = NULL)
     $Qsource = '';
     $input_arr = array();
     if ($source !== NULL) {
-        $Qsource = ' AND "source" = ?';
+        $Qsource = ' AND "source"=?';
         $input_arr[] = $source;
     }
     $sql = "\"spotter_id\" FROM spot_whitelist WHERE 1=1 $Qsource";

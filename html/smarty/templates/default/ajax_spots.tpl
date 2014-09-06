@@ -175,10 +175,8 @@
 {/strip}{/capture}
 
 {* Ok now it's time to put it all together: *}	
-<tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" 
-	onmouseover="javascript:$(this).toggleClass('highlight2');" 
-	onmouseout="javascript:$(this).toggleClass('highlight2');">
-	<td class="fixwidth1">{$set.number}
+<tr name="content" class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}">
+<td class="fixwidth1">{$set.number}
 <input type="hidden" name="set_ids[]" value="{$set.sid}"/>
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>

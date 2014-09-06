@@ -3059,4 +3059,11 @@ function remove_special_zip_strings($line)
     return str_replace(array('=C', '=B', '=A', '=D'), array("\n", "\r", "\0", '='), $line);
 }
 
+function download_exists(DatabaseConnection $db, $dlid)
+{
+    $res = $db->select_query('"ID" FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
+    return isset($res[0]['ID']);
+}
+
+
 

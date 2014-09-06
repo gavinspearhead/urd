@@ -28,7 +28,6 @@
 <tr><td><b>{$LN_urdname} {$LN_version}</b>:</td><td><i>{$VERSION}</i></td><td></td></tr>
 <tr><td><b>{$LN_control_uptime}</b>:</td><td><i>{$uptime_info}</i></td><td></td></tr>
 <tr><td><b>{$LN_control_load}</b>:</td><td><i>{$load_info.load_1} --  {$load_info.load_5} -- {$load_info.load_15}</i></td><td></td></tr>
-
 <tr> <td><b>{$LN_control_diskspace}</b>:</td>
 {strip}
 <td>
@@ -42,7 +41,7 @@
 
 <br/>
 <h3>&nbsp;{$LN_details} 
-<div id="details_button" class="floatleft iconsize {if $control_status != 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" onclick="javascript:fold_details('details_button', 'details_div');" {urd_popup type="small" text=$LN_details }></div></h3>
+<div id="details_button" class="floatleft iconsize {if $control_status != 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" {urd_popup type="small" text=$LN_details }></div></h3>
 <div id="details_div" {if $control_status != 1 }class="hidden"{/if}>
 
 <h4>{$LN_control_threads}</h4>

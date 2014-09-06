@@ -595,8 +595,6 @@ function show_config(DatabaseConnection $db, $userid)
             new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_urdd_restart'], 'urdd_restart', $LN['config_urdd_restart_msg'], $urdd_restart_msg, $prefArray_root['urdd_restart']),
             new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_urdd_daemonise'], 'urdd_daemonise', $LN['config_urdd_daemonise_msg'], $urdd_daemonise_msg, $prefArray_root['urdd_daemonise']),
             new pref_select(user_levels::CONFIG_LEVEL_MASTER, $LN['config_scheduler'], 'scheduler', $LN['config_scheduler_msg'], $scheduler_msg, $on_off, $prefArray_root['scheduler']),
-            new pref_numeric_noformat(user_levels::CONFIG_LEVEL_MASTER, $LN['config_max_dl_name'], 'max_dl_name', $LN['config_max_dl_name_msg'],
-                $max_dl_name_msg, $prefArray_root['max_dl_name'], NUMBER_BOX_SIZE),
             new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_nice_value'], 'nice_value', $LN['config_nice_value_msg'], $nice_value_msg, $prefArray_root['nice_value'], NUMBER_BOX_SIZE),
             new pref_numeric_noformat(user_levels::CONFIG_LEVEL_MASTER, $LN['config_queue_size'], 'queue_size', $LN['config_queue_size_msg'], $queue_size_msg, $prefArray_root['queue_size'], NUMBER_BOX_SIZE),
             new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_pidpath'], 'pidpath', $LN['config_pidpath_msg'], $pidpath_msg, $prefArray_root['pidpath'], TEXT_BOX_SIZE),
@@ -628,9 +626,11 @@ function show_config(DatabaseConnection $db, $userid)
         $download_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_replacement_str'], 'replacement_str', $LN['config_replacement_str_msg'],
                 $replacement_str_msg, $prefArray_root['replacement_str'], TEXT_BOX_SIZE);
     }
+    $download_settings[] = new pref_numeric_noformat(user_levels::CONFIG_LEVEL_MASTER, $LN['config_max_dl_name'], 'max_dl_name', $LN['config_max_dl_name_msg'],
+                $max_dl_name_msg, $prefArray_root['max_dl_name'], NUMBER_BOX_SIZE);
     if ($module_config[urd_modules::URD_CLASS_DOWNLOAD]) {
         $download_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_allow_global_scripts'], 'allow_global_scripts', $LN['config_allow_global_scripts_msg'],
-                $global_scripts_msg, $prefArray_root['allow_global_scripts'], "$('hide_userscripts').toggleClass('hidden')");
+                $global_scripts_msg, $prefArray_root['allow_global_scripts'], "$('#hide_userscripts').toggleClass('hidden')");
         $download_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_allow_user_scripts'], 'allow_user_scripts', $LN['config_allow_user_scripts_msg'],
                 $user_scripts_msg, $prefArray_root['allow_user_scripts'], NULL, 'hide_userscripts', $prefArray_root['allow_global_scripts'] == 1 ? NULL : 'hidden');
         $download_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_auto_download'], 'auto_download', $LN['config_auto_download_msg'],
@@ -638,46 +638,46 @@ function show_config(DatabaseConnection $db, $userid)
     }
 
     $ext_progs = array (
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_urdd_path'], 'urdd_path', $LN['config_urdd_path_msg'], $urdd_path_msg, $prefArray_root['urdd_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_yydecode_path'], 'yydecode_path', $LN['config_yydecode_path_msg'],
-                $yydecode_path_msg, $prefArray_root['yydecode_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_yyencode_path'], 'yyencode_path', $LN['config_yyencode_path_msg'],
-                $yyencode_path_msg, $prefArray_root['yyencode_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_unpar_path'], 'unpar_path', $LN['config_unpar_path_msg'], $unpar_path_msg, $prefArray_root['unpar_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_unrar_path'], 'unrar_path', $LN['config_unrar_path_msg'], $unrar_path_msg, $prefArray_root['unrar_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_rar_path'], 'rar_path', $LN['config_rar_path_msg'], $rar_path_msg, $prefArray_root['rar_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_unace_path'], 'unace_path', $LN['config_unace_path_msg'], $unace_path_msg, $prefArray_root['unace_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_un7zr_path'], 'un7zr_path', $LN['config_un7zr_path_msg'], $un7zr_path_msg, $prefArray_root['un7zr_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_unzip_path'], 'unzip_path', $LN['config_unzip_path_msg'], $unzip_path_msg, $prefArray_root['unzip_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_gzip_path'], 'gzip_path', $LN['config_gzip_path_msg'], $gzip_path_msg, $prefArray_root['gzip_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_unarj_path'], 'unarj_path', $LN['config_unarj_path_msg'], $unarj_path_msg, $prefArray_root['unarj_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_file_path'], 'file_path', $LN['config_file_path_msg'], $file_path_msg, $prefArray_root['file_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_tar_path'], 'tar_path', $LN['config_tar_path_msg'], $tar_path_msg, $prefArray_root['tar_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_cksfv_path'], 'cksfv_path', $LN['config_cksfv_path_msg'], $cksfv_path_msg, $prefArray_root['cksfv_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_trickle_path'], 'trickle_path', $LN['config_trickle_path_msg'],
-                $trickle_path_msg, $prefArray_root['trickle_path'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_subdownloader_path'], 'subdownloader_path', $LN['config_subdownloader_path_msg'],
-                $subdownloader_path_msg, $prefArray_root['subdownloader_path'], TEXT_BOX_SIZE)
-                );
+        new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_urdd_path'], 'urdd_path', $LN['config_urdd_path_msg'], $urdd_path_msg, $prefArray_root['urdd_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_yydecode_path'], 'yydecode_path', $LN['config_yydecode_path_msg'],
+            $yydecode_path_msg, $prefArray_root['yydecode_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_yyencode_path'], 'yyencode_path', $LN['config_yyencode_path_msg'],
+            $yyencode_path_msg, $prefArray_root['yyencode_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_unpar_path'], 'unpar_path', $LN['config_unpar_path_msg'], $unpar_path_msg, $prefArray_root['unpar_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_unrar_path'], 'unrar_path', $LN['config_unrar_path_msg'], $unrar_path_msg, $prefArray_root['unrar_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_rar_path'], 'rar_path', $LN['config_rar_path_msg'], $rar_path_msg, $prefArray_root['rar_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_unace_path'], 'unace_path', $LN['config_unace_path_msg'], $unace_path_msg, $prefArray_root['unace_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_un7zr_path'], 'un7zr_path', $LN['config_un7zr_path_msg'], $un7zr_path_msg, $prefArray_root['un7zr_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_unzip_path'], 'unzip_path', $LN['config_unzip_path_msg'], $unzip_path_msg, $prefArray_root['unzip_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_gzip_path'], 'gzip_path', $LN['config_gzip_path_msg'], $gzip_path_msg, $prefArray_root['gzip_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_unarj_path'], 'unarj_path', $LN['config_unarj_path_msg'], $unarj_path_msg, $prefArray_root['unarj_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_file_path'], 'file_path', $LN['config_file_path_msg'], $file_path_msg, $prefArray_root['file_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_tar_path'], 'tar_path', $LN['config_tar_path_msg'], $tar_path_msg, $prefArray_root['tar_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_cksfv_path'], 'cksfv_path', $LN['config_cksfv_path_msg'], $cksfv_path_msg, $prefArray_root['cksfv_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_trickle_path'], 'trickle_path', $LN['config_trickle_path_msg'],
+            $trickle_path_msg, $prefArray_root['trickle_path'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_subdownloader_path'], 'subdownloader_path', $LN['config_subdownloader_path_msg'],
+            $subdownloader_path_msg, $prefArray_root['subdownloader_path'], TEXT_BOX_SIZE)
+    );
 
     $prog_params = array(
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_pars'], 'urdd_pars', $LN['config_urdd_pars_msg'],
-                $urdd_pars_msg, $prefArray_root['urdd_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_yydecode_pars'], 'yydecode_pars', $LN['config_yydecode_pars_msg'],
-                $yydecode_pars_msg, $prefArray_root['yydecode_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_yyencode_pars'], 'yyencode_pars', $LN['config_yyencode_pars_msg'],
-                $yyencode_pars_msg, $prefArray_root['yyencode_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unpar_pars'], 'unpar_pars', $LN['config_unpar_pars_msg'], $unpar_pars_msg, $prefArray_root['unpar_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unrar_pars'], 'unrar_pars', $LN['config_unrar_pars_msg'], $unrar_pars_msg, $prefArray_root['unrar_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_rar_pars'], 'rar_pars', $LN['config_rar_pars_msg'], $rar_pars_msg, $prefArray_root['rar_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unace_pars'], 'unace_pars', $LN['config_unace_pars_msg'], $unace_pars_msg, $prefArray_root['unace_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_un7zr_pars'], 'un7zr_pars', $LN['config_un7zr_pars_msg'], $un7zr_pars_msg, $prefArray_root['un7zr_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unzip_pars'], 'unzip_pars', $LN['config_unzip_pars_msg'], $unzip_pars_msg, $prefArray_root['unzip_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_gzip_pars'], 'gzip_pars', $LN['config_gzip_pars_msg'], $gzip_pars_msg, $prefArray_root['gzip_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unarj_pars'], 'unarj_pars', $LN['config_unarj_pars_msg'], $unarj_pars_msg, $prefArray_root['unarj_pars'], TEXT_BOX_SIZE),
-            new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_subdownloader_pars'], 'subdownloader_pars', $LN['config_subdownloader_pars_msg'],
-                $unarj_pars_msg, $prefArray_root['subdownloader_pars'], TEXT_BOX_SIZE)
-            );
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_urdd_pars'], 'urdd_pars', $LN['config_urdd_pars_msg'],
+            $urdd_pars_msg, $prefArray_root['urdd_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_yydecode_pars'], 'yydecode_pars', $LN['config_yydecode_pars_msg'],
+            $yydecode_pars_msg, $prefArray_root['yydecode_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_yyencode_pars'], 'yyencode_pars', $LN['config_yyencode_pars_msg'],
+            $yyencode_pars_msg, $prefArray_root['yyencode_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unpar_pars'], 'unpar_pars', $LN['config_unpar_pars_msg'], $unpar_pars_msg, $prefArray_root['unpar_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unrar_pars'], 'unrar_pars', $LN['config_unrar_pars_msg'], $unrar_pars_msg, $prefArray_root['unrar_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_rar_pars'], 'rar_pars', $LN['config_rar_pars_msg'], $rar_pars_msg, $prefArray_root['rar_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unace_pars'], 'unace_pars', $LN['config_unace_pars_msg'], $unace_pars_msg, $prefArray_root['unace_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_un7zr_pars'], 'un7zr_pars', $LN['config_un7zr_pars_msg'], $un7zr_pars_msg, $prefArray_root['un7zr_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unzip_pars'], 'unzip_pars', $LN['config_unzip_pars_msg'], $unzip_pars_msg, $prefArray_root['unzip_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_gzip_pars'], 'gzip_pars', $LN['config_gzip_pars_msg'], $gzip_pars_msg, $prefArray_root['gzip_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_unarj_pars'], 'unarj_pars', $LN['config_unarj_pars_msg'], $unarj_pars_msg, $prefArray_root['unarj_pars'], TEXT_BOX_SIZE),
+        new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_subdownloader_pars'], 'subdownloader_pars', $LN['config_subdownloader_pars_msg'],
+            $unarj_pars_msg, $prefArray_root['subdownloader_pars'], TEXT_BOX_SIZE)
+    );
 
     // we show this one if URDD is offline
     $maintenance_offline = array(
@@ -791,36 +791,63 @@ function show_config(DatabaseConnection $db, $userid)
     $global_settings[] =  new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_auto_reg'], 'auto_reg', $LN['config_auto_reg_msg'],
             $auto_reg_msg, $prefArray_root['auto_reg'], NULL, 'auto_reg_tr', $prefArray_root['register'] ? '' : 'hidden');
 
+    $spots_settings = array();
+    if ($module_config[urd_modules::URD_CLASS_SPOTS]) {
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_group'], 'spots_group', $LN['config_spots_group_msg'],
+                $spots_group_msg, $prefArray_root['spots_group'], TEXT_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_reports_group'], 'spots_reports_group', $LN['config_spots_reports_group_msg'],
+                $spots_reports_group_msg, $prefArray_root['spots_reports_group'], TEXT_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_comments_group'], 'spots_comments_group', $LN['config_spots_comments_group_msg'],
+                $spots_comments_group_msg, $prefArray_root['spots_comments_group'], TEXT_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_ftd_group'], 'ftd_group', $LN['config_ftd_group_msg'], $ftd_group_msg, $prefArray_root['ftd_group'], TEXT_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_spots_blacklist'], 'spots_blacklist', $LN['config_spots_blacklist_msg'],
+                $spots_blacklist_msg, $prefArray_root['spots_blacklist'], TEXT_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_spots_whitelist'], 'spots_whitelist', $LN['config_spots_whitelist_msg'],
+                $spots_whitelist_msg, $prefArray_root['spots_whitelist'], TEXT_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_expire_time'], 'spots_expire_time', $LN['config_spots_expire_time_msg'],
+                $spots_expire_time_msg, $prefArray_root['spots_expire_time'], NUMBER_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spot_expire_spam_count'], 'spot_expire_spam_count', $LN['config_spot_expire_spam_count_msg'],
+                $spot_expire_spam_count_msg, $prefArray_root['spot_expire_spam_count'], NUMBER_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_max_categories'], 'spots_max_categories', $LN['config_spots_max_categories_msg'],
+                $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_expire_time'], 'spots_expire_time', $LN['config_spots_expire_time_msg'],
+                $spots_expire_time_msg, $prefArray_root['spots_expire_time'], NUMBER_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spot_expire_spam_count'], 'spot_expire_spam_count', $LN['config_spot_expire_spam_count_msg'],
+                $spot_expire_spam_count_msg, $prefArray_root['spot_expire_spam_count'], NUMBER_BOX_SIZE);
+        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_max_categories'], 'spots_max_categories', $LN['config_spots_max_categories_msg'],
+                $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
+        $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots'], $LN['config_period_getspots_msg'],
+                $getspots_msg, 'period_getspots', $prefArray_root['period_getspots'], 'time1_getspots', $prefArray_root['time1_getspots'], 'time2_getspots', $prefArray_root['time2_getspots']);
+        $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_reports'], 'download_spots_reports', $LN['config_download_spots_reports_msg'],
+                $download_spots_reports_msg, $prefArray_root['download_spots_reports']);
+        $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_images'], 'download_spots_images', $LN['config_download_spots_images_msg'],
+                $download_spots_images_msg, $prefArray_root['download_spots_images']);
+        $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_download_spots_comments'], 'download_spots_comments', $LN['config_download_spots_comments_msg'],
+                $download_spots_comments_msg, $prefArray_root['download_spots_comments'], '$(\'#hide_cmt_avt\').toggleClass(\'hidden\');');
+        $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_download_comment_avatar'], 'download_comment_avatar', $LN['config_download_comment_avatar_msg'],
+                $config_download_comment_avatar_msg, $prefArray_root['download_comment_avatar'], NULL, 'hide_cmt_avt', $prefArray_root['download_spots_comments'] == 1 ? NULL:'hidden');
+        $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots_blacklist'], $LN['config_period_getspots_blacklist_msg'],
+                $getspots_blacklist_msg, 'period_getspots_blacklist', $prefArray_root['period_getspots_blacklist'], 'time1_getspots_blacklist',
+                $prefArray_root['time1_getspots_blacklist'], 'time2_getspots_blacklist', $prefArray_root['time2_getspots_blacklist']);
+        $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots_whitelist'], $LN['config_period_getspots_whitelist_msg'],
+                $getspots_whitelist_msg, 'period_getspots_whitelist', $prefArray_root['period_getspots_whitelist'], 'time1_getspots_whitelist',
+                $prefArray_root['time1_getspots_whitelist'], 'time2_getspots_whitelist', $prefArray_root['time2_getspots_whitelist']);
+    }
+
     $set_updating= array();
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_extset_group'], 'extset_group', $LN['config_extset_group_msg'],
-            $extset_group_msg, $prefArray_root['extset_group'], TEXT_BOX_SIZE);
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_group'], 'spots_group', $LN['config_spots_group_msg'],
-            $spots_group_msg, $prefArray_root['spots_group'], TEXT_BOX_SIZE);
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_reports_group'], 'spots_reports_group', $LN['config_spots_reports_group_msg'],
-            $spots_reports_group_msg, $prefArray_root['spots_reports_group'], TEXT_BOX_SIZE);
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_comments_group'], 'spots_comments_group', $LN['config_spots_comments_group_msg'],
-            $spots_comments_group_msg, $prefArray_root['spots_comments_group'], TEXT_BOX_SIZE);
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_ftd_group'], 'ftd_group', $LN['config_ftd_group_msg'], $ftd_group_msg, $prefArray_root['ftd_group'], TEXT_BOX_SIZE);
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_spots_blacklist'], 'spots_blacklist', $LN['config_spots_blacklist_msg'],
-            $spots_blacklist_msg, $prefArray_root['spots_blacklist'], TEXT_BOX_SIZE);
-    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_spots_whitelist'], 'spots_whitelist', $LN['config_spots_whitelist_msg'],
-            $spots_whitelist_msg, $prefArray_root['spots_whitelist'], TEXT_BOX_SIZE);
     if ($module_config[urd_modules::URD_CLASS_GROUPS]) {
         $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_group_filter'], 'group_filter', $LN['config_group_filter_msg'],
                 $group_filter_msg, $prefArray_root['group_filter'], TEXT_BOX_SIZE);
     }
+    $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_extset_group'], 'extset_group', $LN['config_extset_group_msg'],
+            $extset_group_msg, $prefArray_root['extset_group'], TEXT_BOX_SIZE);
 
     $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_auto_expire'], 'auto_expire', $LN['config_auto_expire_msg'], $auto_expire_msg, $prefArray_root['auto_expire']);
     if ($module_config[urd_modules::URD_CLASS_GROUPS] || $module_config[urd_modules::URD_CLASS_RSS]) {
         $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxexpire'], 'maxexpire', $LN['config_maxexpire_msg'], $maxexpire_msg, $prefArray_root['maxexpire'], NUMBER_BOX_SIZE);
     }
     if ($module_config[urd_modules::URD_CLASS_SPOTS]) {
-        $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_expire_time'], 'spots_expire_time', $LN['config_spots_expire_time_msg'],
-                $spots_expire_time_msg, $prefArray_root['spots_expire_time'], NUMBER_BOX_SIZE);
-        $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spot_expire_spam_count'], 'spot_expire_spam_count', $LN['config_spot_expire_spam_count_msg'],
-                $spot_expire_spam_count_msg, $prefArray_root['spot_expire_spam_count'], NUMBER_BOX_SIZE);
-        $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_max_categories'], 'spots_max_categories', $LN['config_spots_max_categories_msg'],
-                $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
+      
     }
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_default_expire_time'], 'default_expire_time', $LN['config_default_expire_time_msg'],
             $default_expire_time_msg, $prefArray_root['default_expire_time'], NUMBER_BOX_SIZE);
@@ -830,29 +857,6 @@ function show_config(DatabaseConnection $db, $userid)
     if ($module_config[urd_modules::URD_CLASS_GROUPS] || $module_config[urd_modules::URD_CLASS_RSS]) {
         $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_keep_interesting'], 'keep_interesting', $LN['config_keep_interesting_msg'],
                 $keep_int_msg, $prefArray_root['keep_interesting']);
-    }
-    if ($module_config[urd_modules::URD_CLASS_SPOTS]) {
-        $set_updating[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots'], $LN['config_period_getspots_msg'],
-                $getspots_msg, 'period_getspots', $prefArray_root['period_getspots'], 'time1_getspots', $prefArray_root['time1_getspots'], 'time2_getspots', $prefArray_root['time2_getspots']);
-        $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_reports'], 'download_spots_reports', $LN['config_download_spots_reports_msg'],
-                $download_spots_reports_msg, $prefArray_root['download_spots_reports']);
-        $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_images'], 'download_spots_images', $LN['config_download_spots_images_msg'],
-                $download_spots_images_msg, $prefArray_root['download_spots_images']);
-        $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_download_spots_comments'], 'download_spots_comments', $LN['config_download_spots_comments_msg'],
-                $download_spots_comments_msg, $prefArray_root['download_spots_comments'], '$(\'#hide_cmt_avt\').toggleClass(\'hidden\');');
-        $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, 
-                $LN['config_download_comment_avatar'], 
-                'download_comment_avatar', 
-                $LN['config_download_comment_avatar_msg'],
-                $config_download_comment_avatar_msg, 
-                $prefArray_root['download_comment_avatar'], 
-                NULL, 'hide_cmt_avt', $prefArray_root['download_spots_comments'] == 1 ? NULL:'hidden');
-        $set_updating[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots_blacklist'], $LN['config_period_getspots_blacklist_msg'],
-                $getspots_blacklist_msg, 'period_getspots_blacklist', $prefArray_root['period_getspots_blacklist'], 'time1_getspots_blacklist',
-                $prefArray_root['time1_getspots_blacklist'], 'time2_getspots_blacklist', $prefArray_root['time2_getspots_blacklist']);
-        $set_updating[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots_whitelist'], $LN['config_period_getspots_whitelist_msg'],
-                $getspots_whitelist_msg, 'period_getspots_whitelist', $prefArray_root['period_getspots_whitelist'], 'time1_getspots_whitelist',
-                $prefArray_root['time1_getspots_whitelist'], 'time2_getspots_whitelist', $prefArray_root['time2_getspots_whitelist']);
     }
 
     $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_expire_incomplete'], 'expire_incomplete', $LN['config_expire_incomplete_msg'],
@@ -902,10 +906,13 @@ function show_config(DatabaseConnection $db, $userid)
 
     $pref_list[] = new pref_list('config_globalsettings', $global_settings);
     $pref_list[] = new pref_list('pref_downloading', $download_settings);
-    $pref_list[] = new pref_list('config_notifysettings', $notify_settings);
     $pref_list[] = new pref_list('config_urdd_head', $urdd_cfg);
-    $pref_list[] = new pref_list('config_networking', $networking);
     $pref_list[] = new pref_list('config_setinfo', $set_updating);
+    if ($module_config[urd_modules::URD_CLASS_SPOTS]) {
+        $pref_list[] = new pref_list('pref_spots', $spots_settings);
+    }
+    $pref_list[] = new pref_list('config_notifysettings', $notify_settings);
+    $pref_list[] = new pref_list('config_networking', $networking);
     $pref_list[] = new pref_list('config_formatstrings', $format_strings);
     $pref_list[] = new pref_list('config_extprogs', $ext_progs);
     $pref_list[] = new pref_list('config_prog_params', $prog_params);

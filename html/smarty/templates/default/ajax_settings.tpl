@@ -65,9 +65,8 @@
     {$length=1}
     {$hidden=""}
 {/if}
-<tr class="{$hidden} even content {if $block->tr_class neq ''} {$block->tr_class} {/if}" 
+<tr name="content" class="{$hidden} even content {if $block->tr_class neq ''} {$block->tr_class} {/if}" 
         {if $block->tr_id neq ''}id="{$block->tr_id}" {/if}
-        onmouseover="javascript:$(this).toggleClass('highlight2');" onmouseout="javascript:$(this).toggleClass('highlight2');" 
 >
 {$popup_text=$block->popup|escape}
 <td class="settings vtop"{if $popup_text!=''}{urd_popup text=$popup_text}{/if}>
@@ -75,9 +74,9 @@
 {$block->text}: 
 <input type="text" name="custom_{$block->id}_name" id="custom_{$block->id}_name" value="{if $block->name != '__new'}{$block->name|escape:htmlall}{/if}" size="{$block->size}" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'name', 'fn':'load_prefs();' } );"/>
 {else}
-{if {$block->text} != ''}
-	{$block->text}:
-{/if}
+    {if {$block->text} != ''}
+        {$block->text}:
+    {/if}
 {/if}
 </td>
 <td>
@@ -87,7 +86,7 @@
 {if $b_type eq "custom_text"}
     <input type="text" name="custom_{$block->id}_value" id="custom_{$block->id}_value" value="{$block->value|escape:htmlall}" size="{$block->size}" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'value', 'fn':'load_prefs();' } );"/>
     {if $block->id != '__new'}
-    <div id="{$name}_collapse" class="floatright iconsize deleteicon noborder buttonlike" onclick="javascript:delete_setting('{$block->id|escape:javascript}');" {urd_popup type="small" text="$LN_delete"} >
+        <div id="{$name}_collapse" class="floatright iconsize deleteicon noborder buttonlike" onclick="javascript:delete_setting('{$block->id|escape:javascript}');" {urd_popup type="small" text="$LN_delete"} >
     {/if}
 {/if}
 {if $b_type eq "password"}

@@ -302,16 +302,6 @@ function CheckPHPCURL()
 	return extension_loaded('curl');
 }	
 
-/*function CheckAdodb()
-{
-	@include_once '../functions/libs/adodb/adodb-exceptions.inc.php';
-	@include_once '../functions/libs/adodb/adodb.inc.php';
-	if (class_exists('ADODB_Exception') && class_exists('ADOConnection')) {
-        return TRUE;
-    }
-	return FALSE;
-}*/
-
 function CheckYydecode()
 {
 	exec('which yydecode', $foo, $rv);
@@ -522,7 +512,7 @@ function WriteDBConfig($dbtype,$dbuser,$dbpass,$dbname,$dbhost, $dbport, $dbengi
 {
 	$file = fopen('../dbconfig.php', 'w');
     if (!$file) {
-        throw new exception("Couldn't create dbconfig.php file");
+        throw new exception('Could not create dbconfig.php file');
     }
 
     $dbname = str_replace('\'', '\\\'', $dbname);

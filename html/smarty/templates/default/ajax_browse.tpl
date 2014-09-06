@@ -161,9 +161,7 @@
 {/if}
 
 {* Ok now it's time to put it all together: *}	
-<tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" 
-	onmouseover="javascript:$(this).toggleClass('highlight2');" 
-	onmouseout="javascript:$(this).toggleClass('highlight2');">
+<tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" name="content">
 	<td class="fixwidth1">{$set.number}
     
     {* We need this stuff to remember any the search options *}

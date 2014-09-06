@@ -65,7 +65,7 @@ $_SESSION['reuse_keystore'] = $reuse_keystore;
 
 // Sanity check:
 $skip = FALSE;
-if ($dbruser != '' && $dbuserclear && ($dbuser == 'root' || $dbuser== $dbruser)) {
+if ($dbruser != '' && $dbuserclear && ($dbuser == 'root' || $dbuser == $dbruser)) {
 	$OUT .= '<tr colspan="2"><td>This installer will not allow you to delete the database administrator (root) account ! Change \'Database username\' to something else or deselect \'Delete existing user\'!</td></tr>';
 	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">' . $refreshpic . '</a></td></tr>';
     $skip = TRUE;
@@ -74,7 +74,7 @@ if ($dbruser != '' && $dbuserclear && ($dbuser == 'root' || $dbuser== $dbruser))
 
 $db_created = TRUE;
 
-if ($dbruser != '' && $dbtype != 'pdo_sqlite') { // = we need to log in as root and create the user and database:
+if ($dbruser != '' && $dbtype != 'sqlite') { //  we need to log in as root and create the user and database:
     $OUT .= '<tr><td class="install2">Database root login</td>';
     try {
         if ($dbname == '') { 
@@ -206,7 +206,12 @@ if ($dbruser != '' && $dbtype != 'pdo_sqlite') { // = we need to log in as root 
 if ($dbtype == 'sqlite') {
     $OUT .= '<tr><td class="install2">Database creation</td>';
     try {
-        unlink($dbname);
+        if (file_exists($dbname)) {
+            $rv = @unlink($dbname);
+            if ($rv === FALSE) {
+                throw new exception('Could not delete database');
+            }
+        }
         $db = new DatabaseConnection_sqlite($dbtype, $dbhost, $dbport, $dbuser, $dbpass, $dbname, TRUE);
         $rv_deldb = TRUE;
     } catch (exception $e) {
@@ -218,7 +223,6 @@ if ($dbtype == 'sqlite') {
         $OUT .= '<tr colspan="2"><td><span class="info">' . $error . '</span></td></tr>';
     }
 }
-
 
 $rv_db = FALSE;
 if ($db_created) {
@@ -242,7 +246,7 @@ if ($db_created) {
     if ($rv_db === FALSE)
         $OUT .= '<tr colspan="2"><td><span class="info">' . $error . '</span></td></tr>';
 
-    if($dbruser != '' || $dbtype == 'pdo_sqlite') {
+    if($dbruser != '' || $dbtype == 'sqlite') {
         $OUT .= '<tr><td class="install2">Creating tables</td>';
         try{
             if ($rv_db === FALSE) {
@@ -347,7 +351,6 @@ if ($db_created) {
         }
     }
 }
-
 
 if ($rv_db && $rv_ct && $rv_cr && $rv_sdi && $rv_cus && $rv_kst) {
     $OUT .= '<tr colspan="2"><td><a onclick="LoadPage(5);">'.$continuepic.'</a>';
