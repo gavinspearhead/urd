@@ -62,6 +62,7 @@ function get_cookie($var, $default='', $verify_fn=NULL)
 
 function get_request($var, $default='', $verify_fn=NULL)
 {
+// can't use $_REQUEST as it also includes $_COOKIE
     assert($var !== NULL);
     if (!isset($_POST[$var]) && !isset($_GET[$var])) {
         return $default;
@@ -568,7 +569,7 @@ function start_preview(DatabaseConnection $db, $pbin_id, $pgroup_id, $userid)
     global $LN;
 
     $rprefs = load_config($db);
-    $sql = "\"subject\", \"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\" = ?";
+    $sql = "\"subject\", \"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\"=?";
     $res = $db->select_query($sql, array($pbin_id));
     if (!isset($res[0])) {
         throw new exception($LN['error_binariesnotfound']);
@@ -673,11 +674,11 @@ function get_setsize(DatabaseConnection $db, $setid, $type)
 {
     global $LN;
     if ($type == 'group') {
-        $sql = '"size" FROM setdata WHERE "ID" = ?';
+        $sql = '"size" FROM setdata WHERE "ID"=?';
     } elseif ($type == 'rss') {
-        $sql = '"size" FROM rss_sets WHERE "setid" = ?';
+        $sql = '"size" FROM rss_sets WHERE "setid"=?';
     } elseif ($type == 'spot') {
-        $sql = '"size" AS "size" FROM spots WHERE "spotid" = ?';
+        $sql = '"size" AS "size" FROM spots WHERE "spotid"=?';
     } else {
         throw new exception ($LN['error_invalidsetid']);
     }
@@ -774,15 +775,15 @@ function get_dlname_from_session(DatabaseConnection $db)
     if ($first_type == 'group') {
         $sql = 'setdata."subject", extsetdata."value" FROM ' 	.
             '(setdata LEFT JOIN extsetdata ON setdata."ID" = extsetdata."setID" AND extsetdata."name" = \'name\') ' .
-            'WHERE "ID" = ? ';
+            'WHERE "ID"=? ';
     } elseif ($first_type == 'rss') {
         $sql = 'rss_sets."setname" AS "subject", extsetdata."value" FROM ' 	.
-            "(rss_sets LEFT JOIN extsetdata ON rss_sets.\"setid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'name') " .
-            'WHERE rss_sets."setid" = ? ';
+            '(rss_sets LEFT JOIN extsetdata ON rss_sets."setid" = extsetdata."setID" AND extsetdata."name" = \'name\') ' .
+            'WHERE rss_sets."setid"=? ';
     } elseif ($first_type == 'spot') {
         $sql = 'spots."title" AS "subject", extsetdata."value" FROM ' 	.
-            "(spots LEFT JOIN extsetdata ON spots.\"spotid\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'name') " .
-            'WHERE spots."spotid" = ? ';
+            '(spots LEFT JOIN extsetdata ON spots."spotid" = extsetdata."setID" AND extsetdata."name" = \'name\') ' .
+            'WHERE spots."spotid"=? ';
     } else {
         throw new exception ($LN['error_unknowntype'] . ': ' . $first_type);
     }
@@ -1081,8 +1082,8 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
         }
     }
     $sql = 'groups."ID", groups."name", groups."setcount" FROM groups LEFT JOIN usergroupinfo ON groups."ID" = "groupid" AND "userid" = :userid ' .
-        ' WHERE "active" = \'' . newsgroup_status::NG_SUBSCRIBED . "' AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
-    $res = $db->select_query($sql, array(':userid'=>$userid));
+        " WHERE \"active\" = :active AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
+    $res = $db->select_query($sql, array(':userid'=>$userid, ':active'=> newsgroup_status::NG_SUBSCRIBED));
     if (!is_array($res)) {
         $res = array();
     }
@@ -1187,7 +1188,7 @@ function subscribed_spots_select($categoryid, array $categories)
      foreach ($categories as $row) {
         list($size, $suffix) = format_size($row['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($row['id'] == $categoryid)) { // don't show empty groups anyway
-            $subscribedspots[$row['id']] = array ('id'=> $row['id'], 'article_count' => $size . $suffix, 'name' => $row['name']);
+            $subscribedspots[$row['id']] = array('id'=> $row['id'], 'article_count' => $size . $suffix, 'name' => $row['name']);
         }
     }
 
@@ -1520,7 +1521,7 @@ function add_to_blacklist(DatabaseConnection $db, $spotterID, $userid, $global, 
     if ($global && urd_user_rights::is_admin($db, $userid)) {
         $userid = user_status::SUPER_USERID; // if it is set by the root user it is global, if by any other userid it's for that user onl
     }
-    $sql = 'count(*) AS cnt FROM spot_blacklist WHERE "spotter_id" = ? AND "source" = ? AND "userid" = ?';
+    $sql = 'count(*) AS cnt FROM spot_blacklist WHERE "spotter_id"=? AND "source"=? AND "userid"=?';
     $res = $db->select_query($sql, array($spotterID, $source, $userid));
     if ($res[0]['cnt'] == 0) {
         $add_ids = array($spotterID, $source, $userid, $status);
@@ -1754,8 +1755,7 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
         $keywords = explode(' ', $search);
         $Qsearch1 = $Qsearch2 = $Qsearch3 = '';
         $next = $not = '';
-        $cnt = 0;
-        foreach ($keywords as $keyword) {
+        foreach ($keywords as $idx => $keyword) {
             $keyword = trim($keyword);
             if ($keyword == '') { continue; }
             if ($next == '') {
@@ -1777,16 +1777,16 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
 
             if ($keyword != '') {
                 if ($column1 != '') {
-                    $input_arr[":keyword_1_$cnt"] = "%{$keyword}%";
-                    $Qsearch1 .= " $qand $not $column1 $search_type :keyword_1_$cnt "; // nasty: like is case sensitive in psql, insensitive in mysql
+                    $input_arr[":keyword_1_$idx"] = "%{$keyword}%";
+                    $Qsearch1 .= " $qand $not $column1 $search_type :keyword_1_$idx "; // nasty: like is case sensitive in psql, insensitive in mysql
                 }
                 if ($column2 != '') {
-                    $input_arr[":keyword_2_$cnt"] = "%{$keyword}%";
-                    $Qsearch2 .= " $qand $not $column2 $search_type :keyword_2_$cnt ";
+                    $input_arr[":keyword_2_$idx"] = "%{$keyword}%";
+                    $Qsearch2 .= " $qand $not $column2 $search_type :keyword_2_$idx ";
                 }
                 if ($column3 != '') {
-                    $input_arr[":keyword_3_$cnt"] = "%{$keyword}%";
-                    $Qsearch3 .= " $qand $not $column3 $search_type :keyword_3_$cnt ";
+                    $input_arr[":keyword_3_$idx"] = "%{$keyword}%";
+                    $Qsearch3 .= " $qand $not $column3 $search_type :keyword_3_$idx ";
                 }
             }
         }
@@ -1828,7 +1828,7 @@ function get_size_limits_groups(DatabaseConnection $db, $groupID=NULL)
     $input_arr = array();
     if (is_numeric($groupID) && $groupID > 0) {
         $input_arr[] = $groupID;
-        $sql .= ' WHERE "groupID" = ?';
+        $sql .= ' WHERE "groupID"=?';
     }
     $res = $db->select_query($sql, 1, $input_arr);
 
@@ -1855,7 +1855,7 @@ function get_size_limits_rsssets(DatabaseConnection $db, $rss_id=NULL)
     $input_arr = array();
     if (is_numeric($rss_id) && $rss_id > 0) {
         $input_arr[] = $rss_id;
-        $sql .= ' WHERE "rss_id" = ?';
+        $sql .= ' WHERE "rss_id"=?';
     }
     $res = $db->select_query($sql, 1, $input_arr);
 
@@ -1897,7 +1897,7 @@ function get_poster_from_set(DatabaseConnection $db, $setid)
     $groupid = get_groupid_for_set($db, $setid);
     $sql = "\"fromname\" FROM parts_$groupid LEFT JOIN binaries_$groupid ON parts_$groupid.\"binaryID\" = binaries_$groupid.\"binaryID\" where setID = ? AND fromname != ''";
     $res = $db->select_query($sql, 1, array($setid));
-    if (!isset($res[0]['fromname']) ) {
+    if (!isset($res[0]['fromname'])) {
         throw new exception($LN['error_binariesnotfound']);
     }
     $fromname = $res[0]['fromname'];
@@ -1935,10 +1935,14 @@ function find_language_matches($accepted, $available)
     $any = FALSE;
     foreach ($accepted as $acceptedQuality => $acceptedValues) {
         $acceptedQuality = floatval($acceptedQuality);
-        if ($acceptedQuality === 0.0) continue;
+        if ($acceptedQuality === 0.0) { 
+            continue;
+        }
         foreach ($available as $availableQuality => $availableValues) {
             $availableQuality = floatval($availableQuality);
-            if ($availableQuality === 0.0) continue;
+            if ($availableQuality === 0.0) { 
+                continue;
+            }
             foreach ($acceptedValues as $acceptedValue) {
                 if ($acceptedValue === '*') {
                     $any = TRUE;
@@ -2082,8 +2086,6 @@ function get_uploaded_files()
         throw new exception ('error!?');
     }
 
-    //challenge::verify_challenge_noreload($_REQUEST['challenge']);
-
     if (empty($_FILES)) {
         throw new exception (file_upload_error_message(UPLOAD_ERR_INI_SIZE));
     }
@@ -2135,9 +2137,9 @@ function return_result(array $vars=array())
     if (!isset($vars['error'])) { 
         $vars['error'] = 0;
     }
-    if (isset($var['contents'])) { // should we do this??? might mangle some utf8 stuff
+//    if (isset($var['contents'])) { // should we do this??? might mangle some utf8 stuff
      //   $vars['contents'] = preg_replace('/[[:cntrl:]]+/u', '', $vars['contents']);
-    }
+ //   }
     die(json_encode($vars));
 }
 
