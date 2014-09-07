@@ -44,9 +44,7 @@
 </td></tr>
 <tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup}:</td><td><select name="newsgroup" id="groupid" class="width300" {$disabledstr}>
     <option value="" {if !isset($group) || $group == ''}selected="selected"{/if}>{$LN_select}</option>
-{foreach $groups as $id=>$name}
-    <option value="{$id}" {if $id == $group}selected="selected"{/if}>{$name}</option>
-{/foreach}
+    {html_options options=$groups selected=$group}
 </select></td></tr>
 <tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup} NZB:</td><td><select name="newsgroup_nzb" id="groupid_nzb" class="width300" {$disabledstr}>
     <option value="" {if (!isset($group_nzb) || $group_nzb == '') && $default_nzb_group === NULL}selected="selected"{/if}>{$LN_select}</option>

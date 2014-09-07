@@ -726,8 +726,6 @@ function create_new_download(DatabaseConnection $db, $userid)
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
     check_connected($uc);
 
-    $total_size = get_basket_size($db);
-
     // Create download:
     $result = $uc->create_download();
     if ($result === FALSE) {
@@ -738,6 +736,7 @@ function create_new_download(DatabaseConnection $db, $userid)
     // Download ID:
     $dlname = get_dlname_from_session($db);
     // Store size:
+    $total_size = get_basket_size($db);
     set_download_size($db, $dlid, $total_size);
 
     $max_dl_name = get_config($db, 'max_dl_name');

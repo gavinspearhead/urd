@@ -706,7 +706,7 @@ function load_control()
         if (x.error == 0) {
             show_content_div_2(x.contents, 'controldiv');
             update_search_bar_height();
-            $("#details_button").click(function () { fold_details('details_button', 'details_div'); });
+            $('#details_button').click(function() { fold_details('details_button', 'details_div'); });
         } else {
             update_message_bar(x.error);
         }
@@ -832,8 +832,8 @@ function show_blacklist(options)
                 $('#black_list_table>tbody tr').eq(-2).after(x.contents);
             }
             highlight_handler();
-            $('#blacklist_bar').click( function () { select_tab_blacklist('blacklist'); } );
-            $('#whitelist_bar').click( function () { select_tab_blacklist('whitelist'); } );
+            $('#blacklist_bar').click(function() { select_tab_blacklist('blacklist'); });
+            $('#whitelist_bar').click(function() { select_tab_blacklist('whitelist'); });
         } else {
             update_message_bar(x.error);
         }
@@ -1027,7 +1027,7 @@ function show_post_message(type, spotid)
 
 function show_uploadnzb(dir, name)
 {
-    var url = 'ajax_show_upload.php';
+    var url = 'ajax_show_upload_nzb.php';
     var data = {};
     if (dir !== undefined && name !== undefined) {
         data.dir = dir;
@@ -1042,6 +1042,17 @@ function show_uploadnzb(dir, name)
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup525x300');
+            $('#url').click( function() { update_setname('url') });
+            $('#submit_button').click( function() { submit_upload(); });
+            $('#browse').click( function() { $('#upfile').click(); });
+            $('#dir_select').change( function () { select_dir('dir_select', 'dl_dir'); });
+            $('#upfile').change( function () { update_setname('upfile'); $('#_upfile').val($('#upfile').val()); });
+            $('#timestamp').click( function () { show_calendar(null, null, null);} ) ;
+            $('#timestamp').keyup( function () { hide_popup('calendardiv', 'calendar'); });
+            $('#toggle_button').click( function () { 
+                $('#dir_select_span').toggleClass('hidden'); 
+                $('#dl_dir_span').toggleClass('hidden');
+            });
         } else {
             update_message_bar(x.error);
         }
@@ -1088,16 +1099,16 @@ function show_post()
 
 function highlight_handler()
 {
-    $("tr[name='content']").each( function() {
+    $("tr[name='content']").each(function() {
         $(this).removeClass('highlight2');
-        $(this).mouseover( function () {
+        $(this).mouseover(function() {
             $(this).addClass('highlight2');
         });
-                
-        $(this).mouseout( function() {
+
+        $(this).mouseout(function() {
             $(this).removeClass('highlight2');
-        } );
-    } );
+        });
+    });
 }
 
 function load_jobs(order, direction)
@@ -1445,6 +1456,7 @@ function transfer_edit(cmd, dlid)
             challenge: challenge
         }
     }).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -1452,6 +1464,7 @@ function transfer_edit(cmd, dlid)
         load_transfers();
     });
 }
+
 
 function which_button(buttonval, e)
 {
@@ -2021,6 +2034,16 @@ function show_rename_transfer(dlid)
             update_message_bar(x.error);
         } else {
             show_overlayed_content_1(x.contents, 'popup700x400');
+            $('#toggle_button').click( function () { 
+                $('#dir_select_span').toggleClass('hidden'); 
+                $('#dl_dir_span').toggleClass('hidden');
+            });
+            $('#dir_select').change( function () { select_dir('dir_select', 'dl_dir'); });
+            $('#apply_button').click( function () {  rename_transfer(); });
+            if (! $('#timestamp').prop('readonly')) { 
+                $('#timestamp').click( function () { show_calendar(null, null, null);} ) ;
+                $('#timestamp').keyup( function () { hide_popup('calendardiv', 'calendar'); });
+            }
         }
     });
 }
@@ -2044,8 +2067,8 @@ function edit_group(id)
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#group_name').focus();
             display_timebox('group_refresh_period');
-            $('#group_refresh_period').change( function () { display_timebox('group_refresh_period'); } );
-            $('#submit_button').click(function () { update_group(); } );
+            $('#group_refresh_period').change(function() { display_timebox('group_refresh_period'); });
+            $('#submit_button').click(function() { update_group(); });
         }
     });
 }
@@ -2069,9 +2092,9 @@ function edit_rss(id)
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#rss_name').focus();
             display_timebox('rss_refresh_period');
-            $('#rss_refresh_period').change( function () { display_timebox('rss_refresh_period'); } );
-            $('#submit_button').click(function () { update_rss(); } );
-            $('#showpass').click(function () { toggle_show_password('rss_password'); } );
+            $('#rss_refresh_period').change(function() { display_timebox('rss_refresh_period'); });
+            $('#submit_button').click(function() { update_rss(); });
+            $('#showpass').click(function() { toggle_show_password('rss_password'); });
         }
     });
 }
@@ -3056,7 +3079,7 @@ function submit_upload()
     var src_local = get_value_from_id('upfile'); // it's a local file we upload to the server
     var iframe_id = 'iframe_' + String(Math.round(Math.random() * 10000));
 
-    $('<iframe id="' + iframe_id + '" name="' + iframe_id + '" style="margin-top:200px;">').appendTo('body');
+    $('<iframe id="' + iframe_id + '" name="' + iframe_id + '">').appendTo('body');
     $('#' + iframe_id).hide();
     if (src_remote != '') {
         $('#parseform').attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
@@ -3145,7 +3168,7 @@ function edit_file(fileid)
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#filename_editfile').focus();
-            $('#submit_button').click( function() { save_file(); } );
+            $('#submit_button').click(function() { save_file(); });
         } else {
             update_message_bar(x.error);
         }
@@ -3589,9 +3612,9 @@ function select_tab_blacklist(tab)
     $('#active_tab').val(tab);
     $('#' + tab + '_bar').addClass('tab_selected');
     if (tab == 'whitelist') {
-        show_blacklist( { 'which': 'spots_whitelist', 'order': 'spotter_id', 'def_direction': 'asc', 'offset': 0} );
+        show_blacklist({ 'which': 'spots_whitelist', 'order': 'spotter_id', 'def_direction': 'asc', 'offset': 0});
     } else if (tab == 'blacklist') {
-        show_blacklist( { 'which': 'spots_blacklist', 'order': 'spotter_id', 'def_direction': 'asc', 'offset': 0} );
+        show_blacklist({ 'which': 'spots_blacklist', 'order': 'spotter_id', 'def_direction': 'asc', 'offset': 0});
     }
 }
 
@@ -5042,8 +5065,9 @@ function fix_chars(str)
 
 function update_setname(id)
 {
-    var newsetname = get_value_from_id(id, '');
+    var newsetname = $('#' + id).val(); 
     var tmpsetname = basename(newsetname);
+    console.log(tmpsetname);
     if (tmpsetname.lastIndexOf('.') > 0) {
         tmpsetname = tmpsetname.substr(0, tmpsetname.lastIndexOf('.'));
     }

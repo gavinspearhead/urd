@@ -35,10 +35,10 @@
 
 <span id="dl_dir_span">
     <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300" {if $dldir_noedit eq 1}readonly="readonly"{/if}/>&nbsp;</div>
-    {if $dldir_noedit != 1}<div class="foldericon iconsize floatleft" onclick="$('#dir_select_span').toggleClass('hidden'); $('#dl_dir_span').toggleClass('hidden');"></div>{/if}
+    {if $dldir_noedit != 1}<div class="foldericon iconsize floatleft" id="toggle_button"></div>{/if}
 </span>
 <span id="dir_select_span" class="hidden">
-<select class="width300" id="dir_select" onchange="select_dir('dir_select', 'dl_dir');">
+<select class="width300" id="dir_select">
 <option value=""></option>
 {foreach $directories as $directory}
 <option value="{$directory|escape:htmlall}">{$directory|escape:htmlall}</option>
@@ -49,8 +49,7 @@
 </td></tr>
 <tr><td>{$LN_browse_schedule_at}:</td><td>
 
-<input type="text" class="width300" name="starttime" id="timestamp" value="{$starttime|escape}" {if $starttime_noedit eq 1}readonly="readonly"{/if}
-{if $starttime_noedit neq 1}onclick="javascript:show_calendar(null, null, null);" onkeyup="javascript:hide_popup('calendardiv', 'calendar');"{/if}
+<input type="text" class="width300" name="starttime" id="timestamp" value="{$starttime|escape}" {if $starttime_noedit eq 1}readonly="readonly"{/if} 
 />
 </td></tr>
 <tr><td colspan="2"><br/>
@@ -63,7 +62,7 @@
 {urd_checkbox value="$add_setname" name="add_setname" id="add_setname" data=$LN_transfers_add_setname }
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered">
-	<input type="button" onclick="rename_transfer();" {urd_popup type="small" text=$LN_apply} name="submit_button" value="{$LN_apply}" class="submit"/> 
+	<input type="button" id="apply_button" {urd_popup type="small" text=$LN_apply} name="submit_button" value="{$LN_apply}" class="submit"/> 
 </td></tr>
 </table>
 
