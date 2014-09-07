@@ -461,8 +461,8 @@ class sets_marking
         }
 
         $type = USERSETTYPE_SPOT;
-        $sql = "spots.\"spotid\" AS \"ID\" FROM spots WHERE (1=0 $like_setdata) AND spots.\"spotid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type') ";
-        $res = $db->select_query($sql);
+        $sql = "spots.\"spotid\" AS \"ID\" FROM spots WHERE (1=0 $like_setdata) AND spots.\"spotid\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = :userid AND \"type\"=:type) ";
+        $res = $db->select_query($sql, array(':userid'=>$userid, ':type'=> $type);
         if ($res !== FALSE) {
             self::mark_sets($db, $res, $userid, $type, self::MARKING_ON, $element, FALSE);
             if ($mail_interesting_sets && $element == 'statusint') {
