@@ -420,7 +420,7 @@ class sets_marking
         }
 
         $type = USERSETTYPE_GROUP;
-        $sql = "SELECT setdata.\"ID\" FROM setdata WHERE $group (1=0 $like_setdata) AND setdata.\"ID\" NOT IN SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type') ";
+        $sql = "SELECT setdata.\"ID\" FROM setdata WHERE $group (1=0 $like_setdata) AND setdata.\"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type') ";
         $sql .= "UNION SELECT setdata.\"ID\" FROM setdata, extsetdata WHERE $group \"type\"='$type' AND setdata.\"ID\" = extsetdata.\"setID\" AND extsetdata.\"name\" = 'setname' AND (1=0 $like_extsetdata) AND setdata.\"ID\" NOT IN (SELECT \"setID\" FROM usersetinfo WHERE \"userID\" = $userid AND \"type\"='$type')";
 
         $res = $db->execute_query($sql);
