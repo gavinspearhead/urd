@@ -24,7 +24,7 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
 $pathac = realpath(dirname(__FILE__));
 require_once "$pathac/../functions/ajax_includes.php";
-require_once "$pathac/../functions/buttons.php";
+require_once "$pathac/../functions/search_options.php";
 
 function update_spots_images(DatabaseConnection $db, urdd_client $uc, $userid)
 {
@@ -602,7 +602,7 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
         clear_all_feeds($db, $userid);
         clear_all_groups($db, $userid);
         clear_all_usenet_servers($db);
-        clear_all_buttons($db);
+        clear_all_search_options($db);
         clear_all_spots_blacklist($db, $userid);
         clear_all_spots_whitelist($db, $userid);
         stop_urdd($userid);
@@ -612,7 +612,7 @@ function import_all(DatabaseConnection $db, urdd_client $uc,  $userid)
         reset_config($db);
         set_configs($db, $settings['config']);
         set_all_users($db, $settings['users'], $settings['users_settings']);
-        set_all_buttons($db, $settings['buttons']);
+        set_all_search_options($db, $settings['buttons']);
         set_all_usenet_servers($db, $settings['usenet_servers']);
         $userid = get_admin_userid($db);
         // we need to get the ID of the first admin we find since we reloaded users

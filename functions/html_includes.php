@@ -66,6 +66,7 @@ try {
 require_once "$pathhtmli/config_functions.php";
 require_once "$pathhtmli/user_functions.php";
 require_once "$pathhtmli/checkauth.php";
+
 $db->check_db_version();
 $prefs = load_prefs($db, $userid); // load the prefs
 
@@ -74,7 +75,7 @@ require_once "$pathhtmli/usenet_functions.php";
 require_once "$pathhtmli/exception.php";
 require_once "$pathhtmli/autoincludes.php";
 require_once "$pathhtmli/../html/fatal_error.php";
-require_once "$pathhtmli/buttons.php";
+require_once "$pathhtmli/search_options.php";
 
 require_once "$pathhtmli/smarty.php";
 // then execute code we always need

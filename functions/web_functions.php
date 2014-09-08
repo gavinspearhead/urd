@@ -537,15 +537,15 @@ function select_template(DatabaseConnection $db, $userid)
     return $template;
 }
 
-function get_buttons(DatabaseConnection $db)
+function get_search_options(DatabaseConnection $db)
 {
-    $res_b = get_all_buttons($db);
-    $searchbuttons = array();
+    $res_b = get_all_search_options($db);
+    $searchoptions = array();
     foreach ($res_b as $row) {
-        $searchbuttons[$row['id']] = $row['name'];
+        $searchoptions[$row['id']] = $row['name'];
     }
 
-    return $searchbuttons;
+    return $searchoptions;
 }
 
 function process_schedule(urdd_client $uc, $period, $time1, $time2, $command, $arg_unschedule, $arg_schedule)

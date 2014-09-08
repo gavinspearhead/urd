@@ -838,37 +838,37 @@ function set_and_test_pref_numeric($name, $userid, $min=NULL, $max=NULL, $base=1
     }
 }
 
-function verify_searchbutton($button, array $searchbuttons)
+function verify_search_option($search_option, array $search_options)
 {
     global $LN;
-    if ($button == '' || in_array($button, array_keys($searchbuttons))) {
+    if ($search_option == '' || in_array($search_option, array_keys($search_options))) {
         return '';
     } else {
         return make_error_msg($LN['error_invalidbutton']);
     }
 }
 
-function set_and_test_pref_buttons($name, $userid, array $valids)
+function set_and_test_pref_search_options($name, $userid, array $valids)
 {
     global $LN, $db;
     assert(is_numeric($userid));
     $prefArray = load_prefs($db, $userid);
-    $max_buttons = get_config($db, 'maxbuttons', 0);
+    $max_search_options = get_config($db, 'maxbuttons', 0);
 
     if (isset($_POST[$name])) {
         $val = $_POST[$name];
         $i = 1;
         foreach ($val as $v) { // first check all for validity
-            $rv = verify_searchbutton($v, $valids);
+            $rv = verify_search_options($v, $valids);
             $i++;
             if ($rv != '') {
                 return $rv;
             }
         }
-        if ($i > $max_buttons + 1) {
+        if ($i > $max_search_options + 1) {
             return make_error_msg($LN['error_toomanybuttons']);
         }
-        foreach ($prefArray as $k=> $p) { // unset them all first
+        foreach ($prefArray as $k => $p) { // unset them all first
             if (preg_match('/^button[0-9]+$/', $k)) {
                 set_pref($db, $k, 'none', $userid);
             }
@@ -878,14 +878,14 @@ function set_and_test_pref_buttons($name, $userid, array $valids)
             set_pref($db, "button$i", $v, $userid);
             $i++;
         }
-        for (; $i<= $max_buttons; $i++) {
+        for (; $i<= $max_search_options; $i++) {
             set_pref($db, "button$i", 'none', $userid);
         }
 
         return '';
 
     } else {
-        for ($i = 1; $i<= $max_buttons; $i++) {
+        for ($i = 1; $i<= $max_search_options; $i++) {
             set_pref($db, "button$i", 'none', $userid);
         }
 

@@ -27,11 +27,11 @@ $__auth = 'silent';
 $pathaeb = realpath(dirname(__FILE__));
 
 require_once "$pathaeb/../functions/ajax_includes.php";
-require_once "$pathaeb/../functions/buttons.php";
+require_once "$pathaeb/../functions/search_options.php";
 
 verify_access($db, NULL, TRUE, '', $userid,  TRUE);
 
-class buttons_c
+class search_options_c
 {
     private $name;
     private $url;
@@ -62,16 +62,16 @@ function import_settings(DatabaseConnection $db)
 {
     global $LN;
     $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
-    $buttons = $xml->read_buttons($db);
-    if ($buttons != array()) {
-        clear_all_buttons($db);
-        set_all_buttons($db, $buttons);
+    $search_options = $xml->read_search_options($db);
+    if ($search_options != array()) {
+        clear_all_search_options($db);
+        set_all_search_options($db, $search_options);
     } else {
         throw new exception($LN['error_nosearchoptionsfound']);
     }
 }
 
-function edit_button(DatabaseConnection $db, $id)
+function edit_search_option(DatabaseConnection $db, $id)
 {
     global $LN, $smarty;
     if (is_numeric($id)) {
@@ -84,9 +84,9 @@ function edit_button(DatabaseConnection $db, $id)
         $name = $row['name'];
         $search_url = $row['search_url'];
         $id = $row['id'];
-        $button = new buttons_c($id, $name, $search_url);
+        $search_option = new search_options_c($id, $name, $search_url);
     } elseif ($id == 'new') {
-        $button = new buttons_c(0, '', '', '');
+        $search_option = new search_options_c(0, '', '', '');
     } else {
         throw new exception($LN['buttons_buttonnotfound']);
     }
@@ -94,11 +94,11 @@ function edit_button(DatabaseConnection $db, $id)
     $smarty->assign('id',	$id);
     $smarty->assign('text_box_size', TEXT_BOX_SIZE);
     $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
-    $smarty->assign('button',	$button);
+    $smarty->assign('search_option', $search_option);
     return $smarty->fetch('ajax_edit_searchoptions.tpl');
 }
 
-function show_buttons(DatabaseConnection $db, $userid)
+function show_search_options(DatabaseConnection $db, $userid)
 {
     global $smarty;
     $order_options = array ('name', 'search_url');
@@ -127,23 +127,23 @@ function show_buttons(DatabaseConnection $db, $userid)
         $res = array();
     }
     $cnt = 0;
-    $buttons = array();
+    $search_options = array();
     foreach ($res as $row) {
         $name = $row['name'];
         $search_url = $row['search_url'];
         $id = $row['id'];
-        $buttons[] = new buttons_c($id, $name, $search_url);
+        $search_options[] = new search_options_c($id, $name, $search_url);
     }
     init_smarty('', 0);
     $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
     $smarty->assign('sort', $order);
     $smarty->assign('sort_dir', $order_dir);
     $smarty->assign('search', $o_search);
-    $smarty->assign('buttons', $buttons);
+    $smarty->assign('search_options', $search_options);
     return $smarty->fetch('ajax_show_searchoptions.tpl');
 }
 
-function update_button_info(DatabaseConnection $db, $id)
+function update_search_option_info(DatabaseConnection $db, $id)
 {
     global $LN;
 
@@ -167,7 +167,7 @@ function update_button_info(DatabaseConnection $db, $id)
         $query = '"id" FROM searchbuttons WHERE "id"=?';
         $res = $db->select_query($query, 1, array($id));
         if ($res !== FALSE) {
-            update_button($db, $name, $search_url, $id);
+            update_search_option($db, $name, $search_url, $id);
         } else {
             throw new exception($LN['buttons_buttonexists']);
         }
@@ -185,7 +185,7 @@ function update_button_info(DatabaseConnection $db, $id)
         $query = '"id" FROM searchbuttons WHERE "name"=?';
         $res = $db->select_query($query, array($name));
         if ($res === FALSE) {
-            add_button($db, new button($name, $search_url));
+            add_search_option($db, new search_option($name, $search_url));
         } else {
             throw new exception($LN['buttons_buttonexists']);
         }
@@ -208,22 +208,22 @@ try {
         case 'delete_button':
             challenge::verify_challenge($_POST['challenge']);
             if (is_numeric($id)) {
-                delete_button($db, $id);
+                delete_search_option($db, $id);
             } else {
                 throw new exception($LN['buttons_buttonnotfound']);
             }
             break;
         case 'edit':
-            $contents = edit_button($db, $id);
+            $contents = edit_search_option($db, $id);
             return_result(array('contents'=>$contents));
             break;
         case 'show_buttons':
-            $contents = show_buttons($db, $userid);
+            $contents = show_search_options($db, $userid);
             return_result(array('contents'=>$contents));
 
             break;
         case 'update_button':
-            update_button_info($db, $id);
+            update_search_option_info($db, $id);
             break;
         default:
             throw new exception ($LN['error_invalidaction'] . " $cmd");

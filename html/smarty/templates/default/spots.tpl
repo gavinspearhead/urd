@@ -25,7 +25,7 @@
 {* Search form *}
 {capture assign="searchform"}
 <div>
-<form id="searchform" method="get">
+<form id="searchform">
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="text" id="search" name="search" size="30" placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}"/>&nbsp;
@@ -57,7 +57,6 @@
 {/capture}
 
 {capture assign="basketform"}
-<form method="post" id="setform">
 <div id="basketdiv" class="down3"></div>
 
 {* We need this stuff to remember any the search options *}
@@ -68,13 +67,9 @@
 <input type="hidden" name="cat_id" id="cat_id" value="{$catid|escape:htmlall}"/>
 <input type="hidden" name="dlname" id="dlname" value=""/>
 <input type="hidden" name="whichbutton" value="" id="whichbutton"/>
-<input type="hidden" name="previewBinID" value="" id="previewBinID"/>
-<input type="hidden" name="previewGroupID" value="" id="previewGroupID"/>
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
-<input type="hidden" name="curScrollVal" id="curScrollVal" value=""/>
 <input type="hidden" name="type" id="type" value="spots"/>
 </div>
-</form>
 {/capture}
 
 {$rss_link}

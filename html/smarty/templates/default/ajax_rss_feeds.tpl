@@ -32,8 +32,8 @@
 {capture assign=selector}
 <div class="pref_selector">
 <ul class="tabs">
-<li onclick="javascript:toggle_table('feedstable', 'user', 'admin')" id="button_global" class="tab{if $page_tab == 'admin'} tab_selected{/if}">{$LN_global_settings}</li>
-<li onclick="javascript:toggle_table('feedstable', 'admin', 'user')" id="button_user" class="tab{if $page_tab != 'admin'} tab_selected{/if}">{$LN_user_settings}
+<li id="button_global" class="tab{if $page_tab == 'admin'} tab_selected{/if}">{$LN_global_settings}</li>
+<li id="button_user" class="tab{if $page_tab != 'admin'} tab_selected{/if}">{$LN_user_settings}
 <input type="hidden" id="page_tab" value="{$page_tab|escape}"/>
 </li>
 </ul>
@@ -84,7 +84,6 @@
 {if $sort == "feedcount"}{if $sort_dir=='desc'}{$feedcount_sort=$up}{else}{$feedcount_sort=$down}{/if}{else}{$feedcount_sort=""}{/if}
 {if $sort == ""}{if $sort_dir=='desc'}{$_sort=$up}{else}{$_sort=$down}{/if}{else}{$_sort=""}{/if}
 
-<form method="post" id="rssfeedsform">
 <div class="hidden">
 <input type="hidden" name="order" id="order" value="{$sort|escape}"/>
 <input type="hidden" name="page" id="page1" value="{$page_tab|escape}"/>
@@ -195,7 +194,6 @@
 {/if}
 </tr>
 </table>
-</form>
 </div>
 {$bottomskipper}
 <div>

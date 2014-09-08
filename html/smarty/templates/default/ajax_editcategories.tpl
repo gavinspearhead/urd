@@ -26,13 +26,12 @@
 {block name=title}{$LN_editcategories}{/block}
 {block name=contents}
 
-
 <br/>
 <table class="hmid">
 <tr><td>{$LN_category}:</td>
 <td>
 <input type="hidden" name="cat_id" id="cat_id" value="new"/>
-<select name="category" id="category_id" onchange="javascript:get_category_name();">
+<select name="category" id="category_id">
     <option value="new">{$LN_newcategory}</option>
     {foreach $categories as $item}		
     <option value="{$item.id}">{$item.name|escape:htmlall}</option>
@@ -41,8 +40,8 @@
 </td></tr>
 <tr><td>{$LN_name}:</td><td><input type="text" name="cat_name" id="cat_name" value="" size="{$text_box_size}" placeholder="{$LN_name}" required/></td></tr>
 <tr><td colspan="2" class="centered"><br/>
-<input type="button" name="add" value="{$LN_apply}" onclick="javascript:update_category_name();" class="submit"/>
-<input type="button" name="delete" value="{$LN_delete}" class="submit" onclick="javascript:delete_category();" />
+<input type="button" id="add_button" name="add" value="{$LN_apply}" class="submit"/>
+<input type="button" id="delete_button" name="delete" value="{$LN_delete}" class="submit"/>
 </td>
 </tr>
 

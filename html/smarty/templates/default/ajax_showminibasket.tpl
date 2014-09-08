@@ -25,13 +25,13 @@
 {if $nrofsets == 0}
 0
 {else} 
-<div class="inline iconsizeplus buttonlike cleartop3 downicon noborder" {urd_popup type="small" text=$LN_browse_download } onclick="javascript:which_button('urddownload', event);"></div>&nbsp;
-<span onclick="javascript:update_basket_display(1);" class="buttonlike">
+<div class="inline iconsizeplus buttonlike cleartop3 downicon noborder" {urd_popup type="small" text=$LN_browse_download } id="download_button"></div>&nbsp;
+<span id="change_basket" class="buttonlike">
 {$nrofsets} {$LN_sets} - {$totalsize}&nbsp;</span>
 <div class="inline"> 
-<div class="inline iconsizeplus buttonlike cleartop3 foldericon noborder" {urd_popup type="small" text=$LN_browse_savenzb } onclick="javascript:which_button('getnzb', event);"/></div>
+<div class="inline iconsizeplus buttonlike cleartop3 foldericon noborder" {urd_popup type="small" text=$LN_browse_savenzb } id="nzb_button"/></div>
 </div>&nbsp;
-<div class="inline iconsizeplus buttonlike cleartop3 purgeicon noborder" {urd_popup type="small" text=$LN_browse_emptylist } onclick="javascript:which_button('clearbasket', event);"/></div>
+<div class="inline iconsizeplus buttonlike cleartop3 purgeicon noborder" {urd_popup type="small" text=$LN_browse_emptylist } id="clear_button"/></div>
 </div>
 <input name="timestamp" id="timestamp" type="hidden" value="{$download_delay|escape:htmlall}"/> 
 <input name="dl_dir" id="dl_dir" type="hidden" value="{$dl_dir|escape:htmlall}"/>

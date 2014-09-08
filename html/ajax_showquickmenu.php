@@ -46,26 +46,26 @@ class QuickMenuItem
     }
 }
 
-function get_search_buttons(DatabaseConnection $db, $userid)
+function get_search_options_for_user(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $activebuttons = array();
-    $max_buttons = get_config($db, 'maxbuttons', button::MAX_SEARCH_BUTTONS);
-    $buttons = array();
-    for ($i = 1; $i <= $max_buttons; $i++) {
+    $active_search_options = array();
+    $max_search_options = get_config($db, 'maxbuttons', search_option::MAX_SEARCH_OPTIONS);
+    $search_options = array();
+    for ($i = 1; $i <= $max_search_options; $i++) {
         $b = get_pref($db, "button$i", $userid, 'none');
           if ($b != 'none') {
-            $buttons[] = $b;
+            $search_options[] = $b;
         }
     }
-    if (count($buttons) == 0) {
+    if (count($search_options) == 0) {
         return array();
     }
     $ids = array();
-    foreach ($buttons as $button) {
-        $ids[] = $button;
+    foreach ($search_options as $search_option) {
+        $ids[] = $search_option;
     }
-    if (count($ids) > 0 ) {
+    if (count($ids) > 0) {
         $qry = '* FROM searchbuttons WHERE "id" IN (' . str_repeat('?,', count($ids) - 1) . '?) ORDER BY "name"';
         $res = $db->select_query($qry, $ids);
         if ($res === FALSE) {
@@ -73,11 +73,11 @@ function get_search_buttons(DatabaseConnection $db, $userid)
         }
         foreach ($res as $row) {
             $row['name'] = htmlentities(utf8_decode($row['name']));
-            $activebuttons[] = $row;
+            $active_search_options[] = $row;
         }
     }
 
-    return $activebuttons;
+    return $active_search_options;
 }
 
 function find_special_file(DatabaseConnection $db, $setID)
@@ -123,17 +123,17 @@ try {
         $subject = get_request('subject');
         $killflag = get_request('killflag');
         $isposter = urd_user_rights::is_poster($db, $userid);
-        $buttons = get_search_buttons($db, $userid);
-        $button_count = count($buttons);
+        $search_options = get_search_options_for_user($db, $userid);
+        $search_options_count = count($search_options);
         $items = array();
         switch ($type) {
             case 'setdetails':
                 $selection = get_request('selection', 0);
                 if ($selection == 1) {
-                    if ($button_count == 1) {
-                        $button = end($buttons); // the last will be the first
-                        $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
-                    } elseif ($button_count > 1) {
+                    if ($search_options_count == 1) {
+                        $search_option = end($search_options); // the last will be the first
+                        $items[] = new QuickMenuItem('search' . $search_option['name'], $LN['quickmenu_setsearch'] . ' ' . $search_option['name'], 'searchbutton', $search_option);
+                    } elseif ($search_options_count > 1) {
                         $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
                     }
                     $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
@@ -143,10 +143,10 @@ try {
             case 'viewfiles':
                 $selection = get_request('selection', 0);
                 if ($selection == 1) {
-                    if ($button_count == 1) {
-                        $button = end($buttons); // the last will be the first
-                        $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
-                    } elseif ($button_count > 1) {
+                    if ($search_options_count == 1) {
+                        $search_option = end($search_options); // the last will be the first
+                        $items[] = new QuickMenuItem('search' . $search_option['name'], $LN['quickmenu_setsearch'] . ' ' . $search_option['name'], 'searchbutton', $search_option);
+                    } elseif ($search_options_count > 1) {
                         $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
                     }
                     $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
@@ -157,10 +157,10 @@ try {
             case 'browse': // Display menu for the browse page items
                 $selection = get_request('selection', 0);
                 if ($selection == 1) {
-                    if ($button_count == 1) {
-                        $button = end($buttons); // the last will be the first
-                        $items[] = new QuickMenuItem('search' . $button['name'], $LN['quickmenu_setsearch'] . ' ' . $button['name'], 'searchbutton', $button);
-                    } elseif (count ($buttons) > 1) {
+                    if ($search_options_count == 1) {
+                        $search_option = end($search_options); // the last will be the first
+                        $items[] = new QuickMenuItem('search' . $search_option['name'], $LN['quickmenu_setsearch'] . ' ' . $search_option['name'], 'searchbutton', $search_option);
+                    } elseif ($search_options_count > 1) {
                         $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
                     }
                     $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
@@ -228,9 +228,9 @@ try {
                     $items[] = new QuickMenuItem('add_posterblacklist', $LN['quickmenu_addposterblacklist'], 'add_posterblacklist');
                 }
                 break;
-            case 'setsearch': // Search buttons for a set
-                foreach ($buttons as $button) {
-                    $items[] = new QuickMenuItem('search' . $button['name'], $button['name'], 'searchbutton', $button);
+            case 'setsearch': // Search options for a set
+                foreach ($search_options as $search_option) {
+                    $items[] = new QuickMenuItem('search' . $search_option['name'], $search_option['name'], 'searchbutton', $search_option);
                 }
                 break;
 
@@ -247,7 +247,7 @@ try {
        - quickdisplay
        - newpage
        This can be used by the template to determine how to treat a click on the buttom (new menu, display or new page)
-       Extra can be the URL (newpage), or a button array (searchbutton).
+       Extra can be the URL (newpage), or a searchoption array (searchoption).
      */
 
     init_smarty('', 0);

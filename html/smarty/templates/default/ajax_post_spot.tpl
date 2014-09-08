@@ -25,14 +25,14 @@
 <div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
 <div class="set_title centered">{$LN_transfers_post_spot}</div>
 <div class="light">
-<form enctype="multipart/form-data" id="post_spot_form">
+<form id="post_spot_form">
 <table class="">
 <tr id="category_row">
 <td>{$LN_category}</td><td>
 <select id="category" name="category" onchange="javascript:change_spotsubcats();">
 {foreach $categories as $cat}
-		<option value="{$cat.id}"> {$cat.name} </option>
-	{/foreach}
+    <option value="{$cat.id}">{$cat.name}</option>
+{/foreach}
 </select>
 
 </td>
@@ -43,7 +43,7 @@
 <tr> <td>{$LN_tasks_description}</td><td><textarea type="text" name="description" id="description" rows="8" class="width300" required>{$content}</textarea> </td> 
 <td>
 {foreach $smileys as $smiley}
-<img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" class="button" onclick="javascript: add_text('[img={$smiley|escape:javascript}]', $('#description'));">
+<img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" class="button" onclick="javascript:add_text('[img={$smiley|escape:javascript}]', $('#description'));">
 {/foreach}
 </td>
 

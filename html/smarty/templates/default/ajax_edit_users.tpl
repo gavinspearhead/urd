@@ -25,9 +25,7 @@
 {block name=title}{if $id eq 'new'}{$LN_users_addnew}{else}{$LN_users_edit}{/if}{/block}
 {block name=contents}
 <br/>
-<div>
-<input type="hidden" name="id" id="id" value="{$id|escape}"/></td>
-</div>
+<div><input type="hidden" name="id" id="id" value="{$id|escape}"/></td></div>
 <table class="hmid">
 <tr><td colspan="2">{$LN_username}</td><td colspan="2"><input type="text" name="username" id="username" placeholder="{$LN_username}" required value="{$name|escape}" size="{$text_box_size}"/></td></tr>
 <tr><td colspan="2">{$LN_fullname}</td><td colspan="2"><input type="text" name="fullname" id="fullname" placeholder="{$LN_fullname}" required value="{$fullname|escape}" size="{$text_box_size}"/></td></tr>
@@ -41,52 +39,48 @@
 <tr><td>{$LN_users_isadmin}</td><td>
 {if $isadmin eq $USER_ADMIN}{$_isadmin=1}{else}{$_isadmin=0}{/if}
 {urd_checkbox value="$_isadmin" name="isadmin" id="isadmin" }
-
 </td>
 
 <td>{$LN_users_rights}</td><td>
-{urd_checkbox value="$rights" name="seteditor" id="seteditor" }
-
+{urd_checkbox value="$rights" name="seteditor" id="seteditor"}
 </td>
 </tr>
 
 <tr><td>{$LN_users_post}</td><td>
-
-{urd_checkbox value="$post" name="post" id="post" }
+{urd_checkbox value="$post" name="post" id="post"}
 </td>
 
 <td>{$LN_active}</td><td>
 {if $isactive eq $USER_ACTIVE}{$isactive=1}{else}{$isactive=0}{/if}
-{urd_checkbox value="$isactive" name="isactive" id="isactive" }
-
+{urd_checkbox value="$isactive" name="isactive" id="isactive"}
 </td>
 
 </tr>
 <tr>
 <td>{$LN_users_autodownload}</td><td>
-{urd_checkbox value="$autodownload" name="autodownload" id="autodownload" }
-
+{urd_checkbox value="$autodownload" name="autodownload" id="autodownload"}
 </td>
-<td>{$LN_users_fileedit}</td><td>
-{urd_checkbox value="$file_edit" name="fileedit" id="fileedit" }
 
+<td>{$LN_users_fileedit}</td><td>
+{urd_checkbox value="$file_edit" name="fileedit" id="fileedit"}
 </td>
 </tr>
 
 <tr>
 <td>{$LN_users_allow_erotica}</td><td>
-{urd_checkbox value="$allow_erotica" name="allow_erotica" id="allow_erotica" }
+{urd_checkbox value="$allow_erotica" name="allow_erotica" id="allow_erotica"}
 </td>
-<td>{$LN_users_allow_update}</td><td>
-{urd_checkbox value="$allow_update" name="allow_update" id="allow_update" }
 
+<td>{$LN_users_allow_update}</td><td>
+{urd_checkbox value="$allow_update" name="allow_update" id="allow_update"}
+</td>
 </tr>
 <tr><td colspan="4">&nbsp;</td></tr>
 <tr><td colspan="4" class="centered">
 {if $id eq 'new'}
-	<input type="button" name="add" value="{$LN_add}" onclick="javascript:update_user();" class="submit"/>
+	<input type="button" name="add" id="apply_button" value="{$LN_add}" class="submitsmall"/>
 {else}
-	<input type="button" name="apply" value="{$LN_apply}" class="submit" onclick="javascript:update_user();"/>
+	<input type="button" name="apply"id="apply_button" value="{$LN_apply}" class="submitsmall"/>
 {/if}
 </td>
 </tr>

@@ -28,7 +28,6 @@ $pathpr = realpath(dirname(__FILE__));
 require_once "$pathpr/../functions/ajax_includes.php";
 require_once "$pathpr/../functions/pref_functions.php";
 
-
 function get_options()
 {
     $options = $_options = array();
@@ -118,7 +117,7 @@ try {
                 throw new exception($LN['error_missingparameter']);
             }
             if ($name == '') {
-                die(json_encode(array('error'=>0, 'count'=> 0)));
+                return_result(array('error'=>0, 'count'=> 0));
             }
             $saved_searches->load($db);
             try {
@@ -165,9 +164,9 @@ try {
                 $saved_searches->delete($name, $type);
                 $saved_searches->save($db);
             } catch (exception $e) {
-                throw new exception($LN['error_searchnamenotfound'] );
+                throw new exception($LN['error_searchnamenotfound']);
             }
-            return_result(array('message' => $LN['deleted'] . ' "' . htmlentities($name) . '"' ));
+            return_result(array('message' => $LN['deleted'] . ' "' . htmlentities($name) . '"'));
             break;
         case 'show':
             init_smarty('', 0);

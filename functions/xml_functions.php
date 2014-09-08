@@ -277,16 +277,16 @@ class urd_xml_writer
         $this->xml->endElement(); // users
 
     }
-    public function write_buttons(DatabaseConnection $db)
+    public function write_search_options(DatabaseConnection $db)
     {
         try {
-            $buttons = get_all_buttons($db);
+            $search_options = get_all_search_options($db);
         } catch (exception $e) {
             return;
         }
         $this->xml->setIndent(TRUE);
         $this->xml->startElement('buttons');
-        foreach ($buttons as $b) {
+        foreach ($search_options as $b) {
             $this->xml->setIndent(TRUE);
             $this->xml->startElement('button');
             $this->xml->writeAttribute('search_url', $b['search_url']);
@@ -361,7 +361,7 @@ class urd_xml_writer
         $this->write_config($db);
         $this->write_usenet_servers($db);
         $this->write_users($db);
-        $this->write_buttons($db);
+        $this->write_search_options($db);
         $this->write_spots_blacklist($db);
         $this->write_spots_whitelist($db);
         foreach ($users as $u) {
@@ -372,7 +372,7 @@ class urd_xml_writer
     {
         switch ($what) {
         case 'all': $this->write_all($db); break;
-        case 'buttons': $this->write_buttons($db); break;
+        case 'buttons': $this->write_search_options($db); break;
         case 'config': $this->write_config($db); break;
         case 'users': $this->write_users($db); break;
         case 'usenet_servers': $this->write_usenet_servers($db); break;
@@ -716,7 +716,7 @@ class urd_xml_reader
 
         return $settings;
     }
-    public function read_buttons()
+    public function read_search_options()
     {
         if ($this->arr === NULL) {
             return array();
@@ -908,7 +908,7 @@ class urd_xml_reader
         $settings['rssfeeds'] = $this->read_feeds_settings();
         $settings['users'] = $this->read_users();
         $settings['users_settings'] = $this->read_user_settings($db);
-        $settings['buttons'] = $this->read_buttons();
+        $settings['buttons'] = $this->search_options();
         $settings['usenet_servers'] = $this->read_usenet_servers();
         $settings['config'] = $this->read_config();
 

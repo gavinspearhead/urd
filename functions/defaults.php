@@ -56,8 +56,8 @@ function get_default_prefs()
     $prefArray['global_scripts']    = '';	// enabled global scripts
     $prefArray['user_scripts']      = '';	// enabled user scripts
     $prefArray['skip_int']          = 0;	// enabled user scripts
-    for ($i = 1; $i <= button::MAX_SEARCH_BUTTONS; $i++) {
-        $prefArray['button'.$i] = 'none';		// the buttons
+    for ($i = 1; $i <= search_option::MAX_SEARCH_OPTIONS; $i++) {
+        $prefArray['button'.$i] = 'none';		// the search_options
     }
     $prefArray['spot_spam_limit']   = 0;
     $prefArray['rarfile_size']      = 1000;
@@ -195,7 +195,7 @@ function get_default_config()
     $prefArray_root['usenet_server']                = '';		// not used?
     $prefArray_root['permissions']                  = '0644';	// the permission downloaded files will have
     $prefArray_root['default_language']             = DEFAULT_LANGUAGE;// the default language for URD
-    $prefArray_root['maxbuttons']                   = button::MAX_SEARCH_BUTTONS; // the maximum number of buttons shown on the browse page
+    $prefArray_root['maxbuttons']                   = search_option::MAX_SEARCH_OPTIONS; // the maximum number of buttons shown on the browse page
     $prefArray_root['period_sendinfo']              = 0;		// the frequency setinfo will be merged into the central repository
     $prefArray_root['period_getinfo']               = 0;		// the frequency setinfo will be gotten frmo the central repository
     $prefArray_root['time1_sendinfo']               = 0;		// hours to send setinfo

@@ -27,7 +27,7 @@
 <table>
 <tr><td><b>{$LN_urdname} {$LN_version}</b>:</td><td><i>{$VERSION}</i></td><td></td></tr>
 <tr><td><b>{$LN_control_uptime}</b>:</td><td><i>{$uptime_info}</i></td><td></td></tr>
-<tr><td><b>{$LN_control_load}</b>:</td><td><i>{$load_info.load_1} --  {$load_info.load_5} -- {$load_info.load_15}</i></td><td></td></tr>
+<tr><td><b>{$LN_control_load}</b>:</td><td><i>{$load_info.load_1} -- {$load_info.load_5} -- {$load_info.load_15}</i></td><td></td></tr>
 <tr> <td><b>{$LN_control_diskspace}</b>:</td>
 {strip}
 <td>

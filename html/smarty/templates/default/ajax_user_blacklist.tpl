@@ -93,7 +93,7 @@
     {$item.spotter_id|escape:htmlall|truncate:$maxstrlen}
     </td>
 	<td>{if $item.userid == 0}{$LN_users_isadmin}{else}{$item.username|escape:htmlall|truncate:$maxstrlen}{/if}</td>
-	<td> {if $item.source == $list_external}{$LN_source_external}{else}{$LN_source_user}{/if} </td>
+	<td>{if $item.source == $list_external}{$LN_source_external}{else}{$LN_source_user}{/if}</td>
 	<td id="status{$item.id}">{if $item.status == $status_active}{$LN_active}
         {else if $item.status == $status_nonactive}{$LN_nonactive}
         {else if $item.status == $status_disabled}{$LN_disabled}

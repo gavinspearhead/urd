@@ -24,16 +24,16 @@
 <div class="set_title centered">{$LN_settings_import_file} </div>
 <br/>
 <div class="light">
-<form method='post' enctype='multipart/form-data' action='{$referrer}' id='uploadform'>
+<form id='uploadform'>
 <div>
 <br/>
 <table class="hmid">
 <tr>
 <td>{$LN_settings_filename}:</td>
 <td>
-<input type="file" name="filename" id="files" size="1" class="hidden" onchange="$('#_files').val($(this).val());"/>
+<input type="file" name="filename" id="files" size="1" class="hidden"/>
 <input type="text" name="_filename" id="_files" placeholder="{$LN_settings_filename}" required size="30"/>
-<input type="button" class="submitsmall" value="{$LN_browse}" onclick="$('#files').click();"/>
+<input type="button" class="submitsmall" id="browse_button" value="{$LN_browse}"/>
 <progress id="progress_import"></progress>
 </td>
 </tr>

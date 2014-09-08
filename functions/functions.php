@@ -1589,11 +1589,11 @@ function dec_dl_lock(DatabaseConnection $db, $dlid)
 }
 
 
-function get_all_buttons(DatabaseConnection $db)
+function get_all_search_options(DatabaseConnection $db)
 {
     $res = $db->select_query('* FROM searchbuttons WHERE "id" > 0 ORDER BY "name" ASC');
     if ($res === FALSE) {
-        throw new exception('Cannot find any buttons');
+        throw new exception('Cannot find any search options');
     }
 
     return $res;
@@ -2104,21 +2104,21 @@ function set_all_groups(DatabaseConnection $db, array $settings, $userid)
     $uc->disconnect();
 }
 
-function clear_all_buttons(DatabaseConnection $db)
+function clear_all_search_options(DatabaseConnection $db)
 {
     try {
-        $buttons = get_all_buttons($db);
-        foreach ($buttons as $button) {
-            delete_button($db, $button['id']);
+        $search_options = get_all_search_options($db);
+        foreach ($search_options as $search_option) {
+            delete_search_option($db, $search_option['id']);
         }
     } catch (exception $e) {
     }
 }
 
-function set_all_buttons(DatabaseConnection $db, array $buttons)
+function set_all_search_options(DatabaseConnection $db, array $search_options)
 {
-    foreach ($buttons as $button) {
-        add_button($db, new button ($button['name'], $button['search_url']));
+    foreach ($search_options as $search_option) {
+        add_search_option($db, new search_option($search_option['name'], $search_option['search_url']));
     }
 }
 

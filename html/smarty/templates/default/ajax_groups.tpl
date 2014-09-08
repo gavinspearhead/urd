@@ -53,15 +53,14 @@
 {capture assign=selector}{strip}
 <div class="pref_selector">
 <ul class="tabs">
-<li onclick="javascript:toggle_table('groupstable', 'user', 'admin')" id="button_global" class="tab{if $page_tab == 'admin'} tab_selected{/if}">{$LN_global_settings}</li>
-<li onclick="javascript:toggle_table('groupstable', 'admin', 'user')" id="button_user" class="tab{if $page_tab != 'admin'} tab_selected{/if}">{$LN_user_settings}
+<li id="button_global" class="tab{if $page_tab == 'admin'} tab_selected{/if}">{$LN_global_settings}</li>
+<li id="button_user" class="tab{if $page_tab != 'admin'} tab_selected{/if}">{$LN_user_settings}
 <input type="hidden" id="page_tab" value="{$page_tab|escape:htmlall}"/></li>
 </ul>
 </div>
 {/strip}
 {/capture}
 
-<form action="ajax_groups.php" method="post" id="newsgroupform">
 <div class="hidden">
 <input type="hidden" name="page" id="page1" value="{$page_tab|escape:htmlall}"/>
 <input type="hidden" id="order" name="order" value="{$sort|escape}"/>
@@ -119,7 +118,6 @@
 
 {foreach $allgroups as $group}
 <tr name="content" class="even content">
-
 <td class="general">{$group.number} </td>
 <td class="general">
 {urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_ng('{$group.id}');"} 
@@ -132,7 +130,7 @@
 {$tooltip="`$group.long_name`"}
 {/if}
 <td {if $tooltip neq ''}{urd_popup text=$tooltip|escape }{/if} class="general" > <div class="donotoverflowdamnit inline">
-<span {if $group.active_val eq $NG_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('browse.php?groupID=group_{$group.id}');"{/if}>
+<span {if $group.active_val == $NG_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('browse.php?groupID=group_{$group.id}');"{/if}>
 {$group.name|escape:htmlall}</span></div>
 </td>
 <td class="{$user_hidden} user center">
@@ -159,7 +157,7 @@
 <input type="text" size="2" value="{$group.maxsetsize}" id="user_maxsetsize_{$group.id}" name="maxsetsize[{$group.id}]" onchange="javascript:update_user_ng_value('groups', 'user_maxsetsize', {$group.id});"/>
 </td>
 
-{if $isadmin neq 0 and $urdd_online neq 0}
+{if $isadmin != 0 and $urdd_online != 0}
 <td class="{$admin_hidden} admin center"> 
 <select name="period[{$group.id}]" id="period_{$group.id}" size="1" class="update" onchange="javascript:update_ng_time('groups', {$group.id});">
 {html_options values=$periods_keys output=$periods_texts selected=$group.select}
@@ -167,7 +165,7 @@
 </td>
 <td class="nowrap {$admin_hidden} admin center">@ <input type="text" id="time1_{$group.id}" name="time1[{$group.id}]" value="{$group.time1|escape:htmlall}" class="time" onchange="javascript:update_ng_time('groups', {$group.id});"/>:<input type="text" id="time2_{$group.id}" class="time" name="time2[{$group.id}]" value="{if isset($group.time2) }{$group.time2|string_format:"%02d"}{/if}" onchange="javascript:update_ng_time('groups', {$group.id});"/>
 </td>
-{if $group.active_val eq $NG_SUBSCRIBED and $isadmin neq 0 and $urdd_online neq 0} 
+{if $group.active_val == $NG_SUBSCRIBED and $isadmin != 0 and $urdd_online != 0} 
 <td class="{$admin_hidden} right admin nowrap">
 <div>
 <div class="floatright">
@@ -180,7 +178,7 @@
 </div>
 </td>
 {else} 
-	{if $group.active_val neq $NG_SUBSCRIBED and $isadmin eq 1 and $urdd_online neq 0}
+	{if $group.active_val != $NG_SUBSCRIBED and $isadmin == 1 and $urdd_online != 0}
         <td class="{$admin_hidden} admin">
         <div class="floatright">
         <div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_feeds_edit } onclick="javascript:edit_group({$group.id});"></div>
@@ -199,7 +197,6 @@
 {/if}
 
 </table>
-</form>
 {$bottomskipper}
 
 <div>

@@ -250,15 +250,15 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
     }
 }
 
-function set_buttons(DatabaseConnection $db, $userid, $value)
+function set_search_options(DatabaseConnection $db, $userid, $value)
 {
     $prefArray = load_prefs($db, $userid, TRUE);
-    $maxbuttons = get_config($db, 'maxbuttons');
+    $maxsearch_options = get_config($db, 'maxbuttons');
     $value = explode(':', $value);
-    for ($i = 0; $i < $maxbuttons; $i++) {
-        $button = 'button' . (string) ($i+1);
+    for ($i = 0; $i < $maxsearch_options; $i++) {
+        $search_option = 'button' . (string) ($i+1);
         $v = (isset($value[$i]) && is_numeric($value[$i])) ? $value[$i] : 'none';
-        set_pref($db, $button, $v, $userid);
+        set_pref($db, $search_option, $v, $userid);
     }
 }
 
@@ -267,7 +267,7 @@ function set_multi_select(DatabaseConnection $db, $userid, $name, $value)
     global $LN;
     switch ($name) {
         case 'buttons':
-            set_buttons($db, $userid, $value);
+            set_search_options($db, $userid, $value);
 
             return;
         case 'global_scripts':
@@ -409,10 +409,10 @@ function show_preferences(DatabaseConnection $db, $userid)
     $basket_type_array = get_basket_type_array();
     $encrar_array = get_encrar_array();
 
-    $searchbuttons = array();
+    $search_options = array();
     try {
-        foreach (get_buttons($db) as $k => $s) {
-            $searchbuttons[$k] = htmlentities(utf8_decode($s));
+        foreach (get_search_options($db) as $k => $s) {
+            $search_options[$k] = htmlentities(utf8_decode($s));
         }
     } catch (exception $e) {
         // don't do anything?
@@ -532,31 +532,31 @@ function show_preferences(DatabaseConnection $db, $userid)
         $buttons_msg = '';
         foreach ($prefArray as $k => $p) {
             if (preg_match('/^button[0-9]+$/', $k) && $p != 'none') {
-                $buttons_msg = verify_searchbutton($prefArray["$k"], $searchbuttons);
+                $buttons_msg = verify_search_option($prefArray["$k"], $search_options);
             }
         }
     }
 
-    $cur_buttons = array();
+    $cur_search_options = array();
     foreach ($prefArray as $k => $p) {
         if (preg_match('/^button[0-9]+$/', $k) && $p != 'none') {
-            $cur_buttons[] = $p;
+            $cur_search_options[] = $p;
         }
     }
 
-    $button_array = array();
-    foreach ($searchbuttons as $k => $button) {
-        $button_array[$k] = array('name' => $button, 'on' => 0, 'id' => $k);
+    $search_options_array = array();
+    foreach ($search_options as $k => $search_option) {
+        $search_options_array[$k] = array('name' => $search_option, 'on' => 0, 'id' => $k);
     }
 
-    foreach ($cur_buttons as $b) {
-        if (is_numeric($b) && isset($button_array[(int) $b])) {
-            $button_array[(int) $b]['on'] = 1;
+    foreach ($cur_search_options as $b) {
+        if (is_numeric($b) && isset($search_options_array[(int) $b])) {
+            $search_options_array[(int) $b]['on'] = 1;
         }
     }
 
     $search_terms = @unserialize($prefArray['search_terms']);
-    if ($search_terms === FALSE) {$search_terms = $prefArray['search_terms']; }
+    if ($search_terms === FALSE) { $search_terms = $prefArray['search_terms']; }
 
     $blocked_terms = @unserialize($prefArray['blocked_terms']);
     if ($blocked_terms === FALSE) { $blocked_terms = $prefArray['blocked_terms']; }
@@ -603,7 +603,7 @@ function show_preferences(DatabaseConnection $db, $userid)
             new pref_checkbox (user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
             new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),
             new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hidden_files_list'], 'hidden_files_list', $LN['pref_hidden_files_list_msg'], $hidden_files_list_msg, $hidden_files_list, 10, 40, NULL, 'hidfil', $prefArray['hiddenfiles']? NULL : 'hidden'),
-            new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $button_array, 5),
+            new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $search_options_array, 5),
             new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_group'], 'default_group', $LN['pref_default_group_msg'], $default_group_msg, $groups_array, $prefArray['default_group']),
             new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_feed'], 'default_feed', $LN['pref_default_feed_msg'], $default_feed_msg, $feeds_array, $prefArray['default_feed']),
             );

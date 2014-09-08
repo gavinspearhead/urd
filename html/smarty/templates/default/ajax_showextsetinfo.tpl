@@ -34,7 +34,7 @@
 {elseif $srctype == 'edit'}
 <div>
 	<input type="hidden" id="extsetinfodisplay:{$setID}" name="extsetinfodisplay:{$setID}" value="edit"/>
-	<form id="ext_setinfo_{$setID}" method="post">
+	<form id="ext_setinfo_{$setID}">
 	<div><input type="hidden" name="values[binarytype]" value="{$binarytype|escape}"/></div>
 <table class="set_details ">
 		<tr class="comment"><td class="bold">

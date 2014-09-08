@@ -25,7 +25,7 @@
 {block name=contents}
 {* Search form *}
 {capture assign="searchform"}
-<form id="searchform" method="get">
+<form id="searchform">
 <div>
 
 {foreach $subscribedfeeds as $item}
@@ -88,10 +88,7 @@
 <input type="hidden" name="setid" id="setid" value="{$setid|escape:htmlall}"/>
 <input type="hidden" name="dlname" value=""/>
 <input type="hidden" name="whichbutton" value="" id="whichbutton"/>
-<input type="hidden" name="previewBinID" value="" id="previewBinID"/>
-<input type="hidden" name="previewGroupID" value="" id="previewGroupID"/>
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
-<input type="hidden" name="curScrollVal" id="curScrollVal" value=""/>
 <input type="hidden" name="type" id="type" value="rss"/>
 </div>
 {/capture}

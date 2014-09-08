@@ -43,8 +43,8 @@ function urd_autoload($class)
     case 'urdd_protocol' : $file = '../urdd/urdd_protocol.php'; break;
     case 'saved_searches' : $file = 'saved_searches.php'; break;
     case 'SpotCategories' : $file = 'spots_categories.php'; break;
-    case 'button': $file = 'buttons.php'; break;
-    case 'button_c': $file = '../html/admin_buttons.php'; break;
+    case 'search_option': $file = 'search_options.php'; break;
+    case 'search_option_c': $file = '../html/ajax_exd_searchoptions.php'; break;
     case 'get_opt': $file = 'libs/getopt.php'; break;
     case 'socket': $file = 'libs/socket.php'; break;
     case 'Base_NNTP_Client': $file = 'libs/base_nntp_client.php'; break;

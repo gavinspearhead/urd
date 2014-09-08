@@ -334,12 +334,12 @@ if ($db_created) {
         }
     }
 
-    // Storing default buttons:
+    // Storing default search options:
     if ($rv_db && $rv_ct && $rv_cr) {
-        $OUT .= '<tr><td class="install2">Storing default search buttons</td>';
+        $OUT .= '<tr><td class="install2">Storing default search options</td>';
         $rv_idb = FALSE;
         try{
-            insert_default_buttons($db);
+            insert_default_options($db);
             $rv_idb = TRUE;
         } catch (exception $e) {
             $error = $e->getMessage();
