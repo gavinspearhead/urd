@@ -1296,6 +1296,7 @@ function load_activity_status(force)
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#status_activity').html(x.contents);
+            $('#urd_poweron').click (function() { control_action('poweron', '', ''); load_quick_status();} ) ;
         }
     });
 }
@@ -1313,6 +1314,8 @@ function load_quick_status()
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#smallstatus').html(x.contents);
+            $('#urdd_enable').click (function() { control_action('poweron', '', ''); load_quick_status();} ) ;
+            $('#urdd_disable').click (function() { control_action('poweroff', '', ''); load_quick_status();} ) ;
         }
     });
 }

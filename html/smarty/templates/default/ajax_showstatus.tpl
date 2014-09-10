@@ -28,11 +28,11 @@
 {if $type == 'icon'}
 {if $isadmin}
     {if $isconnected}
-    <div class="status_light green buttonlike down5" {urd_popup text=$LN_disableurdd type="small"} onclick="javascript:control_action('poweroff', '', ''); load_quick_status();"></div>
+    <div class="status_light green buttonlike down5" {urd_popup text=$LN_disableurdd type="small"} id="urdd_disable"></div>
     {elseif ($startup_perc > 0) && ($startup_perc <= 99) }
     <div class="status_light yellow down5"></div>
     {else}
-    <div class="status_light red buttonlike down5" {urd_popup text=$LN_enableurdd type="small"} onclick="javascript:control_action('poweron', '', ''); load_quick_status();"></div>
+    <div class="status_light red buttonlike down5" {urd_popup text=$LN_enableurdd type="small"} id="urdd_enable"></div>
     {/if}
 {else}
     {if $isconnected}
@@ -74,7 +74,7 @@
 
 {if $type == 'activity'}
 {if not $isconnected}
-<li class="plain"><div class="down3" {if $isadmin} class="down3 buttonlike" onclick="javascript:control_action('poweron', '','');load_quick_status();"{else} class="down3" {/if}>
+<li class="plain"><div class="down3" {if $isadmin} class="down3 buttonlike" id="urdd_poweron"{else} class="down3" {/if}>
 {$LN_urdddisabled}</div>
 </li>
 {else}
@@ -111,7 +111,7 @@
 
 {if !empty($previews)}<li class="activity">&nbsp;</li>
 <li class="activity bold">
-<div class="down3 buttonlike fixedright deleteicon iconsize" onclick="javascript:delete_preview('all');" {urd_popup type="small" text=$LN_delete_all }></div>
+<div class="down3 buttonlike fixedright deleteicon iconsize" id="pv_deleteall" {urd_popup type="small" text=$LN_delete_all }></div>
 <div class="down3">{$LN_stats_pv}</div>
 </li> 
 {/if}
