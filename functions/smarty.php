@@ -42,6 +42,7 @@ function init_smarty($title, $show_menu=1, $custom_menu=NULL)
     }
     $modules = urd_modules::get_urd_module_config(get_config($db, 'modules'));
     $smarty->enableSecurity();
+    $smarty->direct_access_security = FALSE;
     $smarty->setCompileCheck(isset($config['smarty_compile_check']) ? $config['smarty_compile_check'] : TRUE);
     $show_post = $modules[urd_modules::URD_CLASS_POST];
     $show_makenzb = $modules[urd_modules::URD_CLASS_MAKENZB];

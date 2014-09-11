@@ -62,7 +62,7 @@
 {if $killflag}
     <div class="inline iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
 {else}
-    <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset }></div>
+    <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset}></div>
 {/if}
 {if $isadmin}
     <div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
@@ -181,7 +181,7 @@
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 
-<td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories" }{/if}>
+<td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
     <div class="donotoverflowdamnit inline">
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}

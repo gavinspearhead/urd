@@ -1297,6 +1297,7 @@ function load_activity_status(force)
         if (x.error == 0) {
             $('#status_activity').html(x.contents);
             $('#urd_poweron').click (function() { control_action('poweron', '', ''); load_quick_status();} ) ;
+            $('#pv_deleteall').click (function() { delete_preview('all');} ) ;
         }
     });
 }
@@ -3723,14 +3724,15 @@ function show_small_help(msg, ev)
         posx -= 120;
     }
     $('#smallhelp').css('left', (posx + 1) + 'px');
-    $('#smallhelp').css('top' , (posy + 1) + 'px');
-    $('#smallhelp').css('zIndex' , 10000000);
+    $('#smallhelp').css('top', (posy + 1) + 'px');
+    $('#smallhelp').css('zIndex', 10000000);
     $('#smallhelp').removeClass('hidden');
 }
 
 function hide_small_help()
 {
     $('#smallhelp').addClass('hidden');
+    $('#smallhelp').html('');
 }
 
 function load_sets(options)
@@ -6453,22 +6455,31 @@ function show_sidebar(display)
     var side_bar_width = 250;
 
     if (sidebar || display === false) {
-        $('#contentleft').outerWidth(0);
-        $('#contentleft').css('margin-left', '-10000px');
-        $('#topcontent').css('left', 0);
-        $('#searchbar').css('left', 0);
-        $('#topcontent').width('100%');
-        sidebar = 0;
-        $('#sidebar_button').text('>>');
+        $('#topcontent').animate({ left: 0 }, 500, function() {} ); 
+        $('#contentleft').animate( { 'margin-left' : -1 * (side_bar_width + 1) }, { 'duration': 500 });
+        $('#searchbar').animate({ left: 0 }, 500,  function() {
+            $('#topcontent').width('100%');
+            $('#contentleft').outerWidth(0);
+            sidebar = 0;
+            $('#sidebar_button').text('>>');
+            // don't know why we need it ... but...
+            $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });
+            update_widths('browsesubjecttd');
+        }); 
     } else {
-        $('#contentleft').css('margin-left', '0px');
         $('#contentleft').css('height', Math.round($(window).height() - 22));
-        $('#contentleft').outerWidth(side_bar_width);
-        $('#topcontent').css('left', side_bar_width);
-        $('#searchbar').css('left', side_bar_width);
+        $('#contentleft').animate({ 'margin-left' :0 }, { 'duration': 500} );
+        $('#searchbar').animate({ left: side_bar_width }, 500, function() {} ); 
+        $('#topcontent').animate({ left: side_bar_width }, 500,  function() {
+            $('#contentleft').outerWidth(side_bar_width);
+            sidebar = 1;
+            $('#sidebar_button').text('<<');
+
+        }); 
         $('#topcontent').width($('#topcontent').width() - side_bar_width);
-        sidebar = 1;
-        $('#sidebar_button').text('<<');
+        // don't know why we need it ... but...
+        $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });
+        update_widths('browsesubjecttd');
     }
     $('#sbdiv').css('padding-top', (Math.round($(window).height() - 50 - 22) / 2));
     $('#sidebar_button').css('padding-top', 17);
@@ -6476,9 +6487,6 @@ function show_sidebar(display)
 
     $('#content').css('display', 'none');
     $('#content').css('display', 'block');
-    // don't know why we need it ... but...
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });
-    update_widths('browsesubjecttd');
 }
 
 function init_browse_sliders()
