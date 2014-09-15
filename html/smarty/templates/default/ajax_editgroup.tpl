@@ -33,7 +33,7 @@
 <tr><td>{$LN_expire}:</td><td colspan="3"><input type="text" size="5" name="group_expire" id="group_expire" value="{$oldexpire}" required/> {$LN_days|escape:htmlall}</td></tr>
 <tr><td>{$LN_pref_minsetsize}:</td><td colspan="3"><input type="text" size="5" name="group_minsetsize" id="group_minsetsize" value="{$oldminsetsize|escape:htmlall}"/></td></tr>
 <tr><td>{$LN_pref_maxsetsize}:</td><td colspan="3"><input type="text" size="5" name="group_maxsetsize" id="group_maxsetsize" value="{$oldmaxsetsize|escape:htmlall}"/></td></tr>
-<tr><td colspan="1">{$LN_active}</td>
+<tr><td>{$LN_active}</td>
 <td> {urd_checkbox value="$oldsubscribed" name="group_subscribed" id="group_subscribed" } </td></tr>
 <tr><td>{$LN_ng_adult}:</td><td>{urd_checkbox value="$oldadult" name="group_adult" id="group_adult" }</td></tr>
 <td>{$LN_ng_autoupdate}:</td><td>
@@ -46,7 +46,7 @@
 
 <tr><td colspan="4" class="right">&nbsp;</td></tr>
 <tr><td colspan="4" class="right">
-	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submit"/> 
+	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submitsmall"/> 
 </td></tr>
 </table>
 

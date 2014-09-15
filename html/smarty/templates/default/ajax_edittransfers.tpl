@@ -27,14 +27,14 @@
 
 <div class="padding10">
 <br/>
-<input type="hidden" name="dlid" id="dlid" value="{$id|escape:htmlall}" />
+<input type="hidden" name="dlid" id="dlid" value="{$id|escape:htmlall}"/>
 <table class="renametransfer hmid">
 <tr><td>{$LN_transfers_name}:</td><td><input type="text" class="width300" name="dlname" id="dlname" value="{$oldname|escape}" autofocus="autofocus"/></td></tr>
 <tr><td>{$LN_transfers_archpass}:</td><td><input type="text" class="width300" name="dlpass" id="dlpass" value="{$oldpw|escape}"/></td></tr>
 <tr><td>{$LN_browse_download_dir}:</td><td>
 
 <span id="dl_dir_span">
-    <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300" {if $dldir_noedit eq 1}readonly="readonly"{/if}/>&nbsp;</div>
+    <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300" {if $dldir_noedit == 1}readonly="readonly"{/if}/>&nbsp;</div>
     {if $dldir_noedit != 1}<div class="foldericon iconsize floatleft" id="toggle_button"></div>{/if}
 </span>
 <span id="dir_select_span" class="hidden">
@@ -49,7 +49,7 @@
 </td></tr>
 <tr><td>{$LN_browse_schedule_at}:</td><td>
 
-<input type="text" class="width300" name="starttime" id="timestamp" value="{$starttime|escape}" {if $starttime_noedit eq 1}readonly="readonly"{/if} 
+<input type="text" class="width300" name="starttime" id="timestamp" value="{$starttime|escape}" {if $starttime_noedit == 1}readonly="readonly"{/if} 
 />
 </td></tr>
 <tr><td colspan="2"><br/>

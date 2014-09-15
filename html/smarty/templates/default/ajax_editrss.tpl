@@ -34,7 +34,7 @@
 <tr><td>{$LN_name}:</td><td colspan="3"><input type="text" size="40" name="rss_name" id="rss_name" required placeholder="{$LN_name}" value="{$oldname|escape:htmlall}"/></td></tr>
 <tr><td>{$LN_feeds_url}:</td><td colspan="3"><input type="text" size="40" name="rss_url" id="rss_url" required placeholder="{$LN_feeds_url}" value="{$oldurl|escape:htmlall}"/></td></tr>
 <tr><td>{$LN_expire}:</td><td colspan="3"><input type="text" size="5" name="rss_expire" id="rss_expire" required placeholder="{$LN_expire}"value="{$oldexpire|escape:htmlall}"/> {$LN_days}</td></tr>
-<tr><td colspan="1">{$LN_active}</td>
+<tr><td>{$LN_active}</td>
 <td> {urd_checkbox value="$oldsubscribed" name="rss_subscribed" id="rss_subscribed" } </td></tr>
 <tr><td>{$LN_ng_adult}:</td><td>{urd_checkbox value="$oldadult" name="rss_adult" id="rss_adult" }</td></tr>
 <td>{$LN_ng_autoupdate}:</td><td>
@@ -55,7 +55,7 @@
 
 <tr><td colspan="4" class="right">&nbsp;</td></tr>
 <tr><td colspan="4" class="right">
-	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submit"/> 
+	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submitsmall"/> 
 </td></tr>
 </table>
 {/block}

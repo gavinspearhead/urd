@@ -66,25 +66,25 @@
 {/if}
 {if $isadmin}
     <div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
-    <div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+    <div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint}></div>
 {/if}
 {/strip}
 {/capture}
 
 {* And display it here and at the bottom: *}
 
+{capture assign=tableheader}
 {$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
 {$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort.order == "title"} {if $sort.direction=='desc'}{$title_sort=$up} {else}{$title_sort=$down} {/if} {else}{$title_sort=""} {/if}
 {if $sort.order == "stamp"} {if $sort.direction=='desc'}{$stamp_sort=$up} {else}{$stamp_sort=$down} {/if} {else}{$stamp_sort=""} {/if}
 {if $sort.order == "size"} {if $sort.direction=='desc'}{$size_sort=$up} {else}{$size_sort=$down} {/if} {else}{$size_sort=""} {/if}
 
-{capture assign=tableheader}
 <table class="articles" id="spots_table">
 <tr>
 <th class="head round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
-<th id="browsesubjecttd" class="head buttonlike" onclick="javascript:change_sort_order('title');">{$LN_browse_subject} {$title_sort}</th>
+<th class="head buttonlike" id="browsesubjecttd" onclick="javascript:change_sort_order('title');">{$LN_browse_subject} {$title_sort}</th>
 <th class="head fixwidth1 buttonlike" onclick="javascript:change_sort_order('reports', 'desc');">{$LN_spamreporttag}</th>
 <th class="head">{$LN_whitelisttag}</th>
 {if $show_comments > 0}
@@ -181,7 +181,7 @@
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 
-<td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
+<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
     <div class="donotoverflowdamnit inline">
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}
@@ -223,9 +223,9 @@
 <td class="fixwidth3 nowrap">{$set.size}</td>
 <td class="fixwidth1">
     
-    {if $set.url neq ''}
+    {if $set.url != ''}
     <div class="inline iconsize {$linkpic} buttonlike" onclick="javascript:jump('{$set.url|escape:javascript}', true);" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
-	{elseif $set.rating neq 0}
+	{elseif $set.rating != 0}
     <div class="inline iconsize {$linkpic}"></div>
 {else}&nbsp;
 	{/if}

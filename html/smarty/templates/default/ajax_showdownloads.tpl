@@ -49,7 +49,7 @@
 {/if}
 {if $a->comment != ''}
 {$comment=$a->comment}
-<div class="inline iconsizeplus infoicon" {urd_popup type="small" text="$comment" } ></div>
+<div class="inline iconsizeplus infoicon" {urd_popup type="small" text="$comment" }></div>
 {/if}
 {if $a->status == "rarfailed"}
 <div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badrarinfo } onclick="javascript:show_contents('{$a->destination}/rar.log', 0);"></div>
@@ -86,7 +86,7 @@
 {/capture}
 <tr class="even content" name="content">
 		<td class="bold">
-        <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
+        <div class="donotoverflowdamnit inline"><span>{$a->name|escape:htmlall}</span></div>
         </td>
 		<td class="nowrap">
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}
@@ -108,16 +108,16 @@
 <table class="transfers {if $active_tab != 'downloads'}hidden{/if}" id="downloads_tab">
 <thead>
 <tr>
-<th class="head round_left nowrap" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
-<th class="head nowrap fixwidth8a">{$LN_transfers_head_progress}</th>
-<th class="head nowrap fixwidth8">{$LN_size}</th>
+<th class="head round_left nowrap" width="100%" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
+<th class="head nowrap">{$LN_transfers_head_progress}</th>
+<th class="head nowrap">{$LN_size}</th>
 <th class="head nowrap">{$LN_transfers_head_speed}</th>
 <th class="head nowrap">{$LN_eta}</th>
-<th class="head nowrap fixwidth8">{$LN_transfers_head_started}</th>
+<th class="head nowrap">{$LN_transfers_head_started}</th>
 {if $isadmin}
 <th class="head nowrap">{$LN_transfers_head_username}</th>
 {/if}
-<th class="right nowrap head round_right fixwidth8">{$LN_transfers_head_options}</th>
+<th class="right nowrap head round_right">{$LN_transfers_head_options}</th>
 </tr>
 </thead>
 
@@ -137,7 +137,6 @@
 {if isset($infoarray_download['dlfailed'])}{display_status status=$LN_transfers_status_dlfailed infoarray=$infoarray_download['dlfailed']}{/if}
 {if empty($infoarray_download)}
 <tr><td colspan="8" class="centered highlight even bold">{$LN_error_nodownloadsfound}</td></tr>
-
 {/if}
 
 <tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td></tr>

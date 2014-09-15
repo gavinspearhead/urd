@@ -21,8 +21,10 @@
  * $Author: gavinspearhead $
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$title|escape}</div>
+ {extends file="popup.tpl"}
+{block name=title}{$title|escape}{/block}
+{block name=contents}
+
 <div class="sets_inner" onmouseup="javascript:start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, event);" id="td_sets">
 {if $show_image && $image != '' && $image_from_db == 0}
 <div class="spot_thumbnail noborder buttonlike"><img src="{$image}" class="max100x100" alt="" onclick="javascript:jump('{$image|escape:javascript}', true);"/> </div>
@@ -39,7 +41,7 @@
 <tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
-<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'poster':'{$poster|escape:javascript}' });">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">W</div>{/if}</td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'poster':'{$poster|escape:javascript}' });">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
 
 {foreach $subcata as $k=>$cat}<tr class="comment"><td class="nowrap bold">{$k}:</td>
 <td>
@@ -115,3 +117,4 @@
 
 </table>
 </div>
+{/block}

@@ -33,21 +33,21 @@
 <th class="head right round_right">{$LN_actions}</th>
 </tr>
 
-{foreach $buttons as $button}
+{foreach $search_options as $search_option}
 <tr class="even content" name="content">
-<td>{$button->get_name()|escape|truncate:$maxstrlen}</td>
-<td ><span class="buttonlike" {urd_popup type="small" text=$LN_buttons_clicktest} onclick="javascript:jump('{$button->get_url()|replace:"\$q":"test"|escape:javascript}', true);">{$button->get_url()|escape|truncate:$maxstrlen}</span></td>
+<td>{$search_option->get_name()|escape|truncate:$maxstrlen}</td>
+<td ><span class="buttonlike" {urd_popup type="small" text=$LN_buttons_clicktest} onclick="javascript:jump('{$search_option->get_url()|replace:"\$q":"test"|escape:javascript}', true);">{$search_option->get_url()|escape|truncate:$maxstrlen}</span></td>
 <td>
 <div class="floatright">
-<div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_buttons_edit } onclick="javascript:buttons_action('edit',{$button->get_id()});"></div>
-<div class="inline iconsizeplus deleteicon buttonlike" {urd_popup type="small" text=$LN_delete } onclick="javascript:buttons_action_confirm('delete_button', {$button->get_id()}, '{$LN_delete} {$button->get_name()|escape:'javascript'}');"></div>
+<div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_buttons_edit } onclick="javascript:buttons_action('edit',{$search_option->get_id()});"></div>
+<div class="inline iconsizeplus deleteicon buttonlike" {urd_popup type="small" text=$LN_delete } onclick="javascript:buttons_action_confirm('delete_button', {$search_option->get_id()}, '{$LN_delete} {$search_option->get_name()|escape:'javascript'}');"></div>
 </div>
 </td>
 </tr>
 {foreachelse}
 <tr><td colspan="8" class="centered highlight even bold">{$LN_error_nosearchoptionsfound}</td></tr>
 {/foreach}
-{if count($buttons) > 12}
+{if count($search_options) > 12}
 <tr><td colspan="8" class="feet round_both_bottom">&nbsp;</td>
 {/if}
 </table>

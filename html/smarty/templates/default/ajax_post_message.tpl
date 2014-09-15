@@ -22,8 +22,9 @@
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_post_message}</div>
+{extends file="popup.tpl"}
+{block name=title}{if $type=='group'}{$LN_post_message}{else}{$LN_quickmenu_comment_spot}{/if}{/block}
+{block name=contents}
 <div class="light">
 <br/>
 <input type="hidden" id="type" value="{$type|escape:htmlall}"/>
@@ -44,9 +45,16 @@
 {html_options options=$ratings selected=$groupid}
 </select>
 {/if}
-<tr><td {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea>
+<tr><td {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea></td>
+<td>{foreach $smileys as $smiley}
+<img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" title="{$smiley}" class="button" onclick="javascript:add_text('[img={$smiley|escape:javascript}]', $('#messagetext'));">
+{/foreach}
+
+<td>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" class="submit" onclick="javascript:post_message();"/></td></tr>
+<tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" id="post_submit" class="submit"/></td></tr>
 
 </table>
 </div>
+{/block}
+

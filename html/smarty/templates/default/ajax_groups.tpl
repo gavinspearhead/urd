@@ -99,7 +99,7 @@
 <tr>
 <th class="general head round_left">&nbsp;</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_active } class="general buttonlike head nowrap" onclick="javascript:load_groups( { order: 'active', defsort: 'desc' } );">&nbsp;{$active_sort}</th>
-<th {urd_popup type="small" text=$LN_ng_tooltip_name } id="browsesubjecttd" style="width:100%" class="general buttonlike head nowrap" onclick="javascript:load_groups( { order: 'name', defsort: 'desc' } );">{$LN_name} {$name_sort}</th>
+<th {urd_popup type="small" text=$LN_ng_tooltip_name } id="browsesubjecttd" class="general buttonlike head nowrap" onclick="javascript:load_groups( { order: 'name', defsort: 'desc' } );">{$LN_name} {$name_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_category } class="{$user_hidden} center user buttonlike head nowrap" onclick="javascript:load_groups( { order : 'category', defsort: 'asc' } );">{$LN_category} {$category_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_posts } class="center general buttonlike head nowrap" onclick="javascript:load_groups( { order : 'postcount', defsort: 'desc' } );">{$LN_ng_posts} {$postcount_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_adult } class="{$admin_hidden} admin buttonlike center nowrap head" onclick="javascript:load_groups( { order: 'adult', defsort: 'desc' } );">{$LN_ng_adult} {$adult_sort}</th>

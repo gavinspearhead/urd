@@ -55,10 +55,10 @@
 {foreach $usenet_servers as $usenet_server}
 
 {capture assign="enable"}
-<div class="floatleft status_light red buttonlike down2" onclick="javascript:usenet_action('enable_server',{$usenet_server->id})" {urd_popup type="small" text=$LN_usenet_enable|escape }></div>
+<div class="floatleft status_light red buttonlike down2" onclick="javascript:usenet_action('enable_server', {$usenet_server->id})" {urd_popup type="small" text=$LN_usenet_enable|escape }></div>
 {/capture}
 {capture assign="disable"}
-<div class="floatleft status_light green buttonlike down2" onclick="javascript:usenet_action('disable_server',{$usenet_server->id})" {urd_popup type="small" text=$LN_usenet_disable|escape }></div>
+<div class="floatleft status_light green buttonlike down2" onclick="javascript:usenet_action('disable_server', {$usenet_server->id})" {urd_popup type="small" text=$LN_usenet_disable|escape }></div>
 {/capture}
 
 <tr name="content" class="even content server_{if $usenet_server->priority eq 0}disabled{else}enabled{/if}">

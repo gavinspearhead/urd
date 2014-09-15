@@ -21,39 +21,40 @@
  * $Id: ajax_calendar.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button2"></div>
-<div class="set_title centered">&nbsp;</div>
+{extends file="popup.tpl"}
+{block name=title}&nbsp;{/block}
+{block name=contents}
 
 <div><br/>
 <div id="leftcalendar" class="light">
 <table class="centered">
 <tr>
 <td colspan="7" class="centered">
-<span onclick="javascript:show_calendar({$month}, {$year} - 1, 1)" class="buttonlike" {urd_popup type="small" text="$LN_previous $LN_year"|capitalize }>&lt;&lt;</span>
-<span onclick="javascript:show_calendar({$previous_month.0}, {$previous_month.1},1 )" class="buttonlike" {urd_popup type="small" text="$LN_previous $LN_month"|capitalize }>&lt;</span> 
-<span class="bold"> {$LN_month_names.$month} {$year}</span>
-<span class="buttonlike" onclick="javascript:show_calendar({$next_month.0}, {$next_month.1}, 1)" {urd_popup type="small" text="$LN_next $LN_month"|capitalize }>&gt; </span>
-<span class="buttonlike" onclick="javascript:show_calendar({$month}, {$year} + 1),1" {urd_popup type="small" text="$LN_next $LN_year"|capitalize }>&gt;&gt;</span>
+<span class="buttonlike" id="prev_year" {urd_popup type="small" text="$LN_previous $LN_year"|capitalize }>&lt;&lt;</span>
+<span class="buttonlike"id="prev_month"  {urd_popup type="small" text="$LN_previous $LN_month"|capitalize }>&lt;</span> 
+<span class="bold">{$LN_month_names.$month} {$year}</span>
+<span class="buttonlike"id="next_month" {urd_popup type="small" text="$LN_next $LN_month"|capitalize }>&gt;</span>
+<span class="buttonlike" id="next_year" {urd_popup type="small" text="$LN_next $LN_year"|capitalize }>&gt;&gt;</span>
 </td></tr>
 <tr>
 {foreach $LN_short_day_names as $name}
-<th class="right">{$name}</th>
+    <th class="right">{$name}</th>
 {/foreach}
 </tr>
 {foreach $dates as $week}
-<tr>
-{foreach $week as $day}
-<td class="right{if $day==$selected_day and $selected_day neq 0} highlight3{/if}" id="day_{$day}">
-{if $day neq 0}
-<span class="buttonlike{if $today==$day} highlight{/if}" onclick="javascript:select_calendar({$day});">
-{$day}
-</span>
-{/if}
-</td>
+    <tr>
+    {foreach $week as $day}
+        <td class="right{if $day==$selected_day and $selected_day != 0} highlight3{/if}" id="day_{$day}">
+        {if $day neq 0}
+            <span name="day" class="buttonlike{if $today == $day} highlight{/if}">{$day}</span>
+        {/if}
+        </td>
+    {/foreach}
+    </tr> 
 {/foreach}
-</tr> 
-{/foreach}
+
 </table>
+
 </div>
 <div id="rightcalendar">
 <div class="leftward" id="theleft">
@@ -70,8 +71,11 @@
 <td><div id="minutes" style="width:100px"></div></td>
 </tr>
 <tr>
+<td>&nbsp;</td>
+
 <td>
 <div>
+<br/>
 <input name="time" id="time1" type="text" value="{$hour|escape:htmlall}:{$minute|escape:htmlall}" size="5"/>
 </div></td>
 </tr>
@@ -83,8 +87,8 @@
 <br/>
 <br/>
 <div class="right" id="calendarbottom">
-<input class="submit" type="button" name="submit_no_delay" value="{$LN_atonce}" onclick="javascript:submit_calendar('atonce');"/>
-<input class="submit" type="button" name="submit" value="{$LN_ok}" onclick="javascript:submit_calendar();"/>
+<input class="submit" type="button" name="submit_no_delay" id="submit_no_delay" value="{$LN_atonce}"/>
+<input class="submit" type="button" name="submit" id="submit_cal" value="{$LN_ok}"/>
 </div>
 <input type="hidden" id="month" value="{$month|escape:htmlall}"/>
 <input type="hidden" id="year" value="{$year|escape:htmlall}"/>
@@ -92,3 +96,5 @@
 <input type="hidden" id="hour" value="{$hour|escape:htmlall}"/>
 <input type="hidden" id="minute" value="{$minute|escape:htmlall}"/>
 <input name="date" id="date1" type="hidden" value="{$year|escape:htmlall}-{$month|escape:htmlall}-{$selected_day|escape:htmlall}"/>
+
+{/block}

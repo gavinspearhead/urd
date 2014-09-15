@@ -22,8 +22,10 @@
  * $Id: ajax_show_upload.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_transfers_uploadnzb}</div>
+
+{extends file="popup.tpl"}
+{block name=title}{$LN_transfers_uploadnzb}{/if}{/block}
+{block name=contents}
 <br/>
 <div class="light padding10">
 <table class="upload hmid">
@@ -91,3 +93,4 @@
 </div>
 <div id="calendardiv" class="calendaroff">
 </div>
+{/block}

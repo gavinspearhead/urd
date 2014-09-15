@@ -22,9 +22,9 @@
  * $Id: ajax_showextsetinfo.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
-
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$setname|escape}</div>
+{extends file="popup.tpl"}
+{block name=title}{$setname|escape}{/block}
+{block name=contents}
 <div class="sets_inner" id="td_sets">
 
 {if $srctype == 'error'}
@@ -126,7 +126,6 @@
 {$extsetoverview}
 {/if}
 
-
 <tr class="comment"><td colspan="2"><br/></td></tr>
 
 {$fileoverview}
@@ -135,3 +134,4 @@
 {* Display: *}
 {/if}
 </div>
+{/block}

@@ -21,8 +21,11 @@
  * $Id: ajax_show_post.tpl 3094 2014-06-13 23:20:27Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_post_post}</div>
+
+{extends file="popup.tpl"}
+{block name=title}{$LN_post_post}{/block}
+{block name=contents}
+
 <div class="light">
 <input type="hidden" name="postid" id="postid" value="{$postid}"/>
 
@@ -42,11 +45,13 @@
 </select>
 
 </td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup}:</td><td><select name="newsgroup" id="groupid" class="width300" {$disabledstr}>
+<tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup}:</td>
+<td><select name="newsgroup" id="groupid" class="width300" {$disabledstr}>
     <option value="" {if !isset($group) || $group == ''}selected="selected"{/if}>{$LN_select}</option>
     {html_options options=$groups selected=$group}
 </select></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup} NZB:</td><td><select name="newsgroup_nzb" id="groupid_nzb" class="width300" {$disabledstr}>
+<tr><td {urd_popup type="small" text=$LN_post_newsgroupext} >{$LN_post_newsgroup} NZB:</td>
+<td><select name="newsgroup_nzb" id="groupid_nzb" class="width300" {$disabledstr}>
     <option value="" {if (!isset($group_nzb) || $group_nzb == '') && $default_nzb_group === NULL}selected="selected"{/if}>{$LN_select}</option>
     {if $default_nzb_group !== NULL} 
     <option value="{$default_nzb_group.group_id}" {if !isset($group_nzb) || $group_nzb == $default_nzb_group.group_id || $group_nzb == ''}selected="selected"{/if}>{$default_nzb_group.group_name}</option>
@@ -56,19 +61,29 @@
     <option value="{$id}" {if $id == $group_nzb}selected="selected"{/if}>{$name}</option>
 {/foreach}
 </select></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_subjectext} >{$LN_post_subject}:</td><td><input type="text" name="subject" id="subject" class="width300" value="{$subject|escape}" {$readonlystr} required/></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_posternameext} >{$LN_post_postername}:</td><td><input type="text" name="postername" id="postername"class="width300" value="{$poster_name|escape}" {$readonlystr} required/></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_posteremailext}>{$LN_post_posteremail}:</td><td><input type="email" name="posteremail" id="posteremail" class="width300" value="{$poster_email|escape}" {$readonlystr} required/></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_recoveryext} >{$LN_post_recovery}:</td><td><input type="text" name="recovery" id="recovery" {urd_popup type="small" text=$LN_post_recoveryext} value="{$recovery_size|escape}" class="width60" {$readonlystr} required />%</td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_rarfilesext}>{$LN_post_rarfiles}:</td><td><input type="text" name="filesize" id="filesize" {urd_popup type="small" text=$LN_post_rarfilesext} value="{$rarfile_size|escape}" class="width60" {$readonlystr} required/></td></tr>
-<tr><td> {$LN_post_delete_files}:</td> <td> {urd_checkbox value="$delete_files" name="delete_files" id="delete_files" readonly=$readonly} </td></tr>
-<tr><td>{$LN_browse_schedule_at}:</td><td><input id="timestamp" name="timestamp" type="text" value="{$start_time|escape}" class="width300" {if $readonly == 0 } onclick="javascript:show_calendar(null, null, null);" onkeyup="javascript:hide_popup('calendardiv', 'calendar');"{/if} {$readonlystr}/></td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_subjectext} >{$LN_post_subject}:</td>
+<td><input type="text" name="subject" id="subject" class="width300" value="{$subject|escape}" {$readonlystr} required/></td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_posternameext} >{$LN_post_postername}:</td>
+<td><input type="text" name="postername" id="postername"class="width300" value="{$poster_name|escape}" {$readonlystr} required/></td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_posteremailext}>{$LN_post_posteremail}:</td>
+<td><input type="email" name="posteremail" id="posteremail" class="width300" value="{$poster_email|escape}" {$readonlystr} required/></td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_recoveryext} >{$LN_post_recovery}:</td>
+<td><input type="text" name="recovery" id="recovery" {urd_popup type="small" text=$LN_post_recoveryext} value="{$recovery_size|escape}" class="width60" {$readonlystr} required/>%</td></tr>
+<tr><td {urd_popup type="small" text=$LN_post_rarfilesext}>{$LN_post_rarfiles}:</td>
+<td><input type="text" name="filesize" id="filesize" {urd_popup type="small" text=$LN_post_rarfilesext} value="{$rarfile_size|escape}" class="width60" {$readonlystr} required/></td></tr>
+<tr><td> {$LN_post_delete_files}:</td>
+<td> {urd_checkbox value="$delete_files" name="delete_files" id="delete_files" readonly=$readonly}</td></tr>
+<tr><td>{$LN_browse_schedule_at}:</td>
+<td><input id="timestamp" name="timestamp" type="text" value="{$start_time|escape}" class="width300" {$readonlystr}/></td></tr>
 {if $readonly == 0}
 <tr><td>&nbsp;</td></tr>
-<tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" class="submit" onclick="javascript:create_post();"/></td></tr>
+<tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" id="submit_button" class="submit"/></td></tr>
 {/if}
 
 </table>
 <div id="calendardiv" class="calendaroff">
 </div>
 </div>
+
+{/block}
+

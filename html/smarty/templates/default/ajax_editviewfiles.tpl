@@ -44,13 +44,13 @@
 <tr>
 <td>{$LN_group}:
 </td>
-<td>{html_options name="group" id="group_editfile" options=$groups selected=$group }
+<td>{html_options name="group" id="group_editfile" options=$groups selected=$group}
 </td>
 </tr>
 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr>
 <td class="centered" colspan="2">
-<input type="button" value="{$LN_apply}" name="apply" class="submit" onclick="javascript:update_filename();"/>
+<input type="button" value="{$LN_apply}" name="apply" id="apply_button" class="submit"/>
 </td>
 </tr>
 

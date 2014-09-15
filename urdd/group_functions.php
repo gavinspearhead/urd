@@ -123,7 +123,7 @@ function add_parts(DatabaseConnection $db, array $tables, $groupID)
 
             if ($x % DatabaseConnection::MAX_INSERT_PARTS == 0) {
                 // Remove the last , before running the query:
-                $db->update_query_2("binaries_$groupID ", array('dirty'=> DatabaseConnection::DIRTY), '"binaryID" IN ( ' . 
+                $db->update_query_2("binaries_$groupID ", array('dirty' => DatabaseConnection::DIRTY), '"binaryID" IN ( ' . 
                         str_repeat('?,', count($binarieslist) - 1) . '? )', $binarieslist);
                 $binarieslist = array();
                 $x = (int) 1;
@@ -338,7 +338,7 @@ function update_set_data(DatabaseConnection $db, $groupID, $id, $minsetsize, $ma
             $set_list[] = $set_array;
         }
         add_sets($db, $set_list);
-        $db->update_query_2("binaries_$groupID", array('dirty'=> DatabaseConnection::CONSISTENT), "\"setID\" IN ($binary_str)", $l);
+        $db->update_query_2("binaries_$groupID", array('dirty' => DatabaseConnection::CONSISTENT), "\"setID\" IN ($binary_str)", $l);
         $t_time = microtime(TRUE);
         $ETA = floor((($total - $cnt) * ($t_time - $s_time) / $cnt));
         update_queue_status($db, $id, NULL, $ETA, floor(85 + ((15 * $cnt) / $total)), NULL, NULL);
@@ -488,7 +488,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
         $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
     }
 
-    $res = $db->delete_query("binaries_$groupID", "\"setID\" NOT IN (SELECT \"ID\" FROM setdata WHERE \"groupID\"=?) $keep_int", $input_arr);
+    $res = $db->delete_query("binaries_$groupID", '"setID" NOT IN (SELECT "ID" FROM setdata WHERE "groupID"=?) ' . $keep_int, $input_arr);
 
     update_queue_status ($db, $dbid, NULL, 0, 80);
 
@@ -496,7 +496,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     $input_arr = array($expire);
     if ($prefs['keep_interesting']) {
         $keep_int = " AND \"binaryID\" NOT IN (SELECT \"binaryID\" FROM usersetinfo JOIN binaries_$groupID AS bin ON bin.\"setID\" = usersetinfo.\"setID\" "
-            . ' WHERE "type"=?AND "statusint"=?) ';
+            . ' WHERE "type"=? AND "statusint"=?) ';
         $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
     }
     $res = $db->delete_query("parts_$groupID", "\"binaryID\" NOT IN (SELECT \"binaryID\" FROM binaries_$groupID) OR \"date\"<? $keep_int", $input_arr);
@@ -510,13 +510,11 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     return $cnt;
 }
 
-
 function update_postcount(DatabaseConnection $db, $groupid)
 {
     $sql = "UPDATE groups SET postcount = (SELECT COUNT(\"ID\") FROM parts_{$groupid}), \"extset_update\"='0' WHERE \"ID\"=?";
     $db->execute_query($sql, array($groupid));
 }
-
 
 function purge_binaries(DatabaseConnection $db, $groupID)
 {
@@ -527,15 +525,15 @@ function purge_binaries(DatabaseConnection $db, $groupID)
     echo_debug('Deleting all posts', DEBUG_DATABASE);
 
     $type = USERSETTYPE_GROUP;
-    $res = $db->delete_query('usersetinfo', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type"=?', array($groupID, $type));
-    $res = $db->delete_query('extsetdata', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type"=?', array($groupID, $type));
-    $res = $db->delete_query('merged_sets', '"new_setid" IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) AND "type"=?', array($groupID, $type));
+    $res = $db->delete_query('usersetinfo', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', array($groupID, $type));
+    $res = $db->delete_query('extsetdata', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', array($groupID, $type));
+    $res = $db->delete_query('merged_sets', '"new_setid" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', array($groupID, $type));
     $res = $db->delete_query('setdata', '"groupID"=?', array($groupID));
     if ($active === TRUE) {
         $db->truncate_table("parts_$groupID");
         $db->truncate_table("binaries_$groupID");
     }
-    $res = $db->update_query_2('groups', array('last_record'=>0, 'first_record'=>0, 'mid_record'=>0, 'last_updated'=>0, 'postcount'=>0, 'setcount'=>0), '"ID" = ?', array($groupID));
+    $res = $db->update_query_2('groups', array('last_record'=>0, 'first_record'=>0, 'mid_record'=>0, 'last_updated'=>0, 'postcount'=>0, 'setcount'=>0), '"ID"=?', array($groupID));
     echo_debug('Purged all binaries', DEBUG_DATABASE);
 }
 

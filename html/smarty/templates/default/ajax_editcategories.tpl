@@ -34,14 +34,14 @@
 <select name="category" id="category_id">
     <option value="new">{$LN_newcategory}</option>
     {foreach $categories as $item}		
-    <option value="{$item.id}">{$item.name|escape:htmlall}</option>
+        <option value="{$item.id}">{$item.name|escape:htmlall}</option>
 	{/foreach}
     </select>
 </td></tr>
 <tr><td>{$LN_name}:</td><td><input type="text" name="cat_name" id="cat_name" value="" size="{$text_box_size}" placeholder="{$LN_name}" required/></td></tr>
 <tr><td colspan="2" class="centered"><br/>
-<input type="button" id="add_button" name="add" value="{$LN_apply}" class="submit"/>
-<input type="button" id="delete_button" name="delete" value="{$LN_delete}" class="submit"/>
+<input type="button" id="add_button" name="add" value="{$LN_apply}" class="submitsmall"/>
+<input type="button" id="delete_button" name="delete" value="{$LN_delete}" class="submitsmall"/>
 </td>
 </tr>
 

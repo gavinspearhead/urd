@@ -776,6 +776,7 @@ div.sets_inner
     margin-top:22px;
     padding-left: 3px;
     overflow-y:auto;
+    margin-left: -10000px;
 }
 
 #adv_search_head

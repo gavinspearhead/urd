@@ -71,101 +71,80 @@ function calendar($month, $year)
     return $dates;
 }
 
-function next_month($month, $year)
-{
-    if ($month == 12) {
-        return array(1, $year + 1);
-    } else {
-        return array($month + 1, $year);
-    }
-}
-
-function previous_month($month, $year)
-{
-    if ($month == 1) {
-        return array(12, $year - 1);
-    } else {
-        return array($month - 1, $year);
-    }
-}
-
 try {
+    $cmd = get_request('cmd', '');
+    switch ($cmd) {
+        case 'show_calendar':
+            $date = getdate();
 
-$cmd = get_request('cmd', '');
-switch ($cmd) {
-case 'show_calendar':
-    $date = getdate();
+            $timestamp = get_request('timestamp', '');
+            $month = get_request('month', NULL);
+            if (!is_numeric($month) || $month < 1 || $month > 12) {
+                $month = NULL;
+            }
+            $minute = get_request('minute', NULL);
+            if (!is_numeric($minute) || $minute < 1 || $minute > 59) {
+                $minute = NULL;
+            }
+            $hour = get_request('hour', NULL);
+            if (!is_numeric($hour) || $hour < 1 || $hour > 23) {
+                $hour = NULL;
+            }
+            $year = get_request('year', NULL);
+            if (!is_numeric($year)) {
+                $year = NULL;
+            }
+            $timestamp = strtotime($timestamp);
+            if ($timestamp !== FALSE && $timestamp < time()) {
+                while ($timestamp < time()) {
+                    $timestamp += 3600 * 24;
+                }
+            }
+            if ($year === NULL || $month === NULL) {
+                if ($timestamp === FALSE) {
+                    $month = date('n');
+                    $year = date('Y');
+                } else {
+                    $month = date ('n', $timestamp);
+                    $year = date('Y', $timestamp);
+                }
+            }
+            if ($hour === NULL || $minute === NULL) {
+                if ($timestamp === FALSE) {
+                    $now = time() + 60;
+                } else {
+                    $now = $timestamp;
+                }
+                $minute = date('i', $now);
+                $hour = date('G', $now);
+            }
 
-    $timestamp = get_request('timestamp', '');
-    $month = get_request('month', NULL);
-    if (!is_numeric($month) || $month < 1 || $month > 12) {
-        $month = NULL;
+            $today = 0;
+            if ($date['mon'] == $month && $date['year'] == $year) {
+                $today = $date['mday'];
+            }
+            if ($timestamp === FALSE) {
+                $selected_day = $date['mday'];
+                $show_day = 0;
+            } else {
+                $selected_day = $show_day = date('j', $timestamp);
+            }
+            $dates = calendar($month, $year);
+            $smarty->assign('dates',		    $dates);
+            $smarty->assign('today',		    $today);
+            $smarty->assign('selected_day',	    $selected_day);
+            $smarty->assign('show_day',	        $show_day);
+            $smarty->assign('year', 		    $year);
+            $smarty->assign('hour',	            $hour);
+            $smarty->assign('minute', 		    $minute);
+            $smarty->assign('month',		    $month);
+            $contents = $smarty->fetch('ajax_calendar.tpl');
+            return_result(array('contents' => $contents, 'hour' => $hour, 'minute'=>$minute));
+            break;
+        default:
+            throw new exception($LN['error_invalidaction']);
+            break;
     }
-    $minute = get_request('minute', NULL);
-    if (!is_numeric($minute) || $minute < 1 || $minute > 59) {
-        $minute = NULL;
-    }
-    $hour = get_request('hour', NULL);
-    if (!is_numeric($hour) || $hour < 1 || $hour > 23) {
-        $hour = NULL;
-    }
-    $year = get_request('year', NULL);
-    if (!is_numeric($year)) {
-        $year = NULL;
-    }
-    $timestamp = strtotime($timestamp);
-    if ($timestamp !== FALSE && $timestamp < time()) {
-        while ($timestamp < time()) {
-            $timestamp += 3600 * 24;
-        }
-    }
-    if ($year === NULL || $month === NULL) {
-        if ($timestamp === FALSE) {
-            $month = date('n');
-            $year = date('Y');
-        } else {
-            $month = date ('n', $timestamp);
-            $year = date('Y', $timestamp);
-        }
-    }
-    if ($hour === NULL || $minute === NULL) {
-        if ($timestamp === FALSE) {
-            $now = time() + 60;
-        } else {
-            $now = $timestamp;
-        }
-        $minute = date('i', $now);
-        $hour = date('G', $now);
-    }
-
-    $today = 0;
-    if ($date['mon'] == $month && $date['year'] == $year) {
-        $today = $date['mday'];
-    }
-    if ($timestamp === FALSE) {
-        $selected_day = $date['mday'];
-        $show_day = 0;
-    } else {
-        $selected_day = $show_day = date('j', $timestamp);
-    }
-    $dates = calendar($month, $year);
-    $smarty->assign('dates',		    $dates);
-    $smarty->assign('today',		    $today);
-    $smarty->assign('selected_day',	    $selected_day);
-    $smarty->assign('show_day',	        $show_day);
-    $smarty->assign('year', 		    $year);
-    $smarty->assign('hour',	            $hour);
-    $smarty->assign('minute', 		    $minute);
-    $smarty->assign('month',		    $month);
-    $smarty->assign('next_month',		next_month($month, $year));
-    $smarty->assign('previous_month',	previous_month($month, $year));
-    $contents = $smarty->fetch('ajax_calendar.tpl');
-    return_result(array('contents' => $contents, 'hour' => $hour, 'minute'=>$minute));
-    break;
-default:
-    throw new exception($LN['error_invalidaction']);
-    break;
-}
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

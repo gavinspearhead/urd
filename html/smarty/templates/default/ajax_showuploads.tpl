@@ -96,7 +96,7 @@
 <table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
 <thead>
 <tr>
-<th class="left nowrap head round_left" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
+<th class="left nowrap head round_left"  width="100%" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
 <th class="left nowrap head fixwidth8a">{$LN_transfers_head_progress}</th>
 <th class="center nowrap head">{$LN_size}</th>
 <th class="center nowrap head">{$LN_transfers_head_speed}</th>

@@ -21,7 +21,7 @@
  * $Id: ajax_edit_usenet_servers.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {extends file="popup.tpl"}
-{block name=title}{if $id eq 'new'}{$LN_usenet_addserver}{else}{$LN_usenet_editserver}{/if}{/block}
+{block name=title}{if $id == 'new'}{$LN_usenet_addserver}{else}{$LN_usenet_editserver}{/if}{/block}
 {block name=contents}
 
 {if $only_auth}{$auth_class="hidden"}{else}{$auth_class=""}{/if}
@@ -40,13 +40,13 @@
 </tr>
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_port_msg|escape }>{$LN_usenet_port}:</td>
-<td ><input type="text" name="port" value="{$port|escape}" id="port" required size="{$number_box_size}"/></td>
+<td><input type="text" name="port" value="{$port|escape}" id="port" required size="{$number_box_size}"/></td>
 <td {urd_popup type="small" text=$LN_usenet_secport_msg|escape }>{$LN_usenet_secport}:</td>
-<td> <input type="text" id="sec_port" name="secure_port" value="{$sec_port|escape}" required size="{$number_box_size}"/> </td>
+<td><input type="text" id="sec_port" name="secure_port" value="{$sec_port|escape}" required size="{$number_box_size}"/> </td>
 </tr>
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_connectiontype_msg|escape }>{$LN_usenet_connectiontype}:</td>
-<td> {html_options name="connection" id="connection" options=$connection_types selected=$connection }</td>
+<td>{html_options name="connection" id="connection" options=$connection_types selected=$connection}</td>
 </tr>
 <tr><td {urd_popup type="small" text=$LN_usenet_needsauthentication_msg|escape }>
 {$LN_usenet_needsauthentication}:</td>
@@ -60,19 +60,20 @@
 <tr id="authpass" class="{if $authentication neq 1}hidden{/if}">
 <td {urd_popup type="small" text=$LN_usenet_password_msg|escape }>{$LN_password}:</td>
 <td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" placeholder="{$LN_password}" size="{$text_box_size}"/>&nbsp;&nbsp; 
-    <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('password');"
-    </td>
+    <div class="floatright iconsizeplus sadicon buttonlike" id="toggle_password">
+</td>
 </tr>
 
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_nrofthreads_msg|escape }>{$LN_usenet_nrofthreads}:</td>
 <td><input type="text" name="threads" value="{$threads|escape}" id="threads" size="{$number_box_size}"/></td>
 <td {urd_popup type="small" text=$LN_usenet_priority_msg|escape }>{$LN_usenet_priority}:</td>
-<td><input type="text" name="priority" value="{$priority|escape}" id="priority" size="{$number_box_size}"/></td></tr>
+<td><input type="text" name="priority" value="{$priority|escape}" id="priority" size="{$number_box_size}"/></td>
+</tr>
 <tr class="{$auth_class}">
 <td {urd_popup type="small" text=$LN_usenet_compressed_headers_msg|escape }>{$LN_usenet_compressed_headers}:</td>
 <td>
-{urd_checkbox value="$compressed_headers" name="compressed_headers" id="compressed_headers" }
+{urd_checkbox value="$compressed_headers" name="compressed_headers" id="compressed_headers"}
 </td>
 {if $show_post}
 <td {urd_popup type="small" text=$LN_usenet_posting|escape }>
@@ -84,10 +85,10 @@
 </tr>
 <tr><td colspan="4">&nbsp;</td></tr>
 <tr><td colspan="4" class="centered">
-{if $id eq 'new'}
-	<input type="button" name="add" value="{$LN_add}" onclick="javascript:update_usenet_server();" class="submit"/>
+{if $id == 'new'}
+	<input type="button" name="add" value="{$LN_add}" id="submit_server" class="submitsmall"/>
 {else}
-	<input type="button" name="apply" value="{$LN_apply}" class="submit" onclick="javascript:update_usenet_server();"/>
+	<input type="button" name="apply" value="{$LN_apply}" id="submit_server" class="submitsmall"/>
 {/if}
 </td>
 </tr>

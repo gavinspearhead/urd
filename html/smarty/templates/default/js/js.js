@@ -1036,6 +1036,7 @@ function show_post_message(type, spotid)
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
+            $('#post_submit').click( function () { post_message(); } );
         } else {
             update_message_bar(x.error);
         }
@@ -1106,8 +1107,15 @@ function show_post()
         cache: false
     }).done(function(html) {
         var x = $.parseJSON(html);
+        console.log(x);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
+            $('#submit_button').click( function() { create_post(); } );
+            console.log($('#timestamp').prop('readonly'));
+            if (! $('#timestamp').prop('readonly') ) { 
+                $('#timestamp').click( function() {show_calendar(null, null, null); } );
+                $('#timestamp').keyup(function() { hide_popup('calendardiv', 'calendar'); } );
+            }
         } else {
             update_message_bar(x.error);
         }
@@ -1810,6 +1818,7 @@ function buttons_action(action, uid)
         if (x.error == 0) {
             if (action == 'edit') {
                 show_overlayed_content_1(x.contents, 'popup525x300');
+                $('#submit_button').click( function() { update_buttons(); } );
             } else {
                 show_buttons();
             }
@@ -2117,6 +2126,8 @@ function edit_usenet_server(id, only_auth)
             update_message_bar(x.error);
         } else {
             show_overlayed_content_1(x.contents, (only_auth ? 'popup525x300' : 'popup700x400'));
+            $('#toggle_password').click( function() { toggle_show_password('password'); });
+            $('#submit_server').click( function() { update_usenet_server(); });
         }
     });
 }
@@ -2532,7 +2543,9 @@ function rename_file_form(fileid)
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup525x300');
+            $('#apply_button').click( function() { update_filename(); });
         } else {
+        console.log(x.error);
             update_message_bar(x.error);
         }
     });
@@ -2566,7 +2579,6 @@ function update_filename()
         if (x.error == 0) {
             hide_overlayed_content();
             show_files({ 'curdir': directory, 'reset_offset': false });
-            update_message_bar(x.error);
         } else {
             update_message_bar(x.error);
         }
@@ -2712,6 +2724,7 @@ function show_quick_display(srctype, subject, e, type)
             subject: subject
         }
     }).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'quickwindowon');
@@ -3376,7 +3389,35 @@ function show_calendar(month, year, clear_time)
     }).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
+            var n_year, n_month;
             show_overlayed_content_2(x.contents, 'calendardiv');
+            $('span[name="day"]').click( function() {
+                select_calendar(parseInt($(this).text()));
+            });
+            $('#prev_year').click( function () { 
+                month = parseInt($('#month').val());
+                year = parseInt($('#year').val());
+                show_calendar(month, year - 1, 1); 
+            });
+            $('#prev_month').click( function () {
+                month = parseInt($('#month').val());
+                year = parseInt($('#year').val());
+                if (month == 1) { p_month = 12; p_year = year -1; } else { p_month = month -1; p_year = year; };
+                show_calendar(p_month, p_year, 1 ); 
+            });
+            $('#next_month').click( function () {
+                month = parseInt($('#month').val());
+                year = parseInt($('#year').val());
+                if (month == 12) { n_month = 1; n_year = year + 1; } else { n_month = month + 1; n_year = year; };
+                show_calendar(n_month, n_year, 1);
+            });
+            $('#next_year').click( function () {
+                month = parseInt($('#month').val());
+                year = parseInt($('#year').val());
+                show_calendar(month, year + 1, 1);
+            });
+            $('#submit_no_delay').click( function () { submit_calendar('atonce'); });
+            $('#submit_cal').click( function () { submit_calendar(); });
             $(function() {
                 $('#hours').slider({
                     min: 0,
@@ -4561,15 +4602,19 @@ function update_rss_url()
 
 function update_widths(the_id)
 {
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(1); });
+    //$('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(1); });
     var oritextwidth = $('#' + the_id).outerWidth();
+    console.log(oritextwidth);
     // First set all elements to the CURRENT width, this increases the TD size because of padding:
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth); });
+    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth);} );
 
     // Can determine the padding by comparing new size with original size:
     var newtextwidth = $('#' + the_id).outerWidth();
+    console.log(newtextwidth);
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
+
+    console.log(newtextwidth,oritextwidth);
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
     $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(correctedtextwidth); });
@@ -6253,6 +6298,12 @@ function show_post_spot()
             change_spotsubcats();
             $('#progress_image').hide();
             $('#progress_nzb').hide();
+            $('#nzbfile').change( function () { $('#_nzbfile').val($('#nzbfile').val()); } );
+            $('#nzb_upload').click( function () { $('#nzbfile').click();} );
+            $('#imagefile').change( function () { $('#_imagefile').val($('#imagefile').val()); } );
+            $('#image_upload').click( function () { $('#imagefile').click();} );
+            $('#post_spot').click(function () { post_spot(); } );
+            $('#category').change(function () { change_spotsubcats(); } );
         } else {
             update_message_bar(x.error);
         }
@@ -6318,7 +6369,7 @@ function upload_file(id, type, post_id, fn)
 
     $.ajax({
         url: 'ajax_post_spot.php',  //Server script to process data
-        type: 'POST',
+        type: 'post',
         xhr: function() {  // Custom XMLHttpRequest
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) { // Check if upload property exists
@@ -6468,14 +6519,14 @@ function show_sidebar(display)
         }); 
     } else {
         $('#contentleft').css('height', Math.round($(window).height() - 22));
-        $('#contentleft').animate({ 'margin-left' :0 }, { 'duration': 500} );
+        $('#contentleft').animate({ 'margin-left' : 0 }, { 'duration': 500, } );
         $('#searchbar').animate({ left: side_bar_width }, 500, function() {} ); 
         $('#topcontent').animate({ left: side_bar_width }, 500,  function() {
-            $('#contentleft').outerWidth(side_bar_width);
             sidebar = 1;
             $('#sidebar_button').text('<<');
 
         }); 
+        $('#contentleft').outerWidth(side_bar_width);
         $('#topcontent').width($('#topcontent').width() - side_bar_width);
         // don't know why we need it ... but...
         $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });

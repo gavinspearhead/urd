@@ -169,6 +169,7 @@ try {
             $smarty->assign('groups',    	    $groups);
             $smarty->assign('ratings',    	    range(0,10));
             $smarty->assign('type',    	        $type);
+            $smarty->assign('smileys',    	    get_smileys($smarty->getTemplateVars('IMGDIR')));
             $smarty->assign('reference',   	    $reference);
             $smarty->assign('content',    	    $content);
             $smarty->assign('subject',    	    $subject);

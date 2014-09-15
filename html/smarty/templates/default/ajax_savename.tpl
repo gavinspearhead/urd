@@ -20,9 +20,12 @@
  * $Author: gavinspearhead $
  * $Id: rsssets.tpl 2534 2012-06-03 14:36:10Z gavinspearhead $
  *}
+ 
+{extends file="popup.tpl"}
+{block name=title}{$LN_add_search}{/block}
+{block name=contents}
+
 {strip}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_add_search}</div>
 <div id="savename_content">
 {$LN_save_search_as}:<br/>
 <input type="text" value="{$name|escape:htmlall}" id="savename_val" required placeholder="{$LN_name}" class="width300"/></p>
@@ -40,3 +43,4 @@
 </div>
 </div>
 {/strip}
+{/block}

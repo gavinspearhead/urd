@@ -40,9 +40,9 @@
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered">
 {if $id eq 'new'}
-	<input type="button" name="add" value="{$LN_add}" class="submit" onclick="javascript:update_buttons();"/>
+	<input type="button" name="add" value="{$LN_add}" id="submit_button" class="submit"/>
 {else}
-	<input type="button" value="{$LN_apply}" name="apply" class="submit" onclick="javascript:update_buttons();"/>
+	<input type="button" value="{$LN_apply}" name="apply" class="submit" id="submit_button"/>
 	<input type="hidden" name="id" value="{$search_option->get_id()|escape:htmlall}"/>
 {/if}
 </td>

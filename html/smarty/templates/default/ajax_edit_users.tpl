@@ -22,7 +22,7 @@
  * $Id: ajax_edit_users.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {extends file="popup.tpl"}
-{block name=title}{if $id eq 'new'}{$LN_users_addnew}{else}{$LN_users_edit}{/if}{/block}
+{block name=title}{if $id == 'new'}{$LN_users_addnew}{else}{$LN_users_edit}{/if}{/block}
 {block name=contents}
 <br/>
 <div><input type="hidden" name="id" id="id" value="{$id|escape}"/></td></div>
@@ -31,7 +31,8 @@
 <tr><td colspan="2">{$LN_fullname}</td><td colspan="2"><input type="text" name="fullname" id="fullname" placeholder="{$LN_fullname}" required value="{$fullname|escape}" size="{$text_box_size}"/></td></tr>
 <tr><td colspan="2">{$LN_email}</td><td colspan="2"><input type="email" name="email" id="email" placeholder="{$LN_email}" required value="{$email|escape}" size="{$text_box_size}"/></td></tr>
 {if $id == 'new' || $emailallowed == 0}
-<tr><td colspan="2">{$LN_password}</td><td colspan="2"> 
+<tr><td colspan="2">{$LN_password}</td>
+<td colspan="2"> 
     <input type="text" name="password" id="password" size="{$text_box_size}" placeholder="{$LN_password}" required/>
 </td> </tr>
 
@@ -77,7 +78,7 @@
 </tr>
 <tr><td colspan="4">&nbsp;</td></tr>
 <tr><td colspan="4" class="centered">
-{if $id eq 'new'}
+{if $id == 'new'}
 	<input type="button" name="add" id="apply_button" value="{$LN_add}" class="submitsmall"/>
 {else}
 	<input type="button" name="apply"id="apply_button" value="{$LN_apply}" class="submitsmall"/>

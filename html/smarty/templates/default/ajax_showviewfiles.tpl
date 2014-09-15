@@ -46,7 +46,6 @@
 {if $sort == "owner"}{if $sort_dir=='desc'}{$owner_sort=$up}{else}{$owner_sort=$down}{/if}{else}{$owner_sort=""}{/if}
 {if $sort == "group"}{if $sort_dir=='desc'}{$group_sort=$up}{else}{$group_sort=$down}{/if}{else}{$group_sort=""}{/if}
 
-
 {capture assign=tableheader}
 <table class="files" id="files_table">
 <tr>
@@ -140,8 +139,7 @@
 
 {if $only_rows == 0}
 {if count($files) > 12}
-<tr><td colspan="9" class="feet round_both_bottom">&nbsp;</td>
-</tr>
+    <tr><td colspan="9" class="feet round_both_bottom">&nbsp;</td> </tr>
 {/if}
     </table>
     {$bottomskipper}

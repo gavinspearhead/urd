@@ -20,8 +20,10 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_import_settings.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
-<div class="set_title centered">{$LN_settings_import_file} </div>
+ {extends file="popup.tpl"}
+{block name=title}{$LN_settings_import_file}{/block}
+{block name=contents}
+
 <br/>
 <div class="light">
 <form id='uploadform'>
@@ -50,3 +52,5 @@
 </div>
 </form>
 </div>
+{/block}
+
