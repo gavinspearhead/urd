@@ -92,8 +92,8 @@
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}
         </td>
 		<td class="right nowrap">{$a->done_size} / {$a->size}</td>
-		<td class="right">{$a->speed}</td>
-		<td class="center">{$a->ETA}</td>
+		<td class="right nowrap">{$a->speed}</td>
+		<td class="center nowrap">{$a->ETA}</td>
 		<td class="right nowrap">{$a->startdate}</td>
 {if $isadmin}
 		<td>{$a->username|escape:htmlall}</td>
