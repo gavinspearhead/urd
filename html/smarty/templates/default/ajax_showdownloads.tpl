@@ -115,7 +115,7 @@
 <th class="head nowrap">{$LN_eta}</th>
 <th class="head nowrap">{$LN_transfers_head_started}</th>
 {if $isadmin}
-<th class="head nowrap">{$LN_transfers_head_username}</th>
+<th class="head nowrap fixwidth8">{$LN_transfers_head_username}</th>
 {/if}
 <th class="right nowrap head round_right">{$LN_transfers_head_options}</th>
 </tr>

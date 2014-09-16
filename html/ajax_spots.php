@@ -97,7 +97,7 @@ class spot_viewer
             $this->input_arr[':superuserid'] = user_status::SUPER_USERID;
             $this->input_arr[':wlstatus'] = whitelist::ACTIVE;
         }
-        $basic_browse_query .= ' LEFT JOIN spot_blacklist ON (spots."spotter_id" = spot_blacklist."spotter_id" AND spot_blacklist."userid" IN (:userid1, :superuserid1) AND spot_blacklist."status" =  :blstatus)' .
+        $basic_browse_query .= ' LEFT JOIN spot_blacklist ON (spots."spotter_id" = spot_blacklist."spotter_id" AND spot_blacklist."userid" IN (:userid1, :superuserid1) AND spot_blacklist."status" = :blstatus)' .
             ' LEFT JOIN usersetinfo ON ((usersetinfo."setID" = spots."spotid") AND (usersetinfo."userID" = :userid2)) AND (usersetinfo."type" = :type1) ' .
             ' LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2."setID" = spots."spotid" AND extsetdata2."name" = \'setname\' AND extsetdata2."type" = :type2) ' .
             ' LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3."setID" = spots."spotid" AND extsetdata3."name" = \'xrated\' AND extsetdata3."type" = :type3) ' .
@@ -107,7 +107,7 @@ class spot_viewer
         $this->input_arr[':userid1'] = $this->input_arr[':userid2'] = $this->userID;
         $this->input_arr[':superuserid1'] = user_status::SUPER_USERID;
         $this->input_arr[':type1'] = $this->input_arr[':type2'] = $this->input_arr[':type3'] = $this->input_arr[':type4'] = $type;
-        $this->input_arr[':blstatus'] =  blacklist::ACTIVE;
+        $this->input_arr[':blstatus'] = blacklist::ACTIVE;
 
         return $basic_browse_query;
     }
