@@ -45,7 +45,7 @@
 {capture name=opts assign="options"}
 {strip}
 {if $a->nfo_link != ''} 
-<div class="floatleft iconsizeplus followicon buttonlike" {urd_popup type="small" text=$LN_quickmenu_setpreviewnfo left=true} onclick="javascript:show_contents('{$a->nfo_link|escape:javascript}', 0);"></div>
+<div class="inline iconsizeplus followicon buttonlike" {urd_popup type="small" text=$LN_quickmenu_setpreviewnfo left=true} onclick="javascript:show_contents('{$a->nfo_link|escape:javascript}', 0);"></div>
 {/if}
 {if $a->comment != ''}
 {$comment=$a->comment}
@@ -115,9 +115,9 @@
 <th class="head nowrap">{$LN_eta}</th>
 <th class="head nowrap">{$LN_transfers_head_started}</th>
 {if $isadmin}
-<th class="head nowrap fixwidth8">{$LN_transfers_head_username}</th>
+<th class="head nowrap">{$LN_transfers_head_username}</th>
 {/if}
-<th class="right nowrap head round_right">{$LN_transfers_head_options}</th>
+<th class="right nowrap head round_right fixwidth8c">{$LN_transfers_head_options}</th>
 </tr>
 </thead>
 
