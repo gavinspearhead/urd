@@ -106,7 +106,7 @@
  head" onclick="javascript:submit_rss_search('expire', 'desc');">{$LN_feeds_expire_time} {$expire_sort}</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_visible } class="{$user_hidden} user center buttonlike head" onclick="javascript:submit_rss_search('visible', 'desc');">{$LN_feeds_visible} {$visible_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_minsetsize } class="{$user_hidden} user center buttonlike head round_right" onclick="javascript:submit_rss_search('minsetsize', 'desc');">{$LN_ng_minsetsize} {$minsetsize_sort}</th>
-{if $isadmin neq 0 and $urdd_online neq 0 }
+{if $isadmin != 0 and $urdd_online != 0 }
 <th {urd_popup type="small" text=$LN_feeds_tooltip_autoupdate } class="{$admin_hidden} admin center buttonlike head" onclick="javascript:submit_rss_search('refresh_period','desc');">{$LN_feeds_autoupdate} {$refresh_period_sort}</th>
 <th {urd_popup type="small" text=$LN_time } class="fixwidth5c nowrap {$admin_hidden} center admin buttonlike head" onclick="javascript:submit_rss_search('refresh_time', 'asc');">@ {$LN_time} {$refresh_time_sort}</th>
 <th {urd_popup type="small" text=$LN_feeds_tooltip_uepev } class="fixwidth6c {$admin_hidden} center admin head round_right">{$LN_actions}</th>
@@ -151,7 +151,7 @@
 
 <td class="general right">{$feed.lastupdated|escape}</td>
 <td class="{$admin_hidden} admin center">
-<input type="text" size="2" value="{$feed.expire}" name="expire[{$feed.id}]" id="expire_{$feed.id}"  {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('rss', 'expire', {$feed.id});"/>
+<input type="text" size="2" value="{$feed.expire}" name="expire[{$feed.id}]" id="expire_{$feed.id}"  {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('rss', 'expire', {$feed.id});"/>
 </td>
 <td class="{$user_hidden} user center">
 {urd_checkbox value="{$feed.visible}" name="visible[{$feed.id}]" id="visible_{$feed.id}" post_js="toggle_visibility('rss','{$feed.id}');"} 
@@ -160,7 +160,7 @@
 <input type="text" size="3" value="{$feed.maxsetsize|escape}" name="maxsetsize[{$feed.id}]" id="user_maxsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_maxsetsize', {$feed.id});"/>
 </td>
 
-{if $isadmin neq 0 and $urdd_online neq 0}
+{if $isadmin != 0 and $urdd_online != 0}
 <td class="{$admin_hidden} admin center"> 
 <select name="period[{$feed.id}]" id="period_{$feed.id}"  size="1" class="update" onchange="javascript:update_ng_time('rss', {$feed.id});">
 {html_options values=$periods_keys output=$periods_texts selected={$feed.select}}
@@ -171,13 +171,13 @@
 
 <td class="nowrap {$admin_hidden} admin right">
 <div class="floatright">
-{if $feed.active_val eq $RSS_SUBSCRIBED and $isadmin neq 0 and $urdd_online neq 0} 
+{if $feed.active_val eq $RSS_SUBSCRIBED and $isadmin != 0 and $urdd_online != 0} 
 <div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_feeds_editfeed } onclick="javascript:edit_rss({$feed.id});"></div>
 <div class="inline iconsizeplus upicon buttonlike" {urd_popup type="small" text=$LN_update } onclick="javascript:ng_action('updaterss', {$feed.id});"></div>
 <div class="inline iconsizeplus killicon buttonlike" {urd_popup type="small" text=$LN_expire } onclick="javascript:ng_action('expirerss', {$feed.id});"></div>
 <div class="inline iconsizeplus purgeicon buttonlike" {urd_popup type="small" text=$LN_purge } onclick="javascript:ng_action_confirm('purgerss', {$feed.id}, '{$LN_purge} \'@@\'');"></div>
 <div class="inline iconsizeplus deleteicon buttonlike" {urd_popup type="small" text=$LN_delete } onclick="javascript:remove_rss({$feed.id}, '{$LN_delete} \'{$feed.name|escape}\'?');"></div>
-{else if $isadmin neq 0 and $urdd_online neq 0}
+{else if $isadmin != 0 and $urdd_online != 0}
 <div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_feeds_edit } onclick="javascript:edit_rss({$feed.id});"></div>
 <div class="inline iconsizeplus deleteicon buttonlike" {urd_popup type="small" text=$LN_delete } onclick="javascript:remove_rss({$feed.id}, '{$LN_delete} \'{$feed.name|escape}\'?');"></div>
 {/if}

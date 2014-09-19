@@ -26,7 +26,7 @@
 
 {$stat=$infoarray[0]->status|replace:' ':'_'}
 <tbody>
-<tr class="transferstatus"><td colspan="{if $isadmin neq 0}7{else}6{/if}">{$status}</td>
+<tr class="transferstatus"><td colspan="{if $isadmin != 0}7{else}6{/if}">{$status}</td>
     <td>
         <div class="black floatright iconsize noborder buttonlike">
 		<div id="{$stat}post" class="floatright iconsize blackbg {if $post_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" onclick="javascript:fold_transfer('{$stat}', 'post');">        </div>
@@ -42,7 +42,7 @@
 
 {capture name=opts assign="options"}
 {strip}
-<div class="floatright">
+<div class="inline">
 {if $a->nzb != ''}
 <div class="inline iconsizeplus downicon buttonlike" onclick="javascript:jump('getfile.php?file={$a->nzb}');" {urd_popup type="small" text=$LN_browse_savenzb }></div>
 {/if}
@@ -92,11 +92,11 @@
 </tbody>
 {/function}
 
-{if ($poster neq 0 || $isadmin neq 0) && $show_post neq 0}
+{if ($poster != 0 || $isadmin != 0) && $show_post != 0}
 <table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
 <thead>
 <tr>
-<th class="left nowrap head round_left"  width="100%" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
+<th class="left nowrap head round_left" width="100%" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
 <th class="left nowrap head fixwidth8a">{$LN_transfers_head_progress}</th>
 <th class="center nowrap head">{$LN_size}</th>
 <th class="center nowrap head">{$LN_transfers_head_speed}</th>

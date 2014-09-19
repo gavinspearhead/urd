@@ -79,7 +79,7 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
         $max_login_count = 0;
     }
     $input_arr = array(':username' => $username, ':status'=>user_status::USER_ACTIVE);
-    $sql = '* FROM users WHERE "name"=:username AND "active"=:status';
+    $sql = '"pass", "ID", "name", "last_login", "isadmin", "ipaddr" FROM users WHERE "name"=:username AND "active"=:status';
     if ($max_login_count > 0) {
         $sql .= ' AND "failed_login_count" < :failed_login_count';
         $input_arr[':failed_login_count'] = $max_login_count;
@@ -89,41 +89,8 @@ function check_password(DatabaseConnection $db, $username, $plain_password, $pas
 
         return FALSE;
     }
-    $salt_db = $res[0]['salt'];
     $password_db = $res[0]['pass'];
-    /*if ($md5pass != '') { // check if the md5 stuff still matches... if not, we set the new pasword with salt
-        if ($plain_password != '' && $md5pass == md5($token. $res[0]['pass'] . $token)) {
-            set_password($db, $res[0]['ID'], $plain_password, FALSE);
-            $sql = '* FROM users WHERE "name"=:username AND "active"=:status';
-            $res = $db->select_query($sql, 1, array(':username' =>$username, ':status'=>user_status::USER_ACTIVE));
-            if ($res === FALSE) {// no valid user found
-
-                return FALSE;
-            }
-            $salt_db = $res[0]['salt'];
-            $password_db = $res[0]['pass'];
-            $password = hash('sha256', $token . hash('sha256', $salt_db. $plain_password. $salt_db) . $token);
-            set_session_cookie($username, $password, $_SESSION['urd_period'], $token);
-        }
-    }
-    if ($salt_db == '') {
-        if ($plain_password != '' && $password == hash('sha256', $token . $password_db . $token)) {// set the salt in de db
-            set_password($db, $res[0]['ID'], $plain_password, FALSE);
-            $sql = '* FROM users WHERE "name"=:username AND "active"=:status';
-            $res = $db->select_query($sql, 1, array(':username' =>$username,':status'=> user_status::USER_ACTIVE));
-            if ($res === FALSE) {// no valid user found
-
-                return FALSE;
-            }
-            $password_db = $res[0]['pass'];
-            $salt_db = $res[0]['salt'];
-            $password = hash('sha256', $token . hash('sha256', $salt_db . $plain_password . $salt_db) . $token);
-            set_session_cookie($username, $password, $_SESSION['urd_period'], $token);
-        } else {
-            return FALSE;
-        }
-    }*/
-
+    
     $pw_hash = hash('sha256', $token . $password_db . $token);
 
     return $pw_hash == $password;

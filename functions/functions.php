@@ -3044,7 +3044,7 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
     foreach ($res as $row) {
         $blacklist[ $row['spotter_id'] ] = 0;
     }
-    echo_debug(count($blacklist) . ' SpotID\'s on the blacklist', DEBUG_SERVER);
+    echo_debug(count($blacklist) . ' SpotIDs on the blacklist', DEBUG_SERVER);
 
     return $blacklist;
 }

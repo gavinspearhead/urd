@@ -65,12 +65,12 @@
     {$length=1}
     {$hidden=""}
 {/if}
-<tr name="content" class="{$hidden} even content {if $block->tr_class neq ''} {$block->tr_class} {/if}" 
-        {if $block->tr_id neq ''}id="{$block->tr_id}" {/if}
+<tr name="content" class="{$hidden} even content {if $block->tr_class != ''} {$block->tr_class} {/if}" 
+        {if $block->tr_id != ''}id="{$block->tr_id}" {/if}
 >
 {$popup_text=$block->popup|escape}
 <td class="settings vtop"{if $popup_text!=''}{urd_popup text=$popup_text}{/if}>
-{if $b_type eq "custom_text"}
+{if $b_type == "custom_text"}
 {$block->text}: 
 <input type="text" name="custom_{$block->id}_name" id="custom_{$block->id}_name" value="{if $block->name != '__new'}{$block->name|escape:htmlall}{/if}" size="{$block->size}" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'name', 'fn':'load_prefs();' } );"/>
 {else}
@@ -80,21 +80,21 @@
 {/if}
 </td>
 <td>
-{if $b_type eq "plain"} 
+{if $b_type == "plain"} 
 	<b>{$block->value|escape}</b>
 {/if}
-{if $b_type eq "custom_text"}
+{if $b_type == "custom_text"}
     <input type="text" name="custom_{$block->id}_value" id="custom_{$block->id}_value" value="{$block->value|escape:htmlall}" size="{$block->size}" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'value', 'fn':'load_prefs();' } );"/>
     {if $block->id != '__new'}
         <div id="{$name}_collapse" class="floatright iconsize deleteicon noborder buttonlike" onclick="javascript:delete_setting('{$block->id|escape:javascript}');" {urd_popup type="small" text="$LN_delete"} >
     {/if}
 {/if}
-{if $b_type eq "password"}
+{if $b_type == "password"}
 	<input type="password" name="{$block->name}" id="{$block->id}" value="{$block->value|escape:htmlall}" size="{$block->size}" {$block->javascript} /> 
     <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('{$block->name|escape:javascript}');"></div>
     <span id="pw_message_{$block->name}" class="italic"></span>
 {/if}
-{if $b_type eq "password_submit"}
+{if $b_type == "password_submit"}
 <input type="button" id="{$block->id}" value="{$block->value|escape}"/>
     <span id="pwweak" class="hidden italic"><br>{$LN_password_weak}</span>
     <span id="pwmedium" class="hidden italic"><br>{$LN_password_medium}</span>
@@ -105,14 +105,14 @@
 handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|escape:javascript}', '{$block->npw_id2|escape:javascript}','{$block->tr_id|escape:javascript}', '{$block->username|escape:javascript}');
 </script>
 {/if}
-{if $b_type eq "text"}
+{if $b_type == "text"}
 	<input type="text" name="{$block->name}" id="{$block->id}" 
     value="{$block->value|escape:htmlall}" 
     size="{$block->size}" 
     {$block->javascript} 
     onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"/>
 {/if}
-{if $b_type eq "email"}
+{if $b_type == "email"}
 	<input type="email" name="{$block->name}" id="{$block->id}" 
     value="{$block->value|escape:htmlall}" 
     size="{$block->size}" 
@@ -120,10 +120,10 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
     onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"/>
 {/if}
 
-{if $b_type eq "checkbox"}
+{if $b_type == "checkbox"}
     {urd_checkbox value="{$block->toggle}" name="{$block->name}" id="{$block->id}" post_js="update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}'); {$block->javascript}"}
 {/if}
-{if $b_type eq "textarea"}{strip}
+{if $b_type == "textarea"}{strip}
     {$name=$block->id}
     <input type="hidden" id="{$name}_orig_size" value="{$block->rows}"/>
     <textarea name="{$block->name}" id="{$name}" rows="2" cols="{$block->cols}" {$block->javascript}
@@ -133,7 +133,7 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
     <div id="{$name}_collapse" class="floatright iconsize dynimgplus noborder buttonlike" onclick="javascript:collapse_select('{$name}','rows');" {urd_popup type="small" text="$LN_expand"} >
     </div>
 {/if}
-{if $b_type eq "select"}
+{if $b_type == "select"}
 {$opts=$block->options}
 {$js=$block->javascript|escape:javascript}
 <select name="{$block->name}" id="{$block->id}" 
@@ -143,10 +143,10 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 {/foreach}
 </select>
 {/if}
-{if $b_type eq "button"}
+{if $b_type == "button"}
 	<input type="button" class="submitsmall" name="{$block->name}" value="{$block->value|escape}" {$block->javascript} />
 {/if}
-{if $b_type eq "multiselect"}
+{if $b_type == "multiselect"}
     {$name=$block->id}
     <input type="hidden" id="{$name}_orig_size" value="{$block->size}"/>
     <select name="{$block->name}" id="{$name}" size="2" multiple="multiple" {$block->javascript} 
@@ -154,28 +154,28 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
     >
     {$opts=$block->options_triple}
     {foreach $opts as $q}
-        <option value="{$q.id}" {if $q.on eq 1} selected="selected" {/if} >{$q.name}</option>
+        <option value="{$q.id}" {if $q.on == 1} selected="selected" {/if} >{$q.name}</option>
     {/foreach}
     </select>
     <div id="{$name}_collapse" class="floatright iconsize dynimgplus noborder buttonlike" onclick="javascript:collapse_select('{$name}','size');" {urd_popup type="small" text="$LN_expand"|capitalize} >
     </div>
 {/if}
-{if $b_type eq "period"}
+{if $b_type == "period"}
     {$name=$block->id}
     <select name="{$block->period_name}" size="1" id="{$block->period_name}" class="update" {$block->javascript}
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} } );"
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name != ""} , 'extra':'{$block->extra_name}' {/if} } );"
     >
     {html_options values=$block->period_keys output=$block->period_texts selected=$block->period_selected } 
     </select> @
     <input type="text" id="{$block->time1_name}" name="{$block->time1_name}" id="{$block->time1_name}"  {if $block->time1_value ge 0}value="{$block->time1_value}"{/if} class="time" 
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} }  );"
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name != ""} , 'extra':'{$block->extra_name}' {/if} }  );"
     />:
     <input type="text" id="{$block->time2_name}" name="{$block->time2_name}" id="{$block->time2_name}" {if $block->time2_value !== ''}value="{$block->time2_value|string_format:"%02d"}"{/if} class="time" 
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} }  );"
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name != ""} , 'extra':'{$block->extra_name}' {/if} }  );"
     />
-    {if $block->extra_name neq ""}
+    {if $block->extra_name != ""}
     <select name="{$block->extra_name}" size="1", id="{$block->extra_name}"
-    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name neq ""} , 'extra':'{$block->extra_name}' {/if} } );" >
+    onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name != ""} , 'extra':'{$block->extra_name}' {/if} } );" >
         {html_options options=$block->extra_options selected=$block->extra_selected }
     </select>
     {/if}

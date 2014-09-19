@@ -27,7 +27,7 @@
 <div id="textcontent">
 <div class="urdlogo2 floatright noborder buttonlike" onclick="javascript:jump('index.php');"></div>
 
-{if $show_spots eq 1} 
+{if $show_spots == 1} 
 {capture assign="subcatdivs"}
 {foreach $spot_subcats as $k1=>$item}
 
@@ -96,7 +96,7 @@
     <option selected="selected" value="">{$LN_browse_allsets}</option>
     <option value="interesting">{$LN_browse_interesting}</option>
     <option value="read">{$LN_browse_downloaded}</option>
-{if $show_makenzb neq 0}
+{if $show_makenzb != 0}
 <option value="nzb">{$LN_browse_nzb}</option>
 {/if}
 <option value="kill">{$LN_browse_killed}</option>
@@ -141,7 +141,7 @@
 <p>&nbsp;</p>
 {/if}
 
-{if $show_groups neq 0} 
+{if $show_groups != 0} 
 <h3 class="title">{$LN_menugroupsearch}</h3>
 <form id="searchform1" action="browse.php" method="get">
 <table class="search">
@@ -212,7 +212,7 @@
 <p>&nbsp;</p>
 {/if}
 
-{if $show_rss neq 0} 
+{if $show_rss != 0} 
 <h3 class="title">{$LN_menursssearch}</h3>
 <form id="searchform2" action="rsssets.php" method="post">
 <table class="search">
@@ -280,17 +280,17 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-    {if $show_spots eq 1} 
+    {if $show_spots == 1} 
        init_slider({$spotminsetsizelimit}, {$spotmaxsetsizelimit}, "#spotsetsize", "#spotminsetsize", "#spotmaxsetsize");
        init_slider({$spotminagelimit}, {$spotmaxagelimit}, "#spotsetage", "#spotminage", "#spotmaxage");
        init_slider({$spotminratinglimit}, {$spotmaxratinglimit}, "#spotrating", "#spotminrating", "#spotmaxrating");
     {/if}
-    {if $show_rss eq 1} 
+    {if $show_rss == 1} 
        init_slider({$rssminsetsizelimit}, {$rssmaxsetsizelimit}, "#rsssetsize", "#rssminsetsize", "#rssmaxsetsize");
        init_slider({$rssminagelimit}, {$rssmaxagelimit}, "#rsssetage", "#rssminage", "#rssmaxage");
        init_slider({$rssminratinglimit}, {$rssmaxratinglimit}, "#rsssetrating", "#rssminrating", "#rssmaxrating");
     {/if}
-    {if $show_groups eq 1} 
+    {if $show_groups == 1} 
        init_slider({$groupminsetsizelimit}, {$groupmaxsetsizelimit}, "#groupsetsize", "#groupminsetsize", "#groupmaxsetsize");
        init_slider({$groupminagelimit}, {$groupmaxagelimit}, "#groupsetage", "#groupminage", "#groupmaxage");
        init_slider({$groupminratinglimit}, {$groupmaxratinglimit}, "#groupsetrating", "#groupminrating", "#groupmaxrating");

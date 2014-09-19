@@ -129,6 +129,10 @@ abstract class DatabaseConnection
         $this->DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->DB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
+    protected function set_emulate_prepare($emulate)
+    {
+        $this->DB->setAttribute(PDO::ATTR_EMULATE_PREPARES,$emulate);
+    }
     public function __destruct()
     {
         $this->disconnect();
@@ -221,7 +225,10 @@ abstract class DatabaseConnection
                 $sql .= " OFFSET $offset";
             }
         }
-        return $this->execute_query($sql, $inputarr);
+        $this->set_emulate_prepare(FALSE);
+        $rv = $this->execute_query($sql, $inputarr);
+        $this->set_emulate_prepare(TRUE);
+        return $rv;
     }
         
     private function _execute($query, $values=FALSE)
@@ -323,7 +330,9 @@ abstract class DatabaseConnection
         if ($where != '') {
             $query .= " WHERE $where";
         }
+        $this->set_emulate_prepare(FALSE);
         $this->execute_query($query, $values);
+        $this->set_emulate_prepare(TRUE);
     }
     public function update_query_2($table, array $values, $where='', $input_arr=FALSE)
     {
@@ -341,7 +350,9 @@ abstract class DatabaseConnection
         if ($where != '') {
             $query .= " WHERE $where";
         }
+        $this->set_emulate_prepare(FALSE);
         $this->execute_query($query, $vals);
+        $this->set_emulate_prepare(TRUE);
     }
 
     public function insert_query($table, array $columns, array $values, $get_last_ID=FALSE)
@@ -367,7 +378,9 @@ abstract class DatabaseConnection
 
         $sql = "INSERT INTO $table ($col_str) VALUES ($val_str)";
         try {
+            $this->set_emulate_prepare(FALSE);
             $this->execute_query($sql, array_values($values));
+            $this->set_emulate_prepare(TRUE);
             if ($get_last_ID) {
                 return $this->get_last_id();
             } else {
@@ -403,7 +416,9 @@ abstract class DatabaseConnection
 
         $sql = "INSERT INTO $table ($col_str) VALUES ($val_str)";
         try {
+            $this->set_emulate_prepare(FALSE);
             $this->execute_query($sql, array_values($vals));
+            $this->set_emulate_prepare(TRUE);
             if ($get_last_ID) {
                 return $this->get_last_id();
             } else {

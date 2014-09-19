@@ -119,7 +119,7 @@
 {if $set.read == 1}{$read='markedread'}{/if}
 {if $set.interesting == 1}{$interesting='interesting'}{/if}
 {if $set.interesting == 1}{$interestingimg="sadicon"}{/if}
-{if $show_makenzb neq 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
+{if $show_makenzb != 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
 
 {$rating=$set.rating*10}
 {$imdbpic="ratingicon_$rating"}
@@ -145,12 +145,12 @@
     <td class="fixwidth1">{$set.number} <input type="hidden" name="set_ids[]" value="{$set.sid|escape}"/> </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 	<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_RSS}, event);" id="td_set_{$set.sid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
-	<td class="fixwidth2a nowrap {if $set.new_set neq 0}newset{/if}">{$set.age}</td>
+	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{if $set.size eq 0}?{else}{$set.size}{/if}</td>
     <td class="fixwidth1">
-    {if $set.imdblink neq ''}
+    {if $set.imdblink != ''}
     <div class="floatleft iconsizeplus {$imdbpic} buttonlike" onclick="javascript:jump('{$set.imdblink|escape}', true);" {urd_popup type="small" text=$set.imdblink}></div>
-    {elseif $set.rating neq 0}
+    {elseif $set.rating != 0}
     <div class="floatleft iconsizeplus {$imdbpic} buttonlike"></div>
 	{/if}
 	</td>

@@ -45,7 +45,7 @@
     <tr>
     {foreach $week as $day}
         <td class="right{if $day==$selected_day and $selected_day != 0} highlight3{/if}" id="day_{$day}">
-        {if $day neq 0}
+        {if $day != 0}
             <span name="day" class="buttonlike{if $today == $day} highlight{/if}">{$day}</span>
         {/if}
         </td>

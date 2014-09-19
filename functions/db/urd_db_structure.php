@@ -388,6 +388,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('restart', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
         $t->add_index(new urd_index('q_prim', 'PRIMARY', array('ID')));
         $t->add_index(new urd_index('idx_queue_status', '', array('status')));
+//        $t->add_index(new urd_index('idx_desc_status', '', array('description(80)')));
         $t->drop_column('directory');
         $t->drop_index('idx_desc_status');
         $urd_db->add($t);

@@ -53,11 +53,11 @@
 <td colspan="3">
 {urd_checkbox value="$authentication" name="authentication" id="needauthentication" post_js="show_auth();"}
 </tr>
-<tr id="authuser" class="{if $authentication neq 1}hidden{/if}">
+<tr id="authuser" class="{if $authentication != 1}hidden{/if}">
 <td {urd_popup type="small" text=$LN_usenet_username_msg|escape }>{$LN_username}:</td>
 <td colspan="3"><input type="text" name="username" value="{$username|escape}" id="username" placeholder="{$LN_username}" size="{$text_box_size}"/></td>
 </tr>
-<tr id="authpass" class="{if $authentication neq 1}hidden{/if}">
+<tr id="authpass" class="{if $authentication != 1}hidden{/if}">
 <td {urd_popup type="small" text=$LN_usenet_password_msg|escape }>{$LN_password}:</td>
 <td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" placeholder="{$LN_password}" size="{$text_box_size}"/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="toggle_password">

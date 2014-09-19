@@ -63,10 +63,10 @@
 
 <tr name="content" class="even content server_{if $usenet_server->priority eq 0}disabled{else}enabled{/if}">
 <td class="uwider">{if $usenet_server->priority eq 0}{$enable}{else}{$disable}{/if}
-{if $usenet_server->priority neq 0}<div class="floatleft">&nbsp;{$usenet_server->priority|escape|truncate:$maxstrlen}</div>{/if}
+{if $usenet_server->priority != 0}<div class="floatleft">&nbsp;{$usenet_server->priority|escape|truncate:$maxstrlen}</div>{/if}
 </td>
 <td class="fixwidth3c">
-{urd_checkbox value="{if $usenet_server->id eq $primary}1{else}0{/if}" name="primary" id="primary_{$usenet_server->id}" post_js="{if $usenet_server->id neq $primary}usenet_action('set_preferred',{$usenet_server->id}){/if}"}
+{urd_checkbox value="{if $usenet_server->id eq $primary}1{else}0{/if}" name="primary" id="primary_{$usenet_server->id}" post_js="{if $usenet_server->id != $primary}usenet_action('set_preferred',{$usenet_server->id}){/if}"}
 </td>
 {if $show_post}
 <td class="fixwidth3c">

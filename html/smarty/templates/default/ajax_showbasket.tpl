@@ -27,11 +27,11 @@
 <div id="basketbuttondiv" class="hidden">
 <table class="basketbuttons">
 <tr>
-{if $show_download neq 0}
+{if $show_download != 0}
 <td class="nowrap vcenter">
 <div class="floatleft buttonlike basketbuttonsize noborder downloadbutton" {urd_popup type="small" text=$LN_browse_download } id="download_button"/></div>
 {/if}
-{if $show_makenzb neq 0}
+{if $show_makenzb != 0}
 <div class="floatleft buttonlike basketbuttonsize noborder getnzbbutton" {urd_popup type="small" text=$LN_browse_savenzb } id="nzb_button"/></div>
 {/if}
 {if $show_merge}
@@ -39,7 +39,7 @@
 {/if}
 
 <div class="floatleft buttonlike basketbuttonsize noborder clearbutton" {urd_popup type="small" text=$LN_browse_emptylist } id="clear_button"/></div>
-{if $show_download neq 0}
+{if $show_download != 0}
 <td class="vcenter"><div class="floatleft">
 {$LN_browse_schedule_at}:&nbsp;<input name="timestamp" id="timestamp" type="text" value="{$download_delay|escape}" size="20"/></div></td>
 <td class="vcenter"><div class="down4">

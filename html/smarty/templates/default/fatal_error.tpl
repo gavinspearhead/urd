@@ -27,7 +27,7 @@
 {block name=contents}
 
 <div class="light">
-{if $link neq NULL and $link_msg neq NULL}
+{if $link != NULL and $link_msg != NULL}
 <a href="{$link}">{$link_msg}</a>
 {/if}
 </div>

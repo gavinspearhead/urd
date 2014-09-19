@@ -44,7 +44,7 @@
 <button class="quickmenubutton" onclick="javascript:search_button('{$item->extra.search_url}','{$item->extra.name|escape:javascript}');close_quickmenu(); return false;"> 
 {/if}
 
-{if $item->type == 'nfopreview' || $item->type == 'imgpreview'|| ($item->type == 'nzbpreview' && $show_usenzb neq 0 && $show_download neq 0) || $item->type == 'vidpreview' }
+{if $item->type == 'nfopreview' || $item->type == 'imgpreview'|| ($item->type == 'nzbpreview' && $show_usenzb != 0 && $show_download != 0) || $item->type == 'vidpreview' }
 <button class="quickmenubutton" onclick="javascript:select_preview('{$item->extra.binaryID}','{$item->extra.groupID}');close_quickmenu();">
 {/if}
 

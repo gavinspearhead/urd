@@ -25,12 +25,12 @@
 {capture assign=selector}
 <div class="pref_selector">{strip}
 <ul class="tabs">
-{if $show_download neq 0 } 
+{if $show_download != 0 } 
 <li class="tab{if $active_tab == 'downloads'} tab_selected{/if}" id="downloads_bar">{$LN_transfers_downloads}
 <input type="hidden" name="tabs" value="downloads"/>
 </li>
 {/if}
-{if ($poster neq 0 || $isadmin neq 0) && $show_post neq 0 }
+{if ($poster != 0 || $isadmin != 0) && $show_post != 0 }
 <li class="tab{if $active_tab == 'uploads'} tab_selected{/if}" id="uploads_bar">{$LN_transfers_posts}
 <input type="hidden" name="tabs" value="uploads"/>
 </li>

@@ -64,7 +64,7 @@
     <option value="">{$LN_browse_allsets}</option>
     <option value="interesting">{$LN_browse_interesting}</option>
     <option value="read">{$LN_browse_downloaded}</option>
-{if $show_makenzb neq 0}
+{if $show_makenzb != 0}
 <option value="nzb">{$LN_browse_nzb}</option>
 {/if}
 <option value="kill">{$LN_browse_killed}</option>

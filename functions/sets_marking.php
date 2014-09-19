@@ -241,7 +241,7 @@ class sets_marking
                 $input_arr[':groupid'] = $groupid;
             }
 
-            $qry = ' * FROM setdata WHERE "ID" NOT IN ( SELECT "setID" FROM usersetinfo ' . 
+            $qry = '* FROM setdata WHERE "ID" NOT IN ( SELECT "setID" FROM usersetinfo ' . 
                    "WHERE \"$element\" = :marking AND \"userID\" = :userid AND \"type\" = :type) $grp";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;
@@ -253,7 +253,7 @@ class sets_marking
                 $input_arr[':feedid'] = $groupid;
             }
 
-            $qry = ' "setid" AS "ID" FROM rss_sets WHERE "setid" NOT IN (SELECT "setID" FROM usersetinfo ' .
+            $qry = '"setid" AS "ID" FROM rss_sets WHERE "setid" NOT IN (SELECT "setID" FROM usersetinfo ' .
                    "WHERE \"$element\" = :marking' AND \"userID\" = :userid AND \"type\"= :type) $grp";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;

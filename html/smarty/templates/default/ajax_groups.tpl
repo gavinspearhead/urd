@@ -109,7 +109,7 @@
 <th {urd_popup type="small" text=$LN_ng_tooltip_admin_maxsetsize } class="{$admin_hidden} center admin head buttonlike nowrap {if $isadmin == 0 or $urdd_online == 0 }round_right{/if}" onclick="javascript:load_groups( { order : 'admin_maxsetsize', defsort: 'desc' } );">{$LN_ng_admin_maxsetsize} {$admin_maxsetsize_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_visible } class="{$user_hidden} center user buttonlike head nowrap" onclick="javascript:load_groups( { order : 'visible', defsort: 'desc' } );">{$LN_ng_visible} {$visible_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_minsetsize } class="{$user_hidden} center user buttonlike head nowrap round_right" onclick="javascript:load_groups( { order : 'minsetsize', defsort: 'desc' } );">{$LN_ng_minsetsize} {$minsetsize_sort}</th>
-{if $isadmin neq 0 and $urdd_online neq 0 }
+{if $isadmin != 0 and $urdd_online != 0 }
 <th {urd_popup type="small" text=$LN_ng_tooltip_autoupdate } class="{$admin_hidden} admin buttonlike head nowrap" onclick="javascript:load_groups( { order : 'refresh_period', defsort: 'desc' } );">{$LN_ng_autoupdate} {$refresh_period_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_time } class="{$admin_hidden} admin buttonlike head fixwidth5 nowrap" onclick="javascript:load_groups( { order : 'refresh_time', defsort: 'desc' } );">@ {$LN_time} {$refresh_time_sort}</th>
 <th {urd_popup type="small" text=$LN_ng_tooltip_action } class="{$admin_hidden} admin head round_right fixwidth8 nowrap">{$LN_actions}</th>
@@ -123,13 +123,13 @@
 {urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_ng('{$group.id}');"} 
 <input type="hidden" id="ng_id_{$group.id}" value="{$group.name|escape:htmlall}"/>
 </td>
-{if $group.description neq ''}
+{if $group.description != ''}
 {$space='<br/>'}
 {$tooltip="`$group.long_name``$space``$group.description`" }
 {else}
 {$tooltip="`$group.long_name`"}
 {/if}
-<td {if $tooltip neq ''}{urd_popup text=$tooltip|escape }{/if} class="general" > <div class="donotoverflowdamnit inline">
+<td {if $tooltip != ''}{urd_popup text=$tooltip|escape }{/if} class="general" > <div class="donotoverflowdamnit inline">
 <span {if $group.active_val == $NG_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('browse.php?groupID=group_{$group.id}');"{/if}>
 {$group.name|escape:htmlall}</span></div>
 </td>
@@ -147,9 +147,9 @@
 {urd_checkbox value="{$group.adult}" name="adult[{$group.id}]" id="adult_{$group.id}" readonly="{$isadmin eq 0}" post_js="update_adult('group', '{$group.id}')"} 
 </td>
 <td class="general right">{$group.lastupdated}</td>
-<td class="{$admin_hidden} admin right"><input type="text" size="2" value="{$group.expire|escape:htmlall}" id="expire_{$group.id}" name="expire[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'expire', {$group.id});"/></td>
-<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_minsetsize|escape:htmlall}" id="minsetsize_{$group.id}" name="admin_minsetsize[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'minsetsize', {$group.id});"/></td>
-<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_maxsetsize|escape:htmlall}" id="maxsetsize_{$group.id}" name="admin_maxsetsize[{$group.id}]" {if $isadmin neq 1 or $urdd_online neq 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'maxsetsize', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" size="2" value="{$group.expire|escape:htmlall}" id="expire_{$group.id}" name="expire[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'expire', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_minsetsize|escape:htmlall}" id="minsetsize_{$group.id}" name="admin_minsetsize[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'minsetsize', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_maxsetsize|escape:htmlall}" id="maxsetsize_{$group.id}" name="admin_maxsetsize[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'maxsetsize', {$group.id});"/></td>
 <td class="{$user_hidden} user center">
 {urd_checkbox value="{$group.visible}" name="visible[{$group.id}]" id="visible_{$group.id}" post_js="toggle_visibility('group','{$group.id}');"} 
 </td>

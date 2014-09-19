@@ -445,7 +445,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
     }
 
     echo_debug('Deleting expired posts', DEBUG_DATABASE);
-    $sql = "count(\"binaryID\") AS cnt FROM binaries_$groupID WHERE \"date\" < ? $keep_int";
+    $sql = "count(*) AS cnt FROM binaries_$groupID WHERE \"date\" < ? $keep_int";
     $res = $db->select_query($sql, $input_arr);
     $cnt = 0;
     if (isset($res[0]['cnt'])) {
@@ -512,7 +512,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
 
 function update_postcount(DatabaseConnection $db, $groupid)
 {
-    $sql = "UPDATE groups SET postcount = (SELECT COUNT(\"ID\") FROM parts_{$groupid}), \"extset_update\"='0' WHERE \"ID\"=?";
+    $sql = "UPDATE groups SET postcount = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\"='0' WHERE \"ID\"=?";
     $db->execute_query($sql, array($groupid));
 }
 

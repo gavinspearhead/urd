@@ -47,7 +47,7 @@
 <td class="right">{$job.time}</td>
 <td class="right">{$job.period}</td>
 <td>
-{if $urdd_online neq 0}
+{if $urdd_online != 0}
     <div class="floatright iconsize killicon buttonlike" {urd_popup type="small" text=$LN_cancel}  onclick="javascript:job_action('unschedule', '{$job.cmd|escape:javascript}');"></div>
 {else}&nbsp;{/if}
 </td>

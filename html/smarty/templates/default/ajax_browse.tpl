@@ -121,7 +121,7 @@
 {$interesting=''}
 {$interestingimg="smileicon"}
 {if $set.read == 1}{$read='markedread'}{/if}
-{if $show_makenzb neq 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
+{if $show_makenzb != 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
 {if $set.interesting == 1}{$interesting='interesting'}{/if}
 {if $set.interesting == 1}{$interestingimg='sadicon'}{/if}
 
@@ -175,13 +175,13 @@
 {$rating=$set.rating * 10}
 {$imdbpic="ratingicon_$rating"}
 {if $rating == ""}{$imdbpic="followicon"}{/if}
-	<td class="fixwidth2a nowrap {if $set.new_set neq 0}newset{/if}">{$set.age}</td>
+	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{$set.size}</td>
 	<td class="fixwidth1"> <div class="{$complete} status_light down2" {urd_popup type="small" text="$completion" }></div></td>
     <td class="fixwidth1">
-    {if $set.imdblink neq ''}
+    {if $set.imdblink != ''}
     <div class="inline iconsize {$imdbpic} buttonlike" onclick="javascript:jump('{$set.imdblink|escape}', true);" {urd_popup type="small" text=$set.imdblink}></div>
-	{elseif $set.rating neq 0}
+	{elseif $set.rating != 0}
     <div class="inline iconsize {$imdbpic} buttonlike"></div>
 	{/if}</td>
 

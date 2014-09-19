@@ -909,21 +909,21 @@ function wipe_sets(DatabaseConnection $db, array $setids, $type, $userid)
 
 function get_total_rss_sets(DatabaseConnection $db)
 {
-    $res = $db->select_query('COUNT("id") AS cnt FROM rss_sets');
+    $res = $db->select_query('COUNT(*) AS cnt FROM rss_sets');
 
     return $res[0]['cnt'];
 }
 
 function get_total_ng_sets(DatabaseConnection $db)
 {
-    $res = $db->select_query('COUNT("ID") AS cnt FROM setdata');
+    $res = $db->select_query('COUNT(*) AS cnt FROM setdata');
 
     return $res[0]['cnt'];
 }
 
 function get_total_spots(DatabaseConnection $db)
 {
-    $res = $db->select_query('COUNT("id") AS cnt FROM spots');
+    $res = $db->select_query('COUNT(*) AS cnt FROM spots');
 
     return $res[0]['cnt'];
 }

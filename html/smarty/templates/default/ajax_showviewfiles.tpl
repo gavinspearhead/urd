@@ -23,14 +23,14 @@
 
 {* Capture the skipper: *}
 {capture assign=topskipper}
-    {if $lastpage neq 1}
+    {if $lastpage != 1}
         {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=submit_viewfiles_page extra_class="margin10"}
     {else}<br/>
     {/if}
 {/capture}
 
 {capture assign=bottomskipper}
-    {if $lastpage neq 1}
+    {if $lastpage != 1}
         {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=submit_viewfiles_page extra_class="margin10"}
     {else}<br/>
     {/if}
@@ -80,7 +80,7 @@
 {$name=$file->get_name()}
 {$show_delete=$file->get_show_delete()}
 
-{if $ext eq 'dir' and $name neq '..'}
+{if $ext eq 'dir' and $name != '..'}
 	{$size_ext=$LN_files}
 {else}
 	{$size_ext=""}
@@ -100,7 +100,7 @@
 <td>{$file->get_owner()|escape}</td>
 <td>{$file->get_group()|escape}</td>
 <td>
-{if $name neq '..'}
+{if $name != '..'}
 <div class="floatright">
 {if $file->get_nfo_link() != ''} 
 <div class="floatleft iconsizeplus followicon buttonlike" {urd_popup type="small" text=$LN_quickmenu_setpreviewnfo left=true} onclick="javascript:show_contents('{$file->get_nfo_link()|escape:javascript}', 0);"></div>

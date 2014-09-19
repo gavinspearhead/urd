@@ -49,7 +49,7 @@
 {/if}
 {if $a->comment != ''}
 {$comment=$a->comment}
-<div class="inline iconsizeplus infoicon" {urd_popup type="small" text="$comment" }></div>
+<div class="inline iconsizeplus infoicon" {urd_popup type="small" text="$comment"}></div>
 {/if}
 {if $a->status == "rarfailed"}
 <div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badrarinfo } onclick="javascript:show_contents('{$a->destination}/rar.log', 0);"></div>

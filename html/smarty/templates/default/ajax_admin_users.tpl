@@ -75,7 +75,7 @@
 	<td><div class="floatright">
 
     <div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_users_edit } onclick="javascript:user_action('edit',{$user->id});"></div>
-	{if $emailallowed neq 0} 
+	{if $emailallowed != 0} 
     <div class="inline iconsizeplus mailicon buttonlike" {urd_popup type="small" text=$LN_users_resetpw } onclick="javascript:user_action('resetpw',{$user->id});"></div>
 	{/if}
     <div class="inline iconsizeplus deleteicon buttonlike" {urd_popup type="small" text=$LN_users_delete } onclick="javascript:user_action_confirm('delete',{$user->id}, '{$LN_delete} {$user->username|escape}?');"></div>

@@ -121,7 +121,7 @@ function show_search_options(DatabaseConnection $db, $userid)
         $inputarr[] = $search;
     }
 
-    $sql = " * FROM searchbuttons WHERE \"id\" > ? $Qsearch ORDER BY $order $order_dir ";
+    $sql = "* FROM searchbuttons WHERE \"id\" > ? $Qsearch ORDER BY $order $order_dir ";
     $res = $db->select_query($sql, $inputarr);
     if (!is_array($res)) {
         $res = array();

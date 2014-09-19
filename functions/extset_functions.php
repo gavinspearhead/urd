@@ -600,7 +600,7 @@ class urd_extsetinfo
     public static function check_extset_link_exists(DatabaseConnection $db, $setid, $type)
     {
         $search_type = $db->get_pattern_search_command('REGEXP');
-        $sql = " * FROM extsetdata WHERE \"setID\" = ? AND \"type\"=? AND \"name\" = ? AND \"value\" $search_type ?";
+        $sql = "* FROM extsetdata WHERE \"setID\" = ? AND \"type\"=? AND \"name\" = ? AND \"value\" $search_type ?";
         $res = $db->select_query($sql, 1, array($setid, $type, 'link', '^https?://'));
 
         return $res !== FALSE;
