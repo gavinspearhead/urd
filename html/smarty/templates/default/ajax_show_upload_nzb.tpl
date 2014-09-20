@@ -24,7 +24,7 @@
 {* Ajax page, doesn't need a head/foot tpl *}
 
 {extends file="popup.tpl"}
-{block name=title}{$LN_transfers_uploadnzb}{/if}{/block}
+{block name=title}{$LN_transfers_uploadnzb}{/block}
 {block name=contents}
 <br/>
 <div class="light padding10">

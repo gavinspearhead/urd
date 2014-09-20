@@ -309,7 +309,6 @@ abstract class DatabaseConnection
             return FALSE;
         }
         return $rv;
-        
     }
 
     public function update_query($table, array $columns, array $values, $where='', $input_arr=FALSE)

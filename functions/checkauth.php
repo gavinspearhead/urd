@@ -186,7 +186,7 @@ try {
                 // if we log on from the form, we update the IP if requested
                 set_login_ip($db, $ipaddr, $res[0]['ID']);
                 reset_failed_login($db, $username);
-            } elseif ($res[0]['ipaddr'] == '' ||  $res[0]['ipaddr'] == $ipaddr || $res[0]['ipaddr'] === NULL) {
+            } elseif ($res[0]['ipaddr'] == '' || $res[0]['ipaddr'] == $ipaddr || $res[0]['ipaddr'] === NULL) {
                 // if we use the cookie, we make sure the IP address is the same... otherwise user needs to login again
                 $valid = TRUE;
             }
