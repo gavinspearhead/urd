@@ -181,7 +181,7 @@ class urd_spots
                 case 'x-user-signature' :
                     $spot_data['user-signature'] = SpotParser::unspecial_string(substr($line, 18));
                     break;
-                case 'x-xml' :
+                case 'x-xml':
                     $spot_data['xml'] .= substr($line, 7);
                     break;
                 case 'x-user-avatar':
@@ -215,7 +215,6 @@ class urd_spots
         if ($spot_data['verified']) {
             $spot_data['userid'] = $spotSigning->calculate_userid($spot_data['user-key']['modulo']);
             echo_debug('verified spot for ' . $spot_data['userid'] , DEBUG_SERVER);
-
         } else {
             echo_debug('Unverified spot', DEBUG_SERVER);
         }
@@ -602,6 +601,9 @@ class urd_spots
             }
             $ratings = array();
             foreach ($headers as $msg_id => $header) {
+                if (!isset($ids[ $msg_id ])) {
+                    continue;
+                }
                 $this_id = $ids[ $msg_id ]['id'];
                 try {
                     $cnt++;

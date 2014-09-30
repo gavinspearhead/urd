@@ -106,7 +106,7 @@ function show_search_options(DatabaseConnection $db, $userid)
     $search = $o_search = trim(get_request('search', ''));
     $order = strtolower(get_request('sort'));
     $order_dir = strtolower(get_request('sort_dir'));
-    $inputarr = array(0);
+    $inputarr = array(':id' => 0);
     if (!in_array($order, $order_options)) {
         $order = 'name';
     }
@@ -117,11 +117,11 @@ function show_search_options(DatabaseConnection $db, $userid)
     if ($search != '') {
         $search = "%$search%";
         $like = $db->get_pattern_search_command('LIKE');
-        $Qsearch = " AND \"name\" $like ? ";
-        $inputarr[] = $search;
+        $Qsearch = " AND \"name\" $like :name ";
+        $inputarr[ ':name'] = $search;
     }
 
-    $sql = "* FROM searchbuttons WHERE \"id\" > ? $Qsearch ORDER BY $order $order_dir ";
+    $sql = "* FROM searchbuttons WHERE \"id\" > :id $Qsearch ORDER BY $order $order_dir ";
     $res = $db->select_query($sql, $inputarr);
     if (!is_array($res)) {
         $res = array();

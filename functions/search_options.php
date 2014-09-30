@@ -113,3 +113,32 @@ function delete_search_option(DatabaseConnection$db, $id)
     assert(is_numeric($id));
     $db->delete_query('searchbuttons', '"id"=?', array($id));
 }
+
+function clear_all_search_options(DatabaseConnection $db)
+{
+    try {
+        $search_options = get_all_search_options($db);
+        foreach ($search_options as $search_option) {
+            delete_search_option($db, $search_option['id']);
+        }
+    } catch (exception $e) {
+    }
+}
+
+function set_all_search_options(DatabaseConnection $db, array $search_options)
+{
+    foreach ($search_options as $search_option) {
+        add_search_option($db, new search_option($search_option['name'], $search_option['search_url']));
+    }
+}
+
+function get_all_search_options(DatabaseConnection $db)
+{
+    $res = $db->select_query('* FROM searchbuttons WHERE "id" > 0 ORDER BY "name" ASC');
+    if ($res === FALSE) {
+        throw new exception('Cannot find any search options');
+    }
+
+    return $res;
+}
+
