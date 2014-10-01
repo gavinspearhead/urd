@@ -23,6 +23,7 @@
 
 {extends file="popup.tpl"}
 {block name=title}&nbsp;{/block}
+{block name=close_button_id}close_button2{/block}
 {block name=contents}
 
 <div><br/>

@@ -253,21 +253,21 @@ class urd_spots
         $type = USERSETTYPE_SPOT;
         $marking_on = sets_marking::MARKING_ON;
         $spam_count = $keep_int = '';
-        $inputarr = array($expire);
+        $inputarr = array(':stamp' => $expire);
         $spot_expire_spam_count = get_config($db, 'spot_expire_spam_count', 0);
         if ($spot_expire_spam_count > 0) {
-            $spam_count = ' OR spots."reports" > ?';
-            $inputarr[] = $spot_expire_spam_count;
+            $spam_count = ' OR spots."reports" > :reports';
+            $inputarr[':reports'] = $spot_expire_spam_count;
         }
         if (get_config($db, 'keep_interesting', FALSE)) {
-            $keep_int = ' AND "spotid" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
-            $inputarr[] = $type;
-            $inputarr[] = $marking_on;
+            $keep_int = ' AND "spotid" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type" = :type AND "statusint" = :marking) ';
+            $inputarr[':type'] = $type;
+            $inputarr[':marking'] = $marking_on;
         }
 
         echo_debug('Deleting expired spots', DEBUG_DATABASE);
 
-        $sql = "count(\"spotid\") AS cnt FROM spots WHERE (\"stamp\" < ? $spam_count ) $keep_int";
+        $sql = "count(\"spotid\") AS cnt FROM spots WHERE (\"stamp\" < :stamp $spam_count ) $keep_int";
         $res = $db->select_query($sql, -1, -1, $inputarr);
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
@@ -277,7 +277,7 @@ class urd_spots
         update_queue_status ($db, $dbid, NULL, 0, 1);
 
         // expiring
-        $res = $db->delete_query('spots', " (\"stamp\" < ? $spam_count ) $keep_int", $inputarr);
+        $res = $db->delete_query('spots', " (\"stamp\" < :stamp $spam_count ) $keep_int", $inputarr);
         echo_debug("Deleted {$cnt} spots", DEBUG_DATABASE);
         $sql = 'count(*) AS "cnt" FROM spot_images WHERE "spotid" NOT IN (SELECT "spotid" FROM spots)';
         $res = $db->select_query($sql);
@@ -293,12 +293,12 @@ class urd_spots
         // delete files from cache too
 
         write_log('Deleting '. $cnt . ' spot images');
-        $res = $db->delete_query('spot_images', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));
+        $res = $db->delete_query('spot_images', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
         echo_debug("Deleted {$cnt} spot images", DEBUG_DATABASE);
 
         update_queue_status ($db, $dbid, NULL, 0, 40);
-        $sql = 'count(*) AS cnt FROM spot_comments WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?';
-        $res = $db->select_query($sql, array($safety_expire));
+        $sql = 'count(*) AS cnt FROM spot_comments WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp';
+        $res = $db->select_query($sql, array(':stamp'=>$safety_expire));
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
@@ -306,24 +306,23 @@ class urd_spots
 
         update_queue_status ($db, $dbid, NULL, 0, 60);
         write_log('Deleting '. $cnt . ' spot comments');
-        $res = $db->delete_query('spot_comments', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));
+        $res = $db->delete_query('spot_comments', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
         echo_debug("Deleted {$cnt} spot comments", DEBUG_DATABASE);
 
         update_queue_status ($db, $dbid, NULL, 0, 80);
         // expiring reports
-        $sql = 'count(*) AS cnt FROM spot_reports WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?';
-        $res = $db->select_query($sql, array($safety_expire));
+        $sql = 'count(*) AS cnt FROM spot_reports WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp';
+        $res = $db->select_query($sql, array(':stamp'=>$safety_expire));
         $cnt = 0;
         if (isset($res[0]['cnt'])) {
             $cnt = $res[0]['cnt'];
         }
 
-        $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type"=?', array($type));
+        $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type" = :type', array(':type'=>$type));
         update_queue_status ($db, $dbid, NULL, 0, 90);
 
-        update_queue_status ($db, $dbid, NULL, 0, 90);
         write_log('Deleting '. $cnt . ' spot reports');
-        $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < ?', array($safety_expire));
+        $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
         echo_debug("Deleted {$cnt} spot reports", DEBUG_DATABASE);
         self::update_spots_report_count($db);
         self::update_spots_comment_count($db);
@@ -602,6 +601,7 @@ class urd_spots
             $ratings = array();
             foreach ($headers as $msg_id => $header) {
                 if (!isset($ids[ $msg_id ])) {
+                    echo_debug($e->getMessage(), DEBUG_SERVER);
                     continue;
                 }
                 $this_id = $ids[ $msg_id ]['id'];

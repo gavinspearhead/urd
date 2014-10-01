@@ -3403,7 +3403,7 @@ function show_calendar(month, year, clear_time)
                 month = parseInt($('#month').val());
                 year = parseInt($('#year').val());
                 if (month == 1) { p_month = 12; p_year = year -1; } else { p_month = month -1; p_year = year; };
-                show_calendar(p_month, p_year, 1 ); 
+                show_calendar(p_month, p_year, 1); 
             });
             $('#next_month').click( function () {
                 month = parseInt($('#month').val());
@@ -3426,6 +3426,7 @@ function show_calendar(month, year, clear_time)
                     slide: function(event, ui) {
                         $('#hour').val(ui.value);
                         $('#time1').val(ui.value + ':' + $('#minute').val());
+                        event.stopPropagation();
                     }
                 });
                 $('#minutes').slider({
@@ -3435,6 +3436,7 @@ function show_calendar(month, year, clear_time)
                     slide: function(event, ui) {
                         $('#minute').val(ui.value);
                         $('#time1').val($('#hour').val() + ':' + ui.value);
+                        event.stopPropagation();
                     }
                 });
             });

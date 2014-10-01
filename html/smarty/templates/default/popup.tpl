@@ -21,7 +21,7 @@
  * $Id: ajax_preview.tpl 3116 2014-06-25 22:01:04Z gavinspearhead@gmail.com $
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
-<div class="closebutton buttonlike noborder fixedright down5" id="close_button"></div>
+<div class="closebutton buttonlike noborder fixedright down5" id="{block name="close_button_id"}close_button{/block}"></div>
 <div class="set_title centered">{block name="title"}{/block}</div>
 <div class="light">
 {block name="contents"}
