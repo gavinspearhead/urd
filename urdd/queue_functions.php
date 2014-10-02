@@ -207,7 +207,7 @@ function queue_getspot_comments(DatabaseConnection $db, server_data &$servers, $
     $item2 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
     $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3)|| $servers->has_equal($item4)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3) || $servers->has_equal($item4)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -222,7 +222,7 @@ function queue_getspot_reports(DatabaseConnection $db, server_data &$servers, $u
     $item2 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
     $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3)|| $servers->has_equal($item4) ) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3) || $servers->has_equal($item4) ) {
         return urdd_protocol::get_response(403);
     }
 
@@ -237,7 +237,7 @@ function queue_getspot_images(DatabaseConnection $db, server_data &$servers, $us
     $item2 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
     $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3)|| $servers->has_equal($item4)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3) || $servers->has_equal($item4)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -254,7 +254,7 @@ function queue_getspots(DatabaseConnection $db, server_data &$servers, $userid, 
     $item4 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
     $item5 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
     $item6 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item4) || $servers->has_equal($item5)|| $servers->has_equal($item6)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4) || $servers->has_equal($item5)|| $servers->has_equal($item6)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -268,7 +268,7 @@ function queue_expire_spots(DatabaseConnection $db, server_data &$servers, $user
     $item1 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
     $item2 = new action(urdd_protocol::COMMAND_PURGE_SPOTS, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item5) || $servers->has_equal($item4)|| $servers->has_equal($item6)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -285,7 +285,7 @@ function queue_purge_spots(DatabaseConnection $db, server_data &$servers, $useri
     $item4 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
     $item5 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
     $item6 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item5) || $servers->has_equal($item4)|| $servers->has_equal($item6)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item5) || $servers->has_equal($item4)|| $servers->has_equal($item6)) {
         return urdd_protocol::get_response(403);
     }
 
