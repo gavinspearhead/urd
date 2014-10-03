@@ -161,7 +161,7 @@ td.fixwidth9c, th.fixwidth9c
     width: 190px;
     text-align: center;
 }
-td.width100p
+td.width100p, th.width100p
 {
     width:60%;
 }
