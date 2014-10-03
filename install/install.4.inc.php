@@ -339,7 +339,7 @@ if ($db_created) {
         $OUT .= '<tr><td class="install2">Storing default search options</td>';
         $rv_idb = FALSE;
         try{
-            insert_default_options($db);
+            insert_default_search_options($db);
             $rv_idb = TRUE;
         } catch (exception $e) {
             $error = $e->getMessage();
