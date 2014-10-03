@@ -544,6 +544,7 @@ $LN['maxrating']        = 'Max. betyg (0-10)';
 $LN['minrating']        = 'Min. betyg (0-10)';
 $LN['complete']         = 'Fulltalighet, procent';
 $LN['pref_maxcomplete']      = 'Max. fulltalighet, procent';
+$LN['post_comment']     = 'Post comment';
 $LN['pref_mincomplete']      = 'Min. fulltalighet, procent';
 $LN['pref_minngsize']        = 'Min. antal artiklar i Usenet-grupp';
 $LN['config_global_hiddenfiles']        = 'Visa inte dolda filer';
@@ -1372,7 +1373,7 @@ $LN['preview_nzb']          = 'F&ouml;r att starta nedladdning direkt med hj&aum
 $LN['preview_failed']       = 'F&ouml;rhandsgranskning misslyckades';
 
 // FAQ
-$LN['faq_content'][1] = array ('Vad &auml;r URD f&ouml;r n&aring;got?',  'URD &auml;r ett program f&ouml;r att ladda ned bin&auml;rer fr&aring;n Usenet (newsgroups) med ett web-interface.'
+$LN['faq_content'][1] = array('Vad &auml;r URD f&ouml;r n&aring;got?',  'URD &auml;r ett program f&ouml;r att ladda ned bin&auml;rer fr&aring;n Usenet (newsgroups) med ett web-interface.'
     .' Det &auml;r skrivet helt i PGP, &auml;ven om det ocks&aring; anv&auml;nder n&aring;gra externa program f&ouml;r att g&ouml;ra en del'
     .' av det CPU-intensiva arbetet. Det lagrar all information det beh&ouml;ver i en generell databas'
     .' (som MySQL, eller PostGreSQL). Artiklar kommer sl&aring;s ihop till set som upplevs h&ouml;ra ihop.'

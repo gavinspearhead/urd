@@ -72,6 +72,7 @@ $prefs = load_prefs($db, $userid); // load the prefs
 require_once "$pathhtmli/usenet_functions.php";
 
 // first include all the php files that only define stuff
+require_once "$pathhtmli/search_options.php";
 require_once "$pathhtmli/web_functions.php";
 require_once "$pathhtmli/exception.php";
 require_once "$pathhtmli/autoincludes.php";

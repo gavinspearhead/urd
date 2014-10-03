@@ -16,6 +16,7 @@
 - Fixed issue on some browsers (Opera, and Safari) not able to use the basket buttons
 - Fixed a bug in loading the group settings (thanx to Reab4)
 - Fixed a bug in handling the expire date (thanx to Reab4)
+- Fixed a bug in not running spots expire automatically after spots are updated
 - Fixed a bug in handling connection timeouts on downloads
 - Fixed a bug in setting admin config time values (thanx to Reab4)
 - Fixed a bug not expiring extsetdata when expiring spots

@@ -5721,6 +5721,7 @@ function load_prefs()
             current_tab: current_tab
         }
     }).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
@@ -6407,7 +6408,7 @@ function post_spot()
     var description = $('#description').val();
     var subcats = {};
     $('select[name="subcats_select"] > option:selected').each(function() {
-            subcats[$(this).val()] = $(this).val();
+        subcats[$(this).val()] = $(this).val();
     });
     // upload nzb
     // upload image
@@ -6432,20 +6433,19 @@ function post_spot()
         var x = $.parseJSON(html);
 
         if (x.error == 0) {
-            var rv1 = 0;
-            var rv2 = 0;
+            var rv1 = 0, rv2 = 0;
+            var counter = 0;
+            if (x.message !== undefined) {
+                update_message_bar(x.message);
+            }
             upload_file('nzbfile', 'nzb', x.post_id, function(rv) { rv1 = rv; });
             upload_file('imagefile', 'image', x.post_id, function(rv) { rv2 = rv; });
-            var counter = 0;
             var test_f = function() {
                 if (rv1 < 0 || rv2 < 0 || counter > 120) {
                     cancel_post(x.post_id);
                 } else if (rv1 > 0 && rv2 > 0) {
                     start_post(x.post_id);
                     hide_overlayed_content();
-                    if (x.message !== undefined) {
-                        update_message_bar(x.message);
-                    }
         // close popup which we won't do because we have to fill in the stuff over and over again.
                 } else {
                     counter++;

@@ -526,6 +526,7 @@ $LN['maxrating']		= 'Max. rating (0-10)';
 $LN['minrating']		= 'Min. rating (0-10)';
 $LN['complete']		    = 'Vollst&auml;ndigkeit %';
 $LN['maxcomplete']		= 'Max. Vollst&auml;ndigkeit %';
+$LN['post_comment']     = 'Post comment';
 $LN['mincomplete']		= 'Min. Vollst&auml;ndigkeit %';
 $LN['pref_minngsize']		= 'Min Anzahl Artikel in Newsgruppen';
 $LN['config_global_hiddenfiles']		= 'Zeige versteckte Dateien nicht';
@@ -1363,7 +1364,7 @@ $LN['browse_schedule_at']	= 'Starte um';
 $LN['browse_invalid_timestamp'] = 'Ung&uuml;ltige Zeitangabe';
 $LN['NZB_created']		    = 'NZB Datei geschaffen';
 $LN['NZB_file']		        = 'NZB Datei';
-$LN['Image_file']           = 'Bild Datei';
+$LN['image_file']           = 'Bild Datei';
 $LN['browse_mergesets']		= 'Sets verschmelzen';
 $LN['browse_userwhitelisted'] = 'User is on the whitelist';
 

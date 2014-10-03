@@ -547,7 +547,7 @@ class urd_spots
         $sql = '"spotid" FROM spots WHERE "messageid"=?';
         $res = $db->select_query($sql, 1, array($message_id));
         if (!isset($res[0]['spotid'])) {
-            throw new exception ('Spot not found ' . $message_id);
+            throw new exception ('Spot not found ' . $message_id, ERR_SPOT_NOT_FOUND);
         }
 
         return $res[0]['spotid'];

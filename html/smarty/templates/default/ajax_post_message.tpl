@@ -52,7 +52,7 @@
 
 <td>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" id="post_submit" class="submit"/></td></tr>
+<tr><td colspan="2" class="centered"><input type="submit" value="{if  $type == 'comment'}{$LN_post_comment}{else}{$LN_post_post}{/if}" id="post_submit" class="submit"/></td></tr>
 
 </table>
 </div>

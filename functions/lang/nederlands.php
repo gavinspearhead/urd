@@ -516,6 +516,7 @@ $LN['rating']           = 'Score';
 $LN['maxrating']        = 'Max. score (0-10)';
 $LN['minrating']        = 'Min. score (0-10)';
 $LN['complete']         = 'Compleet %';
+$LN['post_comment']     = 'Plaats commentaar';
 $LN['maxcomplete']      = 'Max. compleet %';
 $LN['mincomplete']      = 'Min. compleet %';
 $LN['pref_minngsize']        = 'Min. aantal berichten in een nieuwsgroep';
@@ -1368,7 +1369,7 @@ $LN['browse_toggleint']     = 'Wissel interessant';
 $LN['browse_invalid_timestamp'] = 'Ongeldige tijdstip';
 $LN['NZB_created']          = 'NZB-bestand aangemaakt';
 $LN['NZB_file']             = 'NZB-bestand';
-$LN['Image_file']           = 'Afbeeldingsbestand';
+$LN['image_file']           = 'Afbeeldingsbestand';
 $LN['browse_mergesets']     = 'Sets samenvoegen';
 $LN['browse_userwhitelisted'] = 'Gebruiker staat op de witte lijst';
 

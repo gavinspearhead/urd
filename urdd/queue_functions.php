@@ -207,7 +207,7 @@ function queue_getspot_comments(DatabaseConnection $db, server_data &$servers, $
     $item2 = new action(urdd_protocol::COMMAND_GETSPOT_COMMENTS, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
     $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3) || $servers->has_equal($item4)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -222,7 +222,7 @@ function queue_getspot_reports(DatabaseConnection $db, server_data &$servers, $u
     $item2 = new action(urdd_protocol::COMMAND_GETSPOT_REPORTS, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
     $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3) || $servers->has_equal($item4) ) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4) ) {
         return urdd_protocol::get_response(403);
     }
 
@@ -237,7 +237,7 @@ function queue_getspot_images(DatabaseConnection $db, server_data &$servers, $us
     $item2 = new action(urdd_protocol::COMMAND_GETSPOT_IMAGES, '', $userid);
     $item3 = new action(urdd_protocol::COMMAND_GETSPOTS, '', $userid);
     $item4 = new action(urdd_protocol::COMMAND_EXPIRE_SPOTS, '', $userid);
-    if ($servers->has_equal($item1) || $servers->has_equal($item2)|| $servers->has_equal($item3) || $servers->has_equal($item4)) {
+    if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4)) {
         return urdd_protocol::get_response(403);
     }
 
@@ -633,7 +633,7 @@ function queue_purge_expire(DatabaseConnection $db, $cmd, array $arg_list, $user
         } else {
             $response = urdd_protocol::get_response(599);
         }
-        if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3)|| $servers->has_equal($item4)) {
+        if ($servers->has_equal($item1) || $servers->has_equal($item2) || $servers->has_equal($item3) || $servers->has_equal($item4)) {
             $response = urdd_protocol::get_response(403);
         } else {
             $res = $servers->queue_push($db, $item, TRUE);
@@ -665,7 +665,7 @@ function queue_update_rss(DatabaseConnection $db, $cmd, array $arg_list, $userid
         $item = new action($cmd, $arg_list[0], $userid);
         $item2 = new action(urdd_protocol::COMMAND_PURGE_RSS, $arg_list[0], $userid);
         $item3 = new action(urdd_protocol::COMMAND_EXPIRE_RSS, $arg_list[0], $userid);
-        if ($servers->has_equal($item)||$servers->has_equal($item2)||$servers->has_equal($item3)) {
+        if ($servers->has_equal($item) || $servers->has_equal($item2) || $servers->has_equal($item3)) {
             $response = urdd_protocol::get_response(403);
         } else {
             $res = $servers->queue_push($db, $item, TRUE, server_data::QUEUE_BOTTOM, $priority);
