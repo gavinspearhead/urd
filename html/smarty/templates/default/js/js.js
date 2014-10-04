@@ -289,7 +289,6 @@ function update_basket_display(basket_type)
         }
 
         content = $.trim(content.contents);
-        console.log(basket_type);
         if (basket_type == 1) { // the normal basket
             $('#basketdiv').html(content);
             if ($('#basketbuttondiv') !== undefined) {
@@ -305,7 +304,7 @@ function update_basket_display(basket_type)
             $('#timestamp').click( function() { show_calendar(); });
             $('#timestamp').keyup( function() { hide_popup('calendardiv', 'calendar'); });
             $('#timestamp').change( function() { update_basket_display(1); } );
-            $('#change_basket').click( function() { console.log('aoeu'); update_basket_display(2); } );
+            $('#change_basket').click( function() { update_basket_display(2); } );
             $('#dlsetname').change( function() { update_basket_display(1); } );
             $('#dl_dir').change( function() { update_basket_display(1); } );
             $('#dir_select').change( function() { select_dir('dir_select', 'dl_dir'); } );
@@ -319,7 +318,7 @@ function update_basket_display(basket_type)
                 $('#minibasketdiv').removeClass('hidden');
             }
             $('#basketdiv').html('');
-            $('#change_basket').click( function() {console.log('AOEU'); update_basket_display(1); } );
+            $('#change_basket').click( function() { update_basket_display(1); } );
         } else {
             return false;
         }
@@ -1032,7 +1031,6 @@ function show_post_message(type, spotid)
         data: data,
         cache: false
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -1107,11 +1105,9 @@ function show_post()
         cache: false
     }).done(function(html) {
         var x = $.parseJSON(html);
-        console.log(x);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#submit_button').click( function() { create_post(); } );
-            console.log($('#timestamp').prop('readonly'));
             if (! $('#timestamp').prop('readonly') ) { 
                 $('#timestamp').click( function() {show_calendar(null, null, null); } );
                 $('#timestamp').keyup(function() { hide_popup('calendardiv', 'calendar'); } );
@@ -1485,7 +1481,6 @@ function transfer_edit(cmd, dlid)
             challenge: challenge
         }
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -2379,7 +2374,6 @@ function post_message()
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -2545,7 +2539,6 @@ function rename_file_form(fileid)
             show_overlayed_content_1(x.contents, 'popup525x300');
             $('#apply_button').click( function() { update_filename(); });
         } else {
-        console.log(x.error);
             update_message_bar(x.error);
         }
     });
@@ -2724,7 +2717,6 @@ function show_quick_display(srctype, subject, e, type)
             subject: subject
         }
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'quickwindowon');
@@ -2935,7 +2927,6 @@ function confirm_delete_account(id, msg)
                 challenge: challenge
             }
         }).done(function(html) {
-            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 show_alert(x.message);
@@ -3862,7 +3853,6 @@ function show_savename()
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'savenamediv');
         $('#savename_val').focus();
@@ -3995,7 +3985,6 @@ function save_spot_search()
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -4248,7 +4237,6 @@ function load_spots(options)
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -4383,7 +4371,6 @@ function load_groupsets(options)
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -4565,7 +4552,6 @@ function load_rsssets(options)
         cache: false,
         data: data
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -4606,17 +4592,14 @@ function update_widths(the_id)
 {
     //$('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(1); });
     var oritextwidth = $('#' + the_id).outerWidth();
-    console.log(oritextwidth);
     // First set all elements to the CURRENT width, this increases the TD size because of padding:
     $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth);} );
 
     // Can determine the padding by comparing new size with original size:
     var newtextwidth = $('#' + the_id).outerWidth();
-    console.log(newtextwidth);
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
 
-    console.log(newtextwidth,oritextwidth);
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
     $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(correctedtextwidth); });
@@ -5126,7 +5109,6 @@ function update_setname(id)
 {
     var newsetname = $('#' + id).val(); 
     var tmpsetname = basename(newsetname);
-    console.log(tmpsetname);
     if (tmpsetname.lastIndexOf('.') > 0) {
         tmpsetname = tmpsetname.substr(0, tmpsetname.lastIndexOf('.'));
     }
@@ -5721,7 +5703,6 @@ function load_prefs()
             current_tab: current_tab
         }
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
@@ -5958,7 +5939,6 @@ function submit_forgot_password()
             email: email
         }
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#sent_table').show();
@@ -6348,7 +6328,6 @@ function change_spotsubcats()
 function progressHandlingFunction(e, id)
 {
     if (e.lengthComputable) {
-        console.log({value: e.loaded, max: e.total});
         $(id).attr({value: e.loaded, max: e.total});
     }
 }

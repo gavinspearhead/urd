@@ -344,7 +344,6 @@ try {
         switch ($srctype) {
         case 'setshowesi': // Display extsetinfo
             $contents = display_extsetinfo($db, $subject, $type, $userid);
-            echo_debug_var_file('/tmp/foo', $contents);
             break;
         case 'seteditesi': // Display the edit screen for extsetinfo
             $contents = edit_extsetinfo($db, $subject, $type);
