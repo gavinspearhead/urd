@@ -107,7 +107,6 @@ function display_basket(DatabaseConnection $db, $userid)
             $dlsetname = get_session('dlsetname', '');
         }
         $category = get_request('save_category', '');
-        //var_dump($category);
         $add_setname = get_request('add_setname', '');
         if ($add_setname == '') {
             $add_setname = get_session('add_setname', get_pref($db, 'add_setname', $userid) ? 1 : 0);

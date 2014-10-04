@@ -60,11 +60,11 @@ try {
             $diskspace = $uc->diskfree('h');
             $disk_perc = $uc->diskfree('p1');
             $nodisk_perc = 100 - $disk_perc;
-            $smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
-            $smarty->assign('diskused',		    $diskspace[4] . ' ' . $diskspace[5]);
-            $smarty->assign('disktotal',	    $diskspace[2] . ' ' . $diskspace[3]);
-            $smarty->assign('disk_perc',		$disk_perc);
-            $smarty->assign('nodisk_perc',		$nodisk_perc);
+            $smarty->assign('diskfree',	   $diskspace[0] . ' ' . $diskspace[1]);
+            $smarty->assign('diskused',	   $diskspace[4] . ' ' . $diskspace[5]);
+            $smarty->assign('disktotal',   $diskspace[2] . ' ' . $diskspace[3]);
+            $smarty->assign('disk_perc',   $disk_perc);
+            $smarty->assign('nodisk_perc', $nodisk_perc);
         }
     } elseif ($type == 'activity') {
         $tasks = array();

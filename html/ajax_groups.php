@@ -245,7 +245,6 @@ function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
         $offset = 0;
     }
 
-  
     $categories = get_categories($db, $userid);
     $allgroups = array();
     $res = build_newsgroup_query($db, $userid, $offset, $retvals);
@@ -278,11 +277,11 @@ function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
         $thisng['category'] = utf8_encode($row['category']);
         $thisng['description'] = $description;
         list($val, $suf) = format_size($row['admin_minsetsize'], 'h', '');
-        $thisng['admin_minsetsize'] =  $val . $suf;
+        $thisng['admin_minsetsize'] = $val . $suf;
         list($val, $suf) = format_size($row['admin_maxsetsize'], 'h', '');
-        $thisng['admin_maxsetsize'] =  $val . $suf;
+        $thisng['admin_maxsetsize'] = $val . $suf;
 
-        $thisng['name'] = shorten_newsgroup_name ($row['name'], 0);
+        $thisng['name'] = shorten_newsgroup_name($row['name'], 0);
         $thisng['long_name'] = $row['name'];
         if ($active == 0) {
             $thisng['expire'] = $def_exp;

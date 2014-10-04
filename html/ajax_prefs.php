@@ -42,13 +42,6 @@ function get_search_type_array()
     return $search_type_array;
 }
 
-function get_languages_array()
-{
-    $languages = array_map('htmlentities', get_languages());
-
-    return $languages;
-}
-
 function get_basket_type_array()
 {
     global $LN;
@@ -256,7 +249,7 @@ function set_search_options(DatabaseConnection $db, $userid, $value)
     $maxsearch_options = get_config($db, 'maxbuttons');
     $value = explode(':', $value);
     for ($i = 0; $i < $maxsearch_options; $i++) {
-        $search_option = 'button' . (string) ($i+1);
+        $search_option = 'button' . (string) ($i + 1);
         $v = (isset($value[$i]) && is_numeric($value[$i])) ? $value[$i] : 'none';
         set_pref($db, $search_option, $v, $userid);
     }
@@ -337,7 +330,7 @@ function change_password(DatabaseConnection $db, $userid)
             }
 
             $oldpass = hash('sha256',  $salt . $oldpass . $salt);
-            $res = $db->select_query("\"name\" FROM users WHERE \"ID\"=? AND \"pass\" = ?", array($userid, $oldpass));
+            $res = $db->select_query('"name" FROM users WHERE "ID"=? AND "pass" = ?', array($userid, $oldpass));
             if ($res === FALSE) {
                 throw new exception($LN['error_pwincorrect']);
             } else {

@@ -512,7 +512,7 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
 
 function update_postcount(DatabaseConnection $db, $groupid)
 {
-    $sql = "UPDATE groups SET postcount = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\"= WHERE \"ID\"=?";
+    $sql = "UPDATE groups SET postcount = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\"=? WHERE \"ID\"=?";
     $db->execute_query($sql, array('0', $groupid));
 }
 

@@ -32,7 +32,6 @@ require_once "$pathaac/../functions/periods.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-
 function get_permissions_array()
 {
     global $LN;
@@ -54,9 +53,9 @@ function get_on_off_array()
 {
     global $LN;
     $on_off = array(
-            'on'    => $LN['on'],
-            'off'   => $LN['off']
-            );
+        'on'    => $LN['on'],
+        'off'   => $LN['off']
+    );
 
     return $on_off;
 }
@@ -112,21 +111,6 @@ function get_groups_array()
     }
 
     return $groups;
-}
-
-function get_languages_array()
-{
-    $languages = array_map('htmlentities', get_languages());
-
-    return $languages;
-}
-
-function urdd_connected(DatabaseConnection $db, $userid)
-{
-    $rprefs = load_config($db);
-    $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-
-    return $uc->is_connected();
 }
 
 function show_config(DatabaseConnection $db, $userid)
@@ -1522,11 +1506,11 @@ function get_ln_val($name)
     switch ($name) {
         case 'module[' . urd_modules::URD_CLASS_USENZB . ']':
             return $LN['config_module_usenzb'];
-        case 'module[' . urd_modules::URD_CLASS_GROUPS. ']':
+        case 'module[' . urd_modules::URD_CLASS_GROUPS . ']':
             return $LN['config_module_groups'];
         case 'module[' . urd_modules::URD_CLASS_SPOTS . ']':
             return $LN['config_module_spots'];
-        case 'module[' . urd_modules::URD_CLASS_MAKENZB. ']':
+        case 'module[' . urd_modules::URD_CLASS_MAKENZB . ']':
             return $LN['config_module_makenzb'];
         case 'module[' . urd_modules::URD_CLASS_RSS . ']':
             return $LN['config_module_rss'];
@@ -1536,7 +1520,7 @@ function get_ln_val($name)
             return $LN['config_module_sync'];
         case 'module[' . urd_modules::URD_CLASS_DOWNLOAD . ']':
             return $LN['config_module_download'];
-        case 'module[' . urd_modules::URD_CLASS_VIEWFILES. ']':
+        case 'module[' . urd_modules::URD_CLASS_VIEWFILES . ']':
             return $LN['config_module_viewfiles'];
     }
     if ($name == 'pref_level') {
@@ -1568,11 +1552,13 @@ try {
             unset_config($db, "__custom_$option");
             break;
         case 'set':
+            challenge::verify_challenge($_POST['challenge']);
             $rprefs = load_config($db);
             $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
-            challenge::verify_challenge($_POST['challenge']);
             $option = get_post('option');
-            if (substr($option, -2) == '[]') { $option = substr($option, 0, -2); }
+            if (substr($option, -2) == '[]') { 
+                $option = substr($option, 0, -2); 
+            }
             $value = get_post('value');
             $type = get_post('type');
             set_configuration($db, $uc, $userid, $option, $value, $type);
@@ -1594,7 +1580,7 @@ try {
                 set_configs($db, $settings);
                 $imported = 1;
             } else {
-                throw new exception ($LN['settings_notfound']);
+                throw new exception($LN['settings_notfound']);
             }
             break;
         case 'export_settings':

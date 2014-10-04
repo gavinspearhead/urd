@@ -108,7 +108,6 @@ function socket_error_handler($die=FALSE)
 
 function echo_debug_trace(exception $e, $dbg_lvl)
 {
-
     echo_debug($e->getTraceAsString(), $dbg_lvl);
 }
 

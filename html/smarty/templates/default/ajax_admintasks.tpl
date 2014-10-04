@@ -48,7 +48,6 @@
 {if $sort == "lastupdate"}{if $sort_dir=='desc'}{$lastupdate_sort=$up}{else}{$lastupdate_sort=$down}{/if}{else}{$lastupdate_sort=""}{/if}
 {if $sort == "comment"}{if $sort_dir=='desc'}{$comment_sort=$up}{else}{$comment_sort=$down}{/if}{else}{$comment_sort=""}{/if}
 
-
 <input type="hidden" name="offset" id="offset" value="{$offset|escape:htmlall}"/>
 <input type="hidden" name="order" id="order" value="{$sort|escape:htmlall}"/>
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>

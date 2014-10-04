@@ -1174,6 +1174,7 @@ function load_tasks(order, direction, clear_offset)
     var url = 'ajax_admintasks.php';
     var data = {};
     var orderval = get_value_from_id('order', '');
+    console.log(orderval, order);
     var orderdirval = get_value_from_id('order_dir', '');
     var offsetval = get_value_from_id('offset', '');
     var tasksearch = get_value_from_id('tasksearch', '');
@@ -1184,7 +1185,7 @@ function load_tasks(order, direction, clear_offset)
     }
     var statusval = $('#status_select>option:selected').val();
     data.status = statusval;
-    if (order === undefined && orderval != '') {
+    if (order === null && orderval != '') {
         order = orderval;
     }
     if (order !== null) {
@@ -1199,6 +1200,7 @@ function load_tasks(order, direction, clear_offset)
     if (offsetval != '' && clear_offset !== true) {
         data.offset = offsetval;
     }
+    console.log(data);
     $.ajax({
         type: 'post',
         url: url,

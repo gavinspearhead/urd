@@ -2162,3 +2162,17 @@ function link_to_url($description)
     return $description;
 }
 
+function get_languages_array()
+{
+    $languages = array_map('htmlentities', get_languages());
+
+    return $languages;
+}
+
+function urdd_connected(DatabaseConnection $db, $userid)
+{
+    $rprefs = load_config($db);
+    $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
+
+    return $uc->is_connected();
+}
