@@ -117,7 +117,7 @@ function task_action(action, task)
         }).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
-                update_tasks();
+                load_tasks();
                 update_message_bar(x.message);
             } else {
                 update_message_bar(x.error);
@@ -142,8 +142,8 @@ function job_action(action, job)
         }).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
-                update_jobs();
-               update_message_bar(x.message);
+                load_jobs();
+                update_message_bar(x.message);
             } else {
                 update_message_bar(x.error);
             }
@@ -1174,7 +1174,6 @@ function load_tasks(order, direction, clear_offset)
     var url = 'ajax_admintasks.php';
     var data = {};
     var orderval = get_value_from_id('order', '');
-    console.log(orderval, order);
     var orderdirval = get_value_from_id('order_dir', '');
     var offsetval = get_value_from_id('offset', '');
     var tasksearch = get_value_from_id('tasksearch', '');
@@ -1200,7 +1199,6 @@ function load_tasks(order, direction, clear_offset)
     if (offsetval != '' && clear_offset !== true) {
         data.offset = offsetval;
     }
-    console.log(data);
     $.ajax({
         type: 'post',
         url: url,
