@@ -25,7 +25,7 @@
 - Fixed a bug not setting the default languages correctly in the installer
 - Rearranged the configuration a bit.
 - Cleanup stylesheets and replaced images by css
-- Updated smarty to 3.1.19
+- Updated smarty to 3.1.20
 - Updated to jquery 2.1.1 - note IE 6-8 are no longer supported
 
 

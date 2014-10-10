@@ -136,7 +136,7 @@ try {
             $current = get_request('current', '');
             $cat = get_request('cat', '');
             foreach ($saved_searches->get_names($type) as $k => $v) {
-                $names[$k] = htmlentities(utf8_decode($v));
+                $names[$k] = (utf8_decode($v));
             }
             if (count($names) == 0) {
                 return_result(array('count'=>0));
@@ -144,7 +144,7 @@ try {
             init_smarty('', 0);
             natcasesort($names);
             $smarty->assign('saved_searches',	$names);
-            $smarty->assign('current',	        htmlentities(utf8_decode($current)));
+            $smarty->assign('current',	        (utf8_decode($current)));
             $smarty->assign('usersettype',		$type);
             $smarty->assign('cat',		        $cat);
             $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);

@@ -809,3 +809,8 @@ div.pref_selector
     vertical-align: bottom;
     padding-bottom: 1px;
 }
+
+select 
+{
+    min-width:100px;
+}

@@ -59,11 +59,11 @@
 <select id="saved_search">
 <option value=""></option>
 {foreach $saved_searches as $saved_search}
-<option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
+<option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}</option>
 {/foreach}
 </select>
 </span> 
-<input type="button"  id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
+<input type="button" id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
 </span> 
 
 <div id="minibasketdiv" class="hidden"></div>
