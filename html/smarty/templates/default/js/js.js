@@ -1025,6 +1025,7 @@ function show_post_message(type, spotid)
             data.rating = rating;
         }
     }
+    data.groupid = $('#select_groupid>option:selected').val();
     $.ajax({
         type: 'post',
         url: url,
@@ -3997,7 +3998,6 @@ function save_spot_search()
 
 function update_browse_searches(name)
 {
-    console.log(name);
     var url = 'ajax_saved_searches.php';
     if (name == null || name == '') {
         if ($('#saved_search').prop('selectedIndex') == 0 || name == '') {
@@ -4022,7 +4022,6 @@ function update_browse_searches(name)
             cat: 0
         }
     }).done(function(html) {
-        console.log(name, html);
         var x = $.parseJSON(html);
         $('#save_category').val('');
         if (x.error == 0) {
@@ -4659,7 +4658,6 @@ function show_confirm(msg, fn)
         cache: false,
         data: { msg: msg, allow_cancel: 1 }
     }).done(function(html) {
-        console.log(msg, html);
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'alertdiv');
         $('#cancelbutton').click(function() { hide_overlayed_content(); });

@@ -32,7 +32,7 @@ $msg = insert_wbr(htmlentities($msg), 25);
 $allow_cancel = get_request('allow_cancel', 0);
 
 init_smarty('', 0);
-$smarty->assign('msg',			    $msg );
+$smarty->assign('msg',			    $msg);
 $smarty->assign('allow_cancel',		$allow_cancel);
 $contents = $smarty->fetch('ajax_alert.tpl');
 return_result(array('contents' => $contents));
