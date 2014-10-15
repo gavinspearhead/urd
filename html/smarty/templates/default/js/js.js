@@ -4366,6 +4366,7 @@ function load_groupsets(options)
     data.setid = setid;
     data.flag = flag;
     data.order = order;
+    console.log(data);
     $.ajax({
         type: 'post',
         url: url,
@@ -4380,6 +4381,8 @@ function load_groupsets(options)
             $('#maxrating').val(x.maxrating);
             $('#minsetsize').val(x.minsetsize);
             $('#maxsetsize').val(x.maxsetsize);
+            $('#mincomplete').val(x.mincomplete);
+            $('#maxcomplete').val(x.maxcomplete);
             $('#flag').val(x.flag);
             init_browse_sliders();
             if (add_rows == 0) {
@@ -5275,8 +5278,8 @@ function init_slider(minv, maxv, slidediv, minbox, maxbox)
     if ($.isNumeric($(minbox).val())) { minb = $(minbox).val(); }
     if ($.isNumeric($(maxbox).val())) { maxb = $(maxbox).val(); }
     // we set the default here -- if the value == "" it is set to 0
-    $(maxbox).val(maxb);
-    $(minbox).val(minb);
+    //$(maxbox).val(maxb);
+    //$(minbox).val(minb);
     $(function() {
         $(slidediv).slider({
             range: true,
