@@ -61,7 +61,7 @@ class spotparser
         );
 
         /*  Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net> */
-        $xml = @(new SimpleXMLElement($xmlStr, LIBXML_NOERROR|LIBXML_NOWARNING));
+        $xml = @(new SimpleXMLElement($xmlStr, LIBXML_NOERROR | LIBXML_NOWARNING));
         $xml = $xml->Posting;
         $tpl_spot['category'] = (string) $xml->Category;
         $tpl_spot['spotid'] = (string) $xml->ID;

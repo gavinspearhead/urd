@@ -4366,7 +4366,6 @@ function load_groupsets(options)
     data.setid = setid;
     data.flag = flag;
     data.order = order;
-    console.log(data);
     $.ajax({
         type: 'post',
         url: url,

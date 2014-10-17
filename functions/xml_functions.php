@@ -455,6 +455,8 @@ class urd_xml_reader
         }
 
         $tree = NULL;
+        // suppress parse warninsg
+        $old_err_rep = error_reporting(E_ERROR);
         $old_val = ini_set('track_errors', 1);
         $php_errormsg = '';
         while ($xml->read()) {
@@ -486,6 +488,7 @@ class urd_xml_reader
                 break;
             }
         }
+        error_reporting($old_err_rep);
         $errormsg = $php_errormsg;
         if ($old_val !== FALSE) {
             ini_set('track_errors', $old_val);
@@ -496,7 +499,7 @@ class urd_xml_reader
 
         return $tree;
     }
-    public function read_user_settings(DatabaseConnection $db, $userid= NULL, $verify_name = FALSE)
+    public function read_user_settings(DatabaseConnection $db, $userid=NULL, $verify_name=FALSE)
     {
         assert ((is_numeric($userid) || $userid === NULL) && is_bool($verify_name));
         if ($userid !== NULL && $verify_name === TRUE) {

@@ -794,12 +794,6 @@ function show_config(DatabaseConnection $db, $userid)
                 $spot_expire_spam_count_msg, $prefArray_root['spot_expire_spam_count'], NUMBER_BOX_SIZE);
         $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_max_categories'], 'spots_max_categories', $LN['config_spots_max_categories_msg'],
                 $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
-        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_expire_time'], 'spots_expire_time', $LN['config_spots_expire_time_msg'],
-                $spots_expire_time_msg, $prefArray_root['spots_expire_time'], NUMBER_BOX_SIZE);
-        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spot_expire_spam_count'], 'spot_expire_spam_count', $LN['config_spot_expire_spam_count_msg'],
-                $spot_expire_spam_count_msg, $prefArray_root['spot_expire_spam_count'], NUMBER_BOX_SIZE);
-        $spots_settings[] = new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_spots_max_categories'], 'spots_max_categories', $LN['config_spots_max_categories_msg'],
-                $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
         $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots'], $LN['config_period_getspots_msg'],
                 $getspots_msg, 'period_getspots', $prefArray_root['period_getspots'], 'time1_getspots', $prefArray_root['time1_getspots'], 'time2_getspots', $prefArray_root['time2_getspots']);
         $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_reports'], 'download_spots_reports', $LN['config_download_spots_reports_msg'],
