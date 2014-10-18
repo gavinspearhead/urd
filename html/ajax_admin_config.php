@@ -722,21 +722,21 @@ function show_config(DatabaseConnection $db, $userid)
             $sendmail_msg, $prefArray_root['sendmail'], '$(\'#hide_maa\').toggleClass(\'hidden\');$(\'#hide_macta\').toggleClass(\'hidden\');$(\'#hide_mad\').toggleClass(\'hidden\');$(\'#hide_mds\').toggleClass(\'hidden\');$(\'#hide_mnis\').toggleClass(\'hidden\');$(\'#hide_mnp\').toggleClass(\'hidden\');$(\'#hide_mnu\').toggleClass(\'hidden\');$(\'#hide_mpr\').toggleClass(\'hidden\');');
 
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_account_activated'], 'mail_account_activated', $LN['config_mail_account_activated_msg'],
-            $mail_account_activated_msg, $mail_templates, $prefArray_root['mail_account_activated'], NULL, 'hide_maa', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_account_activated_msg, $mail_templates, $prefArray_root['mail_account_activated'], NULL, 'hide_maa', $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_activate_account'], 'mail_activate_account', $LN['config_mail_activate_account_msg'],
-            $mail_activate_account_msg, $mail_templates, $prefArray_root['mail_activate_account'], NULL, 'hide_macta', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_activate_account_msg, $mail_templates, $prefArray_root['mail_activate_account'], NULL, 'hide_macta', $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_account_disabled'], 'mail_account_disabled', $LN['config_mail_account_disabled_msg'],
-            $mail_account_disabled_msg, $mail_templates, $prefArray_root['mail_account_disabled'], NULL, 'hide_mad', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_account_disabled_msg, $mail_templates, $prefArray_root['mail_account_disabled'], NULL, 'hide_mad', $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_download_status'], 'mail_download_status', $LN['config_mail_download_status_msg'],
-            $mail_download_status_msg, $mail_templates, $prefArray_root['mail_download_status'], NULL, 'hide_mds', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_download_status_msg, $mail_templates, $prefArray_root['mail_download_status'], NULL, 'hide_mds', $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_new_interesting_sets'], 'mail_new_interesting_sets', $LN['config_mail_new_interesting_sets_msg'],
-            $mail_new_interesting_sets_msg, $mail_templates, $prefArray_root['mail_new_interesting_sets'], NULL, 'hide_mnis', $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_new_interesting_sets_msg, $mail_templates, $prefArray_root['mail_new_interesting_sets'], NULL, 'hide_mnis', $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_new_preferences'], 'mail_new_preferences', $LN['config_mail_new_preferences_msg'],
-            $mail_new_preferences_msg, $mail_templates, $prefArray_root['mail_new_preferences'], NULL, 'hide_mnp',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_new_preferences_msg, $mail_templates, $prefArray_root['mail_new_preferences'], NULL, 'hide_mnp',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_new_user'], 'mail_new_user', $LN['config_mail_new_user_msg'],
-            $mail_new_user_msg, $mail_templates, $prefArray_root['mail_new_user'], NULL, 'hide_mnu',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_new_user_msg, $mail_templates, $prefArray_root['mail_new_user'], NULL, 'hide_mnu',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
     $notify_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_mail_password_reset'], 'mail_password_reset', $LN['config_mail_password_reset_msg'],
-            $mail_password_reset_msg, $mail_templates, $prefArray_root['mail_password_reset'], NULL, 'hide_mpr',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden' );
+            $mail_password_reset_msg, $mail_templates, $prefArray_root['mail_password_reset'], NULL, 'hide_mpr',  $prefArray_root['sendmail'] == 1 ? NULL:'hidden');
 
     $global_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_MASTER, $LN['config_parse_nfo'], 'parse_nfo', $LN['config_parse_nfo_msg'],
             $parse_nfo_msg, $prefArray_root['parse_nfo']);
@@ -803,7 +803,7 @@ function show_config(DatabaseConnection $db, $userid)
         $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_download_spots_comments'], 'download_spots_comments', $LN['config_download_spots_comments_msg'],
                 $download_spots_comments_msg, $prefArray_root['download_spots_comments'], '$(\'#hide_cmt_avt\').toggleClass(\'hidden\');');
         $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_download_comment_avatar'], 'download_comment_avatar', $LN['config_download_comment_avatar_msg'],
-                $config_download_comment_avatar_msg, $prefArray_root['download_comment_avatar'], NULL, 'hide_cmt_avt', $prefArray_root['download_spots_comments'] == 1 ? NULL:'hidden');
+                $config_download_comment_avatar_msg, $prefArray_root['download_comment_avatar'], NULL, 'hide_cmt_avt', $prefArray_root['download_spots_comments'] == 1 ? NULL : 'hidden');
         $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots_blacklist'], $LN['config_period_getspots_blacklist_msg'],
                 $getspots_blacklist_msg, 'period_getspots_blacklist', $prefArray_root['period_getspots_blacklist'], 'time1_getspots_blacklist',
                 $prefArray_root['time1_getspots_blacklist'], 'time2_getspots_blacklist', $prefArray_root['time2_getspots_blacklist']);

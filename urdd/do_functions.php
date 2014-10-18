@@ -2334,7 +2334,8 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
             return $rv;
         }
         update_postcount($db, $groupArr_reports['ID']);
-        $comment_count = urd_spots::load_spot_reports($db, $nzb, $item, $groupArr_reports['expire']);
+        $expire = get_config($this->db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
+        $comment_count = urd_spots::load_spot_reports($db, $nzb, $item, $expire);
 
         $nzb->disconnect();
         $status = QUEUE_FINISHED;
@@ -2387,7 +2388,8 @@ function do_getspot_comments(DatabaseConnection $db, action $item)
             return $rv;
         }
         update_postcount($db, $groupArr_comments['ID']);
-        $comment_count = urd_spots::load_spot_comments($db, $nzb, $item, $groupArr_comments['expire']);
+        $expire = get_config($this->db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
+        $comment_count = urd_spots::load_spot_comments($db, $nzb, $item, $expire);
 
         $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. Loaded ' . $comment_count . ' comments');
