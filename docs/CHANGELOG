@@ -13,6 +13,7 @@
 - Fixed some handling of selecting multiple sets at once
 - Fixed bug in saving some settings
 - Fixed a bug in not handling the expire settings correctly on loading spots and expiring spots
+- Fixed a bug in not using the correct expire settings on loading spots comments and reports
 - Fixed issue on some browsers (Opera, and Safari) not able to use the basket buttons
 - Fixed a bug in loading the group settings (thanx to Reab4)
 - Fixed a bug in handling the expire date (thanx to Reab4)

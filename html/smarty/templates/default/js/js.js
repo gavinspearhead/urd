@@ -527,6 +527,7 @@ function submit_viewfiles_action(fileid, command)
                 challenge: challenge
                 }
         }).done(function(html) {
+            console.log(html);
                var x = $.parseJSON(html);
                show_files({ 'curdir': dir, 'reset_offset': false });
                update_message_bar(x.error);

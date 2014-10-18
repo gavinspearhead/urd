@@ -37,7 +37,7 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
 
 $origroupID = $groupID = get_request('groupID', '');
 $minsetsize = get_request('minsetsize', 0, 'is_numeric');
-$maxage  = get_request('maxage', '', 'is_numeric');
+$maxage = get_request('maxage', '', 'is_numeric');
 
 $search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
 $saved_search = get_request('saved_search', '');

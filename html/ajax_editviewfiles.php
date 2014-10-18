@@ -414,11 +414,11 @@ try {
                 }
                 $fullname = $dirname.$filename;
                 if (filesize($fullname) > ($rprefs['maxfilesize']) && $rprefs['maxfilesize'] != 0) {
-                    throw new exception($LN['error_filetoolarge'], $filename);
+                    throw new exception($LN['error_filetoolarge'] . ': ' .  $filename);
                 }
                 $file_contents = @file_get_contents($fullname);
-                if ($file_contents === FALSE || $file_contents == '') {
-                    throw new exception($LN['error_filereaderror'], $filename);
+                if ($file_contents === FALSE || ($file_contents == '' && filesize($fullname) > 0)) {
+                    throw new exception($LN['error_filereaderror'] . ': ' . $filename);
                 }
                 $_SESSION['viewfiles']['file_edit'] = $fullname;
             } else {
@@ -581,7 +581,7 @@ try {
             $tar_cmd = my_escapeshellcmd(get_config($db,'tar_path'));
             $use_tar = (int) (($tar_cmd != 'off' && $tar_cmd != '') && ($rprefs['webdownload'] == 1));
 
-            $allow_edit = $rprefs['webeditfile'];
+            $allow_edit = $rprefs['webeditfile'] && $is_fileeditor;
 
             init_smarty('', 0);
             $smarty->assign('allow_edit',	$allow_edit);
