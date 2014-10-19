@@ -128,17 +128,17 @@ class urd_spots
     private static function parse_spot_header(array $header, $message_id, array $spot_blacklist)
     {
         $spot_data = array(
-                'from' => '',
-                'subject' => '',
-                'date' => '',
-                'xml-signature' => '',
-                'user-signature' => '',
-                'user-key'=> '',
-                'xml' =>'',
-                'messageid' => $message_id,
-                'user-avatar' => '',
-                'verified' => FALSE
-                );
+            'from' => '',
+            'subject' => '',
+            'date' => '',
+            'xml-signature' => '',
+            'user-signature' => '',
+            'user-key'=> '',
+            'xml' =>'',
+            'messageid' => $message_id,
+            'user-avatar' => '',
+            'verified' => FALSE
+        );
         $spotParser = new SpotParser();
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
@@ -600,7 +600,7 @@ class urd_spots
             }
             $ratings = array();
             foreach ($headers as $msg_id => $header) {
-                if (!isset($ids[ $msg_id ])) {
+                if (!isset($ids[ $msg_id ]) || !is_array($header)) {
                     echo_debug($e->getMessage(), DEBUG_SERVER);
                     continue;
                 }
