@@ -27,7 +27,7 @@
 - Fixed a bug not handling edit rights properly in the view_files pages
 - Rearranged the configuration a bit.
 - Cleanup stylesheets and replaced images by css
-- Updated smarty to 3.1.20
+- Updated smarty to 3.1.21
 - Updated to jquery 2.1.1 - note IE 6-8 are no longer supported
 
 

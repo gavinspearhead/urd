@@ -27,5 +27,5 @@ cd -
 
 mv "/tmp/urd-$version.tar.gz" .
 
-#rm -rf /tmp/urd-$version
+rm -rf /tmp/urd-$version
 
