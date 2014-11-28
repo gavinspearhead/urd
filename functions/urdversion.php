@@ -28,7 +28,7 @@ if (!defined('ORIGINAL_PAGE')) {
 
 class urd_version
 {
-    const urd_version       = '1.12.0';
+    const urd_version       = '1.13.0';
     const urd_status        = 'stable';
     const copyright         = '2007-2014 &copy; Styck &amp; Spearhead';
     const extset_version    = '1.0';

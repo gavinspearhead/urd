@@ -1,3 +1,5 @@
+1.13
+
 1.12
 - Added posting spots
 - Added option to set the timeout for which a server will not be used after a connection timed out error

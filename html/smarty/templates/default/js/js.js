@@ -2022,6 +2022,8 @@ function hide_popup(itemname, baseclass)
 {
     $('#' + itemname).removeClass(baseclass + 'on');
     $('#' + itemname).addClass(baseclass + 'off');
+    $('#' + itemname).html('');
+
 }
 
 function show_rename_transfer(dlid)
