@@ -197,7 +197,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
         case 'format_dl_dir':
         case 'poster_email':
         case 'subs_lang':
-            return verify_text_opt($value, NULL);
+            return verify_text_opt($value, FALSE, NULL);
         case 'cancel_crypted_rars':
             return verify_array($value, array_keys(get_encrar_array()));
         case 'search_type':
