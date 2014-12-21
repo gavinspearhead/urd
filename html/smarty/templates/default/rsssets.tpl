@@ -117,6 +117,7 @@
 <input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
+<input type="hidden" id="last_line" value=""/>
 
 {* Load basket: *}
 <script type="text/javascript">

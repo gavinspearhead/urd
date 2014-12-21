@@ -30,7 +30,10 @@ require_once "$pathupl/../functions/html_includes.php";
 // which is then processed as usual in parsenzb.php
 
 verify_access($db, urd_modules::URD_CLASS_USENZB|urd_modules::URD_CLASS_DOWNLOAD, FALSE, '', $userid, FALSE);
-
-list($_REQUEST['upload'], $_REQUEST['upload_orig_filename']) = get_uploaded_files();
+try {
+    list($_REQUEST['upload'], $_REQUEST['upload_orig_filename']) = get_uploaded_files();
+} catch (exception $e){ 
+    die_html($e->getMessage());
+}
 
 require 'parsenzb.php';

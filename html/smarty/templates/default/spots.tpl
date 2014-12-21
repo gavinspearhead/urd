@@ -97,6 +97,7 @@
 <input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage}"/>
+<input type="hidden" id="last_line" value=""/>
 
 <script type="text/javascript">
 $(document).ready(function() {

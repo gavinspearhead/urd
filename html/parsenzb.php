@@ -30,7 +30,6 @@ $pathpn = realpath(dirname(__FILE__));
 require_once "$pathpn/../functions/html_includes.php";
 
 verify_access($db, urd_modules::URD_CLASS_USENZB | urd_modules::URD_CLASS_DOWNLOAD, FALSE, '', $userid, FALSE);
-
 if (isset($_REQUEST['upload'])) {
     $url = trim($_REQUEST['upload']);
     if ($url == '') {
@@ -53,7 +52,7 @@ if (isset($_REQUEST['upload'])) {
     move_uploaded_file($url, $nzb_file);
     $url = $nzb_file;
 } elseif (isset($_REQUEST['url'])) {
-    $url = trim($_REQUEST['url']);
+    $url = trim(get_request('url', ''));
     if ($url == '') {
         die_html($LN['error_filenotexec']);
     }
@@ -102,6 +101,14 @@ $stat_id = add_stat_data($db, stat_actions::DOWNLOAD, 0, $userid);
 set_stat_id($db, $dlid, $stat_id);
 set_dl_dir($db, $dlid, $dl_dir, $add_setname);
 list($timestamp, $time_int) = get_timestamp();
+$unpar = (get_post('unpar', '0') == '1') ? 1 : 0;
+$unrar = (get_post('unrar', '0') == '1') ? 1 : 0;
+$subdl = (get_post('subdl', '0') == '1') ? 1 : 0;
+$delete = (get_post('delete_files', '0') == '1') ? 1 : 0;
+$newpass = trim(get_post('dlpass', ''));
+$cols = array('password', 'unrar', 'subdl', 'dl_dir', 'unpar', 'delete_files');
+$vals = array($newpass, $unrar, $subdl, $dl_dir, $unpar, $delete);
+$res = $db->update_query('downloadinfo', $cols, $vals, '"ID"=?', array($dlid));
 
 set_start_time($db, $dlid, $time_int);
 $url = addslashes($url);

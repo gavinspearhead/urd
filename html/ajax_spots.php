@@ -158,7 +158,7 @@ class spot_viewer
 
         return get_pages($this->totalsets, $perpage, $offset);
     }
-    public function get_spot_data($perpage, $offset)
+    public function get_spot_data($perpage, $offset, &$last_item)
     {
         assert(is_numeric($perpage) && is_numeric($offset));
         global $LN;
@@ -250,7 +250,7 @@ class spot_viewer
             $thisset['number'] = ++$number;
             $allsets[] = $thisset;
         }
-
+        $last_item = $number;
         return $allsets;
     }
 
@@ -514,7 +514,7 @@ try {
     $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order);
     list($pages, $activepage, $totalpages, $offset) = $spots_viewer->get_page_count($perpage, $offset, $only_rows);
 
-    $allsets = $spots_viewer->get_spot_data($perpage, $offset);
+    $allsets = $spots_viewer->get_spot_data($perpage, $offset, $last_line);
     $rssurl = $spots_viewer->get_rss_url($perpage);
 
     init_smarty('', 0);
@@ -551,7 +551,8 @@ try {
         'minrating' => $minrating,
         'maxrating' => $maxrating,
         'only_rows' => $only_rows,
-        'REQUEST' => $_REQUEST
+        'REQUEST' => $_REQUEST,
+        'last_line' => $last_line
     ));
 
 } catch (exception $e) {

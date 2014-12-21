@@ -1057,7 +1057,7 @@ function show_uploadnzb(dir, name)
     }).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
-            show_overlayed_content_1(x.contents, 'popup525x300');
+            show_overlayed_content_1(x.contents, 'popup700x400');
             $('#url').click( function() { update_setname('url') });
             $('#submit_button').click( function() { submit_upload(); });
             $('#browse').click( function() { $('#upfile').click(); });
@@ -3084,32 +3084,33 @@ function submit_language_login()
 function submit_upload()
 {
     // need to rewrite to do proper error handling
-    var src_remote = get_value_from_id('url'); // its a url we post, to be gotten by the server
-    var src_local = get_value_from_id('upfile'); // it's a local file we upload to the server
+    var src_remote = get_value_from_id('url', ''); // its a url we post, to be gotten by the server
+    var src_local = get_value_from_id('upfile', ''); // it's a local file we upload to the server
     var iframe_id = 'iframe_' + String(Math.round(Math.random() * 10000));
+    var form = '';
+    var i = 0;
 
     $('<iframe id="' + iframe_id + '" name="' + iframe_id + '">').appendTo('body');
     $('#' + iframe_id).hide();
     if (src_remote != '') {
-        $('#parseform').attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
-        $('#timestamp1').val(get_value_from_id('timestamp'));
-        $('#add_setname1').val(get_value_from_id('add_setname'));
-        $('#setname1').val(get_value_from_id('setname'));
-        $('#dl_dir1').val(get_value_from_id('dl_dir'));
-        $('#parseform').submit();
-        hide_overlayed_content();
+        form = "#parseform";
     } else if (src_local != '') {
-        $('#uploadform').attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
-        $('#add_setname2').val(get_value_from_id('add_setname'));
-        $('#dl_dir2').val(get_value_from_id('dl_dir'));
-        $('#setname2').val(get_value_from_id('setname'));
-        $('#timestamp2').val(get_value_from_id('timestamp'));
-        $('#uploadform').submit();
-        hide_overlayed_content();
+        form = "#uploadform";
     } else {
         return false;
     }
-    var i = 0;
+    $(form).attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
+    $('<input>').attr({ type: 'hidden', id: 'setname1', name: 'setname', value: $('#setname').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'add_setname2', name: 'add_setname', value: $('#add_setname').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'timestamp2', name: 'timestamp', value: $('#timestamp').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'dl_dir2', name: 'dl_dir', value: $('#dl_dir').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'dlpass1', name: 'dlpass', value: $('#dlpass').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'unpar1', name: 'unpar', value: $('#unpar').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'unrar1', name: 'unrar', value: $('#unrar').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'delete_files1', name: 'delete_files', value: $('#delete_files').val() }).appendTo(form);
+    $('<input>').attr({ type: 'hidden', id: 'subdl1', name: 'subdl', value: $('#subdl').val() }).appendTo(form);
+    $(form).submit();
+    hide_overlayed_content();
     var poll_iframe = function() {
         i++;
         if (document.getElementById(iframe_id).contentWindow.document.body != null) {
@@ -4159,7 +4160,6 @@ function load_spots(options)
             data.perpage = per_page;
             offset = parseInt($('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
-            $('#last_line').val(offset + parseInt(per_page));
         }
         if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
@@ -4249,6 +4249,7 @@ function load_spots(options)
             $('#maxsetsize').val(x.maxsetsize);
             $('#flag').val(x.flag);
             $('#poster').val(x.poster);
+            $('#last_line').val(x.last_line);
             init_spot_sliders();
             if (add_rows == 0) {
                 $('#waitingdiv').addClass('hidden');
@@ -4295,7 +4296,6 @@ function load_groupsets(options)
             data.perpage = per_page;
             offset = parseInt($('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
-            $('#last_line').val(offset + parseInt(per_page));
         }
         if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
@@ -4397,6 +4397,7 @@ function load_groupsets(options)
                 $('#sets_table>tbody tr').eq(-2).after(x.content);
                 update_widths('browsesubjecttd');
             }
+            $('#last_line').val(x.last_line);
             highlight_handler();
         } else {
             update_message_bar(x.error);
@@ -4487,8 +4488,8 @@ function load_rsssets(options)
             data.only_rows = 1;
             data.perpage = per_page;
             offset = parseInt($('#last_line').val());
-            if (!$.isNumeric(offset)) { offset = 0; }
-            $('#last_line').val(offset + parseInt(per_page));
+            //if (!$.isNumeric(offset)) { offset = 0; }
+            //$('#last_line').val(offset + parseInt(per_page));
         }
         if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
@@ -4565,6 +4566,7 @@ function load_rsssets(options)
             $('#minsetsize').val(x.minsetsize);
             $('#maxsetsize').val(x.maxsetsize);
             $('#flag').val(x.flag);
+            $('#last_line').val(x.last_line);
             init_rss_sliders();
             if (add_rows == 0) {
                 show_content_div_2(x.content, 'setsdiv');

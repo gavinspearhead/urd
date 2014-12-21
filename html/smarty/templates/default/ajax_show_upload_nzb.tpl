@@ -32,11 +32,7 @@
 <tr><td>
 <form method="post" action="parsenzb.php" id='parseform'>
 <div>
-<input type="hidden" name="timestamp" value="" id='timestamp1'/> 
 <input type="hidden" name="challenge" value="{$challenge|escape}"/>
-<input type="hidden" name="dl_dir" value="" id='dl_dir1'/> 
-<input type="hidden" name="add_setname" id="add_setname1"/>
-<input type="hidden" name="setname" id="setname1"/>
 	{$LN_transfers_nzblocation}:<br/>
     {if $localfile != ''}
 	<input type="text" name="file" id="url" size="30" placeholder="{$LN_filename}" value="{$localfile|escape}" {urd_popup type="small" text=$LN_transfers_nzblocationext} autofocus="autofocus"/>
@@ -50,15 +46,11 @@
 <td>
 <form method='post' enctype='multipart/form-data' action='upload.php' id='uploadform'>
 <div>
-<input type="hidden" name="timestamp" value="" id='timestamp2'/> 
 <input type="hidden" name="challenge" value="{$challenge|escape}"/>
-<input type="hidden" name="dl_dir" value="" id='dl_dir2'/> 
-<input type="hidden" name="add_setname" id="add_setname2"/>
-<input type="hidden" name="setname" id="setname2"/>
 {$LN_transfers_nzbupload}:<br/>
 
 <input type="text" name="_upfile" id="_upfile" style="width:150px;" {urd_popup type="small" text=$LN_transfers_nzbuploadext}/>
-<input type="file" name="upfile" id="upfile" style="display:none" />
+<input type="file" name="upfile" id="upfile" style="display:none"/>
 <input type="button" id="browse" class="submitsmall" value="{$LN_browse}"/>
 </div>
 </form>
@@ -67,7 +59,7 @@
 <tr>
 <td>{$LN_basket_setname}:<br/><input name="setname" id="setname" type="text" value="{$setname|escape}" size="30"/></td><td>&nbsp;</td>
 <td class="vtop">{$LN_browse_schedule_at}:<br/><input name="timestamp" id="timestamp" type="text" value="{$download_delay|escape}" size="20"/></td></tr>
-<tr><td colspan="3">
+<tr><td colspan="2">
 {$LN_browse_download_dir}:<br/>
 <div id="dl_dir_span">
     <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300"/>&nbsp;</div>
@@ -82,10 +74,15 @@
 </select>
 </div>
 
+</td><td>{$LN_transfers_archpass}:<br/><input type="text" size="30" name="dlpass" id="dlpass" value=""/></td></tr>
+<tr><td colspan="3"><br/>
+{urd_checkbox value="$add_setname" name="_add_setname" id="add_setname" data="$LN_browse_add_setname"} 
+{urd_checkbox value="$unpar" name="_unpar" id="unpar" data=$LN_transfers_unpar}
+{urd_checkbox value="$unrar" name="_unrar" id="unrar" data=$LN_transfers_unrar}
+{urd_checkbox value="$delete_files" name="_delete" id="delete_files" data=$LN_transfers_deletefiles}
+{urd_checkbox value="$subdl" name="_subdl" id="subdl" data=$LN_transfers_subdl}
 </td></tr>
-<tr><td>
-{urd_checkbox value="$add_setname" name="add_setname" id="add_setname" data="$LN_browse_add_setname"} 
-</td>
+
 <tr><td colspan="3">&nbsp;</td></tr>
 
 <tr><td class="vbot centered" colspan="3"><input type="button" id="submit_button" value="{$LN_transfers_import}" class="submit"/></td></tr>

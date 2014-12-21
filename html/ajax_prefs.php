@@ -591,7 +591,7 @@ function show_preferences(DatabaseConnection $db, $userid)
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setsperpage'], 'setsperpage',$LN['pref_setsperpage_msg'], $setsperpage_msg, $prefArray['setsperpage'], NUMBER_BOX_SIZE ),
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minsetsize'], 'minsetsize',$LN['pref_minsetsize_msg'], $minsetsize_msg, $prefArray['minsetsize'], NUMBER_BOX_SIZE ),
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetsize'], 'maxsetsize',$LN['pref_maxsetsize_msg'], $maxsetsize_msg, $prefArray['maxsetsize'], NUMBER_BOX_SIZE ),
-            new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize'], NUMBER_BOX_SIZE) ,
+            new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize'], NUMBER_BOX_SIZE),
             new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setcompleteness'], 'setcompleteness', $LN['pref_setcompleteness_msg'], $setcompleteness_msg,  $prefArray['setcompleteness'], NUMBER_BOX_SIZE),
             new pref_checkbox (user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
             new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),

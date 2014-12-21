@@ -163,7 +163,7 @@ class group_viewer
         return get_pages($this->totalsets, $perpage, $offset);
     }
 
-    public function get_set_data($perpage, $offset)
+    public function get_set_data($perpage, $offset, &$last_line)
     {
         assert(is_numeric($perpage) && is_numeric($offset));
         global $LN;
@@ -247,7 +247,7 @@ class group_viewer
             $thisset['number'] = ++$number;
             $allsets[] = $thisset;
         }
-
+        $last_line = $number;
         return $allsets;
     }
     public function get_killflag()
@@ -531,7 +531,7 @@ try {
     $sets_viewer = new group_viewer($db, $userid);
     $sets_viewer->set_search_options($search, $groupID, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $mincomplete, $maxcomplete, $order);
     list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
-    $allsets = $sets_viewer->get_set_data($perpage, $offset);
+    $allsets = $sets_viewer->get_set_data($perpage, $offset, $last_line);
     $rssurl = $sets_viewer->get_rss_url($perpage);
 
     init_smarty('', 0);
@@ -562,7 +562,8 @@ try {
         'minrating' => $minrating,
         'maxrating' => $maxrating,
         'mincomplete' => $mincomplete,
-        'maxcomplete' => $maxcomplete
+        'maxcomplete' => $maxcomplete,
+        'last_line' => $last_line
     ));
 
 } catch (exception $e) {

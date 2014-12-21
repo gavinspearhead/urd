@@ -1,4 +1,9 @@
 1.13
+- Fixed small bug not saving downloading subtitles correctly (thanx to Andre)
+- Fixed include bug in update_db script
+- Fixed minor bug in the quickmenu handling
+- Added download options to uploading nzb dialog
+
 
 1.12
 - Added posting spots

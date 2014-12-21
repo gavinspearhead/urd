@@ -2082,20 +2082,21 @@ function file_upload_error_message($error_code)
 function get_uploaded_files() 
 {
     if (isset($_FILES['error']) && $_FILES['error'] != 0) {
-        throw new exception ('error!?');
+        throw new exception('error!?');
     }
 
     if (empty($_FILES)) {
         throw new exception (file_upload_error_message(UPLOAD_ERR_INI_SIZE));
     }
     if ($_FILES['upfile']['error'] !== UPLOAD_ERR_OK) {
-        throw new exception (file_upload_error_message($_FILES['upfile']['error']));
+        print_r($_FILES);
+        throw new exception(file_upload_error_message($_FILES['upfile']['error']));
     }
 
     $filename = $_FILES['upfile']['tmp_name'];
     $orig_filename = $_FILES['upfile']['name'];
-    if (!file_exists($filename))  {
-        throw new exception (file_upload_error_message(UPLOAD_ERR_NO_FILE));
+    if (!file_exists($filename)) {
+        throw new exception(file_upload_error_message(UPLOAD_ERR_NO_FILE));
     }
 
     return array( $filename, $orig_filename);

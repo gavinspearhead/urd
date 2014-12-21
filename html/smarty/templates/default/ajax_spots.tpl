@@ -247,7 +247,7 @@
 {* Last bit: *}
 
 {if $only_rows == 0}
-{if count($allsets) > 12}
+{if $lastpage > 1}
 <tr><td colspan="{if $show_comments > 0}9{else}8{/if}" class="feet round_left_bottom">&nbsp;</td>
 <td class="nowrap feet round_right_bottom">{$unmark_int_all}</td>
 </tr>
@@ -258,7 +258,6 @@
 {$bottomskipper}
 <br/>
 
-<input type="hidden" id="last_line" value="{$set.number}"/>
 <input type="hidden" id="rss_url" value="{$rssurl|escape:quotes}"/>
 <input type="hidden" id="killflag" value="{$killflag|escape}"/>
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>

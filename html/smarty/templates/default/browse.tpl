@@ -116,6 +116,9 @@
 <input type="hidden" id="maxagelimit" value="{$maxagelimit}"/>
 <input type="hidden" id="mincompletelimit" value="{$mincompletelimit}"/>
 <input type="hidden" id="maxcompletelimit" value="{$maxcompletelimit}"/>
+<input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
+<input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
+<input type="hidden" id="last_line" value=""/>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -151,7 +154,5 @@ $(document).ready(function() {
    $('#saved_search').change( function () { update_browse_searches(null); } );
 });
 </script>
-<input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
-<input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 
 {/block}

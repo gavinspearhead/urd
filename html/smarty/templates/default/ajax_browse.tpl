@@ -202,7 +202,7 @@
 {* Last bit: *}
 
 {if $only_rows == 0}
-{if count($allsets) > 12}
+{if $lastpage > 1}
 <tr><td colspan="7" class="feet round_left_bottom">&nbsp;</td>
 <td class="nowrap feet round_right_bottom">{$unmark_int_all}</td>
 </tr>
@@ -214,6 +214,5 @@
 <input type="hidden" id="killflag" value="{$killflag|escape:htmlall}"/>
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
-<input type="hidden" id="last_line" value="{$set.number}"/>
 
 {/if}

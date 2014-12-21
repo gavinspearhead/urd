@@ -62,6 +62,10 @@ try {
         $smarty->assign('add_setname',  $add_setname);
         $smarty->assign('dl_dir', $dl_dir);
         $smarty->assign('directories', $directories);
+        $smarty->assign('unrar', get_pref($db, 'unrar', $userid, 0));
+        $smarty->assign('unpar', get_pref($db, 'unpar', $userid, 0));
+        $smarty->assign('delete_files', get_pref($db, 'delete_files', $userid, 0));
+        $smarty->assign('subdl', ((get_pref($db, 'subdl', $userid, '') == '') ? 0 : 1));
         $contents = $smarty->fetch('ajax_show_upload_nzb.tpl');
     }
     return_result(array('contents' => $contents));

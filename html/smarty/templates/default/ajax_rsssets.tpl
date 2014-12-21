@@ -173,7 +173,7 @@
 
 {if $only_rows == 0}
 {* Last bit: *}
-{if count($allsets) > 12}
+{if $lastpage > 1}
 <tr><td colspan="6" class="feet round_left_bottom">&nbsp;</td>
 <td class="nowrap feet round_right_bottom">{$unmark_int_all}</td>
 </tr>

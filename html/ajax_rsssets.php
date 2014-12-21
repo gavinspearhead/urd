@@ -157,7 +157,7 @@ class feed_viewer
 
         return get_pages($this->totalsets, $perpage, $offset);
     }
-    public function get_set_data($perpage, $offset)
+    public function get_set_data($perpage, $offset, &$last_line)
     {
         global $LN;
         $setres = array();
@@ -229,11 +229,10 @@ class feed_viewer
             $thisset['age'] = readable_time($age,'largest_two');
             list($_size, $suffix) = format_size($arr['size'],'h' , $LN['byte_short'], 1024, 1);
             $thisset['size'] = $_size . ' ' . $suffix;
-            $number++;
-            $thisset['number'] = $number;
+            $thisset['number'] = ++$number;
             $allsets[] = $thisset;
         }
-
+        $last_line = $number;
         return $allsets;
     }
     public function set_qsize($ominsetsize, $omaxsetsize)
@@ -481,7 +480,7 @@ try {
     $sets_viewer = new feed_viewer($db, $userid);
     $sets_viewer->set_search_options($search, $feed_id, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $order);
     list($pages, $activepage, $totalpages, $offset) = $sets_viewer->get_page_count($perpage, $offset, $only_rows);
-    $allsets = $sets_viewer->get_set_data($perpage, $offset);
+    $allsets = $sets_viewer->get_set_data($perpage, $offset, $last_line);
     $rssurl = $sets_viewer->get_rss_url($perpage);
 
     init_smarty('', 0);
@@ -510,7 +509,8 @@ try {
         'maxage' => $maxage,
         'flag' => $flag,
         'minrating' => $minrating,
-        'maxrating' => $maxrating
+        'maxrating' => $maxrating,
+        'last_line' => $last_line
     ));
 
 } catch (exception $e) {

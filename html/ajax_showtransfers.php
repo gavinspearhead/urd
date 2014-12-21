@@ -208,9 +208,9 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
     }
     if ($isadmin) {
         // Admins can see any download
-        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "preview"=? ORDER BY "status" ASC, "position" ASC, "ID" DESC';
+        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "preview"=? ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
     } else {
-        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "userid"=? AND "preview"=?  ORDER BY "status" ASC, "position" ASC, "ID" DESC';
+        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "userid"=? AND "preview"=?  ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
         $input_arr[] = $userid;
     }
     $input_arr[] = download_types::NORMAL;
