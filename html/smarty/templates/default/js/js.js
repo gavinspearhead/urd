@@ -393,13 +393,11 @@ function toggle_set(setID, type)
    }).done(function() {
        if (xstatus === 0) {
             set.val('x');
-            $('#divset_' + setID).toggleClass('setimgplus');
-            $('#divset_' + setID).toggleClass('setimgminus');
         } else {
             set.val('');
-            $('#divset_' + setID).toggleClass('setimgplus');
-            $('#divset_' + setID).toggleClass('setimgminus');
         }
+        $('#divset_' + setID).toggleClass('setimgplus');
+        $('#divset_' + setID).toggleClass('setimgminus');
 
         update_basket_display();
    });
@@ -1515,10 +1513,11 @@ function which_button(buttonval, e)
             data: data
         }).done(function(html) {
             var content = $.parseJSON(html);
-            if (content.error != 0) {
+            console.log(content);
+            if (content.error != 0){ /*&& content.message != '') {
                 show_confirm(content.message, function() {
                     process_whichbutton(buttonval, rightclick);
-                });
+                });*/
                 return;
             }
         });
@@ -1568,7 +1567,7 @@ function process_whichbutton(buttonval, rightclick)
             update_basket_display();
             update_message_bar(content.message);
             if (timestamp != null) {
-                timestamp.value = '';
+                $('#timestamp').val('');
             }
             if (buttonval == 'urddownload') {
                 set_as_downloaded_sets();
@@ -3090,8 +3089,6 @@ function submit_upload()
     var form = '';
     var i = 0;
 
-    $('<iframe id="' + iframe_id + '" name="' + iframe_id + '">').appendTo('body');
-    $('#' + iframe_id).hide();
     if (src_remote != '') {
         form = "#parseform";
     } else if (src_local != '') {
@@ -3099,6 +3096,8 @@ function submit_upload()
     } else {
         return false;
     }
+    $('<iframe id="' + iframe_id + '" name="' + iframe_id + '">').appendTo('body');
+    $('#' + iframe_id).hide();
     $(form).attr('target', iframe_id);// the iframe swallows the upload, so the page does not have to reload
     $('<input>').attr({ type: 'hidden', id: 'setname1', name: 'setname', value: $('#setname').val() }).appendTo(form);
     $('<input>').attr({ type: 'hidden', id: 'add_setname2', name: 'add_setname', value: $('#add_setname').val() }).appendTo(form);
@@ -4149,7 +4148,15 @@ function load_spots(options)
     var poster = get_value_from_id('poster', '');
     var order = get_value_from_id('searchorder', '');
     var cat_id = get_selected_cat();
-    var data = get_subcats_from_form('searchform');
+    var data;
+    if (options.subcats !== undefined) {
+        data = options.subcats;
+        $.each(options.subcats, function(key, s_val) {
+            set_checkbox(key, s_val);
+        });
+    } else {
+        data = get_subcats_from_form('searchform');
+    }
     var flag = $('#flag>option:selected').val();
     var per_page = $('#perpage').val();
     var add_rows = 0;

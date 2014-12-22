@@ -54,7 +54,7 @@
 {$cnt="0"}
 {/if}
 <td class="subcat">
-{urd_checkbox value="0" name="subcat_{$k1}_{$k2}_{$k3}" id="subcat_{$k1}_{$k2}_{$k3}" data="$item2" tristate="1" } 
+{urd_checkbox value="0" name="subcat_{$k1}_{$k2}_{$k3}" id="subcat_{$k1}_{$k2}_{$k3}" data="$item2" tristate="1"} 
 </td>
 {$cnt="`$cnt+1`"}
 {/if}

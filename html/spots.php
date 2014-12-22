@@ -33,6 +33,7 @@ if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
 
+
 verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE, '', $userid, FALSE);
 $add_menu = NULL;
 
@@ -101,12 +102,17 @@ $adult = urd_user_rights::is_adult($db, $userid);
 $subcats = SpotCategories::get_allsubcats($adult);
 
 list($select_subcats, $not_subcats, $off_subcats) = get_subcats_requests();
-foreach ($select_subcats as $key=>$value) {
+$searched_subcats = array();
+foreach ($select_subcats as $key => $value) {
+    $searched_subcats[$key] = $value['value'] ;
     $smarty->assign($key, $value['value']);
 }
-foreach ($not_subcats as $key=>$value) {
+foreach ($not_subcats as $key => $value) {
+    $searched_subcats[$key] = $value['value'] ;
     $smarty->assign($key, $value['value']);
 }
+
+$smarty->assign('searched_subcats', json_encode($searched_subcats));
 
 $subscribed_categories = subscribed_spots_select($categoryID, $categories);
 $totbin = get_total_spots($db);

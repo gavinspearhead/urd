@@ -106,8 +106,9 @@ $(document).ready(function() {
            update_search_names('{$_saved_search|escape:javascript}');
            update_spot_searches('{$_saved_search|escape:javascript}');
        {else}
-           load_sets( {   
+           load_sets( {
                'offset': '0'
+               {if $searched_subcats != ''}, 'subcats': {$searched_subcats}{/if}
                {if $spotid == ''}       , 'setid':'' {/if}
                {if $minsetsize != ''}   , 'minsetsize': '{$minsetsize|escape:javascript}' {/if}
                {if $maxsetsize != ''}   , 'maxsetsize': '{$maxsetsize|escape:javascript}' {/if}

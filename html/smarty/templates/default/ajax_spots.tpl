@@ -108,14 +108,23 @@
 {foreach from=$allsets item=set}
 
 {capture assign=smallbuttons}{strip}	
-{if !$set.added}
-<div id="divset_{$set.sid}" class="setimgplus inline iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'spot', event);return false;"></div>
 <input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>
-{else}
-<div id="divset_{$set.sid}" class="setimgminus inline iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'spot', event);return false;"></div>
-<input type="hidden" name="setdata[]" id="set_{$set.sid}" value="x"/>
+<div id="divset_{$set.sid}" class="inline iconsize buttonlike"></div>
+<script type="text/javascript">
+{if $set.added} 
+    $('#set_{$set.sid}').val('x'); 
+    $('#divset_{$set.sid}').addClass('setimgminus'); 
+{else} 
+    $('#divset_{$set.sid}').addClass('setimgplus'); 
 {/if}
+$('#divset_{$set.sid}').click( function (e) { select_set('{$set.sid}', 'spot', e);return false; } );
+$('#td_set_{$set.sid}').mouseup( function (e) { start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_SPOT}, e); } );
+$('#intimg_{$set.sid}').click( function () { mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
+$('#wipe_img_{$set.sid}').click( function () { mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
+$('#link_img_{$set.sid}').click( function () { jump('{$set.url|escape:javascript}', true); } );
+</script>
 {/strip}
+
 {/capture}
 
 {* Store flags to be used in class definition: *}
@@ -181,7 +190,7 @@
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 
-<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_SPOT}, event);" id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
+<td id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
     <div class="donotoverflowdamnit inline">
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}
@@ -224,7 +233,7 @@
 <td class="fixwidth1">
     
     {if $set.url != ''}
-    <div class="inline iconsize {$linkpic} buttonlike" onclick="javascript:jump('{$set.url|escape:javascript}', true);" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
+    <div id="link_img_{$set.sid}" class="inline iconsize {$linkpic} buttonlike" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
 	{elseif $set.rating != 0}
     <div class="inline iconsize {$linkpic}"></div>
 {else}&nbsp;
@@ -233,9 +242,9 @@
 	<td class="nowrap">
     <div class="floatright">
     {if $isadmin}
-    <div class="inline iconsize purgeicon buttonlike" onclick="javascript:mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_SPOT})" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div id="wipe_img_{$set.sid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" onclick="javascript:mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_SPOT})" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
     </div>
 	</td>
 </tr>
