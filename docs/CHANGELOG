@@ -2,6 +2,7 @@
 - Fixed small bug not saving downloading subtitles correctly (thanx to Andre)
 - Fixed include bug in update_db script
 - Fixed minor bug in the quickmenu handling
+- Fixed a bug in search page not selecting the subcategories (thanx to Andre)
 - Added download options to uploading nzb dialog
 
 
