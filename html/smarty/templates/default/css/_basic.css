@@ -814,3 +814,9 @@ select
 {
     min-width:100px;
 }
+
+div.suggestion
+{
+    white-space: nowrap;
+    width: 100%;
+}

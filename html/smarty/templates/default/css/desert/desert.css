@@ -1933,4 +1933,17 @@ background: #888888;
     border-right: solid 1px #666666;
 }
 
+div.suggest
+{
+    max-width: 450px;
+    background: #DBDAA9;
+    z-index: 10000;
+    position: fixed;
+    border: solid 1px #202020;
+    border-radius: 5px;
+    overflow-x: hidden;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
 

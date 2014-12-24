@@ -29,6 +29,7 @@
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="text" id="search" name="search" size="30" placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}"/>&nbsp;
+    <div class="hidden suggest" id="suggest_div"></div>
 <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 &nbsp;
 
@@ -128,6 +129,8 @@ $(document).ready(function() {
    $('#searchformdiv').html('');
    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'' } ); return false; } ) ;
    $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'' } ); } );
+   $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), get_selected_cat()) } );
+   $('#search').attr( 'autocomplete', 'off' );
    $('#next_search').click( function () { select_next_search('saved_search', 1); } );
    $('#prev_search').click( function () { select_next_search('saved_search', -1); } );
    $('#saved_search').change( function () { update_spot_searches(null); } );

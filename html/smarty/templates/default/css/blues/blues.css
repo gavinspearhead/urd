@@ -1869,4 +1869,18 @@ background-image: linear-gradient(to bottom, #d0d0d0, #ababab 70%, #888888);
     border-right: solid 1px #DDDDDD;
 }
 
+div.suggest
+{
+    max-width: 450px;
+    color: #202020;
+    background: #bbdafa;
+    z-index: 10000;
+    position: fixed;
+    border: solid 1px #dddddd;
+    border-radius: 5px;
+    overflow-x: hidden;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
 

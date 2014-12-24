@@ -887,4 +887,5 @@ class urd_spots
 
         return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
     }
+
 }

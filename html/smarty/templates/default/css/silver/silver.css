@@ -1912,3 +1912,16 @@ background: #cccccc;
 }
 
 
+div.suggest
+{
+    max-width: 450px;
+    background: #b0b0b0;
+    z-index: 10000;
+    position: fixed;
+    border: solid 1px #202020;
+    border-radius: 5px;
+    overflow-x: hidden;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+

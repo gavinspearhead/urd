@@ -46,6 +46,7 @@
 	</select>&thinsp;
     <input type="button" id="next_group" value="&gt;" class="submitsmall" {urd_popup type="small" text=$LN_next }/>&nbsp;
    	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/> &nbsp;
+    <div class="hidden suggest" id="suggest_div"></div>
 	<input type="hidden" value="" name="maxage"/>
     <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
     &nbsp; 
@@ -149,6 +150,8 @@ $(document).ready(function() {
         $('#next_search').click( function () { select_next_search('saved_search',1); } );
         $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
         $('#saved_search').change( function () { update_browse_searches(null); } );
+        $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search')) } );
+        $('#search').attr( 'autocomplete', 'off' );
     });
 });
 </script>

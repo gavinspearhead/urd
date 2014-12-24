@@ -6808,3 +6808,38 @@ function do_command(command, message)
     }
 }
 
+function suggest(type, suggest_div, text_bar, cat) 
+{ 
+    if (text_bar.val() == '') {
+        $('#' + suggest_div).addClass('hidden');
+        return;
+    }
+    var url = 'ajax_suggest_text.php';
+    $.ajax({
+        type: 'post',
+        url: url,
+        cache: false,
+        data: {
+            text: text_bar.val(), 
+            cat: cat,
+            type: type
+        }
+    }).done(function(html) {
+        var r = $.parseJSON(html);
+        if (r.counter > 0 && r.error == 0) {
+            $('#' + suggest_div).removeClass('hidden');
+            $('#' + suggest_div).html(r.content);
+            $('div[name="suggestion"]').mousedown( function () { 
+                text_bar.val( $(this).text()); 
+                $('#' + suggest_div).addClass('hidden'); 
+                load_sets( { 'offset':'0', 'setid':'' } ); 
+            } );
+            text_bar.focusout( function () { $('#' + suggest_div).addClass('hidden'); } );
+            $('div[name="suggestion"]').mouseover( function () { $(this).addClass('highlight2'); } );
+            $('div[name="suggestion"]').mouseout( function () { $(this).removeClass('highlight2'); } );
+        } else {
+            $('#' + suggest_div).addClass('hidden');
+        }
+    });
+}
+

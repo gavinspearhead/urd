@@ -443,7 +443,7 @@ class spot_viewer
                 if ($s[0] == $this->categoryID) {
                     $sc = $s[1];
                     $sci = $s[1] . $s[2];
-                    $Qsubcat .= ' OR ' . "( \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
+                    $this->Qsubcat .= ' OR ' . "( \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
                 } else {
                     $hcat = $s[0];
                     $sc = $s[1];

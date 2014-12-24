@@ -1884,4 +1884,17 @@ input.passwordcorrect
     border-right: solid 1px #004586;
 }
 
+div.suggest
+{
+    max-width: 450px;
+    background: #202020;
+    color: #E0E0E0;
+    z-index: 10000;
+    position: fixed;
+    border: solid 1px #404040;
+    border-radius: 5px;
+    overflow-x: hidden;
+    padding-left: 3px;
+    padding-right: 3px;
+}
 

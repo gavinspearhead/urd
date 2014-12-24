@@ -105,7 +105,7 @@
 {/if}
 
 {* Display the bunch: *}
-{foreach from=$allsets item=set}
+{foreach $allsets as $set}
 
 {capture assign=smallbuttons}{strip}	
 <input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>

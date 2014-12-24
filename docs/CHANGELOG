@@ -4,6 +4,7 @@
 - Fixed minor bug in the quickmenu handling
 - Fixed a bug in search page not selecting the subcategories (thanx to Andre)
 - Added download options to uploading nzb dialog
+- Added search suggestions to browse and search pages
 
 
 1.12
