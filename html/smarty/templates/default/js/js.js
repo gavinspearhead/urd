@@ -4149,7 +4149,10 @@ function load_spots(options)
     var order = get_value_from_id('searchorder', '');
     var cat_id = get_selected_cat();
     var data;
-    if (options.subcats !== undefined) {
+    var flag = $('#flag>option:selected').val();
+    var per_page = $('#perpage').val();
+    var add_rows = 0;
+    if (options !== undefined && options.subcats !== undefined) {
         data = options.subcats;
         $.each(options.subcats, function(key, s_val) {
             set_checkbox(key, s_val);
@@ -4157,9 +4160,6 @@ function load_spots(options)
     } else {
         data = get_subcats_from_form('searchform');
     }
-    var flag = $('#flag>option:selected').val();
-    var per_page = $('#perpage').val();
-    var add_rows = 0;
     if (options !== undefined) {
         if (options.add_rows !== undefined) {
             add_rows = 1;
