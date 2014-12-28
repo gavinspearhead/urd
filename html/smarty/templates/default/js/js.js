@@ -1513,7 +1513,6 @@ function which_button(buttonval, e)
             data: data
         }).done(function(html) {
             var content = $.parseJSON(html);
-            console.log(content);
             if (content.error != 0){ /*&& content.message != '') {
                 show_confirm(content.message, function() {
                     process_whichbutton(buttonval, rightclick);

@@ -21,6 +21,6 @@
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
 {foreach $suggestions as $sug}
-<div name="suggestion" class="suggestion">{$sug|escape:htmlall:"UTF-8"}</div>
+<div name="suggestion" class="suggestion content">{$sug|escape:htmlall:"UTF-8"}</div>
 {/foreach}
 

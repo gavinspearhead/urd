@@ -75,8 +75,8 @@ div.light
 }
 .even
 {
-    color: white;
-     background: #285591;
+  color: white;
+  background: #285591;
   border-color: #285591 #204371 #1A355B;
   background-image: -webkit-linear-gradient(top, #285591, #204371 70%, #1A355B);
   background-image: -moz-linear-gradient(top, #285591, #204371 70%, #1A355B);
