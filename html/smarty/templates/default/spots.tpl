@@ -67,7 +67,6 @@
 <input type="hidden" name="spotid" id="spotid" value="{$spotid|escape:htmlall}"/>
 <input type="hidden" name="cat_id" id="cat_id" value="{$catid|escape:htmlall}"/>
 <input type="hidden" name="dlname" id="dlname" value=""/>
-<input type="hidden" name="whichbutton" value="" id="whichbutton"/>
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
 <input type="hidden" name="type" id="type" value="spots"/>
 </div>
@@ -129,7 +128,7 @@ $(document).ready(function() {
    $('#searchformdiv').html('');
    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'' } ); return false; } ) ;
    $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'' } ); } );
-   $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), get_selected_cat()) } );
+   $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search')) } );
    $('#search').attr( 'autocomplete', 'off' );
    $('#next_search').click( function () { select_next_search('saved_search', 1); } );
    $('#prev_search').click( function () { select_next_search('saved_search', -1); } );

@@ -6807,23 +6807,30 @@ function do_command(command, message)
     }
 }
 
-function suggest(type, suggest_div, text_bar, cat) 
+function suggest(type, suggest_div, text_bar) 
 { 
     if (text_bar.val() == '') {
         $('#' + suggest_div).addClass('hidden');
         return;
     }
     var url = 'ajax_suggest_text.php';
+    var cat_id = get_selected_cat();
+    var group_id = $('#select_groupid>option:selected').val();
+    var feed_id = $('#select_feedid>option:selected').val();
+    console.log(group_id, feed_id, cat_id);
     $.ajax({
         type: 'post',
         url: url,
         cache: false,
         data: {
             text: text_bar.val(), 
-            cat: cat,
+            cat: cat_id,
+            group: group_id,
+            feed: feed_id,
             type: type
         }
     }).done(function(html) {
+        console.log(html);
         var r = $.parseJSON(html);
         if (r.counter > 0 && r.error == 0) {
             $('#' + suggest_div).removeClass('hidden');

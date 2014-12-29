@@ -287,14 +287,14 @@ $(document).ready(function() {
        init_slider({$spotminsetsizelimit}, {$spotmaxsetsizelimit}, "#spotsetsize", "#spotminsetsize", "#spotmaxsetsize");
        init_slider({$spotminagelimit}, {$spotmaxagelimit}, "#spotsetage", "#spotminage", "#spotmaxage");
        init_slider({$spotminratinglimit}, {$spotmaxratinglimit}, "#spotrating", "#spotminrating", "#spotmaxrating");
-       $('#search_spots').keyup( function (e) { suggest( {$USERSETTYPE_SPOT},'suggest_div_spots', $('#search_spots'), get_selected_cat()) } );
+       $('#search_spots').keyup( function (e) { suggest( {$USERSETTYPE_SPOT},'suggest_div_spots', $('#search_spots')) } );
        $('#search_spots').attr( 'autocomplete', 'off' );
     {/if}
     {if $show_rss == 1} 
        init_slider({$rssminsetsizelimit}, {$rssmaxsetsizelimit}, "#rsssetsize", "#rssminsetsize", "#rssmaxsetsize");
        init_slider({$rssminagelimit}, {$rssmaxagelimit}, "#rsssetage", "#rssminage", "#rssmaxage");
        init_slider({$rssminratinglimit}, {$rssmaxratinglimit}, "#rsssetrating", "#rssminrating", "#rssmaxrating");
-       $('#search_rss').keyup( function (e) { suggest({$USERSETTYPE_RSS}, 'suggest_div_rss', $('#search_rss'), get_selected_cat()) } );
+       $('#search_rss').keyup( function (e) { suggest({$USERSETTYPE_RSS}, 'suggest_div_rss', $('#search_rss'))  } );
        $('#search_rss').attr( 'autocomplete', 'off' );
     {/if}
     {if $show_groups == 1} 
@@ -302,7 +302,7 @@ $(document).ready(function() {
        init_slider({$groupminagelimit}, {$groupmaxagelimit}, "#groupsetage", "#groupminage", "#groupmaxage");
        init_slider({$groupminratinglimit}, {$groupmaxratinglimit}, "#groupsetrating", "#groupminrating", "#groupmaxrating");
        init_slider({$groupmincompletelimit}, {$groupmaxcompletelimit}, "#groupsetcomplete", "#groupmincomplete", "#groupmaxcomplete");
-       $('#search_groups').keyup( function (e) { suggest({$USERSETTYPE_GROUP}, 'suggest_div_groups', $('#search_groups'), get_selected_cat()) } );
+       $('#search_groups').keyup( function (e) { suggest({$USERSETTYPE_GROUP}, 'suggest_div_groups', $('#search_groups')) } );
        $('#search_groups').attr( 'autocomplete', 'off' );
     {/if}
 });

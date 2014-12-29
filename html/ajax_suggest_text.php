@@ -72,13 +72,23 @@ function get_spot_suggestions(DatabaseConnection $db, $text, $cat, $is_adult)
 }
 
 
-function get_group_suggestions(DatabaseConnection $db, $text, $is_adult)
+function get_group_suggestions(DatabaseConnection $db, $text, $group_id, $is_adult)
 {
     $like = $db->get_pattern_search_command('like');
     $text = str_replace('%', '', $text);
     $input_arr = array(':text' => "%$text%");
     $q_adult = '';
-    $sql = "\"subject\" AS \"title\" FROM setdata WHERE \"subject\" $like :text $q_adult ORDER BY \"date\" DESC";
+    $q_adult_join = '';
+    if (!$is_adult) {
+        $q_adult_join = 'LEFT JOIN groups ON groups."ID" = setdata."groupID"';
+        $q_adult = 'AND groups.adult != ' . ADULT_ON;
+    }
+    $q_group = '';
+    if (is_numeric($group_id) && $group_id != 0) {
+        $q_group = 'AND "groupID" = :group';
+        $input_arr[':group'] = $group_id;
+    }
+    $sql = "\"subject\" AS \"title\" FROM setdata $q_adult_join WHERE \"subject\" $like :text $q_group $q_adult ORDER BY \"date\" DESC";
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
         $res = array();
@@ -87,37 +97,47 @@ function get_group_suggestions(DatabaseConnection $db, $text, $is_adult)
 }
 
 
-function get_rss_suggestions(DatabaseConnection $db, $text, $is_adult)
+function get_rss_suggestions(DatabaseConnection $db, $text, $feed_id, $is_adult)
 {
     $like = $db->get_pattern_search_command('like');
     $text = str_replace('%', '', $text);
     $input_arr = array(':text' => "%$text%");
     $q_adult = '';
-    $sql = "\"setname\" AS \"title\" FROM rss_sets WHERE \"setname\" $like :text $q_adult ORDER BY \"timestamp\" DESC";
+    $q_adult_join = '';
+    if (!$is_adult) {
+        $q_adult_join = 'LEFT JOIN rss_urls ON rss_urls."id" = rss_sets."rss_id"';
+        $q_adult = 'AND rss_urls.adult != ' . ADULT_ON;
+    }
+    $q_feed = '';
+    if (is_numeric($feed_id) && $feed_id != 0) {
+        $q_feed = 'AND "rss_id" = :feed';
+        $input_arr[':feed']= $feed_id;
+    }
+    $sql = "\"setname\" AS \"title\" FROM rss_sets $q_adult_join WHERE \"setname\" $like :text $q_feed $q_adult ORDER BY \"timestamp\" DESC";
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
         $res = array();
     }
     return $res;
 }
-
-
 
 
 try {
     $text = get_request('text', '');
-    $cat = get_request('cat', '');
     $type = get_request('type', '');
     $adult = urd_user_rights::is_adult($db, $userid);
     switch($type) { 
         case USERSETTYPE_SPOT:
+            $cat = get_request('cat', '');
             $suggestions = get_spot_suggestions($db, $text, $cat, $adult);
             break;
         case USERSETTYPE_GROUP:
-            $suggestions = get_group_suggestions($db, $text, $adult);
+            $group = substr(get_request('group', ''), 6);
+            $suggestions = get_group_suggestions($db, $text, $group, $adult);
             break;
         case USERSETTYPE_RSS:
-            $suggestions = get_rss_suggestions($db, $text, $adult);
+            $feed_id = substr(get_request('feed', ''), 5);
+            $suggestions = get_rss_suggestions($db, $text, $feed_id, $adult);
             break;
         default:
             $suggestions = array();

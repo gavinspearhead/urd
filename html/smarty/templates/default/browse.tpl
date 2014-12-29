@@ -86,7 +86,6 @@
 <input type="hidden" name="setid" id="setid" value="{$setid|escape:htmlall}"/>
 <input type="hidden" name="group_id" id="group_id" value="{$groupID|escape:htmlall}"/>
 <input type="hidden" name="dlname" id="dlname" value=""/>
-<input type="hidden" name="whichbutton" value="" id="whichbutton"/>
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
 <input type="hidden" name="type" id="type" value="groups"/>
 <input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE|escape:htmlall}"/>
