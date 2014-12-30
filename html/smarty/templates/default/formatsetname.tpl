@@ -21,17 +21,7 @@
  * $Id: formatsetname.tpl 2245 2011-07-04 21:51:30Z gavinspearhead $
  *}
 
-{* Icon images: (Global variable ish) *}
-{$btmovie="<img class=\"binicon\" src=\"$IMGDIR/bin_movie.png\">"}
-{$btmusic="<img class=\"binicon\" src=\"$IMGDIR/bin_music.png\">"}
-{$btimage="<img class=\"binicon\" src=\"$IMGDIR/bin_image.png\">"}
-{$btsoftw="<img class=\"binicon\" src=\"$IMGDIR/bin_software.png\">"}
-{$bttv="<img class=\"binicon\" src=\"$IMGDIR/bin_series.png\">"}
-{$btdocu="<img class=\"binicon\" src=\"$IMGDIR/bin_documentary.png\">"}
-{$btgame="<img class=\"binicon\" src=\"$IMGDIR/bin_games.png\">"}
-{$btebook="<img class=\"binicon\" src=\"$IMGDIR/bin_ebook.png\">"}
-{$btpw="<img class=\"binicon\" src=\"$IMGDIR/icon_pw.png\">"}
-{$btcopyright="<img class=\"binicon\" src=\"$IMGDIR/icon_copy.png\">"}
+{include 'include_bin_image.tpl' scope='parent'}
 
 {$setdesc=$newname}
 {capture assign=setdesc}{$setdesc|truncate:$maxstrlen:'...':true:true|escape:htmlall}{/capture}

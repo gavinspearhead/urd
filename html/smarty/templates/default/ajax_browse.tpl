@@ -22,19 +22,7 @@
  * $Id: ajax_browse.tpl 3116 2014-06-25 22:01:04Z gavinspearhead@gmail.com $
  *}
 
-{* These icon images are a copy of the code in formatsetname.tpl *}
-{* Smarty doesn't allow you to 'include' variables from another file... *}
-{* Icon images: (Global variable ish) *}
-{$btmovie="<img class=\"binicon\" src=\"$IMGDIR/bin_movie.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btmusic="<img class=\"binicon\" src=\"$IMGDIR/bin_music.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btimage="<img class=\"binicon\" src=\"$IMGDIR/bin_image.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btsoftw="<img class=\"binicon\" src=\"$IMGDIR/bin_software.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$bttv="<img class=\"binicon\" src=\"$IMGDIR/bin_series.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btdocu="<img class=\"binicon\" src=\"$IMGDIR/bin_documentary.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btgame="<img class=\"binicon\" src=\"$IMGDIR/bin_games.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btebook="<img class=\"binicon\" src=\"$IMGDIR/bin_ebook.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btpw="<img class=\"binicon\" src=\"$IMGDIR/icon_pw.png\" width=\"16\" height=\"16\"/>"}
-{$btcopyright="<img class=\"binicon\" src=\"$IMGDIR/icon_copy.png\" width=\"16\" height=\"16\"/>"}
+{include 'include_bin_image.tpl' scope='parent'}
 
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
@@ -60,15 +48,15 @@
 {capture assign=unmark_int_all}{strip}
 <div class="floatright">
 {if $killflag}
-<div class="inline iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
+<div class="inline iconsizeplus killicon buttonlike" id="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
 {else}
-<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset }></div>
+<div class="inline iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset }></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+<div class="inline iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+<div class="inline iconsizeplus sadicon buttonlike" id="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint }></div>
 {/if}
 </div>
 {/strip}
@@ -78,8 +66,7 @@
 {capture assign=tableheader}
 
 {$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}
-{$down="<img src='$IMGDIR/small_down.png' width='9' height='6'  alt=''>"}
-{if $sort.order == "complete"}{if $sort.direction=='desc'}{$complete_sort=$up}{else}{$complete_sort=$down}{/if}{else}{$complete_sort=""}{/if}
+{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
 {if $sort.order == "better_subject"}{if $sort.direction=='desc'}{$title_sort=$up}{else}{$title_sort=$down}{/if}{else}{$title_sort=""}{/if}
 {if $sort.order == "date"}{if $sort.direction=='desc'}{$stamp_sort=$up}{else}{$stamp_sort=$down}{/if}{else}{$stamp_sort=""}{/if}
 {if $sort.order == "size"}{if $sort.direction=='desc'}{$size_sort=$up}{else}{$size_sort=$down}{/if}{else}{$size_sort=""}{/if}
@@ -88,11 +75,11 @@
 <tr>
 <th class="head round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
-<th id="browsesubjecttd" class="head buttonlike" onclick="javascript:change_sort_order('better_subject', 'asc');">{$LN_browse_subject} {$title_sort}</th>
-<th class="fixwidth2a nowrap buttonlike head right" onclick="javascript:change_sort_order('date', 'desc');">{$LN_browse_age} {$stamp_sort}</th>
-<th class="fixwidth3 nowrap buttonlike head right" onclick="javascript:change_sort_order('size', 'desc');">{$LN_size} {$size_sort}</th>
-<th class="fixwidth1 buttonlike head" onclick="javascript:change_sort_order('complete', 'desc');">{$LN_browse_percent} {*$complete_sort*}</th>
-<th class="fixwidth1 buttonlike head right" onclick="javascript:change_sort_order('rating', 'desc');"><div class="floatleft iconsizeplus followicon buttonlike"></div> </th>
+<th id="browsesubjecttd" class="head buttonlike">{$LN_browse_subject} {$title_sort}</th>
+<th id="head_stamp" class="fixwidth2a nowrap buttonlike head right">{$LN_browse_age} {$stamp_sort}</th>
+<th id="head_size" class="fixwidth3 nowrap buttonlike head right">{$LN_size} {$size_sort}</th>
+<th id="head_complete" class="fixwidth1 buttonlike head">{$LN_browse_percent}</th>
+<th id="head_rating" class="fixwidth1 buttonlike head right"><div class="floatleft iconsizeplus followicon buttonlike"></div></th>
 <th class="nowrap fixwidth4 head round_right">{$unmark_int_all}</th>
 </tr>
 {/capture}
@@ -105,13 +92,25 @@
 {foreach $allsets as $set}
 
 {capture assign="smallbuttons"}{strip}	
-{if !$set.added}
-<div id="divset_{$set.sid}" class="setimgplus floatleft iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'group', event);return false;"></div>
 <input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>
-{else}
-<div id="divset_{$set.sid}" class="setimgminus floatleft iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'group', event);return false;"></div>
-<input type="hidden" name="setdata[]" id="set_{$set.sid}" value="x"/>
-{/if}
+<div id="divset_{$set.sid}" class="inline iconsize buttonlike"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    {if $set.added} 
+        $('#set_{$set.sid}').val('x'); 
+        $('#divset_{$set.sid}').addClass('setimgminus'); 
+    {else} 
+        $('#divset_{$set.sid}').addClass('setimgplus'); 
+    {/if}
+    $('#divset_{$set.sid}').click( function (e) { select_set('{$set.sid}', 'group', e); return false; } );
+    $('#td_set_{$set.sid}').mouseup( function (e) { start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_GROUP}, e); } );
+    $('#intimg_{$set.sid}').click( function () { mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_GROUP} ); } );
+    $('#wipe_img_{$set.sid}').click( function () { mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_GROUP} ); } );
+    $('#link_img_{$set.sid}').click( function () { jump('{$set.imdblink|escape:javascript}', true); } );
+});
+</script>
+
 {/strip}
 {/capture}
 
@@ -169,7 +168,7 @@
     <input type="hidden" name="set_ids[]" value="{$set.sid}"/>
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
-    <td onmouseup="javascript:start_quickmenu('browse','{$set.sid}', {$USERSETTYPE_GROUP}, event);" id="td_set_{$set.sid}">
+    <td id="td_set_{$set.sid}">
     <div class="donotoverflowdamnit inline">{$bintype} {$setdesc}</div>
     </td>
 {$rating=$set.rating * 10}
@@ -180,7 +179,7 @@
 	<td class="fixwidth1"> <div class="{$complete} status_light down2" {urd_popup type="small" text="$completion" }></div></td>
     <td class="fixwidth1">
     {if $set.imdblink != ''}
-    <div class="inline iconsize {$imdbpic} buttonlike" onclick="javascript:jump('{$set.imdblink|escape}', true);" {urd_popup type="small" text=$set.imdblink}></div>
+    <div id="link_img_{$set.sid}" class="inline iconsize {$imdbpic} buttonlike" {urd_popup type="small" text=$set.imdblink}></div>
 	{elseif $set.rating != 0}
     <div class="inline iconsize {$imdbpic} buttonlike"></div>
 	{/if}</td>
@@ -188,9 +187,9 @@
 	<td class="nowrap">
     <div class="floatright">
     {if $isadmin}
-    <div class="inline iconsize purgeicon buttonlike" onclick="javascript:mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_GROUP})" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div id="wipe_img_{$set.sid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" onclick="javascript:mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_GROUP})" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
     </div>
 	</td>
 </tr>
@@ -215,4 +214,18 @@
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
 
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
+    $('#remove_button').click( function (e) { which_button('mark_kill_all', e); } );
+    $('#wipe_button').click( function (e) { which_button('wipe_all', e) } );
+    $('#unmark_int_button').click( function (e) { which_button('unmark_int_all', e); } );
+    $('#browsesubjecttd').click( function () { change_sort_order('better_subject', 'asc') } );
+    $('#head_stamp').click( function () { change_sort_order('date', 'desc') } );
+    $('#head_size').click( function () { change_sort_order('size', 'desc') } );
+    $('#head_complete').click( function () { change_sort_order('complete', 'desc') } );
+    $('#head_rating').click( function () { change_sort_order('rating', 'desc') } );
+});
+</script>
 {/if}

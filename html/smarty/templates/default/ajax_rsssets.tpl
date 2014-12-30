@@ -22,20 +22,8 @@
  * $Id: ajax_rsssets.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
-{* These icon images are a copy of the code in formatsetname.tpl *}
-{* Smarty doesn't allow you to 'include' variables from another file... *}
-{* Icon images: (Global variable ish) *}
+{include 'include_bin_image.tpl' scope='parent'}
 
-{$btmovie="<img class=\"binicon\" src=\"$IMGDIR/bin_movie.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btmusic="<img class=\"binicon\" src=\"$IMGDIR/bin_music.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btimage="<img class=\"binicon\" src=\"$IMGDIR/bin_image.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btsoftw="<img class=\"binicon\" src=\"$IMGDIR/bin_software.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$bttv="<img class=\"binicon\" src=\"$IMGDIR/bin_series.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btdocu="<img class=\"binicon\" src=\"$IMGDIR/bin_documentary.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btgame="<img class=\"binicon\" src=\"$IMGDIR/bin_games.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btebook="<img class=\"binicon\" src=\"$IMGDIR/bin_ebook.png\" alt=\"\" width=\"48\" height=\"16\"/>"}
-{$btpw="<img class=\"binicon\" src=\"$IMGDIR/icon_pw.png\" width=\"16\" height=\"16\"/>"}
-{$btcopyright="<img class=\"binicon\" src=\"$IMGDIR/icon_copy.png\" width=\"16\" height=\"16\"/>"}
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
 {if count($pages) > 1}
@@ -61,14 +49,14 @@
 <div class="floatright">
 <input type="hidden" name="feed_id" value="{$feed_id|escape}"/>
 {if $killflag}
-<div class="floatleft iconsizeplus killicon buttonlike" onclick="javascript:which_button('unmark_kill_all', event);" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
+<div class="floatleft iconsizeplus killicon buttonlike" id="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
 {else}
-<div class="floatleft iconsizeplus deleteicon buttonlike" onclick="javascript:which_button('mark_kill_all', event);" {urd_popup type="small" text=$LN_browse_removeset } ></div>
+<div class="floatleft iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset } ></div>
 {/if}
 {if $isadmin}
-<div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:which_button('wipe_all', event)" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+<div class="floatleft iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
 {/if}
-<div class="floatleft iconsizeplus sadicon buttonlike" onclick="javascript:which_button('unmark_int_all', event);" {urd_popup type="small" text=$LN_browse_toggleint } ></div>
+<div class="floatleft iconsizeplus sadicon buttonlike" id="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
 {/strip}{/capture}
 
 {$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
@@ -83,15 +71,15 @@
 <tr>
 <th class="head fixwidth1 round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
-<th id="browsesubjecttd" class="head buttonlike" onclick="javascript:change_sort_order('better_subject');">{$LN_browse_subject} {$title_sort}</th>
-<th class="fixwidth2a nowrap buttonlike head right" onclick="javascript:change_sort_order('timestamp', 'desc');">{$LN_browse_age} {$stamp_sort} </th>
-<th class="fixwidth3 nowrap buttonlike head right" onclick="javascript:change_sort_order('size', 'desc');">{$LN_size} {$size_sort}</th>
-<th class="fixwidth1 buttonlike head right" onclick="javascript:change_sort_order('rating', 'desc');"><div class="floatleft iconsizeplus followicon buttonlike"></div>
+<th id="browsesubjecttd" class="head buttonlike">{$LN_browse_subject} {$title_sort}</th>
+<th id="head_stamp" class="fixwidth2a nowrap buttonlike head right">{$LN_browse_age} {$stamp_sort} </th>
+<th id="head_size" class="fixwidth3 nowrap buttonlike head right">{$LN_size} {$size_sort}</th>
+<th id="head_rating" class="fixwidth1 buttonlike head right"><div class="floatleft iconsizeplus followicon buttonlike"></div>
 </th>
 <th class="head nowrap fixwidth5 round_right">{$unmark_int_all}</th>
 </tr>
-{/capture}
 
+{/capture}
 {* And display it here and at the bottom: *}
 {if $only_rows == 0}
     {$topskipper}
@@ -102,13 +90,25 @@
 {foreach $allsets as $set}
 
 {capture assign=smallbuttons}	
-{if !$set.added}
-<div id="divset_{$set.sid}" class="setimgplus floatleft iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'rss', event);return false;"></div>
+
 <input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>
-{else}
-<div id="divset_{$set.sid}" class="setimgminus floatleft iconsize buttonlike" onclick="javascript:select_set('{$set.sid}', 'rss', event);return false;"></div>
-<input type="hidden" name="setdata[]" id="set_{$set.sid}" value="x"/>
-{/if}
+<div id="divset_{$set.sid}" class="inline iconsize buttonlike"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    {if $set.added} 
+        $('#set_{$set.sid}').val('x'); 
+        $('#divset_{$set.sid}').addClass('setimgminus'); 
+    {else} 
+        $('#divset_{$set.sid}').addClass('setimgplus'); 
+    {/if}
+    $('#divset_{$set.sid}').click( function (e) { select_set('{$set.sid}', 'rss', e); return false; } );
+    $('#td_set_{$set.sid}').mouseup( function (e) { start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_RSS}, e); } );
+    $('#intimg_{$set.sid}').click( function () { mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_RSS} ); } );
+    $('#wipe_img_{$set.sid}').click( function () { mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_RSS} ); } );
+    $('#link_img_{$set.sid}').click( function () { jump('{$set.imdblink|escape:javascript}', true); } );
+});
+</script>
 {/capture}
 
 {* Store flags to be used in class definition: *}
@@ -144,12 +144,12 @@
 <tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" name="content">
     <td class="fixwidth1">{$set.number} <input type="hidden" name="set_ids[]" value="{$set.sid|escape}"/> </td>
 	<td class="setbuttons">{$smallbuttons}</td>
-	<td onmouseup="javascript:start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_RSS}, event);" id="td_set_{$set.sid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
+	<td id="td_set_{$set.sid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
 	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{if $set.size eq 0}?{else}{$set.size}{/if}</td>
     <td class="fixwidth1">
     {if $set.imdblink != ''}
-    <div class="floatleft iconsizeplus {$imdbpic} buttonlike" onclick="javascript:jump('{$set.imdblink|escape}', true);" {urd_popup type="small" text=$set.imdblink}></div>
+    <div class="floatleft iconsizeplus {$imdbpic} buttonlike" id="link_img_{$set.sid}" {urd_popup type="small" text=$set.imdblink}></div>
     {elseif $set.rating != 0}
     <div class="floatleft iconsizeplus {$imdbpic} buttonlike"></div>
 	{/if}
@@ -159,9 +159,9 @@
     <div class="floatright">
     <input type="hidden" id="link_{$set.sid}" value="{$set.link|escape:quotes}"/>
     {if $isadmin}
-    <div class="floatleft iconsizeplus purgeicon buttonlike" onclick="javascript:mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_RSS})" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div class="floatleft iconsizeplus purgeicon buttonlike" id="wipe_img_{$set.sid}" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-	 <div id="intimg_{$set.sid}" class="floatright iconsizeplus {$interestingimg} buttonlike" onclick="javascript:mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_RSS})" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+	 <div id="intimg_{$set.sid}" class="floatright iconsizeplus {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
     </div>
 	</td>
 </tr>
@@ -189,4 +189,16 @@
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
 <input type="hidden" id="last_line" value="{$set.number|escape}"/>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
+    $('#remove_button').click( function (e) { which_button('mark_kill_all', e); } );
+    $('#wipe_button').click( function (e) { which_button('wipe_all', e) } );
+    $('#unmark_int_button').click( function (e) { which_button('unmark_int_all', e); } );
+    $('#browsesubjecttd').click( function () { change_sort_order('better_subject', 'asc') } );
+    $('#head_stamp').click( function () { change_sort_order('timestamp', 'desc') } );
+    $('#head_size').click( function () { change_sort_order('size', 'desc') } );
+    $('#head_rating').click( function () { change_sort_order('rating', 'desc') } );
+});
+</script>
 {/if}

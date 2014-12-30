@@ -34,13 +34,14 @@
 <script type="text/javascript">
 $(document).ready(function() {
     show_alert("{$msg|escape:javascript}");
+    $('#close_link').click( function() { hide_overlay('{$closelink}');" } );
 });
 </script>
 {if isset($__message) && is_array($__message) && count($__message) > 0 }
 
 <div id="overlay">
 <div id="message">
-<div class="closebutton buttonlike noborder fixedright down5" onclick="javascript:hide_overlay('{$closelink}');"></div>
+<div class="closebutton buttonlike noborder fixedright down5" id="close_link"></div>
 <div class="set_title centered">{$LN_fatal_error_title}</div>
 <div id="hideoverlay"></div>
 

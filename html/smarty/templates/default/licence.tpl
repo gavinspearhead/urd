@@ -23,7 +23,7 @@
 {block name=contents}
 
 <div id="textcontent">
-<div class="urdlogo2 floatright noborder buttonlike" onclick="javascript:jump('index.php');"></div>
+<div id="urd_logo" class="urdlogo2 floatright noborder buttonlike"></div>
 <h3 class="centered title">GNU GENERAL PUBLIC LICENSE</h3>
 <p class="centered">Version 3, 29 June 2007</p>
 
@@ -657,6 +657,7 @@ copy of the Program in return for a fee.</p>
 <script>
 $(document).ready(function() {
     update_search_bar_height();
+    $('#urd_logo').click( function () { jump('index.php'); } );
 });
 </script>
 

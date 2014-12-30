@@ -33,9 +33,9 @@
 <input type="hidden" name="tabs" value="{$year|escape}"/>
 </li>
 {/foreach}
-<li onclick="javascript:select_tab_stats('activity', 'activity', null, 'years')" class="tab" id="activity_bar">{$LN_stats_overview}
+<li class="tab" id="activity_bar">{$LN_stats_overview}
 <input type="hidden" name="tabs" value="activity"/></li>
-<li onclick="javascript:select_tab_stats('supply', 'supply')" class="tab" id="supply_bar">{$LN_menubrowsesets}
+<li class="tab" id="supply_bar">{$LN_menubrowsesets}
 <input type="hidden" name="tabs" value="supply"/></li>
 </ul>
 </div>
@@ -56,6 +56,8 @@
 <script type="text/javascript">
 $(document).ready(function() {
     select_tab_stats('{$thisyear|escape:javascript}', 'activity', '{$thisyear|escape:javascript}', 'months');
+    $('#activity_bar').click( function() { select_tab_stats('activity', 'activity', null, 'years'); } );
+    $('#supply_bar').click( function() { select_tab_stats('supply', 'supply')  } );
 });
 </script>
 

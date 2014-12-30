@@ -24,16 +24,25 @@
  {extends file="popup.tpl"}
 {block name=title}{$title|escape}{/block}
 {block name=contents}
+<script type="text/javascript">
+$(document).ready(function() {
+        $('#td_sets').mouseup( function(e) { start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, e); } ); 
+        $('#image_inline').click( function(e) { jump('{$image|escape:javascript}', true); } ); 
+        $('#image_db').click( function(e) { jump('show_image.php?spotid={$spotid|escape:javascript}', true); } ); 
+        $('#image_file').click( function(e) { show_spot_image('getfile.php?file={$image_file|escape:javascript}&raw=1', true); } ); 
+        $('#poster').click( function(e) { load_sets({ 'poster':'{$poster|escape:javascript}' }); } );
+});
+</script>
 
-<div class="sets_inner" onmouseup="javascript:start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, event);" id="td_sets">
+<div class="sets_inner" id="td_sets">
 {if $show_image && $image != '' && $image_from_db == 0}
-<div class="spot_thumbnail noborder buttonlike"><img src="{$image}" class="max100x100" alt="" onclick="javascript:jump('{$image|escape:javascript}', true);"/> </div>
+<div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max100x100" alt=""/> </div>
 {/if}
 {if  $show_image && $image_from_db == 1}
-<div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" class="max100x100" alt="" onclick="javascript:jump('show_image.php?spotid={$spotid}', true);"/></div>
+<div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" id="image_db" class="max100x100" alt=""/></div>
 {/if}
-{if  $show_image && $image_file != ''}
-<div class="spot_thumbnail noborder buttonlike"><img src="getfile.php?raw=1&amp;file={$image_file}" class="max100x100" alt="" onclick="javascript:show_spot_image('getfile.php?file={$image_file}&amp;raw=1', true);"/></div>
+{if $show_image && $image_file != ''}
+<div class="spot_thumbnail noborder buttonlike"><img src="getfile.php?raw=1&amp;file={$image_file}" id="image_file" class="max100x100" alt=""/></div>
 {/if}
 <input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
 
@@ -41,7 +50,7 @@
 <tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
-<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'poster':'{$poster|escape:javascript}' });">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span id="poster" class="buttonlike">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
 
 {foreach $subcata as $k=>$cat}<tr class="comment"><td class="nowrap bold">{$k}:</td>
 <td>

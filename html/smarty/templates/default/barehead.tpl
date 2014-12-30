@@ -19,7 +19,7 @@
 
 </head>
 <body>
-<div class="Message hidden" id="message_bar" onclick="javascript:hide_message('message_bar', 0);">
+<div class="Message hidden" id="message_bar">
 <div id="message_icon" class="inline iconsizeplus previewicon buttonlike"></div>
 <div id="message_content" class="inline" ></div>
 </div>
@@ -28,6 +28,11 @@
 </div>
 {block name="contents"}
 {/block}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#message_bar').click( function() { hide_message('message_bar', 0); } );
+});
+</script>
 
 </body>
 <!-- URD v{$VERSION} -->
