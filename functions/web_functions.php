@@ -1744,6 +1744,46 @@ function insert_wbr($str, $size = 64)
     return $str_new;
 }
 
+function split_search_string($search)
+{
+    $keywords = array();
+    $keyword = '';
+    $quote = ' ';
+    $l = strlen($search);
+    for ($i = 0; $i < $l; ++$i) {
+        $s = $search[$i];
+        if ($s == '\\') { 
+            $i++;
+            $keyword .= $search[$i];
+        } elseif (in_array($s, array('\'', '"'))) {
+            if ($s == $quote) { 
+                $quote = ' ';
+                if ($keyword != '') {
+                    $keywords[] = $keyword;
+                    $keyword = '';
+                }
+            } elseif ($quote == ' ') {
+                $quote = $s;
+                if ($keyword != '') {
+                    $keywords[] = $keyword;
+                    $keyword = '';
+                }
+            }
+        } elseif ($quote == ' ' && (in_array($s, array(' ', "\t", "\n", "\v", "\r")))) {
+            if ($keyword != '') {
+                $keywords[] = $keyword;
+                $keyword = '';
+            }            
+        } else {
+            $keyword .= $s;
+        }
+    }
+    if ($keyword != '') {
+        $keywords[] = $keyword;
+    }
+    return $keywords;
+}
+ 
 function parse_search_string($search, $column1, $column2, $column3, $search_type, &$input_arr)
 {
     $Qsearch = '';
@@ -1751,7 +1791,7 @@ function parse_search_string($search, $column1, $column2, $column3, $search_type
     if ($search != '') {
         $search = trim(str_replace('*', ' ', $search));
         $search = strtolower($search);
-        $keywords = explode(' ', $search);
+        $keywords = split_search_string($search);
         $Qsearch1 = $Qsearch2 = $Qsearch3 = '';
         $next = $not = '';
         foreach ($keywords as $idx => $keyword) {

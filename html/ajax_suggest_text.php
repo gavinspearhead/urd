@@ -51,19 +51,19 @@ function subcats_adult(DatabaseConnection $db, $is_adult, $cat)
     return $Qsubcat;
 }
 
-
 function get_spot_suggestions(DatabaseConnection $db, $text, $cat, $is_adult)
 {
     $like = $db->get_pattern_search_command('like');
     $text = str_replace('%', '', $text);
-    $input_arr = array(':text' => "%$text%");
+    $input_arr = array();
+    $q_search = parse_search_string($text, 'title', '', '', $like, $input_arr);
     $q_adult = subcats_adult($db, $is_adult, $cat);
     $q_cat = '';
     if ($cat != '') {
         $q_cat = 'AND "category" = :cat';
         $input_arr [':cat'] = $cat;
     }
-    $sql = "\"title\" FROM spots WHERE \"title\" $like :text $q_cat $q_adult ORDER BY \"stamp\" DESC";
+    $sql = "\"title\" FROM spots WHERE 1=1 $q_search $q_cat $q_adult ORDER BY \"stamp\" DESC";
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
         $res = array();
@@ -75,10 +75,11 @@ function get_spot_suggestions(DatabaseConnection $db, $text, $cat, $is_adult)
 function get_group_suggestions(DatabaseConnection $db, $text, $group_id, $is_adult)
 {
     $like = $db->get_pattern_search_command('like');
-    $text = str_replace('%', '', $text);
-    $input_arr = array(':text' => "%$text%");
+    $input_arr = array();
     $q_adult = '';
     $q_adult_join = '';
+    $text = str_replace('%', ' ', $text);
+    $q_search = parse_search_string($text, 'subject', '', '', $like, $input_arr);
     if (!$is_adult) {
         $q_adult_join = 'LEFT JOIN groups ON groups."ID" = setdata."groupID"';
         $q_adult = 'AND groups.adult != ' . ADULT_ON;
@@ -88,7 +89,8 @@ function get_group_suggestions(DatabaseConnection $db, $text, $group_id, $is_adu
         $q_group = 'AND "groupID" = :group';
         $input_arr[':group'] = $group_id;
     }
-    $sql = "\"subject\" AS \"title\" FROM setdata $q_adult_join WHERE \"subject\" $like :text $q_group $q_adult ORDER BY \"date\" DESC";
+    $sql = "\"subject\" AS \"title\" FROM setdata $q_adult_join WHERE 1=1 $q_search $q_group $q_adult ORDER BY \"date\" DESC";
+    //echo $q_search;
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
         $res = array();
