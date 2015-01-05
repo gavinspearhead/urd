@@ -23,9 +23,11 @@
 {* Ajax page, doesn't need a head/foot tpl *}
 
 {function name=display_status status='' infoarray=''}
-{$stat=$infoarray[0]->status|replace:' ':'_'}
+{$stat=$infoarray['items'][0]->status|replace:' ':'_'}
 <tr class="transferstatus">
-<td colspan="{if $isadmin}8{else}7{/if}">{$status}
+<td colspan="{if $isadmin}5{else}4{/if}">{$status}</td>
+<td colspan="2" class="right nowrap">{$infoarray['done_size']} {$infoarray['done_suffix']} / {$infoarray['size']} {$infoarray['suffix']}</td>
+<td>
     <div class="black floatright iconsize noborder buttonlike">
     <div id="{$stat}down" class="inline iconsize noborder buttonlike {if $transfer_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if}" onclick="javascript:fold_transfer('{$stat}', 'down');">
     </div>
@@ -34,7 +36,7 @@
 </tr>
 
 <tbody id="data_down_{$stat}" class="{if $transfer_hide_status.$stat == 1}hidden{/if}">
-{foreach $infoarray as $a}
+{foreach $infoarray['items'] as $a}
 {capture name=prio assign="prio_button"}
 {if $a->status == "queued" OR $a->status == "paused"}
 <div class="inline iconsizeplus upicon buttonlike" onclick="javascript:transfer_edit('move_up','{$a->dlid}');"></div>
@@ -88,16 +90,16 @@
 		<td class="bold">
         <div class="donotoverflowdamnit inline"><span>{$a->name|escape:htmlall}</span></div>
         </td>
+        {if $isadmin}
+            <td>{$a->username|escape:htmlall}</td>
+        {/if}
 		<td class="nowrap">
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}
         </td>
-		<td class="right nowrap">{$a->done_size} / {$a->size}</td>
 		<td class="right nowrap">{$a->speed}</td>
 		<td class="center nowrap">{$a->ETA}</td>
 		<td class="right nowrap">{$a->startdate}</td>
-{if $isadmin}
-		<td>{$a->username|escape:htmlall}</td>
-{/if}
+		<td class="right nowrap">{$a->done_size} / {$a->size}</td>
 		<td class="rightbut"><div class="floatright">{$prio_button} {$options}</div></td>
 	</tr>
 {/foreach}
@@ -109,14 +111,14 @@
 <thead>
 <tr>
 <th class="head round_left nowrap" width="100%" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
-<th class="head nowrap">{$LN_transfers_head_progress}</th>
-<th class="head nowrap">{$LN_size}</th>
-<th class="head nowrap">{$LN_transfers_head_speed}</th>
-<th class="head nowrap">{$LN_eta}</th>
-<th class="head nowrap">{$LN_transfers_head_started}</th>
 {if $isadmin}
 <th class="head nowrap">{$LN_transfers_head_username}</th>
 {/if}
+<th class="head nowrap">{$LN_transfers_head_progress}</th>
+<th class="head nowrap">{$LN_transfers_head_speed}</th>
+<th class="head nowrap">{$LN_eta}</th>
+<th class="head nowrap">{$LN_transfers_head_started}</th>
+<th class="head nowrap">{$LN_size}</th>
 <th class="right nowrap head round_right fixwidth8c">{$LN_transfers_head_options}</th>
 </tr>
 </thead>

@@ -828,7 +828,7 @@ try {
         require($pathu . '/../install/update_db.php');
     }
     $db = connect_db(TRUE);
-    check_deprecated_db();
+    check_deprecated_db($db);
 
     $config['urdd_pidfile'] = get_config($db, 'pidpath', '');
     if (!isset($config['urdd_daemonise'])) {

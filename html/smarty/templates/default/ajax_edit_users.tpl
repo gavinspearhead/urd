@@ -38,7 +38,7 @@
 
 {/if}
 <tr><td>{$LN_users_isadmin}</td><td>
-{if $isadmin eq $USER_ADMIN}{$_isadmin=1}{else}{$_isadmin=0}{/if}
+{if $isadmin == $USER_ADMIN}{$_isadmin=1}{else}{$_isadmin=0}{/if}
 {urd_checkbox value="$_isadmin" name="isadmin" id="isadmin" }
 </td>
 
@@ -52,7 +52,7 @@
 </td>
 
 <td>{$LN_active}</td><td>
-{if $isactive eq $USER_ACTIVE}{$isactive=1}{else}{$isactive=0}{/if}
+{if $isactive == $USER_ACTIVE}{$isactive=1}{else}{$isactive=0}{/if}
 {urd_checkbox value="$isactive" name="isactive" id="isactive"}
 </td>
 

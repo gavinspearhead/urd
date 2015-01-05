@@ -146,7 +146,7 @@ $(document).ready(function() {
 	<td class="setbuttons">{$smallbuttons}</td>
 	<td id="td_set_{$set.sid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
 	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
-	<td class="fixwidth3 nowrap">{if $set.size eq 0}?{else}{$set.size}{/if}</td>
+	<td class="fixwidth3 nowrap">{if $set.size == 0}?{else}{$set.size}{/if}</td>
     <td class="fixwidth1">
     {if $set.imdblink != ''}
     <div class="floatleft iconsizeplus {$imdbpic} buttonlike" id="link_img_{$set.sid}" {urd_popup type="small" text=$set.imdblink}></div>

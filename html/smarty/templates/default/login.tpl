@@ -63,7 +63,7 @@
 </td>
 </tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td><a href="forgot_password.php">{$LN_login_forgot_password}</a></td>{if $register eq 1}
+<tr><td><a href="forgot_password.php">{$LN_login_forgot_password}</a></td>{if $register == 1}
 <td><a href="register.php">{$LN_login_register}</a></td></tr>
 {/if}
 </table>

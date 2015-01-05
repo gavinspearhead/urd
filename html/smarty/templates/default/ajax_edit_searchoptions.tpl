@@ -21,7 +21,7 @@
  * $Id: ajax_edit_searchoptions.tpl 3095 2014-06-14 22:41:23Z gavinspearhead@gmail.com $
  *}
 {extends file="popup.tpl"}
-{block name=title}{if $id eq 'new'}{$LN_buttons_addbutton}{else}{$LN_buttons_editbutton}{/if}{/block}
+{block name=title}{if $id == 'new'}{$LN_buttons_addbutton}{else}{$LN_buttons_editbutton}{/if}{/block}
 {block name=contents}
 
 <br/>
@@ -39,7 +39,7 @@
 </tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered">
-{if $id eq 'new'}
+{if $id == 'new'}
 	<input type="button" name="add" value="{$LN_add}" id="submit_button" class="submit"/>
 {else}
 	<input type="button" value="{$LN_apply}" name="apply" class="submit" id="submit_button"/>

@@ -80,7 +80,7 @@
 {$name=$file->get_name()}
 {$show_delete=$file->get_show_delete()}
 
-{if $ext eq 'dir' and $name != '..'}
+{if $ext == 'dir' and $name != '..'}
 	{$size_ext=$LN_files}
 {else}
 	{$size_ext=""}
@@ -112,7 +112,7 @@
     <div class="floatleft iconsizeplus"></div>
 {/if}
 
-{if $icon eq 'nzb'}
+{if $icon == 'nzb'}
     <div class="floatleft iconsizeplus playicon buttonlike" {urd_popup type="small" text=$LN_viewfiles_uploadnzb left=true} onclick="submit_viewfiles_action('file{$counter}', 'up_nzb')"></div>
 {else}
     <div class="floatleft iconsizeplus"></div>

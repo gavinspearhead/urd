@@ -45,7 +45,7 @@
     <span id="pwcorrect"><br>{$LN_password_correct}</span>
     <span id="pwincorrect"><br>{$LN_password_incorrect}</span>
 </td></tr>
-{if $captcha eq 1}
+{if $captcha == 1}
 <tr><td>{$LN_CAPTCHA1}:<br/>
     ({$LN_CAPTCHA2})
     </td>

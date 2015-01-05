@@ -94,8 +94,8 @@ function urd_autoload($class)
     case 'urd_help' : $file = 'urdd_help.php'; break;
     case 'urdd_rss' : $file = 'urdd_rss.php'; break;
     case 'UbbParse' : $file = 'libs/ubbparse.php'; break;
-    case 'SpotSigning': $file = 'libs/spot_signing.php'; break;
-    case 'SpotParser' : $file = 'libs/spotparser.php'; break;
+    case 'spotsigning': $file = 'libs/spot_signing.php'; break;
+    case 'spotparser' : $file = 'libs/spotparser.php'; break;
     case 'urd_xml_writer' :
     case 'urd_xml_reader' : $file = 'xml_functions.php'; break;
     case 'exception_nntp_connect': $file = 'urd_exceptions.php'; break;

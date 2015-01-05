@@ -71,7 +71,6 @@ function get_spot_suggestions(DatabaseConnection $db, $text, $cat, $is_adult)
     return $res;
 }
 
-
 function get_group_suggestions(DatabaseConnection $db, $text, $group_id, $is_adult)
 {
     $like = $db->get_pattern_search_command('like');
@@ -97,7 +96,6 @@ function get_group_suggestions(DatabaseConnection $db, $text, $group_id, $is_adu
     }
     return $res;
 }
-
 
 function get_rss_suggestions(DatabaseConnection $db, $text, $feed_id, $is_adult)
 {

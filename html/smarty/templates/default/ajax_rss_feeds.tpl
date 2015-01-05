@@ -117,12 +117,12 @@
 <tr class="even content" name="content">
 <td class="general">{$feed.number}</td>
 <td class="general">
-{urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_rss('{$feed.id}');"} 
+{urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin == 0 || $urdd_online == 0}" post_js="subscribe_rss('{$feed.id}');"} 
 <input type="hidden" id="ng_id_{$feed.id}" value="{$feed.name|escape}"/>
 </td>
 <td class="general"> <div class="donotoverflowdamnit inline">
 
-<span {if $feed.active_val eq $RSS_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('rsssets.php?feed_id=feed_{$feed.id}');"{/if}>
+<span {if $feed.active_val == $RSS_SUBSCRIBED} class="buttonlike" onclick="javascript:jump('rsssets.php?feed_id=feed_{$feed.id}');"{/if}>
 {$feed.name|escape:htmlall}</span>
 </div>
 
@@ -146,7 +146,7 @@
 <td class="general right">{$feed.feedcount|escape}</td>
 <td class="{$admin_hidden} admin center">
 
-{urd_checkbox value="{$feed.adult}" name="adult[{$feed.id}]" id="adult_{$feed.id}" readonly="{$isadmin eq 0}" post_js="update_adult('rss', '{$feed.id}')"} 
+{urd_checkbox value="{$feed.adult}" name="adult[{$feed.id}]" id="adult_{$feed.id}" readonly="{$isadmin == 0}" post_js="update_adult('rss', '{$feed.id}')"} 
 </td>
 
 <td class="general right">{$feed.lastupdated|escape}</td>
@@ -171,7 +171,7 @@
 
 <td class="nowrap {$admin_hidden} admin right">
 <div class="floatright">
-{if $feed.active_val eq $RSS_SUBSCRIBED and $isadmin != 0 and $urdd_online != 0} 
+{if $feed.active_val == $RSS_SUBSCRIBED and $isadmin != 0 and $urdd_online != 0} 
 <div class="inline iconsizeplus editicon buttonlike" {urd_popup type="small" text=$LN_feeds_editfeed } onclick="javascript:edit_rss({$feed.id});"></div>
 <div class="inline iconsizeplus upicon buttonlike" {urd_popup type="small" text=$LN_update } onclick="javascript:ng_action('updaterss', {$feed.id});"></div>
 <div class="inline iconsizeplus killicon buttonlike" {urd_popup type="small" text=$LN_expire } onclick="javascript:ng_action('expirerss', {$feed.id});"></div>

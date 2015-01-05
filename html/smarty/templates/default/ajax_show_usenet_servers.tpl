@@ -61,25 +61,25 @@
 <div class="floatleft status_light green buttonlike down2" onclick="javascript:usenet_action('disable_server', {$usenet_server->id})" {urd_popup type="small" text=$LN_usenet_disable|escape }></div>
 {/capture}
 
-<tr name="content" class="even content server_{if $usenet_server->priority eq 0}disabled{else}enabled{/if}">
-<td class="uwider">{if $usenet_server->priority eq 0}{$enable}{else}{$disable}{/if}
+<tr name="content" class="even content server_{if $usenet_server->priority == 0}disabled{else}enabled{/if}">
+<td class="uwider">{if $usenet_server->priority == 0}{$enable}{else}{$disable}{/if}
 {if $usenet_server->priority != 0}<div class="floatleft">&nbsp;{$usenet_server->priority|escape|truncate:$maxstrlen}</div>{/if}
 </td>
 <td class="fixwidth3c">
-{urd_checkbox value="{if $usenet_server->id eq $primary}1{else}0{/if}" name="primary" id="primary_{$usenet_server->id}" post_js="{if $usenet_server->id != $primary}usenet_action('set_preferred',{$usenet_server->id}){/if}"}
+{urd_checkbox value="{if $usenet_server->id == $primary}1{else}0{/if}" name="primary" id="primary_{$usenet_server->id}" post_js="{if $usenet_server->id != $primary}usenet_action('set_preferred',{$usenet_server->id}){/if}"}
 </td>
 {if $show_post}
 <td class="fixwidth3c">
-{urd_checkbox value="{$usenet_server->posting}" name="posting" id="posting_{$usenet_server->id}" post_js="usenet_action({if $usenet_server->posting eq 1}'disable_posting'{else}'enable_posting'{/if}, {$usenet_server->id});"}
+{urd_checkbox value="{$usenet_server->posting}" name="posting" id="posting_{$usenet_server->id}" post_js="usenet_action({if $usenet_server->posting == 1}'disable_posting'{else}'enable_posting'{/if}, {$usenet_server->id});"}
 </td>
 {/if}
 <td>{$usenet_server->name|escape|truncate:$maxstrlen}</td>
 <td class="fixwidth3c">{$usenet_server->threads|escape|truncate:$maxstrlen}</td>
 <td class="fixwidth3c">{$usenet_server->connection|truncate:$maxstrlen}</td>
 <td class="fixwidth3c" {urd_popup type="small" text=$LN_usenet_needsauthentication }> 
-{urd_checkbox value="{if $usenet_server->authentication eq 1}1{else}0{/if}" name="need_auth" id="need_auth_{$usenet_server->id}" post_js="toggle_usenet_auth({$usenet_server->id}, 'need_auth_{$usenet_server->id}')"}
+{urd_checkbox value="{if $usenet_server->authentication == 1}1{else}0{/if}" name="need_auth" id="need_auth_{$usenet_server->id}" post_js="toggle_usenet_auth({$usenet_server->id}, 'need_auth_{$usenet_server->id}')"}
 <td>
-{if $usenet_server->authentication eq 1}
+{if $usenet_server->authentication == 1}
 {$usenet_server->username|escape|truncate:$maxstrlen}
 {/if}
 </td>

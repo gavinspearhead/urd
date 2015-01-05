@@ -1,10 +1,13 @@
 1.13
-- Fixed small bug not saving downloading subtitles correctly (thanx to Andre)
+- Fixed small bug not saving downloading subtitles settings correctly (thanx to Andre)
 - Fixed include bug in update_db script
 - Fixed minor bug in the quickmenu handling
 - Fixed a bug in search page not selecting the subcategories (thanx to Andre)
 - Added download options to uploading nzb dialog
 - Added search suggestions to browse and search pages
+- Added display totals to transfer pages
+- Improved parsing search strings in browse pages
+- Updated to jquery 2.1.3 
 
 
 1.12

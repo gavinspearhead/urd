@@ -23,7 +23,7 @@
 {* Ajax page, doesn't need a head/foot tpl *}
 
 {extends file="popup.tpl"}
-{block name=title}{if $id eq 'new'}{$LN_feeds_addfeed}{else}{$LN_feeds_editfeed}{/if}{/block}
+{block name=title}{if $id == 'new'}{$LN_feeds_addfeed}{else}{$LN_feeds_editfeed}{/if}{/block}
 {block name=contents}
 {$authentication=($oldusername != '' || $oldpassword != '')}
 

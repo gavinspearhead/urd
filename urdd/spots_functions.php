@@ -139,10 +139,11 @@ class urd_spots
             'user-avatar' => '',
             'verified' => FALSE
         );
-        $spotParser = new SpotParser();
+        $spotParser = new spotparser();
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
+                echo_debug("Something wrong with the header", DEBUG_SERVER);
                 //echo "something wrong with the header\n";
                 continue;
             }
@@ -179,7 +180,7 @@ class urd_spots
                     }
                     break;
                 case 'x-user-signature' :
-                    $spot_data['user-signature'] = SpotParser::unspecial_string(substr($line, 18));
+                    $spot_data['user-signature'] = spotparser::unspecial_string(substr($line, 18));
                     break;
                 case 'x-xml':
                     $spot_data['xml'] .= substr($line, 7);
@@ -194,6 +195,7 @@ class urd_spots
                 $spot_data['xml'] == '' ||
                 $spot_data['user-key'] == '' ||
                 $spot_data['user-signature'] == '') {
+            echo_debug("No valid signature", DEBUG_SERVER);
             return FALSE;
         }
         
@@ -209,7 +211,7 @@ class urd_spots
 
     private static function verify_spot(array &$spot_data)
     {
-        $spotSigning = new SpotSigning(extension_loaded('openssl'));
+        $spotSigning = new spotsigning(extension_loaded('openssl'));
         $spot_data['verified'] = $spotSigning->verifyFullSpot($spot_data);
         // als de spot verified is, toon dan de userid van deze user
         if ($spot_data['verified']) {
@@ -224,7 +226,7 @@ class urd_spots
 
     private static function parse_spot_data(array &$spot_data)
     {
-        $spotParser = new SpotParser();
+        $spotParser = new spotparser();
         $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
     }
 
@@ -454,7 +456,7 @@ class urd_spots
                     break;
                 case 'x-user-signature':
                     $sig = trim($line[1]);
-                    $res['user-signature'] = SpotParser::unspecial_string($sig);
+                    $res['user-signature'] = spotparser::unspecial_string($sig);
                     break;
                 case 'date':
                     $sig = trim($line[1]);
@@ -535,7 +537,7 @@ class urd_spots
             return '';
         }
         $sig = explode('.', $addr[0]);
-        $pubkey = SpotParser::unspecial_string($sig[0]);
+        $pubkey = spotparser::unspecial_string($sig[0]);
 
         $spotterid = self::calculate_spotter_id($pubkey);
 
@@ -570,7 +572,7 @@ class urd_spots
         write_log("Getting $totalcount spot comments", LOG_NOTICE);
         $cnt = 0;
         $limit = 100;
-        $spotSigning = new SpotSigning(extension_loaded('openssl'));
+        $spotSigning = new spotsigning(extension_loaded('openssl'));
         $nzb->reconnect();
         $blacklist_url = get_config($db, 'spots_blacklist', '');
         $spots_blacklist = array();

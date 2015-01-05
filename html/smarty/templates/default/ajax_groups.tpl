@@ -120,7 +120,7 @@
 <tr name="content" class="even content">
 <td class="general">{$group.number} </td>
 <td class="general">
-{urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin eq 0 || $urdd_online eq 0}" post_js="subscribe_ng('{$group.id}');"} 
+{urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin == 0 || $urdd_online == 0}" post_js="subscribe_ng('{$group.id}');"} 
 <input type="hidden" id="ng_id_{$group.id}" value="{$group.name|escape:htmlall}"/>
 </td>
 {if $group.description != ''}
@@ -144,7 +144,7 @@
 <td class="general right">{$group.postcount}</td>
 <td class="{$admin_hidden} admin center">
 
-{urd_checkbox value="{$group.adult}" name="adult[{$group.id}]" id="adult_{$group.id}" readonly="{$isadmin eq 0}" post_js="update_adult('group', '{$group.id}')"} 
+{urd_checkbox value="{$group.adult}" name="adult[{$group.id}]" id="adult_{$group.id}" readonly="{$isadmin == 0}" post_js="update_adult('group', '{$group.id}')"} 
 </td>
 <td class="general right">{$group.lastupdated}</td>
 <td class="{$admin_hidden} admin right"><input type="text" size="2" value="{$group.expire|escape:htmlall}" id="expire_{$group.id}" name="expire[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'expire', {$group.id});"/></td>

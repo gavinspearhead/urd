@@ -59,7 +59,7 @@
 	<td>{$user->email|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->last_active|capitalize|escape}</td>
 	<td class="center" {urd_popup type="small" text=$LN_users_isadmin}>
-    {urd_checkbox value="{if $user->admin eq $USER_ADMIN}1{else}0{/if}" name="user_is_admin" id="user_{$user->id}_is_admin" post_js="user_update_setting({$user->id}, 'admin', {if $user->admin eq $USER_ADMIN}0{ELSE}1{/if});"}
+    {urd_checkbox value="{if $user->admin == $USER_ADMIN}1{else}0{/if}" name="user_is_admin" id="user_{$user->id}_is_admin" post_js="user_update_setting({$user->id}, 'admin', {if $user->admin == $USER_ADMIN}0{ELSE}1{/if});"}
 </td>
 	<td class="center" {urd_popup type="small" text=$LN_users_rights_help}>
 {urd_checkbox value="{if isset($user->rights.c) && $user->rights.c == 1}1{else}0{/if}" name="user_is_setedit" id="user_{$user->id}_is_setedit" post_js="user_update_setting({$user->id}, 'set_editor', {if isset($user->rights.c) && $user->rights.c == 1}0{ELSE}1{/if});"}
@@ -70,7 +70,7 @@
     
 	</td>
 	<td class="center" {urd_popup type="small" text=$LN_active} >
-    {urd_checkbox value="{if $user->active eq $USER_ACTIVE}1{else}0{/if}" name="user_is_active" id="user_{$user->id}_is_active" post_js="user_update_setting({$user->id}, 'active', {if $user->active eq $USER_ACTIVE}0{ELSE}1{/if});"}
+    {urd_checkbox value="{if $user->active == $USER_ACTIVE}1{else}0{/if}" name="user_is_active" id="user_{$user->id}_is_active" post_js="user_update_setting({$user->id}, 'active', {if $user->active == $USER_ACTIVE}0{ELSE}1{/if});"}
     </td>
 	<td><div class="floatright">
 

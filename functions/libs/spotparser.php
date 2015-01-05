@@ -33,6 +33,41 @@ require_once "$pathspf/spot_signing.php";
 
 class spotparser
 {
+    private function correct_elm_contents($xmlStr, $elems) {
+		$cdataStart = '<![CDATA[';
+		$cdataEnd = ']]>';
+
+		/*
+		 * replace low-ascii characters, see messageid KNCuzvnxJJErJibUAAxQJ@spot.net
+		 */
+		$xmlStr = preg_replace('/[\x00-\x1F]/', '', $xmlStr);
+
+		/* and loop through all elements and fix them up */
+		foreach($elems as $elementName) {
+			// find the element entries
+			$startElem = stripos($xmlStr, '<' . $elementName . '>');
+			$endElem = stripos($xmlStr, '</' . $elementName . '>');
+
+			if (($startElem === false) || ($endElem === false)) {
+				continue;
+			}
+
+			/*
+			 * Make sure this elements content is not preceeded by the
+			 * required CDATA header
+			 */ 
+			if (substr($xmlStr, $startElem + strlen($elementName) + 2, strlen($cdataStart)) !== $cdataStart) {
+				$xmlStr = str_replace(
+					Array('<' . $elementName . '>', '</' . $elementName . '>'),
+					Array('<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'),
+					$xmlStr);
+			} // if
+		} # foreach
+
+		return $xmlStr;
+	} # correctElmContents
+
+
     public function parse_full($xmlStr)
     {
         # Gebruik een spot template zodat we altijd de velden hebben die we willen
@@ -59,7 +94,14 @@ class spotparser
             'imageid' => '',
             'spotter_id'=> '',
         );
-
+        if (strpos($xmlStr, 'spot.net></Segment') !== FALSE) {
+			$xmlStr = str_replace(
+				Array('spot.net></Segment>', 'spot.ne</Segment>'),
+				Array('spot.net</Segment>', 'spot.net</Segment>'),
+				$xmlStr
+			);
+		} 
+		$xmlStr = $this->correct_elm_contents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
         /*  Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net> */
         $xml = @(new SimpleXMLElement($xmlStr, LIBXML_NOERROR | LIBXML_NOWARNING));
         $xml = $xml->Posting;

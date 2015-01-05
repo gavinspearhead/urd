@@ -46,7 +46,7 @@ function get_base($fn, $ext)
             }
         }
 
-        return substr($fn, 0,  - (1 + strlen($ext))); // remove the $ext if no other match is found
+        return substr($fn, 0, - (1 + strlen($ext))); // remove the $ext if no other match is found
     } else {
         return FALSE;
     }
@@ -232,7 +232,6 @@ function set_permissions(DatabaseConnection $db, $dir)
                 write_log("Can't chmod directory: $dir", LOG_ERR);
             }
         }
-
     } else {
         write_log('Cannot set permission; incorrect value "' . $perm . '"' , LOG_NOTICE);
 
@@ -279,7 +278,6 @@ function move_file_to_nzb(DatabaseConnection $db, $dlid, $filename, $dlpath, $ba
 
     return $to;
 }
-
 
 function move_download_to_done(DatabaseConnection $db, action $item, $dlid, $userid, $type = 'DOWNLOAD')
 {
@@ -338,7 +336,6 @@ function move_download_to_done(DatabaseConnection $db, action $item, $dlid, $use
     }
 }
 
-
 function get_timeout(action $item)
 { // in minutes;
     $cnt = $item->get_counter();
@@ -388,7 +385,6 @@ function schedule_locked_item(DatabaseConnection $db, server_data &$servers, act
     $job = new job($item_unpause, time() + $offset, NULL); //try again in 30 secs
     $servers->add_schedule($db, $job);
 }
-
 
 function urdd_kill($pid, $signal)
 {
@@ -498,9 +494,8 @@ function restart_urdd(DatabaseConnection $db, server_data &$servers)
     posix_kill(posix_getpid(), SIGUSR1);
 }
 
-function check_deprecated_db()
+function check_deprecated_db(DatabaseConnection $db)
 {
-    global $db;
     $dbtype = $db->get_databasetype(); 
     switch($dbtype) { 
         case 'pdo_mysql':
@@ -518,4 +513,3 @@ function check_deprecated_db()
             break;
     }
 }
-

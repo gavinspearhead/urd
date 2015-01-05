@@ -24,19 +24,20 @@
 
 {function name=display_status status='' infoarray=''}
 
-{$stat=$infoarray[0]->status|replace:' ':'_'}
+{$stat=$infoarray['items'][0]->status|replace:' ':'_'}
 <tbody>
-<tr class="transferstatus"><td colspan="{if $isadmin != 0}7{else}6{/if}">{$status}</td>
-    <td>
-        <div class="black floatright iconsize noborder buttonlike">
-		<div id="{$stat}post" class="floatright iconsize blackbg {if $post_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" onclick="javascript:fold_transfer('{$stat}', 'post');">        </div>
-        </div>
+<tr class="transferstatus"><td colspan="{if $isadmin}5{else}3{/if}">{$status}</td>
+<td colspan="2" class="right nowrap">{$infoarray['size']} {$infoarray['suffix']}</td>
+<td>
+   <div class="black floatright iconsize noborder buttonlike">
+        <div id="{$stat}post" class="floatright iconsize blackbg {if $post_hide_status.$stat == 1}dynimgplus{else}dynimgminus{/if} noborder buttonlike" onclick="javascript:fold_transfer('{$stat}', 'post');">        </div>
+    </div>
     </td>
 </tr>
 </tbody>
 
 
-{foreach $infoarray as $a}
+{foreach $infoarray['items'] as $a}
 {$stat=$a->status|replace:' ':'_'}
 <tbody id="data_post_{$stat}" class="{if $post_hide_status.$stat == 1}hidden{/if}">
 
@@ -47,10 +48,10 @@
 <div class="inline iconsizeplus downicon buttonlike" onclick="javascript:jump('getfile.php?file={$a->nzb}');" {urd_popup type="small" text=$LN_browse_savenzb }></div>
 {/if}
 {if $a->status == "rarfailed" && $a->directory != ''}
-<div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badrarinfo } alt="" onclick="javascript:show_contents('{$a->destination}/rar.log', 0);"></div><
+<div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badrarinfo } onclick="javascript:show_contents('{$a->destination}/rar.log', 0);"></div><
 {/if}
 {if $a->status == "par2failed" && $a->directory != ''}
-<div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badparinfo } alt="" onclick="javascript:show_contents('{$a->destination}/par2.log', 0);"></div>
+<div class="inline iconsizeplus infoicon buttonlike" {urd_popup type="small" text=$LN_transfers_badparinfo } onclick="javascript:show_contents('{$a->destination}/par2.log', 0);"></div>
 {/if}
 <div class="inline iconsizeplus editicon buttonlike" onclick="javascript:show_edit_post('{$a->postid}');"></div>
 {if ($a->status == "paused" OR $a->status == "ready") AND $urdd_online}
@@ -76,16 +77,16 @@
 		<td class="bold nowrap">
         <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
         </td>
+        {if $isadmin}
+            <td>{$a->username|escape:htmlall}</td>
+        {/if}
 		<td class="nowrap fixwidth8a">
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" background="grey" classes="down2" text="{$a->progress}%"}
         </td>
-		<td class="right nowrap">{$a->size}</td>
 		<td class="right nowrap">{$a->speed}</td>
 		<td class="center nowrap">{$a->ETA}</td>
 		<td class="nowrap right">{$a->startdate}</td>
-{if $isadmin}
-		<td>{$a->username|escape:htmlall}</td>
-{/if}
+		<td class="right nowrap">{$a->size}</td>
 		<td class="rightbut">{$options}</td>
 	</tr>
 {/foreach}
@@ -97,14 +98,14 @@
 <thead>
 <tr>
 <th class="left nowrap head round_left" width="100%" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
-<th class="left nowrap head fixwidth8a">{$LN_transfers_head_progress}</th>
-<th class="center nowrap head">{$LN_size}</th>
-<th class="center nowrap head">{$LN_transfers_head_speed}</th>
-<th class="left nowrap head">{$LN_eta}</th>
-<th class="left nowrap head ">{$LN_transfers_head_started}</th>
 {if $isadmin}
 <th class="left nowrap head">{$LN_transfers_head_username}</th>
 {/if}
+<th class="left nowrap head fixwidth8a">{$LN_transfers_head_progress}</th>
+<th class="center nowrap head">{$LN_transfers_head_speed}</th>
+<th class="left nowrap head">{$LN_eta}</th>
+<th class="left nowrap head ">{$LN_transfers_head_started}</th>
+<th class="center nowrap head">{$LN_size}</th>
 <th class="right head nowrap round_right">{$LN_transfers_head_options}</th>
 </tr>
 </thead>

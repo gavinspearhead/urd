@@ -5,11 +5,11 @@ $pathsps = realpath(dirname(__FILE__));
 require_once "$pathsps/biginteger.php";
 require_once "$pathsps/rsa.php";
 
-class SpotSigning
+class spotsigning
 {
-    public function __construct($useOpenSsl)
+    public function __construct($use_openssl)
     {
-        if (($useOpenSsl) && (!defined('CRYPT_RSA_MODE'))) {
+        if (($use_openssl) && (!defined('CRYPT_RSA_MODE'))) {
             define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
         }
     }

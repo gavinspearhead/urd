@@ -83,13 +83,13 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
 
     if ($search != '') { 
         $qsearch = ' AND "subject" LIKE ? ';
-         $input_arr[] = "%$search%";
+        $input_arr[] = "%$search%";
     }
     if ($isadmin) {
         // Admins can see any upload
         $sql_up = '* FROM postinfo WHERE 1=1 ' . $qsearch . ' ORDER BY "status" ASC, "id" DESC';
     } else {
-        $sql_up = '* FROM postinfo WHERE "userid"=?  ' . $qsearch . 'ORDER BY "status" ASC, "id" DESC';
+        $sql_up = '* FROM postinfo WHERE "userid"=? ' . $qsearch . ' ORDER BY "status" ASC, "id" DESC';
         $input_arr[] = $userid;
     }
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST)) {
@@ -110,10 +110,18 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
             $dest = $row['tmp_dir'];
 
             // Get more information for this download (when it's in progress:)
-            $sql = "* FROM queueinfo WHERE \"description\" = '" . get_command(urdd_protocol::COMMAND_POST_ACTION) . " $postid' OR "
-                . " (\"description\" = '" . get_command(urdd_protocol::COMMAND_POST) . " $postid' AND \"status\" NOT IN ( '" . QUEUE_FINISHED . '\',\'' . QUEUE_REMOVED . "')) OR"
-                . " (\"description\" = '" . get_command(urdd_protocol::COMMAND_START_POST) . " $postid' AND \"status\" NOT IN ( '" . QUEUE_FINISHED . '\',\'' . QUEUE_REMOVED . "'))";
-            $res3 = $db->select_query($sql);
+            $sql = '* FROM queueinfo WHERE "description" = :post_action OR '
+                . ' ("description" = :post AND "status" NOT IN (:qf1, :qr1)) OR '
+                . ' ("description" = :start_post AND "status" NOT IN (:qf2, :qr2))';
+            $res3 = $db->select_query($sql, array(
+                ':post_action'=> get_command(urdd_protocol::COMMAND_POST_ACTION) . ' ' . $postid,
+                ':post' => get_command(urdd_protocol::COMMAND_POST) . ' ' . $postid,
+                ':start_post' => get_command(urdd_protocol::COMMAND_START_POST) . ' ' . $postid,
+                ':qf1' => QUEUE_FINISHED,
+                ':qf2' => QUEUE_FINISHED,
+                ':qr1' => QUEUE_REMOVED,
+                ':qr2' => QUEUE_REMOVED,
+            ));
             if ($res3 === FALSE || count($res3) == 0) {
                 continue;
             }
@@ -135,7 +143,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
                 }
             }
             $dltime = $stoptime - $start_time;
-            $fETA = ($ETA > 0) ? readable_time($ETA, 'fancy') :  '';
+            $fETA = ($ETA > 0) ? readable_time($ETA, 'fancy') : '';
             if ($fETA == '0' || $fETA == '?') {
                 $fETA = '';
             }
@@ -160,13 +168,13 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
                 case POST_STOPPED:    $cat = 'stopped'; break;
                 case POST_SHUTDOWN:   $cat = 'shutdown'; break;
                 case POST_ERROR:      $cat = 'error'; break;
-                case POST_RARRED :    $cat = 'rarred'; break;
-                case POST_PARRED :    $cat = 'par2ed'; break;
-                case POST_YYENCODED : $cat = 'yyencoded'; break;
+                case POST_RARRED:     $cat = 'rarred'; break;
+                case POST_PARRED:     $cat = 'par2ed'; break;
+                case POST_YYENCODED:  $cat = 'yyencoded'; break;
                 case POST_YYENCODE_FAILED: $cat = 'yyencodefailed'; break;
                 case POST_RAR_FAILED: $cat = 'rarfailed'; break;
                 case POST_PAR_FAILED: $cat = 'par2failed'; break;
-                default :             $cat = 'unknown'; break;
+                default:              $cat = 'unknown'; break;
             }
 
             $info = new upload_info();
@@ -181,6 +189,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
             $info->username = $username;
             $info->destination = $dest;
             $info->nzb = $nzb;
+            $info->raw_size = $size;
 
             list($_size, $suffix) = format_size($size, 'h', $LN['byte_short'], 1024, 1);
             $info->size = $_size . ' ' . $suffix;
@@ -189,10 +198,28 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
                 $info->ETA = '';
                 $info->speed = '';
             }
-            $infoarray_upload[$cat][] = $info;
+            $infoarray_upload[$cat]['items'][] = $info;
+            if (isset($infoarray_upload[$cat]['raw_size'])) {
+                $infoarray_upload[$cat]['raw_size'] += $size;
+            } else {
+                $infoarray_upload[$cat]['raw_size'] = $size;
+            }
+
         }
     }
-    return $infoarray_upload;
+    $_infoarray_upload = array();
+    foreach($infoarray_upload as $cat => $data) {
+        $_infoarray_upload[$cat] = $data;
+        $size = 0;
+        foreach ($data['items'] as $d) {
+            $size += $d->raw_size;
+        }
+        list($_size, $_suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);
+        $_infoarray_upload[$cat]['size'] = $_size;
+        $_infoarray_upload[$cat]['suffix'] = $_suffix;
+    }
+
+    return $_infoarray_upload;
 }
 
 function get_download_status(DatabaseConnection $db, $userid, $isadmin)
@@ -210,7 +237,7 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
         // Admins can see any download
         $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "preview"=? ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
     } else {
-        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "userid"=? AND "preview"=?  ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
+        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "userid"=? AND "preview"=? ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
         $input_arr[] = $userid;
     }
     $input_arr[] = download_types::NORMAL;
@@ -248,7 +275,12 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
 
             // Get more information for this download (when it's in progress:)
             $sql = '* FROM queueinfo WHERE "description"=? OR ("description"=? AND "status" NOT IN (?,?))';
-            $res3 = $db->select_query($sql, array(get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . " $dlid", get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid", QUEUE_FINISHED, QUEUE_REMOVED));
+            $res3 = $db->select_query($sql, array(
+                get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid, 
+                get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid, 
+                QUEUE_FINISHED, 
+                QUEUE_REMOVED
+            ));
             if ($res3 === FALSE || count($res3) == 0) {
                 continue;
             }
@@ -295,11 +327,11 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
                 case DOWNLOAD_SHUTDOWN:      $cat = 'shutdown'; break;
                 case DOWNLOAD_ERROR:         $cat = 'error'; break;
                 case DOWNLOAD_COMPLETE:      $cat = 'complete'; break;
-                case DOWNLOAD_RAR_FAILED :   $cat = 'rarfailed'; break;
-                case DOWNLOAD_PAR_FAILED :   $cat = 'par2failed'; break;
-                case DOWNLOAD_CKSFV_FAILED : $cat = 'cksfvfailed'; break;
+                case DOWNLOAD_RAR_FAILED:    $cat = 'rarfailed'; break;
+                case DOWNLOAD_PAR_FAILED:    $cat = 'par2failed'; break;
+                case DOWNLOAD_CKSFV_FAILED:  $cat = 'cksfvfailed'; break;
                 case DOWNLOAD_FAILED:        $cat = 'dlfailed'; break;
-                default :                    $cat = 'unknown'; break;
+                default:                     $cat = 'unknown'; break;
             }
             $info = new download_info();
             $info->status = $cat;
@@ -319,8 +351,10 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             }
             $info->dlid = $dlid;
             $info->username = get_username($db, $userid);
+            $info->raw_size = $size;
             list($_size, $suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);
             $info->size = $_size . ' ' . $suffix;
+            $info->raw_done_size = $done_size;
             list($_done_size, $done_suffix) = format_size($done_size, 'h', $LN['byte_short'], 1024, 1);
             if ($_done_size == 0) {
                 $done_suffix = '';
@@ -331,10 +365,32 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
                 $info->ETA = '';
                 $info->speed = '';
             }
-            $infoarray_download[$cat][] = $info;
+            $infoarray_download[$cat]['items'][] = $info;
+            if (isset($infoarray_download[$cat]['raw_size'])) {
+                $infoarray_download[$cat]['raw_size'] += $size;
+            } else {
+                $infoarray_download[$cat]['raw_size'] = $size;
+            }
         }
     }
-    return $infoarray_download;
+    $_infoarray_download = array();
+    foreach($infoarray_download as $cat => $data) {
+        $_infoarray_download[$cat] = $data;
+        $size = 0;
+        $done_size = 0;
+        foreach ($data['items'] as $d) {
+            $size += $d->raw_size;
+            $done_size += $d->raw_done_size;
+        }
+        list($_size, $_suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);
+        $_infoarray_download[$cat]['size'] = $_size;
+        $_infoarray_download[$cat]['suffix'] = $_suffix;
+        list($_done_size, $_done_suffix) = format_size($done_size, 'h' , $LN['byte_short'], 1024, 1);
+        $_infoarray_download[$cat]['done_size'] = $_done_size;
+        $_infoarray_download[$cat]['done_suffix'] = $_done_suffix;
+    }
+        
+    return $_infoarray_download;
 }
 
 try {

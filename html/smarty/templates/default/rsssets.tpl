@@ -39,7 +39,7 @@
     <option value="">{$LN_feeds_allgroups} ({$total_articles})</option>
     {foreach $subscribedfeeds as $item}
         {capture name=current assign=current}{$item.type}_{$item.id}{/capture}
-		<option {if $current eq $feed_id && $feed_id != '' }selected="selected"{/if} value="{$item.type}_{$item.id}"> 
+		<option {if $current == $feed_id && $feed_id != ''}selected="selected"{/if} value="{$item.type}_{$item.id}"> 
             {if $item.type=='category'}{$LN_category}: {/if}{$item.name|escape:htmlall} ({$item.article_count})
         </option>
     {/foreach}

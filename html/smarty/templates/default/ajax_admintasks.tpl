@@ -74,7 +74,7 @@
 <td class="right">{$task.lastupdated}</td>
 <td><div class="donotoverflowdamnit" {urd_popup text="`$task.comment`." type=small}>{$task.comment}</div></td>
 <td>
-{if $urdd_online eq 1}
+{if $urdd_online == 1}
 <div class="floatright">
 {if $task.raw_status == 'Queued' or $task.raw_status == 'Paused' or $task.raw_status == 'Running'}
     <div class="inline iconsizeplus killicon buttonlike" {urd_popup type="small" text=$LN_cancel} onclick="javascript:task_action('cancel', '{$task.urdd_id|escape:javascript}');"></div>
