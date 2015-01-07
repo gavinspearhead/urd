@@ -477,21 +477,20 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
         }
     } else { // child
         $nntp_enabled = $servers->get_nntp_enabled();
-        unset($servers);
+        unset($servers, $db);
         start_child($item, $conn_list, $nntp_enabled);
     }
 
     return FALSE;
 }
 
-
 function start_child(action $item, conn_list $conn_list, $nntp_enabled)
 {
     global $is_child;
     assert(is_bool($nntp_enabled));
     try {
-        $status = QUEUE_RUNNING;
         $is_child = TRUE; // for overriding the shutdown function
+        $status = QUEUE_RUNNING;
         pcntl_signal(SIGTERM, SIG_DFL);
         pcntl_signal(SIGCHLD, SIG_DFL);
         pcntl_signal(SIGINT, SIG_DFL);

@@ -52,6 +52,11 @@ class connection
         self::STATE_GOT_USERNAME,
         self::STATE_AUTHENTICATED
     );
+    public function __destruct()
+    {
+        $this->buffer = NULL;
+        $this->last_line = NULL;
+    }
     public function __construct($sock)
     {
         $this->state = self::STATE_NOT_AUTHENTICATED;

@@ -33,7 +33,7 @@
 </div>
 <div class="even menu_head down3">
 <div class="inline"><input type="text" id="minsetsize" name="minsetsize" size="4" value=""/>&nbsp;</div>
-<div id="setsize" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setsize" class="slider inline">&nbsp;</div>
 <div class="inline"><input type="text" id="maxsetsize" name="maxsetsize" size="4" value=""/></div>
 <br/>
 </div>
@@ -43,7 +43,7 @@
 </div>
 <div class="even menu_head down3">
 <div class="inline"><input type="text" id="minage" name="minage" size="4" value=""/>&nbsp;</div>
-<div id="setage" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setage" class="slider inline">&nbsp;</div>
 <div class="inline"><input type="text" id="maxage" name="maxage" size="4" value=""/></div>
 <br/>
 </div>
@@ -53,7 +53,7 @@
 </div>
 <div class="even menu_head down3">
 <div class="inline"><input type="text" id="minrating" name="minrating" size="4" value=""/>&nbsp;</div>
-<div id="setrating" style="width:100px;" class="inline">&nbsp;</div>
+<div id="setrating" class="slider inline">&nbsp;</div>
 <div class="inline"><input type="text" id="maxrating" name="maxrating" size="4" value=""/></div>
 <br/>
 </div>

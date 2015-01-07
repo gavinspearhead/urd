@@ -130,9 +130,7 @@ $(document).ready(function() {
 {if $set.interesting == 1}{$interestingimg='sadicon'}{/if}
 
 {* Remember this is a copy of formatsetname.tpl; included here for performance reasons (beats 100's of includes) *}
-{capture assign=setdesc}{$set.name|escape:htmlall}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_pw:':$btpw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_copyright:':$btcopyright}{/capture}
+{capture assign=setdesc}{$set.name|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
 
 {capture assign=subcats}{strip}
 <table>
@@ -261,7 +259,7 @@ $(document).ready(function() {
 
 <input type="hidden" id="rss_url" value="{$rssurl|escape:quotes}"/>
 <input type="hidden" id="killflag" value="{$killflag|escape}"/>
-<input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
+<!--input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/-->
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
 
 <script type="text/javascript">

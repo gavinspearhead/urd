@@ -412,6 +412,7 @@ class usenet_servers
     }
     public function __destruct()
     {
+        $this->servers = NULL;
     }
     public function set_update_server($server_id)
     {

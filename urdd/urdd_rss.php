@@ -195,7 +195,6 @@ class urdd_rss
         return $cnt;
     }
 
-
     public function expire_rss(DatabaseConnection $db, $rss_id, $dbid)
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
@@ -247,5 +246,4 @@ class urdd_rss
 
         return $cnt;
     }
-
 }

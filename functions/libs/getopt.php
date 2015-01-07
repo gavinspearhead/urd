@@ -204,4 +204,4 @@ class get_opt
         }
         throw new exception("unrecognized option --$opt");
     }
-} // get_opt
+}

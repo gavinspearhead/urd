@@ -600,7 +600,7 @@ class urd_extsetinfo
     public static function check_extset_link_exists(DatabaseConnection $db, $setid, $type)
     {
         $search_type = $db->get_pattern_search_command('REGEXP');
-        $sql = "* FROM extsetdata WHERE \"setID\" = ? AND \"type\"=? AND \"name\" = ? AND \"value\" $search_type ?";
+        $sql = '* FROM extsetdata WHERE "setID"=? AND "type"=? AND "name"=? AND "value" ' . $search_type . '?';
         $res = $db->select_query($sql, 1, array($setid, $type, 'link', '^https?://'));
 
         return $res !== FALSE;
@@ -722,7 +722,7 @@ class urd_extsetinfo
 
         switch ($namevalues['binarytype']) {
             case self::SETTYPE_MOVIE:
-                $chars = 'TtnylsmaNqxPC';
+                $chars = 'tnylsmaNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
                 $lang = GetAV($namevalues, 'lang');
@@ -748,10 +748,9 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['q'] = $quality;   //
                 $values['t'] = 'Movie';   // type
-               // $values['T'] = ':_img_movie:';   //  image placeholder
                 break;
             case self::SETTYPE_ALBUM:
-                $chars = 'TntyqfgNPC';
+                $chars = 'ntyqfgNPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
                 $format = GetAV($namevalues, 'musicformat');
@@ -769,10 +768,9 @@ class urd_extsetinfo
                 $values['g'] = $genre;
                 $values['N'] = $note;
                 $values['t'] = 'Album';   // type
-              //  $values['T'] = ':_img_album:';   //  image placeholder
                 break;
             case self::SETTYPE_IMAGE:
-                $chars = 'TtnfgxqNPC';
+                $chars = 'tnfgxqNPC';
                 $name = GetAV($namevalues, 'name');
                 $format= GetAV($namevalues, 'imageformat');
                 $genre = GetAV($namevalues, 'imagegenre');
@@ -790,10 +788,9 @@ class urd_extsetinfo
                 $values['N'] = $note;
                 $values['q'] = $quality;
                 $values['t'] = 'Image';   // type
-              //  $values['T'] = ':_img_image:';   //  image placeholder
                 break;
             case self::SETTYPE_SOFTWARE:
-                $chars = 'TnotNqxPC';
+                $chars = 'notNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $os = GetAV($namevalues, 'os');
                 $note = GetAV($namevalues, 'note');
@@ -809,10 +806,9 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['N'] = $note;
                 $values['t'] = 'Software';   // type
-             //   $values['T'] = ':_img_software:';   // image placeholder
                 break;
             case self::SETTYPE_TVSERIES:
-                $chars = 'TtnemqaxNyPC';
+                $chars = 'tnemqaxNyPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
                 $eps = GetAV($namevalues, 'episode');
@@ -835,7 +831,6 @@ class urd_extsetinfo
                 $values['q'] = $quality;
                 $values['x'] = $xxx;   //
                 $values['t'] = 'Series';   // type
-              //  $values['T'] = ':_img_series:';   //  image placeholder
                 break;
             case self::SETTYPE_EBOOK:
                 $chars = 'TtnAfqgxyPC';
@@ -861,10 +856,9 @@ class urd_extsetinfo
                 $values['A'] = $author;
                 $values['x'] = $xxx;
                 $values['t'] = 'Ebook';   // type
-              //  $values['T'] = ':_img_ebook:';   //  image placeholder
                 break;
             case self::SETTYPE_GAME:
-                $chars = 'TnotNqxPC';
+                $chars = 'notNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $os = GetAV($namevalues, 'os');
                 $note = GetAV($namevalues, 'note');
@@ -880,10 +874,9 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['N'] = $note;
                 $values['t'] = 'Game';   // type
-             //   $values['T'] = ':_img_game:';   //  image placeholder
                 break;
             case self::SETTYPE_DOCUMENTARY:
-                $chars = 'TtnylsmaNqxPC';
+                $chars = 'tnylsmaNqxPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
                 $lang = GetAV($namevalues, 'lang');
@@ -908,10 +901,9 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   //
                 $values['q'] = $quality;   //
                 $values['t'] = 'Documentary';   // type
-             //   $values['T'] = ':_img_documentary:';   //  image placeholder
                 break;
             case self::SETTYPE_TVSHOW:
-                $chars = 'TtnmaxeNyqPC';
+                $chars = 'tnmaxeNyqPC';
                 $name = GetAV($namevalues, 'name');
                 $year = GetAV($namevalues, 'year');
                 $eps = GetAV($namevalues, 'episode');
@@ -935,19 +927,17 @@ class urd_extsetinfo
                 $values['x'] = $xxx;   // name
                 $values['q'] = $quality;   // name
                 $values['t'] = 'TVShow';   // string
-            //    $values['T'] = ':_img_tvshow:';   // image placeholder
                 break;
             case self::SETTYPE_UNKNOWN:
             case self::SETTYPE_OTHER:
             default:
-                $chars = 'ntTPC';
+                $chars = 'ntPC';
                 $password = GetAV($namevalues, 'password');
                 $copyright = GetAV($namevalues, 'copyright');
                 $values['P'] = ($password != '' ? ':_img_pw:' : '');
                 $values['C'] = ($copyright == '1' ? ':_img_copyright:' : '');
                 $values['n'] = GetAV($namevalues, 'name');   // name
                 $values['t'] = 'Unknown';   // type
-             //   $values['T'] = ':_img_unknown:';   //  image placeholder
                 break;
         }
 
@@ -976,7 +966,7 @@ class urd_extsetinfo
                 if ($res === FALSE) {
                     $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type) );
                 } elseif ($overwrite === TRUE) {
-                    $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=> $commit), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, $name, $type));
+                    $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=> $commit), '"setID"=? AND "name"=? AND "type"=?', array($setid, $name, $type));
                 }
             }
         }
@@ -987,7 +977,7 @@ class urd_extsetinfo
         if ($res === FALSE) {
             $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, 'setname', $newsetname, $commit, $type));
         } else {
-            $db->update_query('extsetdata', array('value'=>$newsetname, 'committed'=>$commit), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, 'setname', $type));
+            $db->update_query('extsetdata', array('value'=>$newsetname, 'committed'=>$commit), '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
         }
         // Return newsetname so we can use ajax to show it in the browse page without reloading it.
         return $newsetname; // Unsafe version, we don't want the added quotes thank you.
@@ -1005,7 +995,7 @@ class urd_extsetinfo
             if ($res === FALSE) {
                 $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type));
             } elseif ($overwrite === TRUE) {
-                $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=>$commit), '"setID" = ? AND "name" = ? AND "type" = ?', array($setid, $name, $type));
+                $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=>$commit), '"setID"=? AND "name"=? AND "type"=?', array($setid, $name, $type));
             }
         }
     }

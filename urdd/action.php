@@ -347,7 +347,7 @@ class action
         assert(is_bool($p));
         $this->preview = (bool) $p;
     }
-    public function get_preview ()
+    public function get_preview()
     {
         return $this->preview;
     }

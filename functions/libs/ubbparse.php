@@ -17,6 +17,11 @@ class ubbparse
     private $curpos = -1;
     private $inputstr = '';
 
+    public function __destruct()
+    {
+        $this->inputstr = NULL;
+    }
+
     public function __construct($inputstr)
     {
         $this->setinputstring($inputstr);

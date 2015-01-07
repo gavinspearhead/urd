@@ -67,6 +67,11 @@ class thread_list
     {
         $this->threads = array();
     }
+    public function __destruct ()
+    {
+        $this->threads = NULL;
+    }
+
     public function size()
     {
         return count($this->threads);

@@ -150,7 +150,7 @@
 <div id="searchbar"></div>
 <div id="topcontent">
 <div id="contentout">
-<div id="sbdiv" class="buttonlike"><span id="sidebar_button"></span></div>
+<div id="sbdiv" class="buttonlike floatleft"><span id="sidebar_button"></span></div>
 <div id="content" class="down3">
 <input type="hidden" name="urdd_message" id="urdd_message" value="{$offline_message}"/>
 

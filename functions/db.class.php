@@ -31,9 +31,6 @@ $pathdbc = realpath(dirname(__FILE__));
 
 require_once "$pathdbc/file_functions.php";
 require_once "$pathdbc/db/urd_db_structure.php";
-//require_once "$pathdbc/db_mysql.php";
-//require_once "$pathdbc/db_psql.php";
-//require_once "$pathdbc/db_sqlite.php";
 
 function connect_db($check_db=TRUE)
 {

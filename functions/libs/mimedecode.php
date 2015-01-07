@@ -103,6 +103,12 @@ class Mail_mimeDecode
      */
     private $_decode_headers;
 
+    public function __destruct()
+    {
+        $this->_header         = NULL;
+        $this->_body           = NULL;
+        $this->_input          = NULL;
+    }
     /**
      * Constructor.
      *

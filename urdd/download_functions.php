@@ -224,7 +224,6 @@ function get_batchsize($preview, $total_ready)
     return $batch_size;
 }
 
-
 function start_download(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -337,7 +336,7 @@ function start_download(DatabaseConnection $db, action $item)
 
             // Download the batch:
             try {
-                list ($bytes) = download_batch($db, $res, $dir, $nzb, $groupid, $userid, $connected, $check_for_rar_encryption, $download_par_files);
+                list($bytes) = download_batch($db, $res, $dir, $nzb, $groupid, $userid, $connected, $check_for_rar_encryption, $download_par_files);
             } catch (exception $e) {
                 if ($e->getCode() == ENCRYPTED_RAR) {
                     $status = QUEUE_CANCELLED;
@@ -478,7 +477,6 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
         update_dlinfo_status ($db, $status, $dlid);
     }
 }
-
 
 function check_all_dl_done(DatabaseConnection $db, action $item)
 {
@@ -635,7 +633,6 @@ function restart_download(DatabaseConnection $db, server_data &$servers, $userid
     }
 }
 
-
 function verify_cksfv(DatabaseConnection $db, $dir, $dlid, pr_list $files, action $item, &$error)
 {
     assert(is_numeric($dlid));
@@ -684,7 +681,6 @@ function verify_cksfv(DatabaseConnection $db, $dir, $dlid, pr_list $files, actio
 
     return $comment;
 }
-
 
 function verify_par(DatabaseConnection $db, $dir, $dlid, pr_list $files, action $item, &$error, &$unpar)
 {

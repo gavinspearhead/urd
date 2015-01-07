@@ -153,7 +153,7 @@ $(document).ready(function() {
    $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
    $('#saved_search').change( function () { update_browse_searches(null); } );
    $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search')) } );
-   $('#search').attr( 'autocomplete', 'off' );
+   $('#search').attr('autocomplete', 'off');
 });
 </script>
 

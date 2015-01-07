@@ -65,6 +65,15 @@ class URD_NNTP
     const BINARYID_CACHE_SIZE = 64; // number of binary IDs we keep in memory to minimise the redundant subjects and posters we store
     const GROUP_FILTER = 'alt.bin*, free.*';
 
+    public function __destruct()
+    {
+        $this->disconnect();
+        $this->downloadspeedArr = NULL;
+        $this->downloadspeedArr_b = NULL;
+        $this->db = NULL;
+        $this->extset_headers = NULL;
+    }
+
     public function __construct (DatabaseConnection $db, $server, $connection_type=NULL, $port=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
     {
         assert (is_numeric($port) && is_numeric($timeout));
@@ -107,10 +116,6 @@ class URD_NNTP
         }
         $this->maxMssgs = get_config($db, 'maxheaders'); //fetch this ammount of messages at the time
 
-    }
-    public function __destruct ()
-    {
-        $this->disconnect();
     }
     public function get_extset_headers()
     {
@@ -649,7 +654,7 @@ Array
         $binary_id = array();
         $_blacklist_counter = 0;
         $total_counter_1 = count($msgs);
-        foreach ($msgs as $msgtxt) {
+        foreach($msgs as $msgtxt) {
             // Split the bunch:
             $msg = explode("\t", $msgtxt);
             if (!isset($msg[$this->xover_subject], $msg[$this->xover_bytes], $msg[$this->xover_messageid], $msg[$this->xover_date], $msg[$this->xover_from])) {
@@ -739,6 +744,7 @@ Array
 
             }
         }
+        unset($msgs, $binary_id);
         if (!$parse_spots && !$parse_spots_comments && !$parse_spots_reports) {
             $total_counter_2 = count($allParts);
             if ($total_counter_2 != $total_counter_1) {
@@ -767,8 +773,9 @@ Array
         } else {
             $older_counter += $cnt;
         }
-        echo_debug("$_blacklist_counter of " . count($msgs) . ' articles matched the blacklist', DEBUG_NNTP);
+        echo_debug("$_blacklist_counter of " . $total_counter_1 . ' articles matched the blacklist', DEBUG_NNTP);
         $blacklist_counter = gmp_add($blacklist_counter, $_blacklist_counter);
+        unset($spot_comments, $spot_reports, $spot_ids);
         add_parts($this->db, $allParts, $this->groupID);
 
         return TRUE;

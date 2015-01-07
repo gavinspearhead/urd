@@ -319,7 +319,7 @@ function create_spot_data($db, array $spot_db_data, $userid, $nzb_segments, $ima
     $header_data['X-Server-Signature'] = prepare_base64($server_signature['signature']);
     $header_data['X-Server-Key'] = pubkey_to_xml($server_signature['publickey']);
     $from = $poster_name . ' < ' . prepare_base64($user_signature['publickey']['modulo']) . '.' . prepare_base64($user_signature['signature']) . '@';
-    $spot_hdr = $from . $spot_hdr .  prepare_base64($header_signature['signature']) . '>';
+    $spot_hdr = $from . $spot_hdr . prepare_base64($header_signature['signature']) . '>';
     $header_data['X-User-Signature'] = prepare_base64($user_signature['signature']);
     $header_data['X-User-Key'] = pubkey_to_xml($user_signature['publickey']);
     $header_data['X-No-Archive'] = 'yes';
@@ -613,6 +613,7 @@ function do_post_batch(DatabaseConnection $db, action $item)
                     echo_debug("Posting $filename", DEBUG_SERVER);
                     $bytes = strlen($article);
                     $articleid = $nntp->post_article(array($header, $article));
+                    unset($article, $header); 
                     $success_count++;
                     update_dlstats($db, $stat_id, $bytes);
                     $art_status = POST_FINISHED;

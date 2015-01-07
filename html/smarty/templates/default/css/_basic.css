@@ -178,12 +178,12 @@ td.spacer
 
 tr.preference
 {
-    vertical-align: top;
+   vertical-align: top;
 }
 
 th
 {
-    text-align: left;
+   text-align: left;
 }
 .hidden
 {
@@ -194,10 +194,7 @@ th
 {
     cursor: pointer;
 }
-.fullwidth
-{
-    width: 100%;
-}
+
 .hmid
 {
     margin-left: auto;
@@ -493,7 +490,10 @@ div.inline
 {
     display: inline-block;
 }
-
+.height22
+{
+    height: 22px;
+}
 .centered2
 {
     width: 100%;
@@ -506,6 +506,10 @@ div.inline
 .rmargin30
 {
     margin-right: 50px;
+}
+.lmargin10
+{
+    margin-left: 10px;
 }
 .lmargin3
 {
@@ -748,11 +752,6 @@ div.sets_inner
 {
     height:100%; 
     float:left;
-}
-
-#sbdiv
-{
-    float: left;
 }
 
 .status_light

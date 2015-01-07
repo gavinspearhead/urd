@@ -24,18 +24,6 @@
 {include 'include_bin_image.tpl' scope='parent'}
 
 {$setdesc=$newname}
-{capture assign=setdesc}{$setdesc|truncate:$maxstrlen:'...':true:true|escape:htmlall}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_movie:':$btmovie}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_album:':$btmusic}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_image:':$btimage}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_software:':$btsoftw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_series:':$bttv}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_tvshow:':$bttv}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_documentary:':$btdocu}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_ebook:':$btebook}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_game:':$btgame}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_pw:':$btpw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_copyright:':$btcopyright}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_unknown:':''}{/capture}
+{capture assign=setdesc}{$newname|truncate:$maxstrlen:'...':true:true|escape:htmlall|replace:':_img_movie:':''|replace:':_img_album:':''|replace:':_img_image:':''|replace:':_img_software:':''|replace:':_img_series:':''|replace:':_img_tvshow:':''|replace:':_img_documentary:':''|replace:':_img_ebook:':''|replace:':_img_game:':''|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright|replace:':_img_unknown:':''}{/capture}
 
 {$setdesc}

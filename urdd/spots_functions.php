@@ -323,7 +323,7 @@ class urd_spots
         $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type" = :type', array(':type'=>$type));
         update_queue_status ($db, $dbid, NULL, 0, 90);
 
-        write_log('Deleting '. $cnt . ' spot reports');
+        write_log('Deleting ' . $cnt . ' spot reports');
         $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
         echo_debug("Deleted {$cnt} spot reports", DEBUG_DATABASE);
         self::update_spots_report_count($db);
@@ -595,6 +595,7 @@ class urd_spots
                 $msg_ids[] = $row['message_id'];
                 $ids[ $row['message_id'] ] = array('id' => $row['id'], 'spotid' => $row['spotid']);
             }
+            unset($res);
             try {
                 $headers = $nzb->get_header_multi($msg_ids);
             } catch (exception $e) {
@@ -713,6 +714,7 @@ class urd_spots
                 $msg_ids[] = $row['message_id'];
                 $ids[ $row['message_id'] ] = array('id'=>$row['id'], 'spotid'=>$row['spotid']);
             }
+            unset($res);
             try {
                 $headers = $nzb->get_header_multi($msg_ids);
             } catch (exception $e) {
@@ -822,6 +824,7 @@ class urd_spots
                 $msg_ids[] = $row['message_id'];
                 $ids[] = $row['id'];
             }
+            unset($res);
             try {
                 $headers = $nzb->get_header($msg_ids);
             } catch (exception $e) {

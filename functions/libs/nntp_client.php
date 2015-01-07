@@ -91,6 +91,8 @@ class NNTP_Client extends Base_NNTP_Client
     {
         echo_debug_function(DEBUG_WORKER, __FUNCTION__);
         $this->disconnect();
+        $this->_selectedGroupSummary = NULL;
+        $this->_overviewFormatCache = NULL;
         parent::__destruct();
     }
     /**

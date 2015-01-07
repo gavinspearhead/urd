@@ -42,7 +42,7 @@ class server_data { // lots of cleaning up to do
     private $check_nntp_connections; // whether to check the max # nntp connenctions a server can have
     // generic
     //
-    //
+   
     const QUEUE_TOP= 1;
     const QUEUE_BOTTOM = 2;
     const CONNECT_CHECK_TIME = 60;
@@ -66,7 +66,7 @@ class server_data { // lots of cleaning up to do
     }
     public function __destruct()
     {
-        /* nothing yet */
+        $this->threads = $this->servers = $this->queue = $this->schedule = NULL;
     }
 
     private function add_slot()

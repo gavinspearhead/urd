@@ -26,13 +26,11 @@ if (!defined('ORIGINAL_PAGE')) {
 }
 
 $pathidx = realpath(dirname(__FILE__));
-
 require_once "$pathidx/../functions/html_includes.php";
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
 }
-
 
 verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE, '', $userid, FALSE);
 $add_menu = NULL;
@@ -61,17 +59,17 @@ if ($isadmin) {
 }
 
 if (urd_user_rights::is_poster($db, $userid)) {
-    $add_menu['actions'][] = new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST |urd_modules::URD_CLASS_SPOTS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_SPOTS, '', 'command');
 }
 
 $add_menu['actions'][] = new menu_item2 ('add_search', 'add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
 $add_menu['actions'][] = new menu_item2 ('delete_search', 'delete_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
 
-$saved_searches = new saved_searches($userid);
-$saved_searches->load($db);
+$search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
 $type = USERSETTYPE_SPOT;
 
-$search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
+$saved_searches = new saved_searches($userid);
+$saved_searches->load($db);
 
 $saved_search = get_request('saved_search', '');
 if ($saved_search == '' && $_POST == array() && $_GET == array()) {
@@ -198,7 +196,7 @@ $smarty->assign('maxsetsizelimit',	$maxsetsizelimit);
 $smarty->assign('minsetsizelimit',	$minsetsizelimit);
 $smarty->assign('saved_searches',	$saved_searches);
 $smarty->assign('_saved_search',	$saved_search);
-$smarty->assign('USERSETTYPE',		USERSETTYPE_SPOT);
+$smarty->assign('USERSETTYPE',		$type);
 $smarty->assign('rssurl',		$rssurl);
 $smarty->assign('categories',	$subscribed_categories);
 $smarty->assign('subcats',	    $subcats);

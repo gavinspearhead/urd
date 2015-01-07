@@ -62,14 +62,14 @@
 <table>
 <tr>
 <td>{$LN_hour}:</td>
-<td><div id="hours" style="width:100px"></div></td>
+<td><div id="hours" class="slider"></div></td>
 </tr>
 <tr>
 <td><div>&nbsp;</div></td>
 </tr>
 <tr>
 <td>{$LN_minute}:</td>
-<td><div id="minutes" style="width:100px"></div></td>
+<td><div id="minutes" class="slider"></div></td>
 </tr>
 <tr>
 <td>&nbsp;</td>

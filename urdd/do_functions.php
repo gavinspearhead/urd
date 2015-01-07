@@ -700,10 +700,10 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 $db->delete_query('queueinfo');
                 $db->delete_query('postinfo');
             } else {
-                $db->delete_query('downloadinfo', 'userid = ?', array($userid));
+                $db->delete_query('downloadinfo', 'userid=?', array($userid));
                 $db->delete_query('downloadarticles', '"downloadID" NOT IN (SELECT "ID" FROM downloadinfo)');
-                $db->delete_query('queueinfo', 'userid = ?', array($userid));
-                $db->delete_query('postinfo', 'userid = ?', array($userid));
+                $db->delete_query('queueinfo', 'userid=?', array($userid));
+                $db->delete_query('postinfo', 'userid=?', array($userid));
             }
         } elseif ($arg == 'users') {
             if ($isadmin) {

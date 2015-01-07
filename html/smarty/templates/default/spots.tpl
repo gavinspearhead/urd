@@ -39,7 +39,7 @@
 <select id="saved_search">
 <option value="" label="all"></option>
 {foreach $saved_searches as $k1=>$saved_search}
-<option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
+    <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
 </select>
 </span>

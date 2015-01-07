@@ -70,17 +70,17 @@ class spot_viewer
     private $killflag = FALSE;
     private $categoryID;
 
-    private $userid;
-    private $db;
-    private $now;
-    private $search_type;
+    private $userid = -1;
+    private $db = NULL;
+    private $now = 0;
+    private $search_type = '';
     private $totalsets = 0;
     private $int_sets = 0;
 
-    public function __construct(DatabaseConnection $db, $userid)
+    public function __construct(DatabaseConnection& $db, $userid)
     {
         assert(is_numeric($userid));
-        $this->db = $db;
+        $this->db = &$db;
         $this->userID = $userid;
         $this->now = time();
         $this->input_arr = array();
@@ -122,13 +122,13 @@ class spot_viewer
             '(CASE WHEN extsetdata4."value" IS NULL THEN \'0\' ELSE extsetdata4."value" END) AS "rating" ';
         $sql .=	$this->get_basic_browse_query();
         if ($interesting_only) {
-            $sql1 = $sql . ' AND usersetinfo."statusint" = 1';
+            $sql .= ' AND usersetinfo."statusint" = 1';
         } else {
-            $sql1 = $sql . ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL)';
+            $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL)';
         }
-        $sql1 .= " ORDER BY {$this->Qorder}";
-        //echo "select " . $sql1 .";<br><br>";
-        return $sql1;
+        $sql .= " ORDER BY {$this->Qorder}";
+        //echo "select " . $sql .";<br><br>";
+        return $sql;
     }
     private function get_spots_count($interesting_only)
     {

@@ -102,13 +102,14 @@ function add_parts(DatabaseConnection $db, array $tables, $groupID)
         // Insert the remaining values (if any):
         if (count($vals) > 0) {
             $db->insert_query("parts_$groupID", $cols, $vals);
+            unset($vals);
         }
     } catch (exception $e) {
         $db->commit_transaction();
         throw $e;
     }
     $db->commit_transaction();
-
+    unset($table);
     // Update the binaries
     $x = (int) 1;
     $binarieslist = array();
@@ -206,6 +207,7 @@ function update_binary_data(DatabaseConnection $db, $groupID, $id)
             . " FROM parts_$groupID WHERE \"binaryID\" IN ($binary_list) GROUP BY \"binaryID\"";
 
         $res = $db->select_query($sql, $l);
+        unset($l);
         $vals = $vals_nfo = array();
         // For each row, export to binaries_X
         if (!is_array($res)) {
@@ -685,6 +687,7 @@ function merge_sets(DatabaseConnection $db, $setid1, array $setids)
         $db->delete_query('setdata', '"ID"=?', array($setid2));
         store_merge_sets_data($db, $setid1, $setid2, USERSETTYPE_GROUP, ESI_NOT_COMMITTED);
     }
+    unset($setids);
     add_set_data($db, $groupid1, $setid1);
     $db->update_query_2('setdata', array('articlesmax'=>$articlesmax), '"ID"=?', array($setid1));
     $setcount = count_sets_group($db, $groupid1);

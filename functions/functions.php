@@ -309,7 +309,7 @@ function category_by_name(DatabaseConnection $db, $category, $userid)
     if ($category == '') {
         return 0;
     }
-    $sql = '"id" FROM categories WHERE "name" LIKE ? AND "userid" = ?';
+    $sql = '"id" FROM categories WHERE "name" LIKE ? AND "userid"=?';
     $res = $db->select_query($sql, 1, array($category, $userid));
 
     return (!isset($res[0]['id'])) ? 0 : $res[0]['id'];
@@ -414,7 +414,6 @@ function set_period_rss(urdd_client $uc, DatabaseConnection $db, $id, $first_upd
     $uc->schedule(urdd_protocol::COMMAND_UPDATE_RSS, $id, $first_update, $period * 3600);
 }
 
-
 function set_period(urdd_client $uc, DatabaseConnection $db, $id, $first_update, $period, $time, $periodselect)
 {
     assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
@@ -476,10 +475,9 @@ function get_set_size($name)
     return 0;
 }
 
-
 /* read last X lines of a given text file
    $filename = full path + filename (i.e. /home/marco/file.txt)
-   $lines       = number of lines (i.e. 10)
+   $lines    = number of lines (i.e. 10)
  */
 function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
 {
@@ -592,12 +590,10 @@ function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
     return $lines;
 }
 
-
 function create_binary_id($subject, $poster)
 {
     return md5($subject . ' ' . $poster);
 }
-
 
 function create_extset_download_name(DatabaseConnection $db, $setID)
 {
@@ -748,7 +744,6 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
     $uc->disconnect();
 }
 
-
 function get_from_array(array $arr, $idx, $default = NULL)
 {
     if (is_array($idx)) {
@@ -757,7 +752,6 @@ function get_from_array(array $arr, $idx, $default = NULL)
         return isset($arr[$idx]) ? $arr[$idx] : $default;
     }
 }
-
 
 function read_argv()
 {
@@ -804,9 +798,7 @@ function clean_usergroupinfo(DatabaseConnection $db, $userid)
 function get_hiddenfiles($text)
 {
     $list = unserialize($text);
-    $ll = array_filter($list, 'is_not_empty');
-
-    return $ll;
+    return array_filter($list, 'is_not_empty');
 }
 
 function is_not_empty($s)
@@ -891,7 +883,6 @@ function group_by_name(DatabaseConnection $db, $name)
     return $res[0]['ID'];
 }
 
-
 function get_feed_by_name(DatabaseConnection $db, $name)
 {
     global $LN;
@@ -919,8 +910,8 @@ function feed_category(DatabaseConnection $db, $feedid, $userid)
 {
     global $LN;
     assert(is_numeric($feedid) && is_numeric($userid));
-    $sql = 'categories."name" AS "name" FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category\ = categories."id" AND userfeedinfo."userid" = categories."userid"' .
-        ' WHERE userfeedinfo."feedid"=? AND categories."userid" = ?';
+    $sql = 'categories."name" AS "name" FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category" = categories."id" AND userfeedinfo."userid" = categories."userid"' .
+        ' WHERE userfeedinfo."feedid"=? AND categories."userid"=?';
     $res = $db->select_query($sql, 1, array($feedid, $userid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_feednotfound'] . ": $feedid", ERR_RSS_NOT_FOUND);
@@ -1019,7 +1010,7 @@ function update_group_state(DatabaseConnection $db, $id, $state, $exp, $minsetsi
 function get_rar_files(DatabaseConnection $db, $postid)
 {
     assert(is_numeric($postid));
-    $sql = '"rarfile", count("id") AS "rar_count" FROM post_files WHERE "postid" = ? GROUP BY "rarfile"';
+    $sql = '"rarfile", count("id") AS "rar_count" FROM post_files WHERE "postid"=? GROUP BY "rarfile"';
     $res = $db->select_query($sql, array($postid));
     if ($res === FALSE) {
         throw new exception('No files to post'); // Xxx make $LN var
@@ -1036,7 +1027,7 @@ function get_rar_files(DatabaseConnection $db, $postid)
 function get_post_articles_count(DatabaseConnection $db, $postid)
 {
     assert(is_numeric($postid));
-    $sql = 'count("id") AS "total_count" FROM post_files WHERE "postid" = ?';
+    $sql = 'count("id") AS "total_count" FROM post_files WHERE "postid"=?';
     $res = $db->select_query($sql, 1, array($postid));
     if ($res === FALSE || !isset($res[0]['total_count'])) {
         throw new exception('No files to post'); // Xxx make $LN var
@@ -1054,7 +1045,6 @@ function get_post_articles_count_status(DatabaseConnection $db, $id, $status)
 
     return $res[0]['cnt'];
 }
-
 
 function get_download_articles_count_status(DatabaseConnection $db, $id, $status)
 {
@@ -1909,7 +1899,7 @@ function rss_url_name_exists(DatabaseConnection $db, $name, $id=NULL)
     $inputarr= array($name);
     $sql = 'count("id") AS cnt FROM rss_urls WHERE "name"=?';
     if ($id !== NULL) {
-        $sql .= " AND \"id\" != ?";
+        $sql .= ' AND "id"!=?';
         $inputarr[] = $id;
 
     }
@@ -2399,7 +2389,6 @@ function strip_garbage($dlname)
     return trim($dlname);
 }
 
-
 function check_contains_filename($str)
 {
     if (preg_match('/\.(sfv|nzb|par2|nfo|jpg|png|gif|rar|arj|vob|pls|lzh|txt|htm|flac|mp3|avi|mkv|cue|log|wav|mp4|wmv)/i', $str)) {
@@ -2492,7 +2481,7 @@ function add_line_to_text_area(DatabaseConnection $db, $option, $line, $userid)
 function get_extsetdata(DatabaseConnection $db, $setid, $name)
 {
     $like = $db->get_pattern_search_command('LIKE');
-    $sql = "\"value\" FROM extsetdata WHERE \"setID\" = ? AND \"name\" $like ?";
+    $sql = "\"value\" FROM extsetdata WHERE \"setID\"=? AND \"name\" $like ?";
     $res = $db->select_query($sql, 1, array($setid, $name));
 
     return (isset($res[0]['value'])) ? $res[0]['value'] : '';
@@ -2611,7 +2600,7 @@ function update_group_setcount(DatabaseConnection $db, $groupid, $setcount)
 function get_sets_count_group(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
-    $sql = '"setcount" AS "cnt" FROM groups WHERE "ID" = ?';
+    $sql = '"setcount" AS "cnt" FROM groups WHERE "ID"=?';
     $res = $db->select_query($sql, array($groupid));
 
     return (!isset($res[0]['cnt'])) ? FALSE : $res[0]['cnt'];
@@ -2620,7 +2609,7 @@ function get_sets_count_group(DatabaseConnection $db, $groupid)
 function count_sets_group(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
-    $sql = 'COUNT("ID") AS "cnt" FROM setdata WHERE "groupID" = ?';
+    $sql = 'COUNT("ID") AS "cnt" FROM setdata WHERE "groupID"=?';
     $res = $db->select_query($sql, array($groupid));
 
     return (!isset($res[0]['cnt'])) ? FALSE : $res[0]['cnt'];
@@ -2635,7 +2624,7 @@ function update_feed_setcount(DatabaseConnection $db, $feed_id, $setcount)
 function count_sets_feed(DatabaseConnection $db, $feed_id)
 {
     assert(is_numeric($feed_id));
-    $sql = 'COUNT("id") AS "cnt" FROM rss_sets WHERE "rss_id" = ?';
+    $sql = 'COUNT("id") AS "cnt" FROM rss_sets WHERE "rss_id"=?';
     $res = $db->select_query($sql, array($feed_id));
 
     return (!isset($res[0]['cnt'])) ? FALSE : $res[0]['cnt'];
@@ -2644,7 +2633,7 @@ function count_sets_feed(DatabaseConnection $db, $feed_id)
 function get_queue_status(DatabaseConnection $db, $dbid)
 {
     assert(is_numeric($dbid));
-    $sql = '"status" FROM queueinfo WHERE "ID" = ?';
+    $sql = '"status" FROM queueinfo WHERE "ID"=?';
     $res = $db->select_query($sql, 1, array($dbid));
 
     return (isset($res[0]['status']) ? $res[0]['status'] : FALSE);
@@ -2654,11 +2643,11 @@ function get_set_info(DatabaseConnection $db, $setID, $origin_type)
 {
     global $LN;
     if ($origin_type == USERSETTYPE_GROUP) {
-        $sql = '* FROM setdata WHERE "ID" = ?';
+        $sql = '* FROM setdata WHERE "ID"=?';
     } elseif ($origin_type == USERSETTYPE_RSS) {
-        $sql = '* FROM rss_sets WHERE "setid" = ?';
+        $sql = '* FROM rss_sets WHERE "setid"=?';
     } elseif ($origin_type == USERSETTYPE_SPOT) {
-        $sql = '* FROM spots WHERE "spotid" = ?';
+        $sql = '* FROM spots WHERE "spotid"=?';
     } else {
         throw new exception('Unknown origin_type');
     }
@@ -2746,15 +2735,15 @@ function split_args($args)
 function delete_category(DatabaseConnection $db, $id, $userid)
 {
     assert(is_numeric($userid) && is_numeric($id));
-    $db->delete_query('categories', '"userid" = ? AND "id" = ?', array($userid, $id));
-    $db->update_query_2('usergroupinfo', array('category'=>0), '"userid" = ? AND "category" = ?', array($userid, $id));
-    $db->update_query_2('userfeedinfo', array('category'=>0), '"userid" = ? AND "category" = ?', array($userid, $id));
+    $db->delete_query('categories', '"userid" = ? AND "id"=?', array($userid, $id));
+    $db->update_query_2('usergroupinfo', array('category'=>0), '"userid"=? AND "category"=?', array($userid, $id));
+    $db->update_query_2('userfeedinfo', array('category'=>0), '"userid"=? AND "category"=?', array($userid, $id));
 }
 
 function get_category(DatabaseConnection $db, $cat_id, $userid)
 {
     assert(is_numeric($userid) && is_numeric($cat_id));
-    $sql = '"name" FROM categories WHERE "userid" = ? AND "id" = ?';
+    $sql = '"name" FROM categories WHERE "userid"=? AND "id"=?';
     $res = $db->select_query($sql, 1, array($userid, $cat_id));
     if (!isset($res[0]['name'])) {
         return '';
@@ -2766,7 +2755,7 @@ function get_category(DatabaseConnection $db, $cat_id, $userid)
 function get_server_name(DatabaseConnection $db, $server_id)
 {
     assert(is_numeric($server_id));
-    $sql = '"name" FROM usenet_servers WHERE "id" = ?';
+    $sql = '"name" FROM usenet_servers WHERE "id"=?';
     $res = $db->select_query($sql, 1, array($server_id));
     if (!isset($res[0]['name'])) {
         return '';
@@ -2851,7 +2840,7 @@ function get_post_info(DatabaseConnection $db, $userid, $postid)
     assert(is_numeric($userid) && is_numeric($postid));
     $is_admin = urd_user_rights::is_admin($db, $userid);
     $input_arr = array($postid);
-    $sql = '* FROM postinfo WHERE "id" = ?';
+    $sql = '* FROM postinfo WHERE "id"=?';
     if (!$is_admin) {
         $sql .= ' AND "userid" = ?';
         $input_arr[] = $userid;

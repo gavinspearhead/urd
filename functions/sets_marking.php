@@ -161,7 +161,7 @@ class sets_marking
                 " WHERE (\"$element\" = :marking $qint) AND \"userID\" = :userid AND \"type\" = :type ) AND \"ID\" IN ($sets_str) $grp";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;
-            $ipnut_arr[':type'] = $type;
+            $input_arr[':type'] = $type;
 
         } elseif ($type == USERSETTYPE_RSS) { // feed
             if (is_numeric($groupid)) {
@@ -173,13 +173,13 @@ class sets_marking
                 " WHERE (\"$element\" = :marking $qint) AND \"userID\" = :userid AND \"type\" = :type ) AND \"setid\" IN ($sets_str) $grp";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;
-            $ipnut_arr[':type'] = $type;
+            $input_arr[':type'] = $type;
         } elseif ($type == USERSETTYPE_SPOT) {
             $qry = ' "spotid" AS "ID" FROM spots WHERE "spotid" NOT IN (SELECT "setID" FROM usersetinfo ' .
                 " WHERE (\"$element\" = :marking $qint) AND \"userID\" = :userid AND \"type\" = :type) AND \"spotid\" IN ($sets_str) ";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;
-            $ipnut_arr[':type'] = $type;
+            $input_arr[':type'] = $type;
         }
         $res = $db->select_query($qry, $input_arr);
         if ($res !== FALSE) {
@@ -245,7 +245,7 @@ class sets_marking
                    "WHERE \"$element\" = :marking AND \"userID\" = :userid AND \"type\" = :type) $grp";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;
-            $ipnut_arr[':type'] = $type;
+            $input_arr[':type'] = $type;
         } else {
             $grp = '';
             if (is_numeric($groupid)) {
@@ -257,7 +257,7 @@ class sets_marking
                    "WHERE \"$element\" = :marking' AND \"userID\" = :userid AND \"type\"= :type) $grp";
             $input_arr[':userid'] = $userid;
             $input_arr[':marking'] = $marking;
-            $ipnut_arr[':type'] = $type;
+            $input_arr[':type'] = $type;
         }
         $res = $db->select_query($qry, $input_arr);
         if ($res !== FALSE) {
@@ -350,11 +350,11 @@ class sets_marking
             $feed = '';
         } elseif (is_numeric($feed_id)) {
             if (!feed_subscribed($db, $feed_id)) {
-                throw new exception( $LN['error_feednotfound'], ERR_RSS_NOT_FOUND);
+                throw new exception($LN['error_feednotfound'], ERR_RSS_NOT_FOUND);
             }
-            $feed = " \"rss_id\"=$feed_id AND";
+            $feed = " \"rss_id\" = $feed_id AND";
         } else {
-            throw new exception ($LN['error_invalidfeedid'], ERR_RSS_NOT_FOUND);
+            throw new exception($LN['error_invalidfeedid'], ERR_RSS_NOT_FOUND);
         }
         if ($like_setdata == '') {
             $like_setdata = ' AND 1=0 ';
@@ -375,7 +375,6 @@ class sets_marking
             }
         }
     }
-
 
     private static function mark_search_group(DatabaseConnection $db, $userid, $element = 'statusint', $groupid=NULL)
         // used to automatically mark sets interesting or kill from the search terms / blocked terms

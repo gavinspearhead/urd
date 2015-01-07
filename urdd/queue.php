@@ -42,7 +42,7 @@ class queue
     }
     public function __destruct()
     {
-/* empty still */
+        $this->qq = NULL;
     }
     public function size()
     {

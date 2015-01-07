@@ -115,8 +115,8 @@ function echo_debug_function($dbg_lvl, $function)
 {
     global $config;
     if (debug_match($dbg_lvl, $config['urdd_debug_level'])) {
-        $mmu = memory_get_usage (TRUE);
-        $mmpu = memory_get_peak_usage (TRUE);
+        $mmu = memory_get_usage(TRUE);
+        $mmpu = memory_get_peak_usage(TRUE);
         $msg = "fn:{$function}() ($mmu $mmpu)";
         echo_debug($msg, $dbg_lvl);
     }

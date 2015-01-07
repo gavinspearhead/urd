@@ -134,7 +134,13 @@ class Crypt_Hash
      * @access private
      */
     public $ipad;
-
+    public function __destruct()
+    {
+        $this->key = NULL;
+        $this->hash = NULL;
+        $this->opad = NULL;
+        $this->ipad = NULL;
+    }
     /**
      * Default Constructor.
      *
@@ -142,7 +148,7 @@ class Crypt_Hash
      * @return Crypt_Hash
      * @access public
      */
-    public function Crypt_Hash($hash = 'sha1')
+    public function __construct($hash = 'sha1')
     {
         if ( !defined('CRYPT_HASH_MODE') ) {
             switch (true) {

@@ -124,6 +124,7 @@ class Base_NNTP_Client
         if ($this->_is_connected()) {
             $this->_socket->disconnect();
         }
+        $this->_socket = NULL;
     }
 
     private function split_list_response($line)

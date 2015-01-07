@@ -126,19 +126,7 @@ $(document).ready(function() {
 {if $rating == ""}{$imdbpic="followicon"}{/if}
 
 {* Remember this is a copy of formatsetname.tpl; included here for performance reasons (beats 100's of includes) (I think) *}
-{capture assign=setdesc}{$set.setname|escape:htmlall}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_movie:':$btmovie}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_album:':$btmusic}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_image:':$btimage}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_software:':$btsoftw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_series:':$bttv}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_tvshow:':$bttv}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_documentary:':$btdocu}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_ebook:':$btebook}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_game:':$btgame}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_pw:':$btpw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_copyright:':$btcopyright}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_unknown:':''}{/capture}
+{capture assign=setdesc}{$set.setname|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
 
 {* Ok now it's time to put it all together: *}	
 <tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" name="content">

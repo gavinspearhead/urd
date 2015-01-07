@@ -41,6 +41,9 @@ class job
         $this->recurrence = (int) $recurrence;
         $this->dbid = (int) 0;
     }
+    public function __destruct()
+    {
+    }
 
     public function get_action()
     {
@@ -72,6 +75,10 @@ class schedule
     public function __construct()
     {
         $this->jobs = array();
+    }
+    public function __destruct()
+    {
+        $this->jobs = NULL;
     }
     public function size()
     {

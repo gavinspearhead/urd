@@ -94,7 +94,7 @@ $(document).ready(function() {
 {if $image != ''}
 <tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image|escape}</span></td></tr>
 {/if}
-<tr class="comment"><td class="nowrap bold">{$LN_category}:</td><td><span class="buttonlike" onclick="javascript: load_sets({ 'spot_cat':'{$category_id|escape:javascript}' });">{$category|escape}</span></td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_category}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'spot_cat':'{$category_id|escape:javascript}' });">{$category|escape}</span></td></tr>
 {if $subcat != 0} <tr class="comment"><td class="nowrap bold">{$LN_spot_subcategory}:</td><td>{$subcat|escape}</td></tr>{/if}
 <tr class="comment"><td class="nowrap bold">{$LN_spam_reports}:</td><td>
 {if $spam_reports gt 0}<div class="highlight_spam inline center width15">{$spam_reports|escape}</div>

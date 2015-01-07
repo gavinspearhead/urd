@@ -111,19 +111,19 @@
 <tr>
 <td>{$LN_setsize}:</td>
 <td><input type="text" id="spotminsetsize" name="minsetsize" size="6" value="{$spotminsetsize|escape}"/></td> 
-<td><div id="spotsetsize" style="width:100px;"></div></td>
+<td><div id="spotsetsize" class="slider"></div></td>
 <td><input type="text" id="spotmaxsetsize" name="maxsetsize" size="6" value="{$spotmaxsetsize|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_age}:</td>
 <td><input type="text" id="spotminage" name="minage" size="6" value="{$spotminagelimit|escape}"/></td> 
-<td><div id="spotsetage" style="width:100px;"></div></td>
+<td><div id="spotsetage" class="slider"></div></td>
 <td><input type="text" id="spotmaxage" name="maxage" size="6" value="{$spotmaxagelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
 <td><input type="text" id="spotminrating" name="minrating" size="6" value="{$spotminratinglimit|escape}"/></td> 
-<td><div id="spotrating" style="width:100px;"></div></td>
+<td><div id="spotrating" class="slider"></div></td>
 <td><input type="text" id="spotmaxrating" name="maxrating" size="6" value="{$spotmaxratinglimit|escape}"/></td>
 </tr>
 
@@ -170,7 +170,7 @@
 	</select>
     </td>
     <td>
-	<input type="text" id="search_groups" name="search" size="30" class="search" placeholder="{$LN_search}" onkeypress="javascript:submit_enter(event,do_submit, 'searchform2');"/>
+	<input type="text" id="search_groups" name="search" size="30" class="search" placeholder="{$LN_search}"/>
     <div class="hidden suggest" id="suggest_div_groups"></div>
     </td>
 
@@ -178,25 +178,25 @@
 <tr>
 <td>{$LN_setsize}:</td>
 <td><input type="text" id="groupminsetsize" name="minsetsize" size="6" value="{$groupminsetsizelimit|escape}"/></td> 
-<td><div id="groupsetsize" style="width:100px;"></div></td>
+<td><div id="groupsetsize" class="slider"></div></td>
 <td><input type="text" id="groupmaxsetsize" name="maxsetsize" size="6" value="{$groupmaxsetsizelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_age}:</td>
 <td><input type="text" id="groupminage" name="minage" size="6" value="{$groupminagelimit|escape}"/></td> 
-<td><div id="groupsetage" style="width:100px;"></div></td>
+<td><div id="groupsetage" class="slider"></div></td>
 <td><input type="text" id="groupmaxage" name="maxage" size="6" value="{$groupmaxagelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
 <td><input type="text" id="groupminrating" name="minrating" size="6" value="{$groupminratinglimit|escape}"/></td> 
-<td><div id="groupsetrating" style="width:100px;"></div></td>
+<td><div id="groupsetrating" class="slider"></div></td>
 <td><input type="text" id="groupmaxrating" name="maxrating" size="6" value="{$groupmaxratinglimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_complete}:</td>
 <td><input type="text" id="groupmincomplete" name="mincomplete" size="6" value="{$groupmincompletelimit|escape}"/></td> 
-<td><div id="groupsetcomplete" style="width:100px;"></div></td>
+<td><div id="groupsetcomplete" class="slider"></div></td>
 <td><input type="text" id="groupmaxcomplete" name="maxcomplete" size="6" value="{$groupmaxcompletelimit|escape}"/></td>
 </tr>
 
@@ -241,7 +241,7 @@
     </td>
     <td>
 
-	<input type="text" id="search_rss" name="search" size="30" class="search" placeholder="{$LN_search}" onkeypress="javascript:submit_enter(event,do_submit, 'searchform2');"/>
+	<input type="text" id="search_rss" name="search" size="30" class="search" placeholder="{$LN_search}"/>
     <div class="hidden suggest" id="suggest_div_rss"></div>
 	<input type="hidden" value="" name="maxage"/>
     </td>
@@ -249,19 +249,19 @@
 <tr>
 <td>{$LN_setsize}:</td>
 <td><input type="text" id="rssminsetsize" size="6" name="minsetsize" value="{$rssminsetsizelimit|escape}"/></td> 
-<td><div id="rsssetsize" style="width:100px;"></div></td>
+<td><div id="rsssetsize" class="slider"></div></td>
 <td><input type="text" id="rssmaxsetsize" size="6" name="maxsetsize" value="{$rssmaxsetsizelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_age}:</td>
 <td><input type="text" id="rssminage" name="minage" size="6" value="{$rssminagelimit|escape}"/></td> 
-<td><div id="rsssetage" style="width:100px;"></div></td>
+<td><div id="rsssetage" class="slider"</div></td>
 <td><input type="text" id="rssmaxage" name="maxage" size="6" value="{$rssmaxagelimit|escape}"/></td>
 </tr>
 <tr>
 <td>{$LN_rating}:</td>
 <td><input type="text" id="rssminrating" name="minrating" size="6" value="{$rssminratinglimit|escape}"/></td> 
-<td><div id="rsssetrating" style="width:100px;"></a></div></td>
+<td><div id="rsssetrating" class="slider"></div></td>
 <td><input type="text" id="rssmaxrating" name="maxrating" size="6" value="{$rssmaxratinglimit|escape}"/></td>
 <td>
 
@@ -294,6 +294,7 @@ $(document).ready(function() {
        init_slider({$rssminsetsizelimit}, {$rssmaxsetsizelimit}, "#rsssetsize", "#rssminsetsize", "#rssmaxsetsize");
        init_slider({$rssminagelimit}, {$rssmaxagelimit}, "#rsssetage", "#rssminage", "#rssmaxage");
        init_slider({$rssminratinglimit}, {$rssmaxratinglimit}, "#rsssetrating", "#rssminrating", "#rssmaxrating");
+       $('#search_rss').keypress( function (e) {submit_enter(e, do_submit, 'searchform2'); } );
        $('#search_rss').keyup( function (e) { suggest({$USERSETTYPE_RSS}, 'suggest_div_rss', $('#search_rss'))  } );
        $('#search_rss').attr( 'autocomplete', 'off' );
     {/if}
@@ -302,6 +303,7 @@ $(document).ready(function() {
        init_slider({$groupminagelimit}, {$groupmaxagelimit}, "#groupsetage", "#groupminage", "#groupmaxage");
        init_slider({$groupminratinglimit}, {$groupmaxratinglimit}, "#groupsetrating", "#groupminrating", "#groupmaxrating");
        init_slider({$groupmincompletelimit}, {$groupmaxcompletelimit}, "#groupsetcomplete", "#groupmincomplete", "#groupmaxcomplete");
+       $('#search_groups').keypress( function (e) {submit_enter(e, do_submit, 'searchform1'); } );
        $('#search_groups').keyup( function (e) { suggest({$USERSETTYPE_GROUP}, 'suggest_div_groups', $('#search_groups')) } );
        $('#search_groups').attr( 'autocomplete', 'off' );
     {/if}

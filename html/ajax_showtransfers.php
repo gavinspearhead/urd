@@ -142,6 +142,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
                     $ETA = ($ETA <= 0) ? $queue['ETA'] : min($ETA, $queue['ETA']);
                 }
             }
+            unset($res3);
             $dltime = $stoptime - $start_time;
             $fETA = ($ETA > 0) ? readable_time($ETA, 'fancy') : '';
             if ($fETA == '0' || $fETA == '?') {
@@ -300,6 +301,7 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
                     $ETA = ($ETA == 0) ? $queue['ETA'] : min($ETA, $queue['ETA']);
                 }
             }
+            unset($res3);
             $dltime = $stoptime - $start_time;
             $fETA = ($ETA > 0) ? readable_time($ETA, 'fancy') : '';
             if ($fETA == '0' || $fETA == '?') {

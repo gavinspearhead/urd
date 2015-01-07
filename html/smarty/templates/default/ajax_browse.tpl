@@ -134,19 +134,7 @@ $(document).ready(function() {
 {if $set.complete == -1}{$complete="grey"}{$completion='Completion unknown'}{/if}
 
 {* Remember this is a copy of formatsetname.tpl; included here for performance reasons (beats 100's of includes) (I think) *}
-{capture assign=setdesc}{$set.name|escape:htmlall}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_movie:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_album:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_image:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_software:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_series:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_tvshow:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_documentary:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_ebook:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_game:':''}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_pw:':$btpw}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_copyright:':$btcopyright}{/capture}
-{capture assign=setdesc}{$setdesc|replace:':_img_unknown:':''}{/capture}
+{capture assign=setdesc}{$set.name|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
 
 {$bintype=''}
 {if $set.binary_type == 1} {$bintype=$btmovie}
@@ -176,7 +164,7 @@ $(document).ready(function() {
 {if $rating == ""}{$imdbpic="followicon"}{/if}
 	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{$set.size}</td>
-	<td class="fixwidth1"> <div class="{$complete} status_light down2" {urd_popup type="small" text="$completion" }></div></td>
+	<td class="fixwidth1"> <div class="{$complete} status_light down2" {urd_popup type="small" text="$completion"}></div></td>
     <td class="fixwidth1">
     {if $set.imdblink != ''}
     <div id="link_img_{$set.sid}" class="inline iconsize {$imdbpic} buttonlike" {urd_popup type="small" text=$set.imdblink}></div>
@@ -189,7 +177,7 @@ $(document).ready(function() {
     {if $isadmin}
     <div id="wipe_img_{$set.sid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint}></div>
     </div>
 	</td>
 </tr>
@@ -213,7 +201,6 @@ $(document).ready(function() {
 <input type="hidden" id="killflag" value="{$killflag|escape:htmlall}"/>
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
-
 
 <script type="text/javascript">
 $(document).ready(function() {
