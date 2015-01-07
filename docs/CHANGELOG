@@ -3,10 +3,12 @@
 - Fixed include bug in update_db script
 - Fixed minor bug in the quickmenu handling
 - Fixed a bug in search page not selecting the subcategories (thanx to Andre)
+- Fixed a bug in the marking all sets buttons not working
 - Added download options to uploading nzb dialog
 - Added search suggestions to browse and search pages
 - Added display totals to transfer pages
 - Improved parsing search strings in browse pages
+- Reduces memory footprint slightly
 - Updated to jquery 2.1.3 
 
 
