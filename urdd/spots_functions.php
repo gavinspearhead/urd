@@ -824,6 +824,7 @@ class urd_spots
                 $msg_ids[] = $row['message_id'];
                 $ids[] = $row['id'];
             }
+            $cnt += count($res);
             unset($res);
             try {
                 $headers = $nzb->get_header($msg_ids);
@@ -866,7 +867,6 @@ class urd_spots
             if (count($ids) > 0) {
                 $db->delete_query('spot_messages', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
             }
-            $cnt += count($res);
             $time_b = microtime(TRUE);
             $status = QUEUE_RUNNING;
             $perc = ceil(((float) $cnt * 100) / $totalcount);

@@ -922,6 +922,10 @@ class urd_xml_reader
         echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         $res = array();
 
+        if (!is_array($this->arr)) {
+            var_dump($this->arr);
+            return FALSE;
+        }
         foreach ($this->arr as $t1) {
             if (get_string($t1,'tag') == 'urd_extsetdata' && isset($t1['value'])) {
                 foreach ($t1['value'] as $t2) {

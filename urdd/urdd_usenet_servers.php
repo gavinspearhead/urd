@@ -388,6 +388,7 @@ class usenet_servers
 {
     private $servers;
     private $update_server;
+    const BACKUP_PRIO = 50;
 
     public function restore_server_settings()
     {
@@ -406,6 +407,15 @@ class usenet_servers
             $s->print_size();
         }
     }
+    public function is_backup_server($server_id)
+    {
+        if (isset ($this->servers[$server_id])) {
+            return ($this->servers[$server_id]->get_priority() > self::BACKUP_PRIO);
+        } else {
+            throw new exception ("Server ($server_id) does not exist", ERR_NO_SUCH_SERVER);
+        }
+    }
+
     public function __construct()
     {
         $this->reset_servers();
@@ -460,16 +470,21 @@ class usenet_servers
 
         return FALSE;
     }
-    public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE)
+    public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE, $is_download = FALSE)
     {
         $server_id = FALSE;
         $prio = 0;
         foreach ($this->servers as $srv) {
             $srv_prio = $srv->get_priority();
             $id = $srv->get_id();
-            if ($srv->has_free_slot($this->update_server) && $srv->is_enabled() && $srv->get_priority() > 0
-                && ($srv_prio < $prio || $server_id === FALSE) && !in_array($id, $already_used_servers)
-                && ($need_posting === FALSE || $srv->get_posting())) {
+            if ($srv->has_free_slot($this->update_server) 
+                && $srv->is_enabled() 
+                && $srv->get_priority() > 0
+                && ($srv_prio < $prio || $server_id === FALSE) 
+                && !in_array($id, $already_used_servers)
+                && ($need_posting === FALSE || $srv->get_posting())
+                && ($is_download && ($srv_prio < self::BACKUP_PRIO || count($already_used_servers) > 0))) 
+            {
                 $server_id = $srv->get_id();
                 $prio = $srv->get_priority();
             }

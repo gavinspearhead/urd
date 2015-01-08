@@ -935,7 +935,7 @@ function create_download_threads(DatabaseConnection $db, server_data &$servers, 
 
             return;
         }
-        $srv_id = $servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting()); // is there a server that has a free slot
+        $srv_id = $servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting(), TRUE); // is there a server that has a free slot
         if ($item->get_preview()) {
             $nr_threads = 1;
             $priority = 1; // preview always gets ahead of anything

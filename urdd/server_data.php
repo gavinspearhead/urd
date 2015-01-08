@@ -541,9 +541,9 @@ class server_data { // lots of cleaning up to do
         return $this->servers->get_servers();
     }
 
-    public function find_free_slot(array $already_used_servers=array(), $posting)
+    public function find_free_slot(array $already_used_servers=array(), $posting, $is_download)
     {
-        return $this->servers->find_free_slot($already_used_servers, $posting);
+        return $this->servers->find_free_slot($already_used_servers, $posting, $is_download);
     }
     // queue wrappers
     public function pause(DatabaseConnection $db, $id, $pause, $userid)
@@ -857,7 +857,7 @@ class server_data { // lots of cleaning up to do
             } else {
                 $not_these = array(); // the ones we already tried
                 while (1) {
-                    $item = $this->queue->top(TRUE, $not_these, $this->free_db_intensive_slots > 0 ? TRUE : FALSE); // get an nntp item from the queue or if non, found a nonnntp item
+                    $item = $this->queue->top(TRUE, $not_these, $this->free_db_intensive_slots > 0 ? TRUE : FALSE); // get an nntp item from the queue or if non found, a non-nntp item
                     if ($item === FALSE) { // there are no more items that can run
 
                         return TRUE;
@@ -869,19 +869,23 @@ class server_data { // lots of cleaning up to do
 
                         return $item;
                     }
+                    $is_download = in_array($item->get_command_code(), array(urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA));
                     if ($item->primary_nntp()) {
                         $server_id = $this->get_update_server();
                         $item->set_preferred_server($server_id);
                     } else {
                         $server_id = $item->get_preferred_server();
-                        if ($server_id != 0 && $this->servers->get_priority($server_id) <= 0) {
+                        if ($server_id != 0 && ($this->servers->get_priority($server_id) <= 0 ||
+                                    $this->servers->is_backup_server($server_id) && count($item->get_all_failed_servers()) ==0 && $is_download)) {
                             $server_id = 0;
                             $item->set_preferred_server(0);
                             $item->remove_tried_server($server_id);
                         }
                     }
                     if ($server_id == 0) {// if the preferred server is not set, it can probably run
-                        $srv = $this->servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting());
+                    
+                        $srv = $this->servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting(), $is_download);
+
                         if ($srv !== FALSE) {
                             $item->set_preferred_server($srv);
                             // check if a free slot is available
@@ -922,7 +926,8 @@ class server_data { // lots of cleaning up to do
 
             $server_id = $action->get_preferred_server();
             if ($server_id === FALSE || $server_id == 0) {
-                $server_id = $this->servers->find_free_slot($action->get_all_failed_servers(), $action->need_posting());
+                $is_download = in_array($action->get_command_code(), array(urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA));
+                $server_id = $this->servers->find_free_slot($action->get_all_failed_servers(), $action->need_posting(), $is_download);
             }
             if ($server_id === FALSE) {
                 $this->threads->add_dummy_thread($pid);

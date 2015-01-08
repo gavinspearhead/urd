@@ -283,6 +283,9 @@ function load_extset_data(DatabaseConnection $db, URD_NNTP &$nzb, array $extset_
             $xml = new urd_xml_reader();
             $xml->init_string($art);
             $extset_data = $xml->read_extset_data();
+            if ($extset_data === FALSE) {
+                continue;
+            }
             $counter += store_extset_data($db, $extset_data, $setidarray);
         } catch (exception $e) {
             write_log($e->getMessage(), LOG_ERR);
