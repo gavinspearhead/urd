@@ -477,7 +477,7 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
         }
     } else { // child
         $nntp_enabled = $servers->get_nntp_enabled();
-        unset($servers, $db);
+        unset($servers, $db, $command, $pid);
         start_child($item, $conn_list, $nntp_enabled);
     }
 

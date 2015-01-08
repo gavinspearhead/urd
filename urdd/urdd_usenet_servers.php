@@ -483,7 +483,7 @@ class usenet_servers
                 && ($srv_prio < $prio || $server_id === FALSE) 
                 && !in_array($id, $already_used_servers)
                 && ($need_posting === FALSE || $srv->get_posting())
-                && ($is_download && ($srv_prio < self::BACKUP_PRIO || count($already_used_servers) > 0))) 
+                && (!$is_download || $srv_prio < self::BACKUP_PRIO || count($already_used_servers) > 0)) 
             {
                 $server_id = $srv->get_id();
                 $prio = $srv->get_priority();

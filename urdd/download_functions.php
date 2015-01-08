@@ -935,11 +935,11 @@ function create_download_threads(DatabaseConnection $db, server_data &$servers, 
 
             return;
         }
-        $srv_id = $servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting(), TRUE); // is there a server that has a free slot
         if ($item->get_preview()) {
             $nr_threads = 1;
             $priority = 1; // preview always gets ahead of anything
         } else {
+            $srv_id = $servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting(), TRUE); // is there a server that has a free slot
             if ($srv_id === FALSE) {
                 write_log('Server ID not specified', LOG_ERR);
                 throw new exception('Server ID not specified');
@@ -993,21 +993,16 @@ function create_post_threads(DatabaseConnection $db, server_data &$servers, acti
     $dlid = $item->get_args();
     try {
         $srv_id = $servers->find_free_slot($item->get_all_failed_servers(), $item->need_posting()); // is there a server that has a free slot
-        if ($item->get_preview()) {
-            $nr_threads = 1;
-            $priority = 1; // preview always gets ahead of anything
-        } else {
-            if ($srv_id === FALSE) {
-                write_log('Server ID not specified', LOG_ERR);
-                throw new exception('Server ID not specified');
-            }
-            $max_dl_nntp = get_config($db, 'nntp_maxdlthreads');
-            $nr_threads = $servers->get_max_threads($srv_id);
-            if ($max_dl_nntp > 0) {
-                $nr_threads = min ($max_dl_nntp, $nr_threads);
-            }
-            $priority = 2; // a ready download gets the highest priority so it is scheduled in asap; only previews will overrule this
+        if ($srv_id === FALSE) {
+            write_log('Server ID not specified', LOG_ERR);
+            throw new exception('Server ID not specified');
         }
+        $max_dl_nntp = get_config($db, 'nntp_maxdlthreads');
+        $nr_threads = $servers->get_max_threads($srv_id);
+        if ($max_dl_nntp > 0) {
+            $nr_threads = min ($max_dl_nntp, $nr_threads);
+        }
+        $priority = 2; // a ready download gets the highest priority so it is scheduled in asap; only previews will overrule this
         for ($i = 0; $i < $nr_threads; $i++) {
             $new_item = new action(NULL, NULL, NULL); // create a dummy...
             $new_item->copy($item); // fill it with data here

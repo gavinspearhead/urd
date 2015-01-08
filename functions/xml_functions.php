@@ -932,22 +932,22 @@ class urd_xml_reader
                         $groupname = $setid = $name = $value = $type = NULL;
                         foreach ($t2['value'] as $t3) {
                             if (get_string($t3,'tag') == 'groupname') {
-                                $groupname = get_string($t3,'value');
+                                $groupname = get_string($t3, 'value');
                             }
                             if (get_string($t3,'tag') == 'setid') {
-                                $setid = get_string($t3,'value');
+                                $setid = get_string($t3, 'value');
                             }
                             if (get_string($t3,'tag') == 'name') {
-                                $name = get_string($t3,'value');
+                                $name = get_string($t3, 'value');
                             }
                             if (get_string($t3,'tag') == 'value') {
-                                $value = get_string($t3,'value');
+                                $value = get_string($t3, 'value');
                             }
                             if (get_string($t3,'tag') == 'type') {
-                                $type = get_string($t3,'value');
+                                $type = get_string($t3, 'value');
                             }
                             if ($groupname !== NULL && $setid !== NULL && $name !== NULL && $value !== NULL && $type !== NULL) {
-                                $res[] = array(5 => $groupname, 0 =>$setid, 1 =>$name, 2 => $value, 3 =>$type);
+                                $res[] = array(5 => $groupname, 0 => $setid, 1 => $name, 2 => $value, 3 => $type);
                             }
                         }
                     }
