@@ -923,7 +923,6 @@ class urd_xml_reader
         $res = array();
 
         if (!is_array($this->arr)) {
-            var_dump($this->arr);
             return FALSE;
         }
         foreach ($this->arr as $t1) {
