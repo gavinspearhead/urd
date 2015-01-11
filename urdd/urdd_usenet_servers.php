@@ -38,8 +38,11 @@ class usenet_server
     private $username; // string
     private $password; //string
     private $priority; // number (0 == disabled)
-    private $posting;
-    private $enabled;
+    private $posting; // bool
+    private $enabled; // bool
+    static $test_groups = array('alt.binaries.test', 'alt.binaries.boneless', 'alt.binaries.tv', 'alt.binaries.mp3', 'alt.binaries.linux');
+    static $test_ports_basic = array(119, 563); // these are the normal NNTP and NNTPS ports
+    static $test_ports_extended = array(119, 563, 22, 23, 25, 80, 81, 563, 443, 564, 600, 663, 644, 8080, 7000, 8000, 9000); // most of the ports we know off that are used for NNTP
 
     const NNTP_ABS_MAX = 64; // the maximum number of connection that urdd will open at the same time
 
@@ -214,11 +217,13 @@ class usenet_server
     }
     public function find_max_connections(DatabaseConnection $db, $update_server, test_result_list &$test_results, $check_nntp_connections)
     {
+        // try to open connections to a server until we get an error to find the number of connections to a server
         assert(is_numeric($update_server));
         if ($this->id != $update_server && $this->get_priority() <= 0) { // we only test actually used servers
             return;
         }
         if (0 != $this->used_threads) {
+            // we only run this if nothing is happening on that particular server
             throw new exception ('Has threads running, cancel all threads first', ERR_SERVER_IN_USE);
         }
 
@@ -260,8 +265,9 @@ class usenet_server
     }
     public function test_server(DatabaseConnection $db)
     {
-        static $groups = array ('alt.binaries.test', 'alt.binaries.boneless', 'alt.binaries.tv', 'alt.binaries.mp3', 'alt.binaries.linux');
+        // test if the server is useful, by checking for a number of common groups.
         if (0 != $this->used_threads) {
+            // we only run this if nothing is happening on that particular server
             throw new exception ('Has threads running, cancel all threads first', ERR_SERVER_IN_USE);
         }
         $timeout = get_config($db, 'socket_timeout', '-1');
@@ -274,7 +280,7 @@ class usenet_server
             $conn = new URD_NNTP($db, $this->hostname, $this->encryption, $this->port, $timeout);
             $posting = $conn->connect($auth, $this->username, $this->password);
             $found = TRUE;
-            foreach ($groups as $group) {
+            foreach (self::$test_groups as $group) {
                 if ($conn->test_nntp($group, $code) === TRUE) {
                     $indexing = TRUE;
                     break;
@@ -291,13 +297,11 @@ class usenet_server
     public function find_server(DatabaseConnection $db, &$test_results, $dbid, $current, $total, $extended, $update_config, &$set_update_server)
     {
         if (0 != $this->used_threads) {
+            // we only run this if nothing is happening on that particular server
             throw new exception ('Has threads running, cancel all threads first', ERR_SERVER_IN_USE);
         }
-        static $test_ports_basic = array(119, 563);
-        static $test_ports_extended = array(119, 563, 23, 25, 80, 81, 563, 443, 564, 600, 663, 644, 8080, 7000, 8000, 9000); // most of the ports we know off that are used
-        $test_ports = ($extended === TRUE) ? $test_ports_extended : $test_ports_basic;
+        $test_ports = ($extended === TRUE) ? self::$test_ports_extended : self::$test_ports_basic;
 
-        static $groups = array ('alt.binaries.test', 'alt.binaries.boneless', 'alt.binaries.tv', 'alt.binaries.mp3', 'alt.binaries.linux');
         $timeout = get_config($db, 'socket_timeout');
         if ($timeout <= 0) {
             $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
@@ -317,8 +321,8 @@ class usenet_server
                 try {
                     $conn = new URD_NNTP($db, $hostname, $e, $p, $timeout);
                     $posting = $conn->connect($auth, $this->username, $this->password);
-                    reset($groups);
-                    if ($conn->server_needs_auth(current($groups))) {
+                    reset(self::$test_groups);
+                    if ($conn->server_needs_auth(current(self::$test_groups))) {
                         $auth = TRUE;
                         $conn->connect($auth, $this->username, $this->password);
                     }
@@ -327,7 +331,7 @@ class usenet_server
                     $found_one = TRUE;
                     $indexing = FALSE;
                     $comp_headers = FALSE;
-                    foreach ($groups as $group) {
+                    foreach (self::$test_groups as $group) {
                         if ($conn->test_nntp($group, $code) === TRUE) {
                             $port = $p;
                             $indexing = TRUE;
@@ -382,7 +386,6 @@ class usenet_server
         $test_results->add(new test_result($hostname, FALSE, "Cannot find settings for $hostname"));
     }
 }
-
 
 class usenet_servers
 {

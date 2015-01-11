@@ -213,6 +213,10 @@ class action
     {
         return $this->needs_nntp;
     }
+    public function is_download()
+    {
+        return in_array($this->get_command_code(), array(urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA));
+    }
     public function set_need_nntp($nntp)
     {
         $this->needs_nntp = $nntp;

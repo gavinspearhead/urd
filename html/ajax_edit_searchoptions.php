@@ -75,8 +75,8 @@ function edit_search_option(DatabaseConnection $db, $id)
 {
     global $LN, $smarty;
     if (is_numeric($id)) {
-        $sql = '* FROM searchbuttons WHERE "id"=? ORDER BY "name" ASC';
-        $res = $db->select_query($sql, 1, array($id));
+        $sql = '* FROM searchbuttons WHERE "id"= :id ORDER BY "name" ASC';
+        $res = $db->select_query($sql, 1, array(':id'=>$id));
         if (!isset($res[0])) {
             throw new exception($LN['buttons_buttonnotfound']);
         }
@@ -118,7 +118,7 @@ function show_search_options(DatabaseConnection $db, $userid)
         $search = "%$search%";
         $like = $db->get_pattern_search_command('LIKE');
         $Qsearch = " AND \"name\" $like :name ";
-        $inputarr[ ':name'] = $search;
+        $inputarr[':name'] = $search;
     }
 
     $sql = "* FROM searchbuttons WHERE \"id\" > :id $Qsearch ORDER BY $order $order_dir ";
@@ -164,8 +164,8 @@ function update_search_option_info(DatabaseConnection $db, $id)
         } else {
             throw new exception($LN['buttons_invalidurl']);
         }
-        $query = '"id" FROM searchbuttons WHERE "id"=?';
-        $res = $db->select_query($query, 1, array($id));
+        $query = '"id" FROM searchbuttons WHERE "id"= :id';
+        $res = $db->select_query($query, 1, array(':id'=>$id));
         if ($res !== FALSE) {
             update_search_option($db, $name, $search_url, $id);
         } else {
@@ -182,8 +182,8 @@ function update_search_option_info(DatabaseConnection $db, $id)
         } else {
             throw new exception($LN['buttons_invalidurl']);
         }
-        $query = '"id" FROM searchbuttons WHERE "name"=?';
-        $res = $db->select_query($query, array($name));
+        $query = '"id" FROM searchbuttons WHERE "name" = :name';
+        $res = $db->select_query($query, array(':name' => $name));
         if ($res === FALSE) {
             add_search_option($db, new search_option($name, $search_url));
         } else {

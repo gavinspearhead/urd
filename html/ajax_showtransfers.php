@@ -82,15 +82,15 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
     $qsearch = '';
 
     if ($search != '') { 
-        $qsearch = ' AND "subject" LIKE ? ';
-        $input_arr[] = "%$search%";
+        $qsearch = ' AND "subject" LIKE :search ';
+        $input_arr[':search'] = "%$search%";
     }
     if ($isadmin) {
         // Admins can see any upload
         $sql_up = '* FROM postinfo WHERE 1=1 ' . $qsearch . ' ORDER BY "status" ASC, "id" DESC';
     } else {
-        $sql_up = '* FROM postinfo WHERE "userid"=? ' . $qsearch . ' ORDER BY "status" ASC, "id" DESC';
-        $input_arr[] = $userid;
+        $sql_up = '* FROM postinfo WHERE "userid"= :userid ' . $qsearch . ' ORDER BY "status" ASC, "id" DESC';
+        $input_arr[':userid'] = $userid;
     }
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST)) {
         $res_up = $db->select_query($sql_up, $input_arr);
@@ -231,17 +231,17 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
     $qsearch = '';
     $input_arr = array();
     if ($search != '') { 
-        $qsearch = ' "name" LIKE ? AND ';
-        $input_arr[] = "%$search%";
+        $qsearch = ' "name" LIKE :search AND ';
+        $input_arr[':search'] = "%$search%";
     }
     if ($isadmin) {
         // Admins can see any download
-        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "preview"=? ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
+        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "preview"=:preview ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
     } else {
-        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "userid"=? AND "preview"=? ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
-        $input_arr[] = $userid;
+        $sql_dl = '* FROM downloadinfo WHERE ' . $qsearch . ' "userid"=:userid AND "preview"=:preview ORDER BY "status" ASC, "position" ASC, "start_time" DESC, "ID" DESC';
+        $input_arr[':userid'] = $userid;
     }
-    $input_arr[] = download_types::NORMAL;
+    $input_arr[':preview'] = download_types::NORMAL;
     // Get download info:
     
 
@@ -275,27 +275,23 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             $ETA = 0;
 
             // Get more information for this download (when it's in progress:)
-            $sql = '* FROM queueinfo WHERE "description"=? OR ("description"=? AND "status" NOT IN (?,?))';
+            $sql = '* FROM queueinfo WHERE "description"= :desc1 OR ("description"= :desc2 AND "status" NOT IN (:q1,:q2))';
             $res3 = $db->select_query($sql, array(
-                get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid, 
-                get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid, 
-                QUEUE_FINISHED, 
-                QUEUE_REMOVED
+                ':desc1' => get_command(urdd_protocol::COMMAND_DOWNLOAD_ACTION) . ' ' . $dlid, 
+                ':desc2' => get_command(urdd_protocol::COMMAND_DOWNLOAD) . ' ' . $dlid, 
+                ':q1' => QUEUE_FINISHED, 
+                ':q2' => QUEUE_REMOVED
             ));
             if ($res3 === FALSE || count($res3) == 0) {
                 continue;
             }
 
             foreach ($res3 as $queue) {
-                if ($qstatus == QUEUE_RUNNING) {
+                $qstatus = $queue['status'];
+                if ($qstatus == QUEUE_RUNNING) { // if there is a threat that is still running we consider the entire dl to be running
                     $status = DOWNLOAD_ACTIVE;
-                }
-                if ($qstatus != QUEUE_RUNNING) {
-                    $qstatus = $queue['status'];
-                }
-                if ($qstatus != QUEUE_CANCELLED) {
-                    $maxperc = max($maxperc, $queue['progress']);
-                }
+                } 
+                $maxperc = max($maxperc, $queue['progress']);
                 $stoptime = max($stoptime, $queue['lastupdate']);
                 if ($queue['ETA'] > 0) {
                     $ETA = ($ETA == 0) ? $queue['ETA'] : min($ETA, $queue['ETA']);
@@ -354,7 +350,7 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             $info->dlid = $dlid;
             $info->username = get_username($db, $userid);
             $info->raw_size = $size;
-            list($_size, $suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);
+            list($_size, $suffix) = format_size($size, 'h', $LN['byte_short'], 1024, 1);
             $info->size = $_size . ' ' . $suffix;
             $info->raw_done_size = $done_size;
             list($_done_size, $done_suffix) = format_size($done_size, 'h', $LN['byte_short'], 1024, 1);

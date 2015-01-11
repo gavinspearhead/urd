@@ -61,8 +61,8 @@ function get_download_size(DatabaseConnection $db, $dlid)
 {
     global $LN;
     assert(is_numeric($dlid));
-    $sql = '"size" FROM downloadinfo WHERE "ID"=?';
-    $res = $db->select_query($sql, 1, array($dlid));
+    $sql = '"size" FROM downloadinfo WHERE "ID" = :dlid';
+    $res = $db->select_query($sql, 1, array(':dlid' => $dlid));
     if (!isset($res[0]['size'])) {
         throw new exception($LN['error_downloadnotfound'] . ": $dlid");
     }
@@ -72,11 +72,7 @@ function get_download_size(DatabaseConnection $db, $dlid)
 
 function one_or_more($val, $one, $more)
 {
-    if ($val == 1) {
-        return "$val $one";
-    }
-
-    return "$val $more";
+    return  "$val " . ( ($val == 1) ? $one : $more);
 }
 
 function readable_time($timediff, $value = 'specific')
@@ -253,12 +249,13 @@ function insert_category(DatabaseConnection $db, $userid, $name)
 function set_userfeedinfo(DatabaseConnection $db, $userid, $feedid, $minsetsize, $maxsetsize, $visible, $category)
 {
     assert(is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize));
-    $sql = '"feedid" FROM userfeedinfo WHERE "feedid"=? AND "userid"=?';
-    $res = $db->select_query($sql, 1, array($feedid, $userid));
+    $sql = '"feedid" FROM userfeedinfo WHERE "feedid" = :feedid AND "userid" = :userid';
+    $res = $db->select_query($sql, 1, array(':userid'=>$feedid, ':userid'=>$userid));
     if ($res === FALSE) {
         $db->insert_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'feedid', 'userid', 'category'), array($minsetsize, $maxsetsize, $visible, $feedid, $userid, $category));
     } else {
-        $db->update_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'category'), array($minsetsize, $maxsetsize, $visible, $category), '"feedid"=? AND "userid"=?', array($feedid, $userid));
+        $db->update_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'category'), array($minsetsize, $maxsetsize, $visible, $category),
+                '"feedid"=? AND "userid"=?', array($feedid, $userid));
     }
 }
 
@@ -268,12 +265,12 @@ function set_userfeedinfo_value(DatabaseConnection $db, $userid, $feedid, $optio
     if (!in_array($option, array('minsetsize', 'maxsetsize', 'visible', 'category'))) {
         throw new exception($LN['error_invalidvalue']);
     }
-    $sql = '"feedid" FROM userfeedinfo WHERE "feedid"=? AND "userid"=?';
-    $res = $db->select_query($sql, 1, array($feedid, $userid));
+    $sql = '"feedid" FROM userfeedinfo WHERE "feedid" = :feedid AND "userid" = :userid';
+    $res = $db->select_query($sql, 1,  array(':userid'=>$feedid, ':userid'=>$userid));
     if ($res === FALSE) {
         $db->insert_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'feedid', 'userid', 'category'), array(0, 0, 1, $feedid, $userid, 0));
     }
-    $db->update_query('userfeedinfo', array($option), array($value), '"feedid"=? AND "userid"=?', array($feedid, $userid));
+    $db->update_query('userfeedinfo', array($option), array($value), '"feedid"=:? AND "userid"=?', array($feedid,$userid));
 }
 
 function set_usergroupinfo(DatabaseConnection $db, $userid, $groupid, $minsetsize, $maxsetsize, $visible, $category)
@@ -292,8 +289,8 @@ function set_usergroup_value(DatabaseConnection $db, $userid, $groupid, $option,
 {
     global $LN;
     assert(is_numeric($userid) && is_numeric($groupid));
-    $sql = '"groupid" FROM usergroupinfo WHERE "groupid"=? AND "userid"=?';
-    $res = $db->select_query($sql, 1, array($groupid, $userid));
+    $sql = '"groupid" FROM usergroupinfo WHERE "groupid"=:groupid AND "userid"=:userid';
+    $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=>$userid));
     if (!in_array($option, array('minsetsize', 'maxsetsize', 'visible', 'category'))) {
         throw new exception($LN['error_invalidvalue']);
     }
@@ -309,8 +306,8 @@ function category_by_name(DatabaseConnection $db, $category, $userid)
     if ($category == '') {
         return 0;
     }
-    $sql = '"id" FROM categories WHERE "name" LIKE ? AND "userid"=?';
-    $res = $db->select_query($sql, 1, array($category, $userid));
+    $sql = '"id" FROM categories WHERE "name" LIKE :cat AND "userid"= :userid';
+    $res = $db->select_query($sql, 1, array(':cat'=>$category, ':userid'=>$userid));
 
     return (!isset($res[0]['id'])) ? 0 : $res[0]['id'];
 }
@@ -410,7 +407,7 @@ function set_period_rss(urdd_client $uc, DatabaseConnection $db, $id, $first_upd
 {
     assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
     // $time = update-time that's displayed in the newsgroup page
-    $db->update_query_2('rss_urls', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"id"=?', array($id));
+    $db->update_query_2('rss_urls', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"id"=:id', array(':id'=>$id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE_RSS, $id, $first_update, $period * 3600);
 }
 
@@ -418,7 +415,7 @@ function set_period(urdd_client $uc, DatabaseConnection $db, $id, $first_update,
 {
     assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
     // $time = update-time that's displayed in the newsgroup page
-    $db->update_query_2('groups', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=?', array($id));
+    $db->update_query_2('groups', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=:id', array(':id'=>$id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE, $id, $first_update, $period * 3600);
 }
 
@@ -597,7 +594,7 @@ function create_binary_id($subject, $poster)
 
 function create_extset_download_name(DatabaseConnection $db, $setID)
 {
-    $res = $db->select_query('* FROM extsetdata WHERE "setID" = ?', array($setID));
+    $res = $db->select_query('* FROM extsetdata WHERE "setID" = :setid', array(':setid'=>$setID));
     if (!is_array($res)) {
         return FALSE;
     }
@@ -709,8 +706,8 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
         } elseif ($type == USERSETTYPE_SPOT) {
             $uc->add_spot_data($dlid, $setid);
         } else {
-            $sql = '"nzb_link" FROM rss_sets WHERE "setid" = ?';
-            $res = $db->select_query($sql, array($setid));
+            $sql = '"nzb_link" FROM rss_sets WHERE "setid" = :setid';
+            $res = $db->select_query($sql, array(':setid'=>$setid));
             if ($res !== FALSE) {
                 $url = $res[0]['nzb_link'];
                 $uc->parse_nzb($url, $dlid);
@@ -724,11 +721,11 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
         } else {
             $mark_status = 'statusread';
         }
-        $res = $db->select_query('* FROM usersetinfo WHERE "userID"=? AND "setID"=? AND "type"=?', array($userid, $setid, $type));
+        $res = $db->select_query('* FROM usersetinfo WHERE "userID"=:userid AND "setID"=:setid AND "type"=:type', array(':userid'=>$userid, ':setid'=>$setid, ':type'=>$type));
         if ($res === FALSE) {
             $db->insert_query('usersetinfo', array('setID', 'userID', $mark_status, 'type'), array($setid, $userid, $marking, $type));
         } else {
-            $db->update_query_2('usersetinfo', array($mark_status=>$marking), '"setID"=? AND "userID"=? AND "type"=?', array($setid, $userid, $type));
+            $db->update_query_2('usersetinfo', array($mark_status=>$marking), '"userID"=:userid AND "setID"=:setid AND "type"=:type', array(':userid'=>$userid, ':setid'=>$setid, ':type'=>$type));
         }
         if (!$make_nzb) {
             set_download_size($db, $dlid, $size);
@@ -780,19 +777,19 @@ function update_category(DatabaseConnection $db, $id, $userid, $name)
 function clean_categories(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->delete_query('categories', '"userid" = ?', array($userid));
+    $db->delete_query('categories', '"userid"=?', array($userid));
 }
 
 function clean_userfeedinfo(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->delete_query('userfeedinfo', '"userid" = ?', array($userid));
+    $db->delete_query('userfeedinfo', '"userid"=?', array($userid));
 }
 
 function clean_usergroupinfo(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $db->delete_query('usergroupinfo', '"userid" = ?', array($userid));
+    $db->delete_query('usergroupinfo', '"userid"=?', array($userid));
 }
 
 function get_hiddenfiles($text)
@@ -911,8 +908,8 @@ function feed_category(DatabaseConnection $db, $feedid, $userid)
     global $LN;
     assert(is_numeric($feedid) && is_numeric($userid));
     $sql = 'categories."name" AS "name" FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category" = categories."id" AND userfeedinfo."userid" = categories."userid"' .
-        ' WHERE userfeedinfo."feedid"=? AND categories."userid"=?';
-    $res = $db->select_query($sql, 1, array($feedid, $userid));
+        ' WHERE userfeedinfo."feedid"=:feedid AND categories."userid"=:userid';
+    $res = $db->select_query($sql, 1, array(':feedid'=>$feedid, ':userid'=>$userid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_feednotfound'] . ": $feedid", ERR_RSS_NOT_FOUND);
     }
@@ -926,8 +923,8 @@ function group_category(DatabaseConnection $db, $groupid, $userid)
     global $LN;
     assert(is_numeric($groupid) && is_numeric($userid));
     $sql = 'categories."name" AS "name" FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" AND usergroupinfo."userid" = categories."userid"' .
-           ' WHERE usergroupinfo."groupid"=? AND categories."userid" =?';
-    $res = $db->select_query($sql, 1, array($groupid, $userid));
+           ' WHERE usergroupinfo."groupid"=:groupid AND categories."userid" = :userid';
+    $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=> $userid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
     }
@@ -1896,11 +1893,11 @@ function gmp_max($a, $b)
 
 function rss_url_name_exists(DatabaseConnection $db, $name, $id=NULL)
 {
-    $inputarr= array($name);
-    $sql = 'count("id") AS cnt FROM rss_urls WHERE "name"=?';
+    $inputarr= array(':name'=>$name);
+    $sql = 'count("id") AS cnt FROM rss_urls WHERE "name"=:name';
     if ($id !== NULL) {
-        $sql .= ' AND "id"!=?';
-        $inputarr[] = $id;
+        $sql .= ' AND "id"!=:id';
+        $inputarr[':id'] = $id;
 
     }
     $res = $db->select_query($sql, $inputarr);
@@ -1946,13 +1943,13 @@ function add_rss_url(DatabaseConnection $db, $name, $url, $subscribed, $expire, 
     }
     try {
         $db->insert_query('rss_urls', array('name', 'url', 'subscribed', 'expire', 'username', 'password', 'adult'),
-                array($name, $url, $subscribed, $expire, $username, $password, $adult));
+            array($name, $url, $subscribed, $expire, $username, $password, $adult));
     } catch (exception $e) {
         throw new exception('Insert failed: ' . $e->getmessage());
     }
-    $sql = '"id" FROM rss_urls WHERE "name"=?';
+    $sql = '"id" FROM rss_urls WHERE "name"=:name';
     try {
-        $res = $db->select_query($sql,1, array($name));
+        $res = $db->select_query($sql,1, array(':name'=>$name));
         if (isset($res[0]['id'])) {
             return $res[0]['id'];
         } else {
@@ -2122,9 +2119,10 @@ function perms_to_string($perms)
         return $info;
 }
 
-function deyenc(DatabaseConnection $db, $msg)
+function deyenc($msg)
 {
-    global $LN;
+    // db is global, because when it is used, there is no db parameter. Ugly? Yes!
+    global $LN, $db;
     for ($i = 0; $i < 10; $i++) {
         if (strstr($msg[$i], '=ybegin')) {
             // yydecode doesn't like size=-1 nor a missing name, so we need to fix that first
@@ -2380,6 +2378,7 @@ function strip_filename_bits($dlname)
 
 function strip_garbage($dlname)
 {
+    // removes spammy content from a post name
     $dlname = preg_replace('/(http:\/\/([-a-z0-9]+\.)+[-a-z0-9]{1,6})|(www\.([-a-z0-9]+\.)*[-a-z0-9]{1,6})|(yenc)/i', '', $dlname);
     // strip newsgroup names
     $dlname = preg_replace('/((a.b)|(alt.binaries))(\.[-a-z0-9]+)+(@[-a-z0-9]+)?/i', '', $dlname);
@@ -2402,6 +2401,7 @@ function check_contains_filename($str)
 
 function simplify_chars($str)
 {
+    // replaces non- standard ascii characters by some similar character or character sequence
     $search = explode(',','ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u,ñ,Ç,Æ,Œ,Á,É,Í,Ó,Ú,À,È,Ì,Ò,Ù,Ä,Ë,Ï,Ö,Ü,Â,Ê,Î,Ô,Û,Å,Ø,Ñ');
     $replace = explode(',','c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u,n,C,AE,OE,A,E,I,O,U,A,E,I,O,U,A,E,I,O,U,A,E,I,O,U,A,O,N');
     $str = str_replace($search, $replace, $str);
@@ -2493,7 +2493,6 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
     $dlname = sanitise_download_name($db, $dlname);
 
     try {
-        //var_dump($groupid);
         if ($category == '' && $groupid > 0) {
             if ($dltype == USERSETTYPE_RSS) {
                 $category = feed_category($db, $groupid, $userid);
@@ -2501,9 +2500,7 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
                 $category = group_category($db, $groupid, $userid);
             } elseif ($dltype == USERSETTYPE_SPOT) {
                 $category = SpotCategories::HeadCat2Desc($groupid);
-                //var_dump($category);
                 $category = get_pref($db, 'spot_category_' . $category, $userid, '');
-                //var_dump($category);
                 if ($category != '') {
                     $category = get_category($db, $category, $userid);
                 }
@@ -2674,7 +2671,7 @@ function get_set_info(DatabaseConnection $db, $setID, $origin_type)
     return array(utf8_decode($originalsetname), $groupname, $size);
 }
 
-function round_rating($rating, $min=0, $max = 10)
+function round_rating($rating, $min=0, $max=10)
 {
     assert(is_numeric($rating) && is_numeric($min) && is_numeric($max));
 
@@ -2697,6 +2694,7 @@ function round_rating($rating, $min=0, $max = 10)
 
 function split_args($args)
 {
+    // like explode on whitespace, but also parse a string for quotes, backslashes
     $arg_list = array();
     $item = $quote = '';
     $len = strlen($args);
@@ -2766,6 +2764,7 @@ function get_server_name(DatabaseConnection $db, $server_id)
 
 function get_array(array $arr, $key, $default=NULL)
 {
+    // get a value from an array if the index is set, the default otherwise
     return (isset($arr [ $key ]) ? $arr [ $key ] : $default);
 }
 
@@ -2839,11 +2838,11 @@ function get_post_info(DatabaseConnection $db, $userid, $postid)
 {
     assert(is_numeric($userid) && is_numeric($postid));
     $is_admin = urd_user_rights::is_admin($db, $userid);
-    $input_arr = array($postid);
-    $sql = '* FROM postinfo WHERE "id"=?';
+    $input_arr = array(':postid' => $postid);
+    $sql = '* FROM postinfo WHERE "id"= :postid';
     if (!$is_admin) {
-        $sql .= ' AND "userid" = ?';
-        $input_arr[] = $userid;
+        $sql .= ' AND "userid" = :userid';
+        $input_arr[':userid'] = $userid;
     }
 
     $res = $db->select_query($sql, 1, $input_arr);
@@ -2979,23 +2978,23 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
     $Qsource = $Qstatus = $Quserid = '';
     $input_arr = array();
     if ($source !== NULL) {
-        $input_arr[] = $source;
-        $Qsource = ' AND "source"=? ';
+        $input_arr[':src'] = $source;
+        $Qsource = ' AND "source"= :src';
     }
     if ($status !== NULL) {
-        $input_arr[] = $status;
-        $Qstatus = ' AND "status"=?';
+        $input_arr[':status'] = $status;
+        $Qstatus = ' AND "status"= :status';
     }
     if ($global === TRUE) {
-        $input_arr[] = user_status::SUPER_USERID;
-        $Quserid = ' AND "userid"=?';
+        $input_arr[':userid' ] = user_status::SUPER_USERID;
+        $Quserid = ' AND "userid"= :userid';
     }
     elseif ($global === FALSE) {
-        $input_arr[] = user_status::SUPER_USERID;
-        $Quserid = ' AND "userid" > ?';
+        $input_arr[':superuser'] = user_status::SUPER_USERID;
+        $Quserid = ' AND "userid" > :superuser';
     }
 
-    $sql = "\"id\", \"spotter_id\", \"source\" FROM spot_blacklist WHERE 1=1 $Qsource $Qstatus $Quserid";
+    $sql = '"id", "spotter_id", "source" FROM spot_blacklist WHERE 1=1 '. "$Qsource $Qstatus $Quserid";
     $res = $db->select_query($sql, $input_arr);
     if ($res === FALSE) {
         $res = array();
@@ -3019,11 +3018,15 @@ function remove_special_zip_strings($line)
     return str_replace(array('=C', '=B', '=A', '=D'), array("\n", "\r", "\0", '='), $line);
 }
 
+function special_zip_str($line) 
+{
+    return str_replace(array('=', "\n", "\r", "\0"), array('=D', '=C', '=B', '=A'), $line);
+} 
+
+
 function download_exists(DatabaseConnection $db, $dlid)
 {
-    $res = $db->select_query('"ID" FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
+    $res = $db->select_query('"ID" FROM downloadinfo WHERE "ID"= :id', 1, array(':id'=>$dlid));
     return isset($res[0]['ID']);
 }
-
-
 

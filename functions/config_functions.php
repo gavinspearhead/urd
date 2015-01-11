@@ -181,11 +181,19 @@ function get_custom_prefs(DatabaseConnection $db, $userid)
     return $val;
 }
 
-function get_config(DatabaseConnection $db, $name, $default = NULL)
+function get_config(DatabaseConnection& $db, $name, $default = NULL, $force=FALSE)
 {
     global $LN;
     assert ($name != '');
 
+    if ($force === TRUE) {
+        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option" = :name', array(':userid'=>user_status::SUPER_USERID, ':name'=>$name));
+        if (isset($res['value'])){ 
+            return $res['value'];
+        } else {
+            return $default;
+        }
+    }
     $val = config_cache::get(user_status::SUPER_USERID);
     if (isset($val[$name])) {
         return $val[$name];
@@ -202,10 +210,19 @@ function get_config(DatabaseConnection $db, $name, $default = NULL)
     }
 }
 
-function get_pref(DatabaseConnection $db, $name, $userid, $default=NULL)
+function get_pref(DatabaseConnection& $db, $name, $userid, $default=NULL, $force=FALSE)
 {
     global $LN;
     assert ($name != '' && is_numeric($userid));
+    if ($force === TRUE) {
+        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option" = :name', array(':userid'=>$userid, ':name'=>$name));
+        if (isset($res['value'])){ 
+            return $res['value'];
+        } else {
+            return $default;
+        }
+    }
+
     $val = config_cache::get($userid);
     if (isset($val[$name])) {
         return $val[$name];
@@ -222,7 +239,7 @@ function get_pref(DatabaseConnection $db, $name, $userid, $default=NULL)
     }
 }
 
-function load_config(DatabaseConnection $db, $force = FALSE)
+function load_config(DatabaseConnection& $db, $force = FALSE)
 {
     assert(is_bool($force));
     if (!$force) {
@@ -246,8 +263,7 @@ function load_config(DatabaseConnection $db, $force = FALSE)
     return $prefs;
 }
 
-
-function load_prefs(DatabaseConnection $db, $userid, $force = FALSE)
+function load_prefs(DatabaseConnection& $db, $userid, $force = FALSE)
 {
     assert(is_numeric($userid)); 
     if (!$force) {
@@ -276,7 +292,6 @@ function load_prefs(DatabaseConnection $db, $userid, $force = FALSE)
 
     return $prefs;
 }
-
 
 function set_prefs(DatabaseConnection $db, $userid, array $settings)
 {

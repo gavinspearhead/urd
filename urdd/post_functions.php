@@ -318,7 +318,7 @@ function create_spot_data($db, array $spot_db_data, $userid, $nzb_segments, $ima
     $xml_signature = $spot_signing->signMessage($user_privatekey, $xml);
     $header_data['X-Server-Signature'] = prepare_base64($server_signature['signature']);
     $header_data['X-Server-Key'] = pubkey_to_xml($server_signature['publickey']);
-    $from = $poster_name . ' < ' . prepare_base64($user_signature['publickey']['modulo']) . '.' . prepare_base64($user_signature['signature']) . '@';
+    $from = $poster_name . ' <' . prepare_base64($user_signature['publickey']['modulo']) . '.' . prepare_base64($user_signature['signature']) . '@';
     $spot_hdr = $from . $spot_hdr . prepare_base64($header_signature['signature']) . '>';
     $header_data['X-User-Signature'] = prepare_base64($user_signature['signature']);
     $header_data['X-User-Key'] = pubkey_to_xml($user_signature['publickey']);
@@ -559,7 +559,6 @@ function do_post_batch(DatabaseConnection $db, action $item)
         $poster_email = $row['poster_id'];
         $file_count = $row['file_count'];
         $subject = $row['subject'];
-       // $name = $subject; // better name for rar files ...
 
         $stat_id = get_stat_id($db, $postid, TRUE);
         $useragent = urd_version::get_urd_name() . ' ' . urd_version::get_version();
@@ -883,14 +882,6 @@ function safe_chunk($data, $maxLen, $end = "\r\n")
 
     return $totalChunk;
 } // safe_chunk
-
-function special_zip_str($strInput) 
-{
-    return str_replace(
-        array("=", "\n", "\r", "\0"),
-        array('=D', '=C', '=B', '=A'),
-        $strInput);
-} 
 
 function post_binary_data(DatabaseConnection $db, $postername, $poster_email, $group_name, $nntp, $data)
 {

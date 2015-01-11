@@ -31,7 +31,7 @@ require_once "$pathajss/../functions/ajax_includes.php";
 try {
     $root_prefs = load_config($db);
 
-    $startup_perc = $root_prefs['urdd_startup'];
+    $startup_perc = get_config($db, 'urdd_startup', NULL, TRUE);
     $type = get_request('type', 'normal');
 
     if (!in_array($type, array('quick', 'disk', 'activity', 'icon'))) {
@@ -50,11 +50,11 @@ try {
     if ($type == 'quick' || $type == 'icon') {
         $counter = 0;
         if ($isconnected) {
-            $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status"=?';
-            $res = $db->select_query($sql, array(QUEUE_RUNNING));
+            $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status"= :status';
+            $res = $db->select_query($sql, array(':status'=>QUEUE_RUNNING));
             $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
         }
-        $smarty->assign('counter',		$counter);
+        $smarty->assign('counter', $counter);
     } elseif ($type == 'disk') {
         if ($isconnected) {
             $diskspace = $uc->diskfree('h');
@@ -70,16 +70,17 @@ try {
         $tasks = array();
         if ($isconnected) {
             // Second: Current jobs.
-            $sql = '"description", max("progress") AS "progress", min("ETA") AS "ETA", min("command_id") AS "command_id", count("ID") AS "counter" FROM queueinfo WHERE "status"=? GROUP BY "description"';
-            $res = $db->select_query($sql, array(QUEUE_RUNNING));
+            $sql = '"description", max("progress") AS "progress", min("ETA") AS "ETA", min("command_id") AS "command_id", count("ID") AS "counter" ' 
+                . 'FROM queueinfo WHERE "status" = :status GROUP BY "description"';
+            $res = $db->select_query($sql, array(':status'=>QUEUE_RUNNING));
             if ($res === FALSE) {
                 $res = array();
             }
 
             foreach ($res as $row) {
                 $task = command_description($db, $row['description']);
-                $sql = 'min("ETA") AS "ETA" FROM queueinfo WHERE "description" LIKE ? AND "ETA" > ? ';
-                $res2 = $db->select_query($sql, array($row['description'], 0));
+                $sql = 'min("ETA") AS "ETA" FROM queueinfo WHERE "description" LIKE :desc AND "ETA" > :eta ';
+                $res2 = $db->select_query($sql, array(':desc'=>$row['description'], ':eta'=>0));
                 $ETA = isset($res2[0]['ETA']) ? $res2[0]['ETA'] : '';
                 $row['task'] = $task[0];
                 $row['args'] = $task[1];
@@ -105,12 +106,13 @@ try {
                 // Create or Overwrite the item:
                 $tasks[$arrayid] = $row;
             }
+            unset($res);
             $cnt = count($tasks);
             $input_arr = array();
             $sql = '* FROM downloadinfo WHERE "preview" = 2 AND "hidden" = 0';
             if (!$isadmin) {
-                $input_arr[] = $userid;
-                $sql .= ' AND "userid"=? ';
+                $input_arr[':userid'] = $userid;
+                $sql .= ' AND "userid"=:userid ';
             }
             $sql .= ' ORDER BY "start_time" DESC';
 
@@ -145,6 +147,7 @@ try {
                     case DOWNLOAD_FAILED:        $cat = $LN['transfers_status_dlfailed']; break;
                     default :                    $cat = $LN['transfers_status_unknown']; break;
                 }
+                unset($res);
                 $preview['status'] = $cat;
                 $previews[] = $preview;
             }
@@ -160,6 +163,7 @@ try {
     $smarty->assign('isconnected',	 $isconnected);
     $smarty->assign('isadmin',	   	 $isadmin);
     $smarty->assign('type',	         $type);
+
     $contents = $smarty->fetch('ajax_showstatus.tpl');
     return_result(array('contents' => $contents, 'connected' => $isconnected));
 } catch (exception $e) {

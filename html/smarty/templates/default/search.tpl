@@ -202,7 +202,7 @@
 
 <tr>
 <td>
-<input type="submit" value="{$LN_search}" class="submitsmall" onclick='javascript: do_submit("searchform1");'/>
+<input type="submit" value="{$LN_search}" class="submitsmall" onclick='javascript:do_submit("searchform1");'/>
 &nbsp;&nbsp;
 <input type="button" value="{$LN_reset}" class="submitsmall" onclick='javascript:clear_form("searchform1");'/>
 &nbsp;&nbsp;
@@ -294,7 +294,7 @@ $(document).ready(function() {
        init_slider({$rssminsetsizelimit}, {$rssmaxsetsizelimit}, "#rsssetsize", "#rssminsetsize", "#rssmaxsetsize");
        init_slider({$rssminagelimit}, {$rssmaxagelimit}, "#rsssetage", "#rssminage", "#rssmaxage");
        init_slider({$rssminratinglimit}, {$rssmaxratinglimit}, "#rsssetrating", "#rssminrating", "#rssmaxrating");
-       $('#search_rss').keypress( function (e) {submit_enter(e, do_submit, 'searchform2'); } );
+       $('#search_rss').keypress( function (e) { submit_enter(e, do_submit, 'searchform2'); } );
        $('#search_rss').keyup( function (e) { suggest({$USERSETTYPE_RSS}, 'suggest_div_rss', $('#search_rss'))  } );
        $('#search_rss').attr( 'autocomplete', 'off' );
     {/if}
@@ -303,12 +303,11 @@ $(document).ready(function() {
        init_slider({$groupminagelimit}, {$groupmaxagelimit}, "#groupsetage", "#groupminage", "#groupmaxage");
        init_slider({$groupminratinglimit}, {$groupmaxratinglimit}, "#groupsetrating", "#groupminrating", "#groupmaxrating");
        init_slider({$groupmincompletelimit}, {$groupmaxcompletelimit}, "#groupsetcomplete", "#groupmincomplete", "#groupmaxcomplete");
-       $('#search_groups').keypress( function (e) {submit_enter(e, do_submit, 'searchform1'); } );
+       $('#search_groups').keypress( function (e) { submit_enter(e, do_submit, 'searchform1'); } );
        $('#search_groups').keyup( function (e) { suggest({$USERSETTYPE_GROUP}, 'suggest_div_groups', $('#search_groups')) } );
        $('#search_groups').attr( 'autocomplete', 'off' );
     {/if}
 });
 
 </script>
-
 {/block}

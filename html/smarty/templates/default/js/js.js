@@ -1199,13 +1199,13 @@ function load_activity_status(force)
 function load_quick_status()
 {
     var url = 'ajax_showstatus.php';
-    $.post( url, { type: 'quick' }).done(function(html) {
+    $.post(url, { type: 'quick' }).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#status_msg').html(x.contents);
         }
     });
-    $.post( url,  { type: 'icon' }).done(function(html) {
+    $.post(url, { type: 'icon' }).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#smallstatus').html(x.contents);
@@ -3859,6 +3859,7 @@ function load_spots(options)
     data.flag = flag;
     data.order = order;
     hide_overlayed_content();
+    $('#suggest_div').addClass('hidden');  
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -3910,6 +3911,7 @@ function load_groupsets(options)
     var group_id = $('#select_groupid>option:selected').val();
     var per_page = $('#perpage').val();
     var add_rows = 0;
+    $('#suggest_div').addClass('hidden'); 
     if (options !== undefined) {
         if (options.add_rows !== undefined) {
             add_rows = 1;
@@ -3988,6 +3990,7 @@ function load_groupsets(options)
     data.setid = setid;
     data.flag = flag;
     data.order = order;
+    $('#suggest_div').addClass('hidden'); 
     $.post( url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -6274,7 +6277,7 @@ function suggest(type, suggest_div, text_bar)
                 $('#' + suggest_div).addClass('hidden'); 
                 load_sets( { 'offset':'0', 'setid':'' } ); 
             } );
-            text_bar.focusout( function () { $('#' + suggest_div).addClass('hidden'); } );
+            text_bar.blur( function () { $('#' + suggest_div).addClass('hidden'); } );
             $('div[name="suggestion"]').mouseover( function () { $(this).addClass('highlight2'); } );
             $('div[name="suggestion"]').mouseout( function () { $(this).removeClass('highlight2'); } );
         } else {

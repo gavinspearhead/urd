@@ -30,6 +30,7 @@ $pathwf = realpath(dirname(__FILE__));
 
 require_once "$pathwf/autoincludes.php";
 
+// send a page to a new URL with a meta refresh 
 function redirect($url, $delay = 0)
 {
     assert(is_numeric($delay) && $url != '');
@@ -45,6 +46,7 @@ OUT;
     exit(NO_ERROR);
 }
 
+// get a value from the cookie
 function get_cookie($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
@@ -60,9 +62,12 @@ function get_cookie($var, $default='', $verify_fn=NULL)
     return $_COOKIE[$var];
 }
 
+// get a value from the _POST or _GET variable. 
+// Not equivalent to _REQUEST as it also includes $_COOKIE
+
+
 function get_request($var, $default='', $verify_fn=NULL)
 {
-// can't use $_REQUEST as it also includes $_COOKIE
     assert($var !== NULL);
     if (!isset($_POST[$var]) && !isset($_GET[$var])) {
         return $default;

@@ -470,7 +470,6 @@ class urd_spots
                     break;
             }
         }
-
         return $res;
     }
 
@@ -479,7 +478,7 @@ class urd_spots
         foreach($ratings as $spotid => $rating) {
             $cnt = count($rating);
             $sum = array_sum($rating);
-            $sql = "UPDATE spots SET \"rating_count\" = \"rating_count\" + :cnt1, \"rating\" = (\"rating\" + :sum) / (rating_count + :cnt2) WHERE \"spotid\" = :spotid";
+            $sql = 'UPDATE spots SET "rating_count" = "rating_count" + :cnt1, "rating" = ("rating" + :sum) / ("rating_count" + :cnt2) WHERE "spotid" = :spotid';
             $db->execute_query($sql, array(':cnt1'=> $cnt,':cnt2'=> $cnt, ':sum'=> $sum, ':spotid'=>$spotid));
         }
     }

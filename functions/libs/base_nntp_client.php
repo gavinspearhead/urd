@@ -269,7 +269,7 @@ class Base_NNTP_Client
         $line = @fread($fp, 512);
 
         if (substr($line, 0, 7) == '=ybegin') {
-            $data = $this->_getTextResponse();
+            $data = $this->_get_text_response();
             $data = $line . "\r\n" . implode('', $data);
             $data = deyenc($data);
             $data = explode("\r\n", gzinflate($data));

@@ -5,6 +5,7 @@
 - Fixed a bug in search page not selecting the subcategories (thanx to Andre)
 - Fixed a bug in the marking all sets buttons not working
 - Fixed small bug in downloading extsetdata consisting of invalid data
+- Fixed a bug in detecting compressed headers
 - Usenet servers with a priority of >= 50 are now only used when as a back up server for missing articles
 - Added download options to uploading nzb dialog
 - Added search suggestions to browse and search pages

@@ -28,7 +28,6 @@ require_once "$pathadctl/../functions/ajax_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
-
 function parse_server_info($xml)
 {
     $xml = new SimpleXMLElement($xml);
