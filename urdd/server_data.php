@@ -41,11 +41,10 @@ class server_data { // lots of cleaning up to do
     private $free_db_intensive_slots; // available number of threads with db intensive set that can run
     private $check_nntp_connections; // whether to check the max # nntp connenctions a server can have
     // generic
-    //
-   
-    const QUEUE_TOP= 1;
-    const QUEUE_BOTTOM = 2;
-    const CONNECT_CHECK_TIME = 60;
+    
+    const QUEUE_TOP             = 1;
+    const QUEUE_BOTTOM          = 2;
+    const CONNECT_CHECK_TIME    = 60;
 
     public function __construct($queue_size, $nntp_threads, $total_threads, $db_intensive_threads)
     {
@@ -57,7 +56,7 @@ class server_data { // lots of cleaning up to do
         $this->nntp_enabled = FALSE;
         $this->check_nntp_connections = FALSE;
         if ($total_threads < $nntp_threads) {
-            $total_threads = $nntp_threads ++; // the default is we have always one slot available for other things
+            $total_threads = $nntp_threads + 1; // the default is we have always one slot available for other things
         }
         $this->free_nntp_slots = $this->max_total_nntp_threads = (int) $nntp_threads;
         $this->free_total_slots = $this->max_total_threads = (int) $total_threads;
@@ -262,7 +261,7 @@ class server_data { // lots of cleaning up to do
 
             $this->servers->dec_free_slots($server_id);
             $now = time();
-            if ($this->conn_check_time == 0 ||$this->conn_check_time < $now) {// set the connection retry timeout if not set
+            if ($this->conn_check_time == 0 || $this->conn_check_time < $now) {// set the connection retry timeout if not set
                 $this->conn_check_time = $now + self::CONNECT_CHECK_TIME;
             }
             $this->queue->delete_cmd($db, $item->get_command(), $item->get_args(), user_status::SUPER_USERID, TRUE); // remove all equal from queue
@@ -286,7 +285,7 @@ class server_data { // lots of cleaning up to do
                     echo_debug('Requeueing paused', DEBUG_SERVER);
                     $new_id = $this->recreate_download_command($db, $item, TRUE, TRUE);
                     update_dlinfo_status($db, DOWNLOAD_PAUSED, $item->get_args());
-                    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, $new_id, $item->get_userid(), TRUE, $item->get_priority());
+                    $item_unpause = new action(urdd_protocol::COMMAND_CONTINUE, $new_id, $item->get_userid(), TRUE, $item->get_priority());
                     $job = new job($item_unpause, $now + get_timeout($item) * 60, NULL); //try again in 60 secs
                     $this->schedule->add($db, $job);
                 } else {

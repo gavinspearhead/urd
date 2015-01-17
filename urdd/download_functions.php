@@ -284,6 +284,8 @@ function start_download(DatabaseConnection $db, action $item)
         $connected = FALSE;
 
         $b_time = microtime(TRUE);
+        $article_query = '"groupID", "partnumber", "messageID", "name", "ID" FROM downloadarticles WHERE "downloadID"=:dlid AND "status"=:status ORDER BY "name", "partnumber"';
+        $article_input_arr = array(':dlid'=>$dlid, ':status'=>$req_status);
         while (TRUE) {
             if ($connected === FALSE) {
                 // Check if we didn't exceed max allowed reconnect attempts:
@@ -300,14 +302,13 @@ function start_download(DatabaseConnection $db, action $item)
 
             $s_time = microtime(TRUE);
             try {
-                $query = '"groupID", "partnumber", "messageID", "name", "ID" FROM downloadarticles WHERE "downloadID"=? AND "status"=? ORDER BY "name", "partnumber"';
                 $db->lock($lock_array);
                 // First time use small batch size:
                 if ($first_batch_size > 0) {
-                    $res = $db->select_query($query, $first_batch_size, array($dlid, $req_status));
+                    $res = $db->select_query($article_query, $first_batch_size, $article_input_arr);
                     $first_batch_size = 0;
                 } else {
-                    $res = $db->select_query($query, $batch_size, array($dlid, $req_status));
+                    $res = $db->select_query($article_query, $batch_size, $article_input_arr);
                 }
 
                 if ($res === FALSE) {

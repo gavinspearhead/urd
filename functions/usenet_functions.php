@@ -168,6 +168,7 @@ function create_usenet_servers(DatabaseConnection $db)
     add_usenet_server($db, 'XLNED', 'news.xlned.com', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XLusenet', 'ssl-news.eu.xlusenet.nl', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS usenet', 'reader.xsusenet.com', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
+    add_usenet_server($db, 'XS usenet Free', 'free.xsusenet.com', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS4all - Newszilla', 'newszilla.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS4all - Newszilla IPv6', 'newszilla6.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XMS', 'news.xmsnet.nl', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);

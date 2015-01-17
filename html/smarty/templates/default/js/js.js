@@ -73,16 +73,18 @@ function init()
 {
     // To keep track of the mouse button, used for the quickmenu:
     mousedown = 0;
-    $(document).mousedown = function() {
+    $(document).mousedown (function() {
         ++mousedown;
         // Sanity check, sometimes it misses ups/downs!
         if (mousedown > 1) { mousedown = 1; }
-    };
-    $(document).mouseup = function() {
+        console.log(mousedown);
+    });
+    $(document).mouseup (function() {
         --mousedown;
         // Sanity check, sometimes it misses ups/downs!
         if (mousedown < 0) { mousedown = 0; }
-    };
+        console.log(mousedown);
+    });
     var urdd_status = $('#urdd_status').val();
     var msg = $('#urdd_message').val();
     if (urdd_status !== undefined && urdd_status == 0) {
@@ -2381,6 +2383,7 @@ function show_quickmenu(type, subject, srctype, e)
     if (mousedown) {
         return false;
     }
+    
     // Create an overlay div
     $('#quickmenu').addClass('quickmenuon');
     $('#quickmenu').removeClass('quickmenuoff');
@@ -2400,6 +2403,7 @@ function show_quickmenu(type, subject, srctype, e)
             subject: subject
         }
     ).done(function(html) {
+        has_quickmenu = 0;
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#quickmenu').html(x.contents);
@@ -4584,12 +4588,17 @@ function set_mouse_click()
     mouse_click_time = d.getTime();
 }
 
+var has_quickmenu = 0;
 function start_quickmenu(str, sid, type, e)
 {
-    setTimeout(
-        function() {
-            show_quickmenu(str, sid, type, e);
-        }, 200);
+    console.log(has_quickmenu);
+    if (has_quickmenu <= 0) {
+        has_quickmenu ++;
+        setTimeout(
+            function() {
+                show_quickmenu(str, sid, type, e);
+            }, 150);
+    }
 }
 
 function do_select_subcat()

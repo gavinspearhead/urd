@@ -60,6 +60,11 @@ class socket
 
     public function __construct ()
     {
+        $this->_init();
+            
+    }
+    private function _init() 
+    {
         $this->fp = NULL;
         $this->timeout = FALSE;
         $this->port = (int) 0;
@@ -73,8 +78,8 @@ class socket
         try {
             $this->disconnect();
         } catch (exception $e) {
-            $this->fp = NULL;
         }
+        $this->_init();
     }
 
     public function get_fp()
@@ -120,7 +125,7 @@ class socket
 
         $errno = 0;
         $errstr = '';
-        $url = "$addr:$port";
+        $url = "{$this->addr}:$port";
         if ($options !== NULL) {
             if ($this->timeout !== NULL) {
                 $timeout = $this->timeout;
@@ -273,7 +278,6 @@ class socket
                 return (count($r) > 0) ? TRUE : FALSE;
             }
         }
-        echo "foo\n";
         return FALSE;
     }
 
