@@ -77,13 +77,11 @@ function init()
         ++mousedown;
         // Sanity check, sometimes it misses ups/downs!
         if (mousedown > 1) { mousedown = 1; }
-        console.log(mousedown);
     });
     $(document).mouseup (function() {
         --mousedown;
         // Sanity check, sometimes it misses ups/downs!
         if (mousedown < 0) { mousedown = 0; }
-        console.log(mousedown);
     });
     var urdd_status = $('#urdd_status').val();
     var msg = $('#urdd_message').val();
@@ -1286,7 +1284,6 @@ function search_button(url, xname)
 
 function mark_read(setid, cmd, type)
 {
-    console.log('aeao');
     var url = 'ajax_markread.php';
     var data = {
         cmd: cmd,
@@ -1298,7 +1295,6 @@ function mark_read(setid, cmd, type)
         data.challenge = challenge;
     }
     $.post(url, data).done(function(html) {
-        console.log(html);
         var content = $.parseJSON(html);
         if (content.error == 0) {
             var thetr = $('#base_row_' + setid);
@@ -1385,7 +1381,6 @@ function which_button(buttonval, e)
         });
         var data = { whichbutton: 'checksize', 'set_ids' : set_ids };
         $.post( url, data).done(function(html) {
-            console.log(html);
             var content = $.parseJSON(html);
             if (content.error != 0){ /*&& content.message != '') {
                 show_confirm(content.message, function() {
@@ -1430,7 +1425,6 @@ function process_whichbutton(buttonval, rightclick)
     data.set_ids = set_ids;
 
     $.post( url, data).done(function(html) {
-            console.log(html);
         var content = $.parseJSON(html);
         if (content.error == 0) {
             update_basket_display();
@@ -2604,7 +2598,6 @@ function save_extset_info(setID, type)
     }
     hide_overlayed_content();
     $.post(url, data).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
         // Also echo the new setname into the TD
@@ -4591,7 +4584,6 @@ function set_mouse_click()
 var has_quickmenu = 0;
 function start_quickmenu(str, sid, type, e)
 {
-    console.log(has_quickmenu);
     if (has_quickmenu <= 0) {
         has_quickmenu ++;
         setTimeout(
@@ -6268,7 +6260,6 @@ function suggest(type, suggest_div, text_bar)
     var cat_id = get_selected_cat();
     var group_id = $('#select_groupid>option:selected').val();
     var feed_id = $('#select_feedid>option:selected').val();
-    console.log(group_id, feed_id, cat_id);
     $.post( url, {
         text: text_bar.val(), 
         cat: cat_id,
@@ -6276,7 +6267,6 @@ function suggest(type, suggest_div, text_bar)
         feed: feed_id,
         type: type
     }).done(function(html) {
-        console.log(html);
         var r = $.parseJSON(html);
         if (r.counter > 0 && r.error == 0) {
             $('#' + suggest_div).removeClass('hidden');
