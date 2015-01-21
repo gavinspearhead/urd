@@ -140,7 +140,6 @@ $(document).ready(function() {
         );
     });
 
-   set_scroll_handler('#contentout', load_sets);
    {* Load basket: *}
    update_basket_display();
    $('#searchbar').html( $('#searchformdiv').html());

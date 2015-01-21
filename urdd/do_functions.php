@@ -356,8 +356,8 @@ function do_priority(DatabaseConnection $db, array $arg_list, server_data &$serv
 
 function regenerate_setnames(DatabaseConnection $db, array $setidarray)
 {
+    $sql = '"name", "value", "type" FROM extsetdata WHERE "setID"=?';
     foreach ($setidarray as $setid => $foo) {
-        $sql = '"name", "value", "type" FROM extsetdata WHERE "setID"=?';
         $res = $db->select_query($sql, array($setid));
         if ($res === FALSE) {
             continue;
@@ -985,9 +985,9 @@ function do_diskfree(DatabaseConnection $db, $format='')
 
 function get_spot_nzb(DatabaseConnection $db, $spotid)
 {
-    $res = $db->select_query('"nzbs" FROM spots WHERE "spotid"=?', 1, array($spotid));
+    $res = $db->select_query('"nzbs" FROM spots WHERE "spotid"=:spotid', 1, array(':spotid'=>$spotid));
     if (!isset($res[0]['nzbs'])) {
-        throw new exception('Invalid Set ID');
+        throw new exception('Invalid SpotID');
     }
     $nzbs = $res[0]['nzbs'];
     if ($nzbs == '') {
@@ -1914,7 +1914,6 @@ function do_merge_sets(DatabaseConnection $db, action $item)
     return NO_ERROR;
 }
 
-
 function do_find_servers(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -1959,14 +1958,12 @@ function do_delete_set(DatabaseConnection $db, action $item)
             $cmt .= "Set not found $setid ";
             continue;
         }
-        $sql = "\"binaryID\" FROM binaries_$group_id WHERE \"setID\" = ?";
-        $res = $db->select_query($sql, array($setid));
+        $sql = "\"binaryID\" FROM binaries_$group_id WHERE \"setID\" = :setid";
+        $res = $db->select_query($sql, array(':setid'=>$setid));
         $binary_ids = ($res === FALSE) ? array() : $res;
 
         $db->delete_query('setdata', '"ID" = ?', array($setid));
-
-        $sql = '"setID" = ?';
-        $db->delete_query("binaries_$group_id", $sql, array($setid));
+        $db->delete_query("binaries_$group_id", '"setID" = ?', array($setid));
 
         foreach ($binary_ids as $row) {
             $bin_id = $row['binaryID'];
@@ -2233,15 +2230,15 @@ function fetch_image_articles(DatabaseConnection $db, URD_NNTP $nntp, array $art
 
 function get_unfetched_spot_images_count(DatabaseConnection $db)
 {
-        $like = $db->get_pattern_search_command('LIKE');
-        $sql = "count(*) AS cnt FROM spot_images WHERE \"fetched\"=0 AND \"image\" $like 'articles:%'";
-        $res = $db->select_query($sql);
-        if (!isset($res[0]['cnt'])) {
-            throw new exception('counter not set');
-        }
-        $count = $res[0]['cnt'];
+    $like = $db->get_pattern_search_command('LIKE');
+    $sql = "count(*) AS cnt FROM spot_images WHERE \"fetched\"=0 AND \"image\" $like 'articles:%'";
+    $res = $db->select_query($sql);
+    if (!isset($res[0]['cnt'])) {
+        throw new exception('counter not set');
+    }
+    $count = $res[0]['cnt'];
 
-        return $count;
+    return $count;
 }
 
 function do_getspot_images(DatabaseConnection $db, action $item)
@@ -2265,8 +2262,8 @@ function do_getspot_images(DatabaseConnection $db, action $item)
 
         $image_count = 0;
         $like = $db->get_pattern_search_command('LIKE');
+        $sql = '"image", "spotid" FROM spot_images WHERE "fetched" = 0 AND "image" ' . "$like articles:%'";
         while (TRUE) {
-            $sql = "\"image\", \"spotid\" FROM spot_images WHERE \"fetched\" = 0 AND \"image\" $like 'articles:%'";
             $res = $db->select_query($sql, 50);
             if (!isset($res[0])) {
                 break;

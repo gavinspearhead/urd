@@ -42,7 +42,6 @@ class urd_spots
     {
         //echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         $spotid = self::make_spot_id($spot_data['spotid'], $spot_data['messageid'], $spot_data['poster']);
-      //  $res = $db->select_query('"spotid" FROM spots WHERE "spotid"=?', 1, array($spotid));
         static $cols = array (
             'messageid',
             'spotid',
@@ -216,7 +215,7 @@ class urd_spots
         // als de spot verified is, toon dan de userid van deze user
         if ($spot_data['verified']) {
             $spot_data['userid'] = $spotSigning->calculate_userid($spot_data['user-key']['modulo']);
-            echo_debug('verified spot for ' . $spot_data['userid'] , DEBUG_SERVER);
+            echo_debug('verified spot for ' . $spot_data['userid'], DEBUG_SERVER);
         } else {
             echo_debug('Unverified spot', DEBUG_SERVER);
         }
@@ -271,10 +270,7 @@ class urd_spots
 
         $sql = "count(\"spotid\") AS cnt FROM spots WHERE (\"stamp\" < :stamp $spam_count ) $keep_int";
         $res = $db->select_query($sql, -1, -1, $inputarr);
-        $cnt = 0;
-        if (isset($res[0]['cnt'])) {
-            $cnt = $res[0]['cnt'];
-        }
+        $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
         write_log('Deleting ' . $cnt . ' spots');
         update_queue_status ($db, $dbid, NULL, 0, 1);
 
@@ -283,10 +279,7 @@ class urd_spots
         echo_debug("Deleted {$cnt} spots", DEBUG_DATABASE);
         $sql = 'count(*) AS "cnt" FROM spot_images WHERE "spotid" NOT IN (SELECT "spotid" FROM spots)';
         $res = $db->select_query($sql);
-        $cnt = 0;
-        if (isset($res[0]['cnt'])) {
-            $cnt = $res[0]['cnt'];
-        }
+        $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
         update_queue_status ($db, $dbid, NULL, 0, 10);
 
         self::delete_image_cache($db, FALSE, $safety_expire);
@@ -301,10 +294,7 @@ class urd_spots
         update_queue_status ($db, $dbid, NULL, 0, 40);
         $sql = 'count(*) AS cnt FROM spot_comments WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp';
         $res = $db->select_query($sql, array(':stamp'=>$safety_expire));
-        $cnt = 0;
-        if (isset($res[0]['cnt'])) {
-            $cnt = $res[0]['cnt'];
-        }
+        $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
 
         update_queue_status ($db, $dbid, NULL, 0, 60);
         write_log('Deleting '. $cnt . ' spot comments');
@@ -315,10 +305,7 @@ class urd_spots
         // expiring reports
         $sql = 'count(*) AS cnt FROM spot_reports WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp';
         $res = $db->select_query($sql, array(':stamp'=>$safety_expire));
-        $cnt = 0;
-        if (isset($res[0]['cnt'])) {
-            $cnt = $res[0]['cnt'];
-        }
+        $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
 
         $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type" = :type', array(':type'=>$type));
         update_queue_status ($db, $dbid, NULL, 0, 90);
@@ -399,8 +386,8 @@ class urd_spots
             $cnt = 0;
             foreach ($ids as $id) {
                 $filename = $image_dir . $id . '.jpg';
-                $sql = '"spotid" FROM spots WHERE "spotid"=?';
-                $res = $db->select_query($sql, 1, array($id));
+                $sql = '"spotid" FROM spots WHERE "spotid" = :id';
+                $res = $db->select_query($sql, 1, array(':id' => $id));
                 if (!isset($res[0]['spotid'])) {
                     $cnt ++;
                     if (file_exists($filename)) {
@@ -475,11 +462,11 @@ class urd_spots
 
     private static function update_spot_comment_ratings(DatabaseConnection$db, array $ratings)
     {
+        $sql = 'UPDATE spots SET "rating_count" = "rating_count" + :cnt1, "rating" = ("rating" + :sum) / ("rating_count" + :cnt2) WHERE "spotid" = :spotid';
         foreach($ratings as $spotid => $rating) {
             $cnt = count($rating);
             $sum = array_sum($rating);
-            $sql = 'UPDATE spots SET "rating_count" = "rating_count" + :cnt1, "rating" = ("rating" + :sum) / ("rating_count" + :cnt2) WHERE "spotid" = :spotid';
-            $db->execute_query($sql, array(':cnt1'=> $cnt,':cnt2'=> $cnt, ':sum'=> $sum, ':spotid'=>$spotid));
+            $db->execute_query($sql, array(':cnt1' => $cnt,':cnt2' => $cnt, ':sum' => $sum, ':spotid' => $spotid));
         }
     }
 
@@ -566,7 +553,6 @@ class urd_spots
             return NO_ERROR;
         }
         $load_avatars = get_config($db, 'download_comment_avatar', 0);
-        $time_a = microtime(TRUE);
         $totalcount = $res[0]['cnt'];
         write_log("Getting $totalcount spot comments", LOG_NOTICE);
         $cnt = 0;
@@ -582,10 +568,11 @@ class urd_spots
         $expire_timestamp = time() - ($expire * 24 * 3600);
         echo_debug("Expire $expire_timestamp seconds", DEBUG_SERVER);
         static $cols = array('spotid', 'from', 'comment', 'userid', 'stamp', 'user_avatar');
+        $sql = '"id", "message_id", "spotid" FROM spot_comments WHERE "spotid"=:spotid1 OR "spotid"=:spotid2';
 
+        $time_a = microtime(TRUE);
         while (TRUE) {
-            $sql = '"id", "message_id", "spotid" FROM spot_comments WHERE "spotid"=? OR "spotid"=?';
-            $res = $db->select_query($sql, $limit, array('', '0'));
+            $res = $db->select_query($sql, $limit, array(':spotid1' => '',':spotid2' => '0'));
             if (!is_array($res)) {
                 break;
             }
@@ -696,15 +683,15 @@ class urd_spots
 
             return NO_ERROR;
         }
-        $time_a = microtime(TRUE);
-        $expire_timestamp = time() - ($expire * 24 * 3600);
         $totalcount = $res[0]['cnt'];
         write_log("Getting $totalcount spot reports", LOG_NOTICE);
         $cnt = 0;
         $limit = 100;
+        $sql = '"id", "message_id", "spotid" FROM spot_reports WHERE "reference"=:ref OR "spotid"=:spotid';
+        $expire_timestamp = time() - ($expire * 24 * 3600);
+        $time_a = microtime(TRUE);
         while (TRUE) {
-            $sql = '"id", "message_id", "spotid" FROM spot_reports WHERE "reference"=? OR "spotid"=?';
-            $res = $db->select_query($sql, $limit, array('', '0'));
+            $res = $db->select_query($sql, $limit, array(':ref' => '',':spotid' => '0'));
             if (!is_array($res)) {
                 break;
             }
@@ -811,8 +798,8 @@ class urd_spots
         $expire_time = time() - ($expire * 24 * 3600);
            
         update_queue_status($db, $item->get_dbid(), NULL, 0, 0, 'Getting spots');
+        $sql = '"id", "message_id" FROM spot_messages';
         while (TRUE) {
-            $sql = '"id", "message_id" FROM spot_messages';
             $res = $db->select_query($sql, $limit);
             if (!is_array($res)) {
                 break;
@@ -881,15 +868,14 @@ class urd_spots
 
     static private function calculate_spotter_id($userkey)
     {
-        $userSignCrc = crc32(base64_decode($userkey));
+        $user_sign_crc = crc32(base64_decode($userkey));
+        $user_id_tmp =
+            chr($user_sign_crc & 0xFF) .
+            chr(($user_sign_crc >> 8) & 0xFF) .
+            chr(($user_sign_crc >> 16) & 0xFF) .
+            chr(($user_sign_crc >> 24) & 0xFF);
 
-        $userIdTmp =
-            chr($userSignCrc & 0xFF) .
-            chr(($userSignCrc >> 8) & 0xFF) .
-            chr(($userSignCrc >> 16) & 0xFF) .
-            chr(($userSignCrc >> 24) & 0xFF);
-
-        return str_replace(array('/', '+', '='), '', base64_encode($userIdTmp));
+        return str_replace(array('/', '+', '='), '', base64_encode($user_id_tmp));
     }
 
 }

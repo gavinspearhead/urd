@@ -124,10 +124,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     load_side_bar( function() {
-        set_scroll_handler('#contentout', load_sets);
-
         update_basket_display();
-        
         load_sets( {
            'offset':'0'
            {if $feed_id != ''}          , 'next':'{$feed_id}'  {/if}

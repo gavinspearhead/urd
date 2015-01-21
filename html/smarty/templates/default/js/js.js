@@ -72,7 +72,7 @@ function get_value_from_id(id, def)
 function init()
 {
     // To keep track of the mouse button, used for the quickmenu:
-    mousedown = 0;
+  /*  mousedown = 0;
     $(document).mousedown (function() {
         ++mousedown;
         // Sanity check, sometimes it misses ups/downs!
@@ -82,7 +82,7 @@ function init()
         --mousedown;
         // Sanity check, sometimes it misses ups/downs!
         if (mousedown < 0) { mousedown = 0; }
-    });
+    });*/
     var urdd_status = $('#urdd_status').val();
     var msg = $('#urdd_message').val();
     if (urdd_status !== undefined && urdd_status == 0) {
@@ -125,7 +125,7 @@ function job_action(action, job)
 {
     if (action !== null) {
         var challenge = get_value_from_id('challenge', '');
-        $.post( 'ajax_action.php',  {
+        $.post( 'ajax_action.php', {
             cmd: action,
             job: job,
             challenge: challenge
@@ -212,7 +212,7 @@ function set_basket_type(type)
 
 function get_basket_type()
 {
-    $.post( 'ajax_processbasket.php',  { command: 'get' }).done(function(html) {
+    $.post('ajax_processbasket.php', { command: 'get' }).done(function(html) {
        var x = $.parseJSON(html);
        update_basket_display(x.basket_type);
    });
@@ -1329,7 +1329,7 @@ function post_edit(cmd, postid)
 {
     var url = 'ajax_editposts.php';
     var challenge = get_value_from_id('challenge');
-    $.post( url,  {
+    $.post(url, {
             cmd: cmd,
             postid: postid,
             challenge: challenge
@@ -2355,28 +2355,26 @@ function update_quick_menu_images()
 
 function close_quickmenu()
 {
+    has_quickmenu = 0;
     hide_popup('quickmenu', 'quickmenu');
 }
 
 function show_quickmenu(type, subject, srctype, e)
 {
-    var rightclick;
-    if (!e) {
-        e = window.event;
-    } else if (e.which) {
-        rightclick = (e.which == 3);
-    } else if (e.button) {
-        rightclick = (e.button == 2);
-    }
+    console.log(has_quickmenu, 'aoeu');
+    var rightclick = (e.which != 1);
 
-    // We don't show the quickmenu if it was a right mouse button
+    // We don't show the quickmenu if it was a non-left mouse button
     if (rightclick) {
+        has_quickmenu = 0;
+        console.log('rightclick');
         return false;
     }
     // Nor if there's a mouse button pressed.. we'll wait till the user lets go:
-    if (mousedown) {
+    /*if (mousedown) {
+        console.log('shoud not happen');
         return false;
-    }
+    }*/
     
     // Create an overlay div
     $('#quickmenu').addClass('quickmenuon');
@@ -2389,7 +2387,7 @@ function show_quickmenu(type, subject, srctype, e)
     var url = 'ajax_showquickmenu.php';
 
     $('#quickmenu').html('');
-    $.post( url,  { 
+    $.post(url, { 
             type: type,
             srctype: srctype,
             killflag: killflag,
@@ -3261,7 +3259,7 @@ function select_tab_setting(tab, session_var, session_val)
 {
     if (session_var !== null && session_val !== null) {
         var url = 'ajax_update_session.php';
-        $.post( url,  {
+        $.post(url, {
                 'var' : session_val,
                 type: session_val
             }
@@ -3286,7 +3284,7 @@ function select_tab_transfers(tab, session_var, session_val)
 {
     if (session_var !== null && session_val !== null) {
         var url = 'ajax_update_session.php';
-        $.post( url,  {
+        $.post(url, {
                 'var' : session_val,
                 type: session_val
             }
@@ -3424,6 +3422,7 @@ function hide_small_help()
 function load_sets(options)
 {
     close_browse_divs();
+    $('#contentout').unbind('scroll'); // remove the scroll handler to avoid double scroll events, is set in the load_* functions in the ready clause
     var type = get_value_from_id('type');
     if (type == 'groups') {
         load_groupsets(options);
@@ -3612,7 +3611,7 @@ function save_spot_search()
     data.type = type;
     data.search = search;
     hide_overlayed_content();
-    $.post( url,  data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -3638,7 +3637,7 @@ function update_browse_searches(name)
     }
     var type = get_value_from_id('usersettype', '');
 
-    $.post( url,  { type: type,
+    $.post(url, { type: type,
             name: name,
             cmd: 'get',
             cat: 0
@@ -3809,7 +3808,9 @@ function load_spots(options)
             flag = options.flag;
         }
         if (options.offset !== undefined) {
+            console.log(offset);
             offset = options.offset;
+            console.log(offset);
         }
         if (options.spot_cat !== undefined) {
             //spot categories
@@ -3857,6 +3858,7 @@ function load_spots(options)
     data.order = order;
     hide_overlayed_content();
     $('#suggest_div').addClass('hidden');  
+    console.log(data);
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -3877,12 +3879,12 @@ function load_spots(options)
                 set_checkbox('checkbox_cat_' + cat_id, 1);
                 uncheck_all(cat_id);
                 update_rss_url();
-                update_widths('browsesubjecttd');
             } else {
                 $('#spots_table>tbody tr').eq(-2).after(x.content);
-                update_widths('browsesubjecttd');
             }
+            update_widths('browsesubjecttd');
             highlight_handler();
+            set_scroll_handler('#contentout', load_sets);
         } else {
             update_message_bar(x.error);
         }
@@ -4008,13 +4010,13 @@ function load_groupsets(options)
                 $('#group_id').val(group_id);
                 update_rss_url();
                 setvalbyid('select_groupid', group_id);
-                update_widths('browsesubjecttd');
             } else {
                 $('#sets_table>tbody tr').eq(-2).after(x.content);
-                update_widths('browsesubjecttd');
             }
+            update_widths('browsesubjecttd');
             $('#last_line').val(x.last_line);
             highlight_handler();
+            set_scroll_handler('#contentout', load_sets);
         } else {
             update_message_bar(x.error);
         }
@@ -4167,7 +4169,7 @@ function load_rsssets(options)
     data.order = order;
     data.setid = setid;
     data.flag = flag;
-    $.post( url,  data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -4186,12 +4188,12 @@ function load_rsssets(options)
                 $('#setsdiv').removeClass('hidden');
                 update_rss_url();
                 setvalbyid('select_feedid', feed_id);
-                update_widths('browsesubjecttd');
             } else {
                 $('#sets_table>tbody tr').eq(-2).after(x.content);
-                update_widths('browsesubjecttd');
             }
+            update_widths('browsesubjecttd');
             highlight_handler();
+            set_scroll_handler('#contentout', load_sets);
         } else {
             update_message_bar(x.error);
         }
@@ -4263,7 +4265,7 @@ function insert_at_every(str, ins, pos)
 function show_confirm(msg, fn)
 {
     var url = 'ajax_alert.php';
-    $.post( url,  { msg: msg, allow_cancel: 1 }).done(function(html) {
+    $.post( url, { msg: msg, allow_cancel: 1 }).done(function(html) {
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'alertdiv');
         $('#cancelbutton').click(function() { hide_overlayed_content(); });
@@ -4439,7 +4441,7 @@ function show_contents(file, idx)
 {
     var url = 'ajax_get_textfile.php';
     var challenge = get_value_from_id('challenge', '');
-    $.post( url,  {
+    $.post( url, {
         file: file,
         idx: idx,
         challenge: challenge
@@ -4582,14 +4584,23 @@ function set_mouse_click()
 }
 
 var has_quickmenu = 0;
+var mouse_timeout = null;
 function start_quickmenu(str, sid, type, e)
 {
+    console.log(has_quickmenu);
+    console.log(mouse_timeout);
     if (has_quickmenu <= 0) {
-        has_quickmenu ++;
-        setTimeout(
+        has_quickmenu++;
+        if (mouse_timeout !== null) {
+            console.log('cleartimeout');
+            clearTimeout(mouse_timeout);
+        }
+        mouse_timeout = setTimeout(
             function() {
+                mouse_timeout = null;
                 show_quickmenu(str, sid, type, e);
-            }, 150);
+            }, 250);
+        console.log(mouse_timeout);
     }
 }
 
@@ -5702,7 +5713,7 @@ function update_category(type, group_id)
 var update_ng_setting_timeout = null;
 var update_ng_id = null;
 
-function update_ng_time(type,  group_id)
+function update_ng_time(type, group_id)
 {
     var url, data;
     var challenge = get_value_from_id('challenge', '');
@@ -5832,7 +5843,7 @@ function upload_file(id, type, post_id, fn)
     $('#progress_' + type).attr({value: 0, max: 0});
 
     $.ajax({
-        url: 'ajax_post_spot.php',  //Server script to process data
+        url: 'ajax_post_spot.php', //Server script to process data
         type: 'post',
         xhr: function() {  // Custom XMLHttpRequest
             var myXhr = $.ajaxSettings.xhr();
@@ -5956,7 +5967,7 @@ function show_sidebar(display)
     if (sidebar || display === false) {
         $('#topcontent').animate({ left: 0 }, 500, function() {} ); 
         $('#contentleft').animate( { 'margin-left' : -1 * (side_bar_width + 1) }, { 'duration': 500 });
-        $('#searchbar').animate({ left: 0 }, 500,  function() {
+        $('#searchbar').animate({ left: 0 }, 500, function() {
             $('#topcontent').width('100%');
             $('#contentleft').outerWidth(0);
             sidebar = 0;
@@ -5969,7 +5980,7 @@ function show_sidebar(display)
         $('#contentleft').css('height', Math.round($(window).height() - 22));
         $('#contentleft').animate({ 'margin-left' : 0 }, { 'duration': 500, } );
         $('#searchbar').animate({ left: side_bar_width }, 500, function() {} ); 
-        $('#topcontent').animate({ left: side_bar_width }, 500,  function() {
+        $('#topcontent').animate({ left: side_bar_width }, 500, function() {
             sidebar = 1;
             $('#sidebar_button').text('<<');
 

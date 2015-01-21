@@ -620,6 +620,8 @@ function add_set_data(DatabaseConnection $db, urdd_client $uc, $userid, $dlid, $
 {
     assert(is_numeric($userid) && is_numeric($dlid));
     global $LN;
+    $sql_nzblink = '"nzb_link" FROM rss_sets WHERE "setid"=:setid';
+    $sql_setinfo = '* FROM usersetinfo WHERE "userID"=:userid AND "setID"=:setid AND "type"=:type';
     // Keep track of total downloadsize:
     foreach ($_SESSION['setdata'] as $set) {
         $setid = $set['setid'];
@@ -629,8 +631,7 @@ function add_set_data(DatabaseConnection $db, urdd_client $uc, $userid, $dlid, $
             $uc->add_set_data($dlid, $setid);
         } elseif ($type == 'rss') {
             $type_val = USERSETTYPE_RSS;
-            $sql = '"nzb_link" FROM rss_sets WHERE "setid"=?';
-            $res = $db->select_query($sql, 1, array($setid));
+            $res = $db->select_query($sql_nzblink, 1, array(':setid'=>$setid));
             if ($res !== FALSE) {
                 $url = $res[0]['nzb_link'];
                 $uc->parse_nzb($url, $dlid);
@@ -645,7 +646,7 @@ function add_set_data(DatabaseConnection $db, urdd_client $uc, $userid, $dlid, $
         }
         // mark user info
         $column = ($nzb_or_dl == 'download' ? 'statusread' : 'statusnzb');
-        $res = $db->select_query('* FROM usersetinfo WHERE "userID"=? AND "setID"=? AND "type"=?', 1, array($userid, $setid, $type_val));
+        $res = $db->select_query($sql_setinfo, 1, array(':userid'=>$userid, ':setid'=>$setid, ':type'=>$type_val));
         if ($res === FALSE) {
             $db->insert_query('usersetinfo', array('setID', 'userID', $column, 'type'), array($setid, $userid, sets_marking::MARKING_ON, $type_val));
         } else {
@@ -1954,8 +1955,9 @@ function parse_language_list($language_list)
 {
     $languages = array();
     $language_ranges = explode(',', trim($language_list));
+    $pattern = '/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/';
     foreach ($language_ranges as $language_range) {
-        if (preg_match('/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/', trim($language_range), $match)) {
+        if (preg_match($pattern, trim($language_range), $match)) {
             if (!isset($match[2])) {
                 $match[2] = '1.0';
             } else {

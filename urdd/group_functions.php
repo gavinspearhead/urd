@@ -175,6 +175,7 @@ function update_binary_data(DatabaseConnection $db, $groupID, $id)
     // Columns in the binaries table:
     static $cols = array('binaryID', 'subject', 'date', 'bytes', 'totalParts', 'setID', 'dirty');
     static $cols_nfo = array('setID', 'groupID', 'binaryID');
+    $sql_get_arts = "DISTINCT \"binaryID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
 
     // Going through all dirty binaries for this group
     $s_time = microtime(TRUE);
@@ -182,8 +183,7 @@ function update_binary_data(DatabaseConnection $db, $groupID, $id)
         // Step 1: Selecting:
         // PS: No need to keep track of how many we select, next run these will not have the dirty flag anymore
         //     so we just keep selecting dirty binaries until they are all gone
-        $sql = "DISTINCT \"binaryID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
-        $res = $db->select_query($sql, $stepsize, array(':dirty' => DatabaseConnection::BINARYCHANGED));
+        $res = $db->select_query($sql_get_arts, $stepsize, array(':dirty' => DatabaseConnection::BINARYCHANGED));
         if (!is_array($res)) {
             echo_debug("Processed $cnt binaries.", DEBUG_SERVER);
 
@@ -293,9 +293,9 @@ function update_set_data(DatabaseConnection $db, $groupID, $id, $minsetsize, $ma
     }
     $total = $res[0]['total'];
     $s_time = microtime(TRUE);
+    $sql_select_bins = "DISTINCT \"setID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
     while (1) {
-        $sql = "DISTINCT \"setID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
-        $res = $db->select_query($sql, $stepsize, array(':dirty' => DatabaseConnection::SETCHANGED));
+        $res = $db->select_query($sql_select_bins, $stepsize, array(':dirty' => DatabaseConnection::SETCHANGED));
         if (!is_array($res) && $offset == 0) {
             write_log("No new binaries found for group with id $groupID!", LOG_NOTICE);
 
@@ -514,8 +514,8 @@ function expire_binaries(DatabaseConnection $db, $groupID, $dbid)
 
 function update_postcount(DatabaseConnection $db, $groupid)
 {
-    $sql = "UPDATE groups SET postcount = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\"=? WHERE \"ID\"=?";
-    $db->execute_query($sql, array('0', $groupid));
+    $sql = "UPDATE groups SET \"postcount\" = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\"=:upd WHERE \"ID\"=:id";
+    $db->execute_query($sql, array(':upd'=>'0', ':id'=>$groupid));
 }
 
 function purge_binaries(DatabaseConnection $db, $groupID)
@@ -664,7 +664,7 @@ function merge_sets(DatabaseConnection $db, $setid1, array $setids)
     if (isset($r[0]['articlesmax'])) {
         $articlesmax = $r[0]['articlesmax'];
     }
-
+    $sql = '"articlesmax" FROM setdata WHERE "ID"=:id';
     foreach ($setids as $setid2) { // all old setids
         if (trim($setid2) == '') {
             continue;
@@ -679,7 +679,7 @@ function merge_sets(DatabaseConnection $db, $setid1, array $setids)
             throw new exception ('Groups do not match');
         }
         $db->update_query_2("binaries_$groupid1", array('setID'=>$setid1), '"setID"=?', array($setid2));
-        $r = $db->select_query('"articlesmax" FROM setdata WHERE "ID"=?', array($setid2));
+        $r = $db->select_query($sql, array(':id'=>$setid2));
         if (isset($r[0]['articlesmax'])) {
             $articlesmax += $r[0]['articlesmax'];
         }

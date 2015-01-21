@@ -372,7 +372,8 @@ function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NUL
 }
 
 function sanitise_download_name(DatabaseConnection $db, $name, $has_subdirs=FALSE)
-{
+{   
+    $name = simplify_chars($name);
     $replacement_str = get_config($db, 'replacement_str');
     $dir_sep = $has_subdirs ? '\\' . DIRECTORY_SEPARATOR : '';
     $pattern = "/[^A-Za-z0-9_\-.();[\]$dir_sep ]/";
@@ -661,6 +662,7 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
     $make_nzb = get_pref($db, 'use_auto_download_nzb', $userid, 0);
     $add_setname = get_pref($db, 'add_setname', $userid) ? 1 : 0;
     $marking = sets_marking::MARKING_ON;
+    $sql_usersets = '* FROM usersetinfo WHERE "userID"=:userid AND "setID"=:setid AND "type"=:type';
     foreach ($sets as $set) {
         $size = $set['size'];
         $setid = $set['ID'];
@@ -721,7 +723,7 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
         } else {
             $mark_status = 'statusread';
         }
-        $res = $db->select_query('* FROM usersetinfo WHERE "userID"=:userid AND "setID"=:setid AND "type"=:type', array(':userid'=>$userid, ':setid'=>$setid, ':type'=>$type));
+        $res = $db->select_query($sql_usersets, array(':userid'=>$userid, ':setid'=>$setid, ':type'=>$type));
         if ($res === FALSE) {
             $db->insert_query('usersetinfo', array('setID', 'userID', $mark_status, 'type'), array($setid, $userid, $marking, $type));
         } else {
@@ -1509,7 +1511,6 @@ function add_stat_data(DatabaseConnection $db, $action, $value, $userid)
     return $db->insert_query('stats', array('userid', 'action', 'value', 'timestamp'), array($userid, $action, $value, $timestamp), TRUE);
 }
 
-
 function check_last_lock(DatabaseConnection $db, $dlid) // return TRUE if locked by 1, false otherwise
 {
     global $LN;
@@ -1522,7 +1523,6 @@ function check_last_lock(DatabaseConnection $db, $dlid) // return TRUE if locked
     return ($res[0]['lock'] == 1 ? TRUE : FALSE);
 }
 
-
 function check_dl_lock(DatabaseConnection $db, $dlid) // return TRUE if not locked, false otherwise
 {
     global $LN;
@@ -1534,7 +1534,6 @@ function check_dl_lock(DatabaseConnection $db, $dlid) // return TRUE if not lock
 
     return (($res[0]['lock'] != 0) ? FALSE : TRUE);
 }
-
 
 function reset_dl_lock(DatabaseConnection $db, $dlid)
 {
@@ -2796,6 +2795,7 @@ function format_setname($format_string, $chars, $value)
 {
     $len = strlen($format_string);
     $setname = '';
+    $pattern = "/([\[{(]?)([-+]?\d*)(.)?([-+]?\d*)([$chars])([\])}]?)/";
     for ($i = 0; $i < $len; $i++) {
         if ($format_string[$i] == '%') {
             if ($format_string[$i+1] == '%') {
@@ -2803,7 +2803,7 @@ function format_setname($format_string, $chars, $value)
                 $setname .= '%';
                 continue;
             } else {
-                $rv = preg_match("/([\[{(]?)([-+]?\d*)(.)?([-+]?\d*)([$chars])([\])}]?)/", substr($format_string, $i + 1), $matches);
+                $rv = preg_match($pattern, substr($format_string, $i + 1), $matches);
                 if (!$rv) {
                     write_log('Unknown format character found', LOG_ERR);
                     continue;

@@ -112,7 +112,7 @@ if (!$rv_php8b) {
 $OUT .= '<tr><td class="install2">PHP module mcrypt available</td>';
 $OUT .= GenRetVal(CheckPHPmcrypt($_SESSION['php_path']), $rv_php8c);
 if (!$rv_php8c) {
-    $OUT .= ShowHelp('The mcrypt module is required by URD.');
+    $OUT .= ShowHelp('The mcrypt module is required by URD. Try: sudo apt-get install php5-mcrypt; php5enmod mcrypt');
 }
 
 $OUT .= '<tr><td class="install2">PHP module GD available</td>';

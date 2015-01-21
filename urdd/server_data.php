@@ -945,7 +945,7 @@ class server_data { // lots of cleaning up to do
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         assert(is_numeric($pid) && is_bool($store));
-        list ($item, $server_id, $status) = $this->threads->delete_thread($db, $pid, $store);
+        list($item, $server_id, $status) = $this->threads->delete_thread($db, $pid, $store);
         $this->remove_slot();
         if ($item->need_nntp()) {
             $this->remove_nntp_slot();
@@ -1026,11 +1026,11 @@ class server_data { // lots of cleaning up to do
         $pid = $this->threads->get_pid($id);
 
         $thread =& $this->threads->get_thread($pid);
-        if (!$thread->get_action()->match_userid($userid)) {
+        $item = $thread->get_action(); // delete from the list will be done by the reap function
+        if (!$item->match_userid($userid)) {
             throw new exception('Not allowed', ERR_ACCESS_DENIED);
         }
         $thread->set_status(DOWNLOAD_STOPPED);
-        $item = $thread->get_action(); // delete from the list will be done by the reap function
         $item->clear_tried_servers(array($item->get_active_server()));
         $this->queue_push($db, $item, FALSE, self::QUEUE_BOTTOM, 3); // and reschedule it to the top of the queue, but after previews
 

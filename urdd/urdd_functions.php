@@ -173,16 +173,16 @@ function connect_nntp(DatabaseConnection $db, $id = FALSE)
 function set_dirpermissions($dir, $np, $ndp)
 {
     assert($dir != '');
-    $files = glob ($dir . DIRECTORY_SEPARATOR . '*', GLOB_NOSORT);
+    $files = glob($dir . DIRECTORY_SEPARATOR . '*', GLOB_NOSORT);
     foreach ($files as $f) {
         if (is_dir($f)) {
-            $rv = @chmod ($f, $ndp);
+            $rv = @chmod($f, $ndp);
             if ($rv === FALSE) {
                 write_log("Can't chmod directory: $f", LOG_ERR);
             }
             set_dirpermissions($f, $np, $ndp);
         } else {
-            $rv = @chmod ($f, $np);
+            $rv = @chmod($f, $np);
             if ($rv === FALSE) {
                 write_log("Can't chmod directory: $f", LOG_ERR);
             }
