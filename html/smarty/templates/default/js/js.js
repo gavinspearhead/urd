@@ -2361,18 +2361,15 @@ function close_quickmenu()
 
 function show_quickmenu(type, subject, srctype, e)
 {
-    console.log(has_quickmenu, 'aoeu');
     var rightclick = (e.which != 1);
 
     // We don't show the quickmenu if it was a non-left mouse button
     if (rightclick) {
         has_quickmenu = 0;
-        console.log('rightclick');
         return false;
     }
     // Nor if there's a mouse button pressed.. we'll wait till the user lets go:
     /*if (mousedown) {
-        console.log('shoud not happen');
         return false;
     }*/
     
@@ -3808,9 +3805,7 @@ function load_spots(options)
             flag = options.flag;
         }
         if (options.offset !== undefined) {
-            console.log(offset);
             offset = options.offset;
-            console.log(offset);
         }
         if (options.spot_cat !== undefined) {
             //spot categories
@@ -3858,7 +3853,6 @@ function load_spots(options)
     data.order = order;
     hide_overlayed_content();
     $('#suggest_div').addClass('hidden');  
-    console.log(data);
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -4587,12 +4581,9 @@ var has_quickmenu = 0;
 var mouse_timeout = null;
 function start_quickmenu(str, sid, type, e)
 {
-    console.log(has_quickmenu);
-    console.log(mouse_timeout);
     if (has_quickmenu <= 0) {
         has_quickmenu++;
         if (mouse_timeout !== null) {
-            console.log('cleartimeout');
             clearTimeout(mouse_timeout);
         }
         mouse_timeout = setTimeout(
@@ -4600,7 +4591,6 @@ function start_quickmenu(str, sid, type, e)
                 mouse_timeout = null;
                 show_quickmenu(str, sid, type, e);
             }, 250);
-        console.log(mouse_timeout);
     }
 }
 
