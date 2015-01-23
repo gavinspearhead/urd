@@ -304,40 +304,40 @@ function show_config(DatabaseConnection $db, $userid)
         $urdd_host_msg = verify_text($prefArray_root['urdd_host'], '[a-zA-Z0-9.\-_:\[\]]');
     }
     if (!isset($urdd_uid_msg)) {
-        $urdd_uid_msg = verify_text($prefArray_root['urdd_uid'], '[a-zA-Z0-9.-]');
+        $urdd_uid_msg = verify_text_opt($prefArray_root['urdd_uid'], FALSE, '[a-zA-Z0-9.-]');
     }
     if (!isset($urdd_gid_msg)) {
-        $urdd_gid_msg = verify_text($prefArray_root['urdd_gid'], '[a-zA-Z0-9.-]');
+        $urdd_gid_msg = verify_text_opt($prefArray_root['urdd_gid'], FALSE, '[a-zA-Z0-9.-]');
     }
     if (!isset($replacement_str_msg)) {
-        $replacement_str_msg = verify_text_opt($prefArray_root['replacement_str'], 0, '[a-zA-Z0-9.\-_:\[\] ()!@#$%^&{}+;]');
+        $replacement_str_msg = verify_text_opt($prefArray_root['replacement_str'], FALSE, '[a-zA-Z0-9.\-_:\[\] ()!@#$%^&{}+;]');
     }
     if (!isset($group_filter_msg)) {
-        $group_filter_msg = verify_text_opt($prefArray_root['group_filter'], 0, '[a-zA-Z0-9.*?, ]');
+        $group_filter_msg = verify_text_opt($prefArray_root['group_filter'], FALSE, '[a-zA-Z0-9.*?, ]');
     }
     if (!isset($keystore_path_msg)) {
         $keystore_path_msg = verify_read_only_path($db, $prefArray_root['keystore_path']);
     }
     if (!isset($spots_reports_group_msg)) {
-        $spots_reports_group_msg = verify_text_opt($prefArray_root['spots_reports_group'], 0, '[a-zA-Z0-9.]');
+        $spots_reports_group_msg = verify_text_opt($prefArray_root['spots_reports_group'], FALSE, '[a-zA-Z0-9.]');
     }
     if (!isset($spots_group_msg)) {
-        $spots_group_msg = verify_text_opt($prefArray_root['spots_group'], 0, '[a-zA-Z0-9.]');
+        $spots_group_msg = verify_text_opt($prefArray_root['spots_group'], FALSE, '[a-zA-Z0-9.]');
     }
     if (!isset($spots_comments_group_msg)) {
-        $spots_comments_group_msg = verify_text_opt($prefArray_root['spots_comments_group'], 0, '[a-zA-Z0-9.]');
+        $spots_comments_group_msg = verify_text_opt($prefArray_root['spots_comments_group'], FALSE, '[a-zA-Z0-9.]');
     }
     if (!isset($ftd_group_msg)) {
-        $ftd_group_msg = verify_text_opt($prefArray_root['ftd_group'], 0, '[a-zA-Z0-9.]');
+        $ftd_group_msg = verify_text_opt($prefArray_root['ftd_group'], FALSE, '[a-zA-Z0-9.]');
     }
     if (!isset($spots_blacklist_msg)) {
-        $spots_blacklist_msg = verify_text_opt($prefArray_root['spots_blacklist'], 0, '[a-zA-Z0-9.:\/&%#;+_\-]');
+        $spots_blacklist_msg = verify_text_opt($prefArray_root['spots_blacklist'], FALSE, '[a-zA-Z0-9.:\/&%#;+_\-]');
     }
     if (!isset($spots_whitelist_msg)) {
-        $spots_whitelist_msg = verify_text_opt($prefArray_root['spots_whitelist'], 0, '[a-zA-Z0-9.:\/&%#;+_\-]');
+        $spots_whitelist_msg = verify_text_opt($prefArray_root['spots_whitelist'], FALSE, '[a-zA-Z0-9.:\/&%#;+_\-]');
     }
     if (!isset($extset_group_msg)) {
-        $extset_group_msg = verify_text_opt($prefArray_root['extset_group'], 0, '[a-zA-Z0-9.]');
+        $extset_group_msg = verify_text_opt($prefArray_root['extset_group'], FALSE, '[a-zA-Z0-9.]');
     }
     if (!isset($dlpath_msg)) {
         $dlpath_msg = verify_dlpath($db, $prefArray_root['dlpath']);
@@ -972,11 +972,11 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
             $rv = verify_read_only_path($db, $value);
             return $rv;
         case 'urdd_uid':
-            $rv = verify_text($value, '[a-zA-Z0-9.-]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.-]');
 
             return $rv;
         case 'urdd_gid':
-            $rv = verify_text($value, '[a-zA-Z0-9.-]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.-]');
 
             return $rv;
         case 'index_page_root':
@@ -1152,39 +1152,39 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
 
             return $rv;
         case 'replacement_str':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.\-_:\[\] ()!@#$%^&{}+;]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.\-_:\[\] ()!@#$%^&{}+;]');
 
             return $rv;
         case 'group_filter':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.*?, ]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.*?, ]');
 
             return $rv;
         case 'spots_reports_group':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.]');
 
             return $rv;
         case 'spots_group':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.]');
 
             return $rv;
         case 'spots_comments_group':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.]');
 
             return $rv;
         case 'ftd_group':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.]');
 
             return $rv;
         case 'spots_blacklist':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.:\/&%#;+_\-]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.:\/&%#;+_\-]');
 
             return $rv;
         case 'spots_whitelist':
-            $rv = verify_text_opt($value, 0, '[[a-zA-Z0-9.:\/&%#;+_\-]');
+            $rv = verify_text_opt($value, FALSE, '[[a-zA-Z0-9.:\/&%#;+_\-]');
 
             return $rv;
         case 'extset_group':
-            $rv = verify_text_opt($value, 0, '[a-zA-Z0-9.]');
+            $rv = verify_text_opt($value, FALSE, '[a-zA-Z0-9.]');
 
             return $rv;
         case 'maxdl':

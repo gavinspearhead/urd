@@ -71,18 +71,6 @@ function get_value_from_id(id, def)
 
 function init()
 {
-    // To keep track of the mouse button, used for the quickmenu:
-  /*  mousedown = 0;
-    $(document).mousedown (function() {
-        ++mousedown;
-        // Sanity check, sometimes it misses ups/downs!
-        if (mousedown > 1) { mousedown = 1; }
-    });
-    $(document).mouseup (function() {
-        --mousedown;
-        // Sanity check, sometimes it misses ups/downs!
-        if (mousedown < 0) { mousedown = 0; }
-    });*/
     var urdd_status = $('#urdd_status').val();
     var msg = $('#urdd_message').val();
     if (urdd_status !== undefined && urdd_status == 0) {
@@ -2368,11 +2356,7 @@ function show_quickmenu(type, subject, srctype, e)
         has_quickmenu = 0;
         return false;
     }
-    // Nor if there's a mouse button pressed.. we'll wait till the user lets go:
-    /*if (mousedown) {
-        return false;
-    }*/
-    
+       
     // Create an overlay div
     $('#quickmenu').addClass('quickmenuon');
     $('#quickmenu').removeClass('quickmenuoff');
