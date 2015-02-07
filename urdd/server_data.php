@@ -255,11 +255,9 @@ class server_data { // lots of cleaning up to do
     {// cleanup this one XXX
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         assert(is_numeric($server_id));
-        if (!$this->threads->has_equal($item)) {
-            // this is the last running one
-            // diminish amount of threads on server
-
-            $this->servers->dec_free_slots($server_id);
+        if (!$this->threads->has_equal($item)) { // this is the last running one
+		// diminish amount of threads on server
+		$this->servers->dec_free_slots($server_id);
             $now = time();
             if ($this->conn_check_time == 0 || $this->conn_check_time < $now) {// set the connection retry timeout if not set
                 $this->conn_check_time = $now + self::CONNECT_CHECK_TIME;
@@ -295,6 +293,8 @@ class server_data { // lots of cleaning up to do
                 }
             }
         } else { // we simple pause the item for a while
+	    //decreasing threads is handeled by the reschedule
+	
             $this->reschedule($db, $item, $server_id);
         }
         return TRUE;
@@ -305,10 +305,9 @@ class server_data { // lots of cleaning up to do
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         assert(is_numeric($server_id));
         if (!$this->threads->has_equal($item)) {
+		// diminish amount of threads on server
+		$this->servers->dec_free_slots($server_id);
             // this is the last running one
-            // diminish amount of threads on server
-
-            $this->servers->dec_free_slots($server_id);
             $now = time();
             if ($this->conn_check_time == 0 ||$this->conn_check_time < $now) {// set the connection retry timeout if not set
                 $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
@@ -331,7 +330,8 @@ class server_data { // lots of cleaning up to do
     public function reschedule_addspotdata(DatabaseConnection$db, action &$item, $server_id)
     {
         assert(is_numeric($server_id));
-        $this->servers->dec_free_slots($server_id);
+	// diminish amount of threads on server
+	$this->servers->dec_free_slots($server_id);
         $now = time();
         if ($this->conn_check_time == 0 || $this->conn_check_time < $now) {// set the connection retry timeout if not set
             $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
@@ -349,9 +349,9 @@ class server_data { // lots of cleaning up to do
     }
     public function reschedule(DatabaseConnection$db, action &$item, $server_id)
     {// cleanup this one XXX
-        // diminish amount of threads on server
         assert(is_numeric($server_id));
-        $this->servers->dec_free_slots($server_id);
+	// diminish amount of threads on server
+	$this->servers->dec_free_slots($server_id);
         $now = time();
         if ($this->conn_check_time == 0 ||$this->conn_check_time < $now) {// set the connection retry timeout if not set
             $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
@@ -561,7 +561,7 @@ class server_data { // lots of cleaning up to do
                     throw new exception ('Not allowed', ERR_ACCESS_DENIED);
                 }
                 urdd_kill($pid, SIGTERM);
-                pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+		wait_for_child();
 
                 $thread->set_status(DOWNLOAD_PAUSED);
                 $item = $thread->get_action();
@@ -597,22 +597,27 @@ class server_data { // lots of cleaning up to do
             if ($pids == array()) {
                 return TRUE;
             }
+	    $to_queue = array();
             foreach ($pids as $pid) {
                 $thread =& $this->threads->get_thread($pid);
                 if (!$thread->get_action()->match_userid($userid)) {
                     continue;
                 }
-                urdd_kill($pid, SIGTERM);
+                urdd_kill($pid, SIGTERM); 
                 $thread->set_status(DOWNLOAD_PAUSED);
                 $item = $thread->get_action(); // delete from the list will be done by the reap function
                 $cmd = $item->get_command();
                 update_thread_status($db, $item, DOWNLOAD_PAUSED, POST_PAUSED);
 
                 $item->pause($do_pause, $userid);
-                $this->queue_push($db, $item, FALSE); // if it is paused we simply put it back on the queue
+		$to_queue[] = $item;
                 $rv = TRUE;
             }
-            pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+	    // we wait for urdd to catch the child process and do some cleanup
+	    wait_for_child();
+	    foreach ($to_queue as $item) {
+                $this->queue_push($db, $item, FALSE); // if it is paused we simply put it back on the queue
+	    }
         }
 
         return $rv;
@@ -627,6 +632,7 @@ class server_data { // lots of cleaning up to do
             if ($pids == array()) {
                 return TRUE;
             }
+	    $to_queue = array();
             foreach ($pids as $pid) {
                 $thread =& $this->threads->get_thread($pid);
                 if ($thread->get_action()->match_userid($userid)) {
@@ -635,10 +641,13 @@ class server_data { // lots of cleaning up to do
                     urdd_kill($pid, SIGTERM);
                     $item->pause($do_pause, $userid); // we set it to pause
                     update_thread_status($db, $item, DOWNLOAD_PAUSED, POST_PAUSED);
-                    $this->queue_push($db, $item, FALSE); // and reschedule it
+		$to_queue[] = $item;
                 }
             }
-            pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+	    wait_for_child();
+	    foreach ($to_queue as $item) {
+                $this->queue_push($db, $item, FALSE); // if it is paused we simply put it back on the queue
+	    }
         }
 
     }
@@ -713,7 +722,7 @@ class server_data { // lots of cleaning up to do
             }
             $rv = TRUE;
         }
-        pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+	wait_for_child();
 
         return $rv;
     }
@@ -742,7 +751,7 @@ class server_data { // lots of cleaning up to do
             urdd_kill($pid, SIGTERM);
             // updating database is done by reap function
         }
-        pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+	wait_for_child();
 
         return TRUE; // todo
     }
@@ -770,7 +779,7 @@ class server_data { // lots of cleaning up to do
                     update_queue_status($db, $thread->get_action()->get_dbid(), QUEUE_CANCELLED);
                 }
                 urdd_kill($pid, SIGTERM);
-                pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+		wait_for_child();
                 $rv = TRUE;
             }
         }
@@ -794,7 +803,7 @@ class server_data { // lots of cleaning up to do
                 $this->free_total_slots > 0 && $this->free_nntp_slots > 0) {
             // so it must not have a server set yet and it must be a download action and there must be a total slot available
             $srv = $this->find_free_slot($item->get_all_failed_servers(), FALSE); // find a server with a slot available
-            if ($srv !== FALSE && $srv != 0 && $this->free_total_slots > 0) {
+            if ($srv !== FALSE && $srv != 0) {
                 // so there must be a free server, and there must be a slot available to set the preferred server
                 $item->set_preferred_server($srv); // set the prefered server
                 echo_debug('Found a server ' . $srv, DEBUG_SERVER);
@@ -861,27 +870,26 @@ class server_data { // lots of cleaning up to do
 
                         return TRUE;
                     }
-                    if ($item->db_intensive() === TRUE && $item->need_nntp() === FALSE) {
+                    if ($item->db_intensive() === TRUE && $item->need_nntp() === FALSE) { 
                         return $this->check_db_intensive($item);
                     }
                     if ($item->need_nntp() === FALSE) {// non-nntp items can always run if there is a slot available
 
                         return $item;
                     }
-                    if ($item->primary_nntp()) {
+                    if ($item->primary_nntp()) {  // thread needs the indexing server
                         $server_id = $this->get_update_server();
                         $item->set_preferred_server($server_id);
                     } else {
                         $server_id = $item->get_preferred_server();
                         if ($server_id != 0 && ($this->servers->get_priority($server_id) <= 0 ||
-                                    $this->servers->is_backup_server($server_id) && count($item->get_all_failed_servers()) ==0 && $is_download)) {
-                            $server_id = 0;
+                                    $this->servers->is_backup_server($server_id) && count($item->get_all_failed_servers()) == 0 && $is_download)) {
                             $item->set_preferred_server(0);
                             $item->remove_tried_server($server_id);
+                            $server_id = 0;
                         }
                     }
                     if ($server_id == 0) {// if the preferred server is not set, it can probably run
-                    
                         $srv = $this->find_free_slot($item->get_all_failed_servers(), $item->need_posting(), $item->is_download());
 
                         if ($srv !== FALSE) {
@@ -909,22 +917,21 @@ class server_data { // lots of cleaning up to do
     public function add_thread(thread $thread, $server_id=FALSE)
     {
         assert(is_numeric($server_id) || $server_id === FALSE);
-        $action = $thread->get_action();
+        $item = $thread->get_action();
         $pid = $thread->get_pid();
-        $need_nntp = $action->need_nntp();
         if ($this->free_total_slots <= 0) {// check if there is a slot available...
             $this->threads->add_dummy_thread($pid);
             throw new exception ('No slot available', ERR_NO_SLOT_AVAILABLE);
         }
-        if ($need_nntp === TRUE) { // we are an nntp item check if there is an nntp slot available on any of the servers
+        if ($item->need_nntp() === TRUE) { // we are an nntp item check if there is an nntp slot available on any of the servers
             if ($this->free_nntp_slots <= 0) {
-                $this->threads->add_dummy_thread($pid);
+                $this->threads->add_dummy_thread($pid); // need to create a dummy so that the reaper can remove, otherwise we get silly errors there
                 throw new exception ('No nntp slot available 2', ERR_NO_NNTPSLOT_AVAILABLE);
             }
 
-            $server_id = $action->get_preferred_server();
+            $server_id = $item->get_preferred_server();
             if ($server_id === FALSE || $server_id == 0) {
-                $server_id = $this->find_free_slot($action->get_all_failed_servers(), $action->need_posting(), $action->is_download());
+                $server_id = $this->find_free_slot($item->get_all_failed_servers(), $item->need_posting(), $item->is_download());
             }
             if ($server_id === FALSE) {
                 $this->threads->add_dummy_thread($pid);
@@ -936,7 +943,7 @@ class server_data { // lots of cleaning up to do
         } else {
             $this->threads->add_thread($thread, 0);
         }
-        if ($action->db_intensive() === TRUE) {
+        if ($item->db_intensive() === TRUE) {
             $this->add_db_intensive_slot();
         }
         $this->add_slot();
@@ -984,6 +991,7 @@ class server_data { // lots of cleaning up to do
             if (($item2->need_nntp() == $item->need_nntp())
                     && !in_array($item2->get_active_server(), $item->get_failed_servers())
                     && !in_array($item2->get_active_server(), $item->get_tried_servers())) { // this one will do
+		$item->set_preferred_server($item2->get_preferred_server());
                 break;
             }
             // otherwise we take the last one... this means no nntp threads were in use, but all were occupied by non nntp threads
@@ -994,11 +1002,11 @@ class server_data { // lots of cleaning up to do
             throw new exception ('Cannot preempt a task');
         }
         try {
+            $this->queue->move_top($db, $item->get_id(), user_status::SUPER_USERID);
             $this->stop($db, $old_id, $userid);
         } catch (exception $e) {
             throw new exception ('ID not found ' . $e->getMessage());
         }
-        $this->queue->move_top($db, $item->get_id(), user_status::SUPER_USERID);
 
         return $item2->get_active_server();
     }
@@ -1009,16 +1017,20 @@ class server_data { // lots of cleaning up to do
         if ($pids == array()) {
             return TRUE;
         }
+	$to_queue = array();
         foreach ($pids as $pid) {
             $thread =& $this->threads->get_thread($pid);
             if ($thread->get_action()->match_userid($userid)) {
                 $thread->set_status(DOWNLOAD_STOPPED);
                 $item = $thread->get_action(); // delete from the list will be done by the reap function
                 urdd_kill($pid, SIGTERM);
-                $this->queue_push($db, $item, TRUE); // and reschedule it
+		$to_queue[] = $item;
             }
         }
-        pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1,0);
+	wait_for_child();
+	foreach ($to_queue as $item) {
+		$this->queue_push($db, $item, TRUE); // if it is paused we simply put it back on the queue
+	}
     }
     public function stop(DatabaseConnection $db, $id, $userid)
     {
@@ -1032,10 +1044,10 @@ class server_data { // lots of cleaning up to do
         }
         $thread->set_status(DOWNLOAD_STOPPED);
         $item->clear_tried_servers(array($item->get_active_server()));
-        $this->queue_push($db, $item, FALSE, self::QUEUE_BOTTOM, 3); // and reschedule it to the top of the queue, but after previews
 
         urdd_kill($pid, SIGTERM);
-        pcntl_sigtimedwait(array(SIGCHLD), $dummy, 1, 0);
+	wait_for_child();
+        $this->queue_push($db, $item, FALSE, self::QUEUE_BOTTOM, 3); // and reschedule it to the top of the queue, but after previews
 
         return TRUE;
     }

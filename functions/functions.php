@@ -1626,6 +1626,11 @@ function get_all_spots_whitelist(DatabaseConnection $db, $userid=NULL)
     return $res;
 }
 
+function wait_for_child($sec=2,$nsec=0)
+{
+    pcntl_sigtimedwait(array(SIGCHLD), $dummy, $sec, $nsec);
+}
+
 function ch_group($fn, $group)
 {
     $fgroup = filegroup($fn);

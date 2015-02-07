@@ -82,7 +82,7 @@ class usenet_server
         // a null value means don't update it
     {
         if ($maxt !== NULL) {
-            assert (is_numeric($maxt));
+            assert(is_numeric($maxt));
             $this->max_threads = (int) $maxt;
             if ($this->blocked_threads >= $maxt) {
                 $this->blocked_threads = max(0, $maxt - 1);
@@ -102,7 +102,7 @@ class usenet_server
             $this->password = $pw;
         }
         if ($prio !== NULL) {
-            assert ( is_numeric($prio));
+            assert(is_numeric($prio));
             if ($prio > 0) { 
                 $this->enabled = TRUE;
             }
@@ -120,7 +120,7 @@ class usenet_server
         if (($this->used_threads + $this->blocked_threads) < $this->max_threads) {
             $this->used_threads++;
         } else {
-            throw new exception ('No slot available 1', ERR_NO_NNTPSLOT_AVAILABLE);
+            throw new exception('No slot available on usenet server 1', ERR_NO_NNTPSLOT_AVAILABLE);
         }
     }
     public function delete_thread()
@@ -211,7 +211,7 @@ class usenet_server
     }
     public function inc_max_slots()
     {
-        if ($this->blocked_threads >= 1) {
+        if ($this->blocked_threads > 0) {
             $this->blocked_threads--;
         }
     }
@@ -392,6 +392,14 @@ class usenet_servers
     private $servers;
     private $update_server;
     const BACKUP_PRIO = 50;
+    public function __construct()
+    {
+        $this->reset_servers();
+    }
+    public function __destruct()
+    {
+        $this->servers = NULL;
+    }
 
     public function restore_server_settings()
     {
@@ -419,14 +427,6 @@ class usenet_servers
         }
     }
 
-    public function __construct()
-    {
-        $this->reset_servers();
-    }
-    public function __destruct()
-    {
-        $this->servers = NULL;
-    }
     public function set_update_server($server_id)
     {
         assert(is_numeric($server_id));
@@ -482,14 +482,14 @@ class usenet_servers
             $id = $srv->get_id();
             if ($srv->has_free_slot($this->update_server) 
                 && $srv->is_enabled() 
-                && $srv->get_priority() > 0
-                && ($srv_prio < $prio || $server_id === FALSE) 
+                && ($srv->get_priority() > 0)
+                && (($srv_prio < $prio) || ($server_id === FALSE)) 
                 && !in_array($id, $already_used_servers)
-                && ($need_posting === FALSE || $srv->get_posting())
-                && (!$is_download || $srv_prio < self::BACKUP_PRIO || count($already_used_servers) > 0)) 
+                && (($need_posting === FALSE) || $srv->get_posting())
+                && ((!$is_download) || ($srv_prio < self::BACKUP_PRIO) || (count($already_used_servers) > 0))) 
             {
-                $server_id = $srv->get_id();
-                $prio = $srv->get_priority();
+                $server_id = $id;
+                $prio = $srv_prio;
             }
         }
 
@@ -529,6 +529,7 @@ class usenet_servers
             return TRUE;
         }
         assert (is_numeric($id) && $id > 0);
+	echo_debug('### add thread to server ' . $id, DEBUG_ALL);
         if (!isset($this->servers[$id])) {
             throw new exception ("Server ($id) does not exist", ERR_NO_SUCH_SERVER);
         }
@@ -551,6 +552,7 @@ class usenet_servers
             throw new exception ("Server ($id) does not exist", ERR_NO_SUCH_SERVER);
         }
 
+	echo_debug('#### remove thread to server ' . $id, DEBUG_ALL);
         return $this->servers[$id]->delete_thread();
     }
     public function enable_posting($server_id)

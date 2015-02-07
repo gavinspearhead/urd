@@ -141,16 +141,16 @@ try {
         $jobs_info = parse_jobs_info($jobs_info[1]);
         $threads_info = $uc->show('threads', 'xml');
         $threads_info = parse_threads_info($threads_info[1]);
-        $servers_info = $uc->show('servers', 'xml');
-        $servers_totals = parse_server_totals($servers_info[1]);
-        $servers_info = parse_server_info($servers_info[1]);
+        $servers_data = $uc->show('servers', 'xml');
+        $servers_totals = parse_server_totals($servers_data[1]);
+        $servers_info = parse_server_info($servers_data[1]);
         $load_info = $uc->show('load', 'xml');
         $load_info = parse_load_info($load_info[1]);
         $uptime_info = $uc->uptime();
         $diskspace = $uc->diskfree('h');
         $disk_perc = $uc->diskfree('p1');
         $nodisk_perc = 100 - (int) $disk_perc;
-        unset($load_info[0], $servers_info[0]);
+        unset($load_info[0], $servers_data[0]);
     } else {
         $diskspace = $disk_perc = $nodisk_perc = $isconnected = 0;
         $load_info = array (1 => '', 2 => '', 3 => '');
@@ -159,7 +159,6 @@ try {
     }
 
     $_SESSION['control_status'] = $control_status = get_session('control_status', 0);
-
     init_smarty('', 0);
     $smarty->assign('isconnected',      $isconnected);
     $smarty->assign('disable_urdland',  $disable_urdland);

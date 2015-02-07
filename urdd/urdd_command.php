@@ -47,7 +47,7 @@ class command
     private $syntax;   // format of the command for help
     private $need_admin; // must be admin user to exec the command
     private $need_nntp; // an nntp connection is needed
-    private $primary_nntp; // connect to the primary nntp server
+    private $primary_nntp; // connect to the primary nntp server (that is it uses the indexing server)
     private $arg_str;   // argument string format
     private $rights; // needed rights to execute this
     private $db_intensive; // relies heavily on db interaction==> additional limitation on threads running of this type
@@ -57,13 +57,13 @@ class command
         assert(is_bool($need_nntp) && is_bool($primary_nntp) && is_bool($auth) && is_bool($admin) && is_numeric($code));
         $this->command = $cmd;
         $this->need_auth = $auth;
-        $this->code = (int) $code;
-        $this->help_msg = $help_message;
-        $this->syntax = $syntax;
-        $this->need_admin = $admin;
-        $this->need_nntp = $need_nntp;
-        $this->arg_str = $arg_str;
-        $this->primary_nntp = $primary_nntp;
+	$this->code = (int) $code;
+	$this->help_msg = $help_message;
+	$this->syntax = $syntax;
+	$this->need_admin = $admin;
+	$this->need_nntp = $need_nntp;
+	$this->arg_str = $arg_str;
+	$this->primary_nntp = $primary_nntp;
         $this->db_intensive = $db_intensive;
         $this->need_posting = $need_posting;
         $this->enabled = TRUE;
@@ -323,7 +323,7 @@ class commands_list
     }
 
     public function get_command_primary_nntp($cmd)
-    {//return if a command needs an nntp connection
+    {//return if a command needs the primary (indexing) nntp server for the connection
         if (isset($this->commands[$cmd])) {
             return $this->commands[$cmd]->primary_nntp();
         }

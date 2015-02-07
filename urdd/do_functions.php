@@ -1493,7 +1493,7 @@ function do_pause(DatabaseConnection $db, server_data &$servers, array $arg_list
             } catch (exception $e) {
                 $rv = FALSE;
             }
-            $response =urdd_protocol::get_response( ($rv === FALSE)? 510 : 200);
+            $response = urdd_protocol::get_response( ($rv === FALSE)? 510 : 200);
         } elseif (strtolower($arg_list[0]) == 'all') {
             $servers->pause_all($db, $pause, $e_userid);
             $response = urdd_protocol::get_response(200);

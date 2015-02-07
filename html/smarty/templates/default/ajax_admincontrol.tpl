@@ -138,6 +138,7 @@
 <th class="centered head">{$LN_usenet_posting}</th>
 <th class="centered head round_right">{$LN_usenet_indexing}</th>
 </tr>
+{$servers_info|count}
 {foreach $servers_info as $s}
 <tr>
 <td>{$s.id}</td>

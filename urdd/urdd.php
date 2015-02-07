@@ -200,10 +200,10 @@ function handle_crash(DatabaseConnection $db, server_data &$servers, action $ite
 function get_exit_code($status, $pid)
 {
     assert(is_numeric($pid));
-    if (pcntl_wifexited ($status)) {
+    if (pcntl_wifexited($status)) {
         echo_debug('Normal exit', DEBUG_SERVER);
         $rc = pcntl_wexitstatus($status);
-    } elseif (pcntl_wifsignaled ($status)) {
+    } elseif (pcntl_wifsignaled($status)) {
         echo_debug('Signal happened', DEBUG_SERVER);
         $rc = pcntl_wexitstatus($status);
     } else {
@@ -242,7 +242,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                     } else {
                         echo_debug('NNTP Connection failed', DEBUG_SERVER);
                     }
-                    // we need to disbale the server
+                    // we need to disable the server
                     $timeout = get_config($db, 'connection_timeout', SERVER_CONNECTION_TIMEOUT); // 5 minutes
                     if ($rc == NNTP_AUTH_ERROR) { 
                         $timeout = 3600; // one hour

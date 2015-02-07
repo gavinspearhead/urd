@@ -654,6 +654,7 @@ function load_control()
 {
     var url = 'ajax_admincontrol.php';
     $.post(url).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'controldiv');
