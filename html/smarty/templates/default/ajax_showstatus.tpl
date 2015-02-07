@@ -58,8 +58,8 @@
 
 {if $type == 'disk'}
     {if $isconnected}
-        <div style="padding-left:5px; margin-top:5px">
-        &nbsp;{urd_progressbar width=96 complete=$nodisk_perc done=progress_done2 remain=progress_done background=green colour=red } 
+        <div style="margin-top:5px" class="nooverflow">
+        {urd_progressbar width=96 complete=$nodisk_perc done=progress_done2 remain=progress_done background=green colour=red} 
         </div>
         <ul class="last plain">
         <li class="plain"><div class="down3"><span {if $disk_perc < 10} class="warning_highligh"{/if}>{$diskfree} {$LN_free} ({$disk_perc}%)</span></div>

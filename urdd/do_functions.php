@@ -2262,7 +2262,7 @@ function do_getspot_images(DatabaseConnection $db, action $item)
 
         $image_count = 0;
         $like = $db->get_pattern_search_command('LIKE');
-        $sql = '"image", "spotid" FROM spot_images WHERE "fetched" = 0 AND "image" ' . "$like articles:%'";
+        $sql = '"image", "spotid" FROM spot_images WHERE "fetched" = 0 AND "image" ' . "$like 'articles:%'";
         while (TRUE) {
             $res = $db->select_query($sql, 50);
             if (!isset($res[0])) {
