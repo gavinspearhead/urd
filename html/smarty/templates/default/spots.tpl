@@ -127,7 +127,7 @@ $(document).ready(function() {
    $('#searchformdiv').html('');
    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'' } ); return false; } ) ;
    $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'' } ); } );
-   $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search')) } );
+   $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), e) } );
    $('#search').attr( 'autocomplete', 'off' );
    $('#next_search').click( function () { select_next_search('saved_search', 1); } );
    $('#prev_search').click( function () { select_next_search('saved_search', -1); } );

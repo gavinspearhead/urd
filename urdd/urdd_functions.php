@@ -155,7 +155,7 @@ function connect_nntp(DatabaseConnection $db, $id = FALSE)
     $usenet_config = get_usenet_server($db, $usenet_server, FALSE);
     $timeout = get_config($db, 'socket_timeout', -1);
     if ($timeout <= 0) {
-        write_log('Invalid socket timeout set', LOG_WARNING);
+        write_log('Invalid socket timeout set; using defaults', LOG_WARNING);
         $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
     }
     try {
@@ -178,13 +178,13 @@ function set_dirpermissions($dir, $np, $ndp)
         if (is_dir($f)) {
             $rv = @chmod($f, $ndp);
             if ($rv === FALSE) {
-                write_log("Can't chmod directory: $f", LOG_ERR);
+                write_log("Cannot chmod directory: $f", LOG_ERR);
             }
             set_dirpermissions($f, $np, $ndp);
         } else {
             $rv = @chmod($f, $np);
             if ($rv === FALSE) {
-                write_log("Can't chmod directory: $f", LOG_ERR);
+                write_log("Cannot chmod directory: $f", LOG_ERR);
             }
         }
     }
@@ -354,37 +354,6 @@ function get_timeout(action $item)
     }
 }
 
-function reschedule_locked_item(DatabaseConnection $db, server_data &$servers, action $item)
-{
-    echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    try {
-        echo_debug('Dl still locked, pausing', DEBUG_SERVER);
-        $command = $item->get_command();
-        $args = $item->get_args();
-        $item->pause(TRUE, user_status::SUPER_USERID);
-        $servers->queue_push($db, $item, FALSE);
-        $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_userid(), TRUE);
-        $offset = $item->get_preview() ? DatabaseConnection::DB_LOCK_TIMEOUT_PREVIEW : DatabaseConnection::DB_LOCK_TIMEOUT_DEFAULT;
-        $job = new job($item_unpause, time() + $offset, NULL); //try again in XX secs
-        $servers->add_schedule($db, $job);
-    } catch (exception $e) {
-        echo_debug_trace($e, DEBUG_SERVER);
-        throw $e;
-    }
-}
-
-function schedule_locked_item(DatabaseConnection $db, server_data &$servers, action $item)
-{
-    echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    echo_debug('Dl still locked, pausing', DEBUG_SERVER);
-    $command = $item->get_command();
-    $args = $item->get_args();
-    $item->pause(TRUE, user_status::SUPER_USERID);
-    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_userid(), TRUE);
-    $offset = $item->get_preview() ? DatabaseConnection::DB_LOCK_TIMEOUT_PREVIEW : DatabaseConnection::DB_LOCK_TIMEOUT_DEFAULT;
-    $job = new job($item_unpause, time() + $offset, NULL); //try again in 30 secs
-    $servers->add_schedule($db, $job);
-}
 
 function urdd_kill($pid, $signal)
 {

@@ -259,17 +259,10 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                     $server_id = 0;
                 }
                 echo_debug('NNTP Connect error received', DEBUG_SERVER);
-                if (compare_command($item->get_command(), urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {// downloads are different as they can run on more servers
-                    $servers->reschedule_download($db, $item, $server_id);
-                } elseif (compare_command($item->get_command(), urdd_protocol::COMMAND_POST_ACTION)) {// posts are different as they can run on more servers
-                    $servers->reschedule_post($db, $item, $server_id);
-                } elseif (compare_command($item->get_command(), urdd_protocol::COMMAND_ADDSPOTDATA)) {// add_spot data is different as it can run on more servers
-                    $servers->reschedule_addspotdata($db, $item, $server_id);
-                } else {
-                    $servers->reschedule($db, $item, $server_id);
-                }
+                $servers->do_reschedule($db, $item, $server_id);
+
             } elseif ($rc == DB_LOCKED) {
-                reschedule_locked_item($db, $servers, $item);
+                $servers->reschedule_locked_item($db, $item);
             } elseif ($rc == ENCRYPTED_RAR) {
                 $check_for_rar_encryption = get_pref($db, 'cancel_crypted_rars', $item->get_userid(), FALSE);
                 $dlid = $item->get_args();

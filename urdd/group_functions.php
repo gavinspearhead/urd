@@ -360,8 +360,9 @@ function add_set_data(DatabaseConnection $db, $groupID, $setID_filter)
     // Now re-create it.
     $db->escape($groupID, FALSE);
     $sql = '"setID", count("binaryID") AS bins, MIN("subject") AS subject, MIN("date") AS date, SUM("bytes") AS totalsize ' .
-        "FROM \"binaries_$groupID\" WHERE binaries_$groupID.\"setID\"=? GROUP BY \"setID\"";
-    $res1 = $db->select_query($sql, array($setID_filter));
+        "FROM \"binaries_$groupID\" WHERE binaries_$groupID.\"setID\"=:setid GROUP BY \"setID\"";
+
+    $res1 = $db->select_query($sql, array(':setid'=>$setID_filter));
     $set_list = array();
     // To minimise memory requirements, we update setdata per set, instead of all at the end:
     if (is_array($res1)) {

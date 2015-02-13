@@ -932,7 +932,7 @@ function create_download_threads(DatabaseConnection $db, server_data &$servers, 
     $dlid = $item->get_args();
     try {
         if (check_dl_lock($db, $dlid) === FALSE) { // if db still locked
-            schedule_locked_item($db, $servers, $item);
+            $servers->schedule_locked_item($db, $item);
 
             return;
         }

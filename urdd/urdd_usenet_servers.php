@@ -129,7 +129,7 @@ class usenet_server
             $this->used_threads--;
         }
     }
-    public function has_free_slot($update_server = FALSE)
+    public function has_free_slot($update_server=FALSE)
     {
         return ((($this->used_threads + $this->blocked_threads) < $this->max_threads)) && (($this->priority > 0) || ($this->id == $update_server) && $this->is_enabled());
     }

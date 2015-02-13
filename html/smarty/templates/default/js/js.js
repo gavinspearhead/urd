@@ -6236,9 +6236,9 @@ function do_command(command, message)
     }
 }
 
-function suggest(type, suggest_div, text_bar) 
+function suggest(type, suggest_div, text_bar, e) 
 { 
-    if (text_bar.val() == '') {
+    if (text_bar.val() == ''|| e.which == 27) { // don't show suggestions if the textbar is empty or the key pressed is esc
         $('#' + suggest_div).addClass('hidden');
         return;
     }
@@ -6255,14 +6255,17 @@ function suggest(type, suggest_div, text_bar)
     }).done(function(html) {
         var r = $.parseJSON(html);
         if (r.counter > 0 && r.error == 0) {
-            $('#' + suggest_div).removeClass('hidden');
+            $('#' + suggest_div).css( {left: $('#search').offset().left }); // reposition it below the searchbar
             $('#' + suggest_div).html(r.content);
+            $('#' + suggest_div).removeClass('hidden');
             $('div[name="suggestion"]').mousedown( function () { 
                 text_bar.val( $(this).text()); 
                 $('#' + suggest_div).addClass('hidden'); 
                 load_sets( { 'offset':'0', 'setid':'' } ); 
             } );
-            text_bar.blur( function () { $('#' + suggest_div).addClass('hidden'); } );
+            text_bar.blur( function () { $('#' + suggest_div).addClass('hidden'); return false; } );
+            $(document).keydown(function(e) { // close on ESC
+                if (e.which == 27) { $('#' + suggest_div).addClass('hidden'); return false; } } );
             $('div[name="suggestion"]').mouseover( function () { $(this).addClass('highlight2'); } );
             $('div[name="suggestion"]').mouseout( function () { $(this).removeClass('highlight2'); } );
         } else {
