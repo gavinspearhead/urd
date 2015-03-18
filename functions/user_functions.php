@@ -162,7 +162,7 @@ function create_root(DatabaseConnection $db)
 {
     $db->insert_query('users', array('name', 'fullname', 'email', 'pass', 'ipaddr', 'isadmin', 'active','regtime', 'rights', 'salt'),
             array('root', '', '', 'nologin', '', user_status::USER_ADMIN, user_status::USER_INACTIVE,0, '', ''));
-    $db->update_query('users', array('ID'), array(user_status::SUPER_USERID), 'name=?', array(user_status::SUPER_USER) ); // force the user ID to 0 doesn't always do that by default due to auto inc
+    $db->update_query_2('users', array('ID'=>user_status::SUPER_USERID), 'name=?', array(user_status::SUPER_USER) ); // force the user ID to 0 doesn't always do that by default due to auto inc
     $pref_array = get_default_config();
     foreach ($pref_array as $var => $val) {
         $db->insert_query('preferences', array ('userID', 'option', 'value'), array(user_status::SUPER_USERID, $var, $val));

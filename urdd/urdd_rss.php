@@ -158,8 +158,8 @@ class urdd_rss
         $rss_info = get_rss_info($db, $rss_id);
         $type = USERSETTYPE_RSS;
 
-        $qry = 'count(*) AS cnt FROM rss_sets WHERE "rss_id"=?';
-        $res = $db->select_query($qry, array($rss_id));
+        $qry = 'count(*) AS cnt FROM rss_sets WHERE "rss_id"=:rss_id';
+        $res = $db->select_query($qry, array(':rss_id' => $rss_id));
         if (!isset($res[0]['cnt'])) {
             throw new exception_db ('DB Error');
         }

@@ -26,120 +26,7 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-function get_base($fn, $ext)
-{
-    static $extensions = array (
-        file_extensions::PAR_EXT => array('vol[0-9]+\+[0-9]+\.par2'),
-        file_extensions::ZIP_EXT => array('zip'),
-        file_extensions::ARJ_EXT => array('arj', 'a[0-9][0-9]'),
-        file_extensions::ACE_EXT => array('ace', 'c[0-9][0-9]'),
-        file_extensions::ZR7_EXT => array('7z', '7z\.[0-9][0-9][0-9]'),
-        file_extensions::RAR_EXT => array('part[0-9]+\.rar', 'part[0-9]+\.r[0-9][0-9]', '\.r[0-9][0-9]', '\d{3}'),
-        file_extensions::SFV_EXT => array('sfv', 'sfvmd5', 'csv', 'csv2', 'csv4', 'sha1', 'md5', 'bsdmd5', 'crc'),
-        file_extensions::CAT_EXT => array("(?<!\.7z\.)\d{3}"),
-        file_extensions::UUE_EXT => array('[0-9]+\.urd_uuencoded_part')
-    );
-    if (isset ($extensions[$ext])) {
-        foreach (($extensions[$ext]) as $expr) {
-            if (preg_match("/^(.*)\.$expr$/i", $fn, $fs)) {
-                return $fs[1];
-            }
-        }
-
-        return substr($fn, 0, - (1 + strlen($ext))); // remove the $ext if no other match is found
-    } else {
-        return FALSE;
-    }
-}
-
-function split_filename($filename)
-{
-    $pos = strrpos($filename, '.');
-    if ($pos === FALSE) { // dot is not found in the filename
-
-        return array($filename, ''); // no extension
-    }
-    $basename = substr($filename, 0, $pos);
-    $extension = substr($filename, $pos + 1);
-
-    return array($basename, $extension);
-}
-
-function get_par_rar_files(DatabaseConnection $db, $directory, &$all_files)
-{
-    static $extensions = array (
-        file_extensions::PAR_EXT => array('par2'),
-        file_extensions::ZIP_EXT => array('zip'),
-        file_extensions::ARJ_EXT => array('arj', 'a[0-9][0-9]'),
-        file_extensions::ACE_EXT => array('ace', 'c[0-9][0-9]'),
-        file_extensions::ZR7_EXT => array('7z', '7z\.[0-9][0-9][0-9]'),
-        file_extensions::RAR_EXT => array('rar', 'r[0-9][0-9]'),
-        file_extensions::SFV_EXT => array('sfv'),
-        file_extensions::CAT_EXT => array("(?<!\.7z\.)\d{3}"),
-        file_extensions::UUE_EXT => array('urd_uuencoded_part')
-    );
-
-    $files = new pr_list($directory);
-    if (!is_dir($directory)) {
-        return $files;
-    }
-    $d = dir($directory);
-    $all_files = array();
-    while (FALSE !== ($entry = $d->read())) {
-        if (in_array($entry, array('.', '..', URDD_DOWNLOAD_LOCKFILE))) {
-            continue;
-        }
-        $all_files[] = $entry;
-        $mt = match_mime_type($db, $directory . $entry); // find a mime type for the file
-        if ($mt !== NULL && isset($extensions[$mt])) {
-            $base = get_base($entry, $mt); // try and find the base of the filename, which we use to match all the files against, to collect a set
-            if ($base === FALSE) {
-                list($name) = split_filename($entry, $extensions[$mt]); //otherwise take just the extension off and use that
-            } else {
-                $name = $base;
-            }
-            $files->add($mt, $name, $entry);
-        } else { // ok no mimetype determent, try by file extension
-            foreach ($extensions as $ext => $expressions) {
-                foreach ($expressions as $expr) {
-                    if (preg_match("/^.*\.$expr$/i", $entry) ) {
-                        $base = get_base($entry, $ext);
-                        $files->add($ext, $base, $entry);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    $d->close();
-
-    return $files;
-}
-
-function match_mime_type(DatabaseConnection $db, $file)
-{ // note: /x-* may not always be defined
-    static $mime_types = array (
-        file_extensions::PAR_EXT => 'application/x-par2',
-        file_extensions::ZIP_EXT => 'application/zip',
-        file_extensions::ARJ_EXT => 'application/x-arj',
-        file_extensions::ACE_EXT => 'application/x-ace',
-        file_extensions::ZR7_EXT => 'application/x-7z-compressed',
-        file_extensions::RAR_EXT => 'application/x-rar',
-        file_extensions::SFV_EXT => NULL,
-        file_extensions::CAT_EXT => NULL,
-        file_extensions::UUE_EXT => NULL
-    );
-    $mt = real_mime_content_type($db, $file, TRUE); // will use the file command... if available
-    foreach ($mime_types as $ext => $type) {
-        if ($mt == $type && $type !== NULL) {
-            return $ext;
-        }
-    }
-
-    return NULL;
-}
-
-function connect_nntp(DatabaseConnection $db, $id = FALSE)
+function connect_nntp(DatabaseConnection $db, $id)
 { // TODO fix
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     if ($id === FALSE) { // should not happen
@@ -160,7 +47,7 @@ function connect_nntp(DatabaseConnection $db, $id = FALSE)
     }
     try {
         $nzb = new URD_NNTP($db, $usenet_config['hostname'], $usenet_config['connection'], $usenet_config['port'], $timeout);
-        $nzb->connect($usenet_config['authentication']?TRUE:FALSE, $usenet_config['username'], $usenet_config['password']);
+        $nzb->connect($usenet_config['authentication'] ? TRUE : FALSE, $usenet_config['username'], $usenet_config['password']);
 
         return $nzb;
     } catch (exception $e) {
@@ -354,20 +241,6 @@ function get_timeout(action $item)
     }
 }
 
-
-function urdd_kill($pid, $signal)
-{
-    $r = posix_kill($pid, $signal);
-    if ($r === FALSE) {
-        $ec = posix_get_last_error();
-        $msg = '';
-        if ($ec != 0) {
-            $msg = posix_strerror($ec);
-        }
-        throw new exception('Kill failed: ' . $msg);
-    }
-}
-
 function update_thread_status(DatabaseConnection $db, action $item, $dl_status, $post_status)
 {
     $cmd = $item->get_command();
@@ -482,3 +355,11 @@ function check_deprecated_db(DatabaseConnection $db)
             break;
     }
 }
+
+function wait_for_child($sec=20,$nsec=0)
+{
+    $rv = pcntl_sigtimedwait(array(SIGCHLD), $dummy, $sec, $nsec);
+    return $rv;
+}
+
+

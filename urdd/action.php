@@ -33,6 +33,8 @@ class action
     private $command; // the string representing the command
     private $command_code; // the code of the command
     private $args; // the arguments passed as one string
+    private $priority; // the priority of the action, used to determine which action to pop off the queue and start running
+    private $preview; // is this a preview or (a regular download or other task) - previews get priority over other tasks
     private $counter; // number of times it has been queued
     private $db_intensive; // is flagged as heavy on the db
     private $needs_nntp; // the command needs an nntp connection
@@ -45,12 +47,16 @@ class action
     private $start_time; // the time the action started running
     private $db_id; // the id in the db that matches with this item, if on the queue
     private $dlpath; // the path where downloads are put
-    private $priority; // the priority of the action, used to determine which action to pop off the queue and start running
-    private $preview; // is this a preview or (a regular download or other task) - previews get priority over other tasks
     private $active_server; // if it is set, we either will try to run it only on this server, or it already runs on this one
     private $preferred_server; // if this is 0 we try any active server, otherwise run it _only_ on the server given here; note if it is not active on starting this item, we need to re-schedule it with a new preferred server
     private $temp_fail_servers; // servers we have already tried to run this task on, but failed to connect, or timed out or other temporary failures
     private $perm_fail_servers; // servers that don't have any more articles for us
+
+    public function to_string()
+    {
+        return "{$this->id} {$this->command} '{$this->args}' Pr:{$this->priority} pv:" . ($this->preview?1:0);
+    }
+
     public function __construct ($cmd, $args,  $userid, $paused=FALSE, $priority=DEFAULT_PRIORITY)
     {
         assert(is_numeric($priority) && $priority >= 0 && is_bool($paused) &&  (is_numeric($userid) || ($cmd === NULL && $args === NULL && $userid === NULL)));
@@ -277,6 +283,7 @@ class action
     }
     public function set_preferred_server($id)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         if (!is_numeric($id)) {
             throw new exception ('Server id must be a number', ERR_NO_SUCH_SERVER);
         }

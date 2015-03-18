@@ -38,7 +38,9 @@ class urdd_sockets
     {
         $this->listen_sock = array();
     }
-
+    public function __destruct ()
+    {
+    }
     public function read_sockets(DatabaseConnection $db, array $sq, conn_list &$conn_list, server_data &$servers)
     {
         //  echo_debug_function(DEBUG_MAIN, __FUNCTION__);
@@ -50,7 +52,7 @@ class urdd_sockets
                     socket_error_handler();
                 } else {
                     $c = $conn_list->add_connection($conn);
-                    write_log("Incoming connection from host {$c->get_peer_hostname()}:{$c->get_peer_port()}", LOG_DEBUG);
+                    //echo_debug("Incoming connection from host {$c->get_peer_hostname()}:{$c->get_peer_port()}", DEBUG_MAIN);
                     $msg = sprintf(urdd_protocol::get_response(299), urd_version::get_version());
                     $res = socket_write($conn, $msg);
                     if ($res === FALSE) { // some error occured, close the connection
@@ -78,7 +80,7 @@ class urdd_sockets
                         break;
                     }
                     // ok we found a command... do something with it
-                    echo_debug('read line: [' . preg_replace ('/pass .*/i', 'PASS XXX', preg_replace("/[\n\r]/", '', $line)) . ']', DEBUG_MAIN); // filter out passwords
+                    //echo_debug('read line: [' . preg_replace ('/pass .*/i', 'PASS XXX', preg_replace("/[\n\r]/", '', $line)) . ']', DEBUG_MAIN); // filter out passwords
                     $response = '';
                     $cmd = do_command($db, $line, $response, $conn_list, $s, $servers, NULL, NULL, FALSE);
                     if ($cmd == URDD_NOCOMMAND) {

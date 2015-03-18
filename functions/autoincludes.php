@@ -114,6 +114,7 @@ function urd_autoload($class)
     case 'urd_db_structure' :
     case 'urd_database' : $file = 'db/urd_db_structure.php'; break;
     case 'urd_extsetinfo' :  $file = 'extset_functions.php'; break;
+    case 'file_types': $file = '../urdd/urdd_filetypes.php'; break;
     default :
         // maybe need to change this a bit... as more autoloaders may be chained
         //throw new exception ("Class not found: $class");

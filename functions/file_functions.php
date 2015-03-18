@@ -117,7 +117,7 @@ function find_name(DatabaseConnection $db, $string)
         $filename = $string;
     }
 
-    $filename = preg_replace("/(\.r[0-9]{2})|(\.sfv)|(\.nfo)|(\.mp3)|(\.jpg)|(\.nzb)|(\.par2)|(\.7z)|(\.gz)|(\.tar)|(.tgz)|(\.zip)|(.vol[0-9]+-[0-9]+\.PAR2)|(\.part[0-9]+\.rar)|(\.processing)/i", '', $filename);
+    $filename = preg_replace("/(\.r[0-9]{2})|(\.sfv)|(\.nfo)|(\.mp3)|(\.jpg)|(\.nzb)|(\.par2)|(\.7z)|(\.ace)|(\.arj)|(\.gz)|(\.tar)|(.tgz)|(\.zip)|(.vol[0-9]+-[0-9]+\.PAR2)|(\.part[0-9]+\.rar)|(\.processing)/i", '', $filename);
     $filename = trim(sanitise_download_name($db, $filename));
 
     if (strlen($filename) < 5) {
@@ -440,3 +440,120 @@ function dirsize($path)
 
     return $size;
 }
+
+
+/* read last X lines of a given text file
+   $filename = full path + filename (i.e. /home/marco/file.txt)
+   $lines    = number of lines (i.e. 10)
+ */
+function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
+{
+    global $log_str;
+    assert(is_numeric($maxlines));
+    /* freely customisable number of lines read per time*/
+    $bufferlength = 5000;
+
+    $handle = @fopen($filename, 'r');
+    if (!$handle) {
+        $error = URD_FILENOTFOUND;
+
+        return -1;
+    }
+
+    /*get the file size with a trick*/
+    fseek($handle, 0, SEEK_END);
+    $filesize = ftell($handle);
+
+    /*don't want to get past the start-of-file*/
+    $position = - min($bufferlength, $filesize);
+    $aliq = '';
+    $lines = array();
+
+    while ($maxlines > 0) {
+        if (fseek($handle, $position, SEEK_END)) {  /* should not happen but it's better if we check it*/
+            $error = URD_SEEKERROR;
+            fclose($handle);
+
+            return $lines;
+        }
+
+        /* big read*/
+        $buffer = fread($handle, $bufferlength);
+
+        /* small split*/
+        $tmp2 = explode("\n", $buffer);
+
+        /*previous read could have stored a partial line in $aliq*/
+        if ($aliq != '') {
+            /*concatenate current last line with the piece left from the previous read*/
+            $cnt = count($tmp2);
+            if ($cnt > 0) {
+                $tmp2[$cnt - 1] .= $aliq;
+            } else {
+                $tmp2[] = $aliq;
+            }
+        }
+
+        /*drop first line because it may not be complete*/
+        $aliq = array_shift($tmp2);
+
+        $tmp = array();
+        $read = 0;
+        foreach ($tmp2 as $line) {
+            if ($match != '' && stripos($line, $match) === FALSE) {
+                continue;
+            }
+            if ($min_log_level !== FALSE) {
+
+                $t = explode (' ', $line);
+                if (!isset($t[5])) {
+                    continue;
+                }
+                $log_level = array_search($t[5], $log_str);
+                if ($log_level === FALSE || $log_level > $min_log_level) {
+                    continue;
+                }
+            }
+            $tmp[] = $line;
+            $read++;
+        }
+        if ($read >= $maxlines) {   /*have read too much!*/
+            $tmp2 = array_slice($tmp, $read-$maxlines);
+            /* merge it with the array which will be returned by the function*/
+            $lines = array_merge($tmp2, $lines);
+
+            /* break the cycle*/
+            $maxlines = 0;
+        } elseif (-$position >= $filesize) {  /* haven't read enough but arrived at the start of file*/
+
+            //get back $aliq which contains the very first line of the file
+            if (!is_array($aliq)) {
+                $aliq = array();
+            }
+            if (!is_array($tmp)) {
+                $tmp = array();
+            }
+            $lines = array_merge($aliq, $tmp, $lines);
+
+            //force it to stop reading
+            $maxlines = 0;
+
+        } else {   /*continue reading...*/
+
+            //add the freshly grabbed lines on top of the others
+            $lines = array_merge($tmp, $lines);
+            $maxlines -= $read;
+
+            //next time we want to read another block
+            $position -= $bufferlength;
+
+            //don't want to get past the start of file
+            $position = max($position, -$filesize);
+        }
+    }
+    fclose($handle);
+    $error = URD_NOERROR;
+
+    return $lines;
+}
+

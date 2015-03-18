@@ -40,6 +40,7 @@ class server_data { // lots of cleaning up to do
     private $max_db_intensive_threads; // max number of threads with db intensive set that can run
     private $free_db_intensive_slots; // available number of threads with db intensive set that can run
     private $check_nntp_connections; // whether to check the max # nntp connenctions a server can have
+    private $kill_list; 
     // generic
 
     const QUEUE_TOP             = 1;
@@ -54,8 +55,9 @@ class server_data { // lots of cleaning up to do
         $this->queue = new queue($queue_size);
         $this->schedule = new schedule();
         $this->nntp_enabled = FALSE;
+        $this->kill_list = array();
         $this->check_nntp_connections = FALSE;
-        if ($total_threads < $nntp_threads) {
+        if ($total_threads <= $nntp_threads) {
             $total_threads = $nntp_threads + 1; // the default is we have always one slot available for other things
         }
         $this->free_nntp_slots = $this->max_total_nntp_threads = (int) $nntp_threads;
@@ -253,6 +255,7 @@ class server_data { // lots of cleaning up to do
     }
     public function do_reschedule(DatabaseConnection $db, action &$item, $server_id)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         // diminish amount of threads on server
         $this->servers->dec_free_slots($server_id);
         if (compare_command($item->get_command(), urdd_protocol::COMMAND_DOWNLOAD_ACTION)) {// downloads are different as they can run on more servers
@@ -566,6 +569,7 @@ class server_data { // lots of cleaning up to do
 
     public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE, $is_download=FALSE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         return $this->servers->find_free_slot($already_used_servers, $need_posting, $is_download);
     }
     // queue wrappers
@@ -584,7 +588,7 @@ class server_data { // lots of cleaning up to do
                 if (!$thread->get_action()->match_userid($userid)) {
                     throw new exception ('Not allowed', ERR_ACCESS_DENIED);
                 }
-                urdd_kill($pid, SIGTERM);
+                $this->urdd_kill($pid, SIGTERM);
                 wait_for_child();
 
                 $thread->set_status(DOWNLOAD_PAUSED);
@@ -627,7 +631,7 @@ class server_data { // lots of cleaning up to do
                 if (!$thread->get_action()->match_userid($userid)) {
                     continue;
                 }
-                urdd_kill($pid, SIGTERM); 
+                $this->urdd_kill($pid, SIGTERM); 
                 $thread->set_status(DOWNLOAD_PAUSED);
                 $item = $thread->get_action(); // delete from the list will be done by the reap function
                 $cmd = $item->get_command();
@@ -662,7 +666,7 @@ class server_data { // lots of cleaning up to do
                 if ($thread->get_action()->match_userid($userid)) {
                     $thread->set_status(DOWNLOAD_PAUSED);
                     $item = $thread->get_action(); // delete from the list will be done by the reap function
-                    urdd_kill($pid, SIGTERM);
+                    $this->urdd_kill($pid, SIGTERM);
                     $item->pause($do_pause, $userid); // we set it to pause
                     update_thread_status($db, $item, DOWNLOAD_PAUSED, POST_PAUSED);
                     $to_queue[] = $item;
@@ -675,8 +679,10 @@ class server_data { // lots of cleaning up to do
         }
 
     }
+
     public function queue_push(DatabaseConnection $db, action $item, $increase_counter=TRUE, $position=self::QUEUE_BOTTOM, $priority=NULL)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($increase_counter));
         echo_debug('Queueing ' . $item->get_command() . ' ' . $item->get_args() . ' ' . $item->get_id(), DEBUG_SERVER);
         switch ($position) {
@@ -690,16 +696,19 @@ class server_data { // lots of cleaning up to do
                 throw new exception_queue_failed('Queue position not understood');
         }
     }
+
     public function queue_size()
     {
         return $this->queue->size();
     }
+
     public function move_top(DatabaseConnection $db, $index, $userid)
     {
         assert(is_numeric($index) && is_numeric($userid));
 
         return $this->queue->move_top($db, $index, $userid);
     }
+
     public function queue_delete(DatabaseConnection $db, $action_id, $userid, $delete_db = FALSE)
     {
         assert(is_numeric($action_id) && is_bool($delete_db) && is_numeric($userid));
@@ -736,7 +745,7 @@ class server_data { // lots of cleaning up to do
             if (!$thread->get_action()->match_userid($userid)) {
                 throw new exception ('Not allowed', ERR_ACCESS_DENIED);
             }
-            urdd_kill($pid, SIGTERM);
+            $this->urdd_kill($pid, SIGTERM);
 
             if ($delete_db === TRUE) {
                 $item = $thread->get_action();
@@ -772,7 +781,7 @@ class server_data { // lots of cleaning up to do
             } else {
                 $thread->set_status(DOWNLOAD_SHUTDOWN);
             }
-            urdd_kill($pid, SIGTERM);
+            $this->urdd_kill($pid, SIGTERM);
             // updating database is done by reap function
         }
         wait_for_child();
@@ -781,6 +790,7 @@ class server_data { // lots of cleaning up to do
     }
     public function delete(DatabaseConnection $db, $action_id, $userid, $delete_db = FALSE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_numeric($action_id) && is_bool($delete_db) && is_numeric($userid));
         $q_ids = $this->queue->get_ids_action($action_id, $userid);
         if ($delete_db === TRUE) {
@@ -802,7 +812,7 @@ class server_data { // lots of cleaning up to do
                     $thread->set_status(DOWNLOAD_CANCELLED);
                     update_queue_status($db, $thread->get_action()->get_dbid(), QUEUE_CANCELLED);
                 }
-                urdd_kill($pid, SIGTERM);
+                $this->urdd_kill($pid, SIGTERM);
                 wait_for_child();
                 $rv = TRUE;
             }
@@ -822,12 +832,12 @@ class server_data { // lots of cleaning up to do
     }
     protected function get_first_runnable_preview(DatabaseConnection $db, action $item)
     {
+        //echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         $ready = TRUE;
-        if($item->get_preferred_server() == 0 && in_array($item->get_command_code(), array(urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA)) &&
-                $this->free_total_slots > 0 && $this->free_nntp_slots > 0) {
+        if(($item->get_preferred_server() == 0) && $item->is_download()) {
             // so it must not have a server set yet and it must be a download action and there must be a total slot available
             $srv = $this->find_free_slot($item->get_all_failed_servers(), FALSE); // find a server with a slot available
-            if ($srv !== FALSE && $srv != 0) {
+            if (($srv !== FALSE) && ($srv != 0) && ($this->free_total_slots > 0) && ($this->free_nntp_slots > 0)) {
                 // so there must be a free server, and there must be a slot available to set the preferred server
                 $item->set_preferred_server($srv); // set the prefered server
                 echo_debug('Found a server ' . $srv, DEBUG_SERVER);
@@ -836,20 +846,24 @@ class server_data { // lots of cleaning up to do
                 try {
                     echo_debug('Preempting...', DEBUG_SERVER);
                     $srv = $this->preempt($db, $item, $item->get_userid());
+                    $item->set_preferred_server($srv); // set the prefered server
+                    usleep(5000);// wait so that the chld signal is delivered and the reap function calls it
                     $ready = TRUE;
                 } catch (exception $e) {
                     $ready = FALSE;
                     echo_debug('Could not find a server', DEBUG_SERVER);
                 }
+                $ready = TRUE;
             }
         }
 
         if ($ready === TRUE) {
-            echo_debug('Found a preview thread... should always start ' . $item->get_preferred_server(), DEBUG_SERVER);
+            echo_debug('Found a preview thread... should always start, using server ' . $item->get_preferred_server(), DEBUG_SERVER);
 
             return $item;
         } 
         return FALSE;
+
     }
 
     protected function check_db_intensive(action $item)
@@ -862,6 +876,7 @@ class server_data { // lots of cleaning up to do
     }
     public function get_first_runnable_on_queue(DatabaseConnection $db)
     { // returns TRUE if the queue is empty, FALSE if no item is runnable, otherwise it returns the runnable item
+        //echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         try {
             if ($this->queue->is_empty()) {// we have nothing to do
 
@@ -877,7 +892,7 @@ class server_data { // lots of cleaning up to do
             if ($this->free_total_slots <= 0) {
                 return TRUE; // no slot available....
             } elseif ($this->free_nntp_slots <= 0) { // no nntp slot available but maybe there is a non-nntp item on the queue
-                $item = $this->queue->top(FALSE, array(), $this->free_db_intensive_slots > 0 ? TRUE : FALSE );
+                $item = $this->queue->top(FALSE, array(), ($this->free_db_intensive_slots > 0) ? TRUE : FALSE );
                 if ($item === FALSE) {
                     return TRUE;
                 }
@@ -940,6 +955,7 @@ class server_data { // lots of cleaning up to do
     // threads wrappers
     public function add_thread(thread $thread, $server_id=FALSE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_numeric($server_id) || $server_id === FALSE);
         $item = $thread->get_action();
         $pid = $thread->get_pid();
@@ -1004,6 +1020,10 @@ class server_data { // lots of cleaning up to do
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
         assert(is_numeric($userid));
+        if (!empty($this->kill_list)) { 
+            usleep(5000);
+            throw new exception ('Cannot preempt a task');
+        }
         $pids = $this->threads->get_all_pids($userid);
         $old_id = FALSE;
         foreach ($pids as $item_pid) {
@@ -1027,12 +1047,12 @@ class server_data { // lots of cleaning up to do
             throw new exception ('Cannot preempt a task');
         }
         try {
-            $this->queue->move_top($db, $item->get_id(), user_status::SUPER_USERID);
             $this->stop($db, $old_id, $userid);
+        echo_debug('QUEUE move top ' . $item->to_string(), DEBUG_SERVER);
+            $this->queue->move_top($db, $item->get_id(), user_status::SUPER_USERID);
         } catch (exception $e) {
             throw new exception ('ID not found ' . $e->getMessage());
         }
-
         return $item2->get_active_server();
     }
     public function stop_all(DatabaseConnection $db, $userid)
@@ -1048,7 +1068,7 @@ class server_data { // lots of cleaning up to do
             if ($thread->get_action()->match_userid($userid)) {
                 $thread->set_status(DOWNLOAD_STOPPED);
                 $item = $thread->get_action(); // delete from the list will be done by the reap function
-                urdd_kill($pid, SIGTERM);
+                $this->urdd_kill($pid, SIGTERM);
                 $to_queue[] = $item;
             }
         }
@@ -1059,6 +1079,7 @@ class server_data { // lots of cleaning up to do
     }
     public function stop(DatabaseConnection $db, $id, $userid)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_numeric($id) && is_numeric($userid));
         $pid = $this->threads->get_pid($id);
 
@@ -1069,10 +1090,10 @@ class server_data { // lots of cleaning up to do
         }
         $thread->set_status(DOWNLOAD_STOPPED);
         $item->clear_tried_servers(array($item->get_active_server()));
-
-        urdd_kill($pid, SIGTERM);
-        wait_for_child();
+        echo_debug('QUEUEPUSH ' . $item->to_string(), DEBUG_SERVER);
         $this->queue_push($db, $item, FALSE, self::QUEUE_BOTTOM, 3); // and reschedule it to the top of the queue, but after previews
+        $this->urdd_kill($pid, SIGTERM);
+        wait_for_child();
 
         return TRUE;
     }
@@ -1092,17 +1113,39 @@ class server_data { // lots of cleaning up to do
         $this->servers->restore_server_settings();
     }
     public function schedule_locked_item(DatabaseConnection $db, action $item)
-{
-    echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    echo_debug('Dl still locked, pausing', DEBUG_SERVER);
-    $command = $item->get_command();
-    $args = $item->get_args();
-    $item->pause(TRUE, user_status::SUPER_USERID);
-    $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_userid(), TRUE);
-    $offset = $item->get_preview() ? DatabaseConnection::DB_LOCK_TIMEOUT_PREVIEW : DatabaseConnection::DB_LOCK_TIMEOUT_DEFAULT;
-    $job = new job($item_unpause, time() + $offset, NULL); //try again in 30 secs
-    $this->add_schedule($db, $job);
+    {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+        echo_debug('Dl still locked, pausing', DEBUG_SERVER);
+        $command = $item->get_command();
+        $args = $item->get_args();
+        $item->pause(TRUE, user_status::SUPER_USERID);
+        $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, "$command $args", $item->get_userid(), TRUE);
+        $offset = $item->get_preview() ? DatabaseConnection::DB_LOCK_TIMEOUT_PREVIEW : DatabaseConnection::DB_LOCK_TIMEOUT_DEFAULT;
+        $job = new job($item_unpause, time() + $offset, NULL); //try again in 30 secs
+        $this->add_schedule($db, $job);
+    }
+    public function remove_kill_list($pid)
+    {
+        if (isset($this->kill_list[$pid])) {
+            unset($this->kill_list[$pid]);
+        }
+    }
+    private function urdd_kill($pid, $signal)
+    {
+        $this->kill_list[$pid] = $pid;
+        $r = posix_kill($pid, $signal);
+        
+        if ($r === FALSE) {
+            $ec = posix_get_last_error();
+            $msg = '';
+            if ($ec != 0) {
+                $msg = posix_strerror($ec);
+            }
+        throw new exception('Kill failed: ' . $msg);
+    }
 }
+
+
 
 
 } // server data

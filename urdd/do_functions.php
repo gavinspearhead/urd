@@ -30,7 +30,6 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
     assert (is_numeric($dlid));
     $cols = array('downloadID', 'groupID', 'partnumber', 'name', 'status', 'messageID', 'binaryID', 'size');
-    $status = DOWNLOAD_READY;
     $total_size = $count = 0;
     foreach ($xml as $section) {
         $group = (string) $section->groups->group[0];
@@ -54,7 +53,7 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
             $part_number = (int)($segment_attr['number']);
             $total_size += $size;
 
-            $vals = array($dlid, $groupid, $part_number, $cleansubject, $status, $messageID, $binaryID, $size);
+            $vals = array($dlid, $groupid, $part_number, $cleansubject,DOWNLOAD_READY, $messageID, $binaryID, $size);
             $db->insert_query('downloadarticles', $cols, $vals);
             if ($count == 0 && get_download_name($db, $dlid) == '') {
                 $dlname = find_name($db, $name);
@@ -112,12 +111,10 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
     if ($count == 0) {
         $dlcomment = 'error_nzbfailed';
         update_dlinfo_comment($db, $dlid, $dlcomment);
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Imported NZB failed: no articles found');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , 0, 100, 'Imported NZB failed: no articles found');
         $retval = FILE_NOT_FOUND;
     } else {
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Imported NZB file');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED , 0, 100, 'Imported NZB file');
         $retval = NO_ERROR;
     }
     $dlpath = get_dlpath($db) . SPOOL_PATH;
@@ -138,12 +135,12 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
 {
     assert (is_resource($file) && is_numeric($groupid) && is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $res = $db->select_query('"active" FROM groups WHERE "ID"=?', 1, array($groupid));
+    $res = $db->select_query('"active" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
     if ($res === FALSE || $res[0]['active'] != newsgroup_status::NG_SUBSCRIBED) {
         $res = FALSE;
     } else {
-        $sql = "*, \"date\" AS unixdate FROM binaries_$groupid WHERE \"binaryID\"=?";
-        $res = $db->select_query($sql, array($binaryid));
+        $sql = "*, \"date\" AS unixdate FROM binaries_$groupid WHERE \"binaryID\"=:id";
+        $res = $db->select_query($sql, array(':id' => $binaryid));
     }
     try {
         $group = group_name($db, $groupid);
@@ -249,15 +246,13 @@ function do_make_nzb(DatabaseConnection $db, action $item)
         }
         $total_count = count($res);
         $counter = 0;
-        $status = QUEUE_RUNNING;
         foreach ($res as $binary) {
             $size += write_binary($db, $binary['binaryID'], $binary['groupID'], $binary['cnt'], $binary['subject'], $file, $dlid);
             $counter++;
-            update_queue_status($db, $item->get_dbid(), $status, 0, floor(($counter / $total_count) * 100));
+            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, floor(($counter / $total_count) * 100));
         }
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100);
         if ($e->getCode() == ERR_GROUP_NOT_FOUND) {
             return GROUP_NOT_FOUND;
         } else {
@@ -280,8 +275,7 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     set_permissions($db, $done); // setting permissions must be last otherwise we may not be able to move the file
     set_group($db, $done);
 
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Created NZB file $basename$ext");
+    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED , 0, 100, "Created NZB file $basename$ext");
     cleanup_download_articles($db, $dlid);
     add_stat_data($db, stat_actions::GETNZB, $size, $userid);
 
@@ -316,9 +310,8 @@ function create_make_nzb(DatabaseConnection $db, server_data &$servers, $userid,
 
         return urdd_protocol::get_response(405);
     }
-    $status = DOWNLOAD_READY;
     $download_par_files = get_pref($db, 'download_par', $userid) ? TRUE : FALSE;
-    $id = add_download($db, $userid, 0, 0, 0, 0, $status, '', download_types::NZB, TRUE, $download_par_files);
+    $id = add_download($db, $userid, 0, 0, 0, 0, DOWNLOAD_READY, '', download_types::NZB, TRUE, $download_par_files);
     $item = new action(urdd_protocol::COMMAND_MAKE_NZB, $id, $userid, TRUE);
     $item->set_dlpath($dl_path);
     set_download_dir($db, $id, $dl_path);
@@ -398,9 +391,8 @@ function do_check_version(DatabaseConnection $db, action $item)
     list ($vstr) = explode("\n", $version, 2);
     $rv = preg_match ('/^(\d+\.\d+\.\d+)[ \t]+(\d)+[ \t]+(.*)$/', $vstr, $matches);
     if ($rv === 0) {
-        $status = QUEUE_FAILED;
         $comment = '';
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, $comment);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, $comment);
 
         return COULD_NOT_CHECK_VERSION;
     }
@@ -412,8 +404,7 @@ function do_check_version(DatabaseConnection $db, action $item)
     set_pref($db, 'update_type', $type, 0);
     set_pref($db, 'update_text', $text, 0);
     $comment = "Newest version is $version";
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, NULL, 100, $comment);
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, NULL, 100, $comment);
     write_log($comment, LOG_INFO);
 
     return NO_ERROR;
@@ -436,14 +427,12 @@ function do_update_rss(DatabaseConnection $db, action $item)
         $name = $rss_info['name'];
         $cnt = $rss->rss_update($db, $rss_info);
         update_rss_status($db, $args, time());
-        $status = QUEUE_FINISHED;
         write_log("RSS Update $name: $cnt new sets", LOG_NOTICE);
         add_stat_data($db, stat_actions::RSS_COUNT, $cnt, user_status::SUPER_USERID);
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, NULL, 100);
         sets_marking::mark_interesting($db, USERSETTYPE_RSS, $args);
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, $e->getMessage());
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, $e->getMessage());
         write_log("RSS Update $name failed: " .$e->getmessage(), LOG_ERR);
 
         return FEED_NOT_FOUND;
@@ -459,8 +448,7 @@ function update_headers(DatabaseConnection $db, &$nzb, array &$groupArr, action 
     write_log("Updating group {$groupArr['name']}", LOG_INFO);
     $rv = $nzb->update_newsgroup($groupArr, $item);
     if ($rv === ERR_GROUP_NOT_FOUND) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100);
 
         return GROUP_NOT_FOUND;
     }
@@ -481,8 +469,7 @@ function do_update(DatabaseConnection $db, action $item)
     try {
         $groupArr = get_group_info($db, $args);
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Group not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Group not found');
         throw new exception('Error: group not found', ERR_GROUP_NOT_FOUND);
     }
     try {
@@ -491,8 +478,7 @@ function do_update(DatabaseConnection $db, action $item)
             $server_id = $item->get_preferred_server();
         }
         if ($server_id <= 0) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'No server enabled');
+            update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, NULL, 100, 'No server enabled');
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
         $nzb = connect_nntp($db, $server_id);
@@ -508,15 +494,14 @@ function do_update(DatabaseConnection $db, action $item)
             load_extset_data($db, $nzb, $extset_headers);
         }
         $nzb->disconnect();
-        $status = QUEUE_FINISHED;
-        update_postcount($db, $groupArr['ID']);
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100);
+        $ug = new urdd_group;
+        $ug->update_postcount($db, $groupArr['ID']);
+        update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100);
     } catch (exception $e) {
         write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         if ($e->getcode() == ERR_NNTP_AUTH_FAILED) {
-            $status = QUEUE_FAILED;
             $comment = $e->getMessage();
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, $comment);
 
             return NNTP_AUTH_ERROR;
         } elseif ($e->getcode() == ERR_GROUP_NOT_FOUND) {
@@ -565,8 +550,7 @@ function do_gensets(DatabaseConnection $db, action $item)
     try {
         $groupArr = get_group_info($db, $args);
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Group not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Group not found');
         throw new exception('Error: group not found', ERR_GROUP_NOT_FOUND);
     }
     $groupname = $groupArr['name'];
@@ -575,7 +559,8 @@ function do_gensets(DatabaseConnection $db, action $item)
     $groupid = $groupArr['ID'];
     $expire = time() - ($groupArr['expire'] * 24 * 3600);
     try {
-        update_binary_info($db, $args, $groupname, $do_expire, $expire, $item, $minsetsize, $maxsetsize);
+        $ug = new urdd_group;
+        $ug->update_binary_info($db, $args, $groupname, $do_expire, $expire, $item, $minsetsize, $maxsetsize);
         $old_setcount = get_sets_count_group($db, $groupid);
         $setcount = count_sets_group($db, $groupid);
         $new_sets = $setcount - $old_setcount;
@@ -594,8 +579,7 @@ function do_gensets(DatabaseConnection $db, action $item)
         write_log('Mark interesting failed: ' . $e->getMessage(), LOG_ERR);
     }
     update_user_last_seen_group($db, $args);
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Generated sets data complete');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Generated sets data complete');
 
     return NO_ERROR;
 }
@@ -606,14 +590,12 @@ function do_purge_spots(DatabaseConnection $db, action $item)
     // Check if group exists
     try {
         $count = urd_spots::purge_spots($db, $item->get_dbid());
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Deleted $count spots");
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count spots");
 
         return NO_ERROR;
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
         $comment = $e->getMessage();
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $comment);
         if ($e->getcode() == ERR_GROUP_NOT_FOUND) {
             return GROUP_NOT_FOUND;
         } else {
@@ -627,8 +609,7 @@ function do_expire_spots(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
     // Check if group exists
     $count = urd_spots::expire_spots($db, $item->get_dbid());
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Deleted $count spots");
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count spots");
 
     return NO_ERROR;
 }
@@ -641,14 +622,12 @@ function do_expire_rss(DatabaseConnection $db, action $item)
     $rss = new urdd_rss($db);
     $res = feed_subscribed($db, $args);
     if ($res === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Feed not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Feed not found');
 
         return FEED_NOT_FOUND;
     }
     $count = $rss->expire_rss($db, $args, $item->get_dbid());
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Deleted $count articles");
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count articles");
 
     return NO_ERROR;
 }
@@ -661,16 +640,15 @@ function do_expire(DatabaseConnection $db, action $item)
     // Check if group exists
     $res = group_subscribed($db, $groupid);
     if ($res === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Group not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Group not found');
 
         return GROUP_NOT_FOUND;
     }
-    $count = expire_binaries($db, $groupid, $item->get_dbid());
+    $ug = new urdd_group;
+    $count = $ug->expire_binaries($db, $groupid, $item->get_dbid());
     $setcount = count_sets_group($db, $groupid);
     update_group_setcount($db, $groupid, $setcount);
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Deleted $count articles");
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count articles");
 
     return NO_ERROR;
 }
@@ -754,13 +732,11 @@ function do_cleandb(DatabaseConnection $db, action $item)
         }
     } catch (exception $e) {
         write_log('Database query failed: ' . $e->getmessage(), LOG_WARNING);
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, $e->getMessage());
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $e->getMessage());
 
         return INTERNAL_FAILURE;
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Cleaned Database');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Cleaned Database');
 
     return NO_ERROR;
 }
@@ -845,8 +821,7 @@ function do_cleandir(DatabaseConnection $db, action $item)
         $filecache = TRUE;
         break;
     default:
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Incorrect argument');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Incorrect argument');
 
         return COMMANDLINE_ERROR;
     }
@@ -873,26 +848,22 @@ function do_cleandir(DatabaseConnection $db, action $item)
         write_log("Removed $cnt1 tmp files, $cnt3 nzb files, $cnt4 post files and $cnt2 preview files", LOG_INFO);
         $error = trim($error, "\n\r\t ");
         if ($error == '') {
-            $status = QUEUE_FINISHED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Deleted files');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, NULL, 100, 'Deleted files');
 
             return NO_ERROR;
         } else {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Not all files could be deleted');
+            update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, NULL, 100, 'Not all files could be deleted');
             write_log($error, LOG_ERR);
 
             return COMMANDLINE_ERROR;
         }
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Something happened that should not');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Something happened that should not');
         write_log($e->getMessage(), LOG_WARNING);
 
         return COMMANDLINE_ERROR;
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Deleted files');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, NULL, 100, 'Deleted files');
 
     return NO_ERROR;
 }
@@ -905,21 +876,18 @@ function do_purge_rss(DatabaseConnection $db, action $item)
     $res = feed_subscribed($db, $args);
     $rss = new urdd_rss($db);
     if ($res === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Feed not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Feed not found');
 
         return FEED_NOT_FOUND;
     }
     try {
         $rss->purge_rss($db, $args, $item->get_dbid());
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Purge failed: ' . $e->getMessage());
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, 'Purge failed: ' . $e->getMessage());
 
         return FEED_NOT_FOUND;
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Finished');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Finished');
 
     return NO_ERROR;
 }
@@ -931,18 +899,16 @@ function do_purge(DatabaseConnection $db, action $item)
     // Check if the group exists
     $res = group_subscribed($db, $args);
     if ($res === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'Group not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'Group not found');
 
         return GROUP_NOT_FOUND;
     }
     try {
-        purge_binaries($db, $args);
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Finished');
+        $ug = new urdd_group;
+        $ug->purge_binaries($db, $args);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Finished');
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Purge failed: ' . $e->getMessage());
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'Purge failed: ' . $e->getMessage());
 
         return GROUP_NOT_FOUND;
     }
@@ -1015,26 +981,24 @@ function do_addspotdata(DatabaseConnection $db, action $item)
             $server_id = $item->get_preferred_server();
         }
         if ($server_id <= 0) {
-            $status = QUEUE_QUEUED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
+            update_queue_status($db, $item->get_dbid(), QUEUE_QUEUED, 0, 0, '');
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
 
         if (!download_exists($db, $dlid)) {
-            $status = QUEUE_QUEUED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
+            update_queue_status($db, $item->get_dbid(), QUEUE_QUEUED, 0, 0, '');
             throw new exception('Download not found', ERR_DOWNLOAD_NOT_FOUND);
         }
 
         $nzbs = get_spot_nzb($db, $spotid);
         $count = $totalsize = $fs = 0;
         $groupid = group_by_name($db, get_config($db, 'ftd_group', 'alt.binaries.ftd'));
+        $nzb_data = '';
+        $segment_count = 0;
+        $segments = count($nzbs);
         $nntp = connect_nntp($db, $server_id);
         $nntp->select_group($groupid, $code);
-        $nzb_data = '';
         try {
-            $segment_count = 0;
-            $segments = count($nzbs);
             echo_debug('Getting ' . $segments. ' NZB segments', DEBUG_SERVER);
             try {
                 foreach ($nzbs as $nzb) {
@@ -1044,8 +1008,7 @@ function do_addspotdata(DatabaseConnection $db, action $item)
                 }
             } catch (exception $e) {
                 if ($e->getCode() == ERR_ARTICLE_NOT_FOUND) {
-                    $status = QUEUE_QUEUED;
-                    update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
+                    update_queue_status($db, $item->get_dbid(), QUEUE_QUEUED, 0, 0, '');
 
                     return GETARTICLE_ERROR;
                 } else {
@@ -1076,14 +1039,12 @@ function do_addspotdata(DatabaseConnection $db, action $item)
         add_stat_data($db, stat_actions::IMPORTNZB, $fs, $item->get_userid());
 
         if ($count == 0) {
-            $status = QUEUE_FAILED;
             $comment = 'error_nzbfailed';
             update_dlinfo_comment($db, $dlid, $comment);
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Imported NZB failed: no articles found');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, 'Imported NZB failed: no articles found');
             $retval = FILE_NOT_FOUND;
         } else {
-            $status = QUEUE_FINISHED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Imported NZB file: ' . $count . ' lines');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Imported NZB file: ' . $count . ' lines');
         }
         dec_dl_lock($db, $dlid);
         if (check_last_lock($db, $dlid)) { // we also set a lock on create so we need to remove that too
@@ -1095,24 +1056,20 @@ function do_addspotdata(DatabaseConnection $db, action $item)
         $comment = $e->getMessage();
         write_log('Getting NZB from spot failed '. $comment, LOG_WARNING);
         if ($e->getcode() == ERR_NNTP_AUTH_FAILED) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $comment);
             $err_code = NNTP_AUTH_ERROR;
         } elseif ($e->getcode() == ERR_GROUP_NOT_FOUND) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $comment);
             $err_code = GROUP_NOT_FOUND;
         } elseif ($e->getcode() == ERR_NO_ACTIVE_SERVER) {
             $err_code = CONFIG_ERROR;
         } elseif ($e->getCode() == ERR_ARTICLE_NOT_FOUND) {
             $dlcomment = 'error_nzbfailed';
             update_dlinfo_comment($db, $dlid, $dlcomment);
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, $comment);
             $err_code = FILE_NOT_FOUND;
         } elseif ($e->getCode() == ERR_DOWNLOAD_NOT_FOUND) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $comment);
             $err_code = INTERNAL_FAILURE;
         } else {
             $err_code = NNTP_NOT_CONNECTED_ERROR;
@@ -1154,8 +1111,8 @@ function do_adddata(DatabaseConnection $db, action $item)
                 . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"setID\" = ?";
             $res2 = $db->execute_query($sql, array($setid));
 
-            $sql = '"value" FROM extsetdata WHERE "setID"=? AND "name"=?';
-            $res3 = $db->select_query($sql, 1, array($setid, 'password'));
+            $sql = '"value" FROM extsetdata WHERE "setID"=:setid AND "name"=:name';
+            $res3 = $db->select_query($sql, 1, array(':sedit'=>$setid, ':name'=>'password'));
             if (isset($res3[0]['value'])) {
                 $pw = $res3[0]['value'];
                 $db->update_query_2('downloadinfo', array('password'=>$pw), '"ID"=? AND "password"=?', array($dlid, ''));
@@ -1183,17 +1140,15 @@ function do_adddata(DatabaseConnection $db, action $item)
             break;
         }
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
         echo_debug($e->getMessage(), DEBUG_SERVER);
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Failed');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, 'Failed');
         dec_dl_lock($db, $dlid);
         throw $e;
     }
     if ($groupid != 0) {
         update_dlinfo_groupid($db, $dlid, $groupid);
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Finished');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Finished');
     if (check_last_lock($db, $dlid)) {// we also set a lock on create so we need to remove that too
         dec_dl_lock($db, $dlid);
     }
@@ -1354,7 +1309,6 @@ function do_optimise(DatabaseConnection $db, action $item)
         $total_rows = count($res);
         $cntr = $mtime = 0;
         $stime = microtime(TRUE);
-        $status = QUEUE_RUNNING;
         update_queue_status($db, $item->get_dbid(), NULL, 0, 0);
         foreach ($res as $row) {
             write_log("Optimising table {$row[0]}", LOG_INFO);
@@ -1363,14 +1317,13 @@ function do_optimise(DatabaseConnection $db, action $item)
             if ($perc != 0) {
                 $time_left = ($mtime - $stime) * (($total_rows - $cntr) / $cntr);
             }
-            update_queue_status($db, $item->get_dbid(), $status, $time_left , $perc, "Optimising {$row[0]}");
+            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, $time_left , $perc, "Optimising {$row[0]}");
             $db->optimise_table($row[0]);
             $mtime = microtime(TRUE);
             $cntr++;
         }
-        $status = QUEUE_FINISHED;
         $db->set_fetch_mode($fetch_mode);
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Done');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Done');
 
         return NO_ERROR;
     } catch (exception $e) {
@@ -1657,19 +1610,20 @@ function do_subscribe(DatabaseConnection $db, array $arg_list, server_data &$ser
             $minsetsize = (isset($arg_list[3]) && is_numeric($arg_list[3])) ? $arg_list[3] : 0;
             $maxsetsize = (isset($arg_list[4]) && is_numeric($arg_list[4])) ? $arg_list[4] : 0;
             $adult = (isset($arg_list[5]) && is_numeric($arg_list[5])) ? $arg_list[5] : ADULT_OFF;
+            $ug = new urdd_group;
             if ($onoff && $is_subscribed === TRUE) {
                 set_group_expire($db, $id, $exp);
                 set_group_adult($db, $id, $adult);
                 set_group_minsetsize($db, $id, $minsetsize);
                 set_group_maxsetsize($db, $id, $maxsetsize);
             } elseif (isset($arg_list[1]) && strtolower($arg_list[1]) == 'on' && $is_subscribed === FALSE) {
-                subscribe($db, $id, $exp, $minsetsize, $maxsetsize);
+                $ug->subscribe($db, $id, $exp, $minsetsize, $maxsetsize);
                 $response = queue_update($db, urdd_protocol::COMMAND_UPDATE, array($id), $userid, $servers);
 
                 return $response;
             } elseif (!$onoff && $is_subscribed !== FALSE) {
-                $res = unsubscribe($db, $id);
-                purge_binaries($db, $id);
+                $res = $ug->unsubscribe($db, $id);
+                $ug->purge_binaries($db, $id);
 
                 return urdd_protocol::get_response($res ? 200 : 402);
             }
@@ -1705,6 +1659,7 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
     $all_files = array();
     $uu_error = $par_error = $concat_error = $comp_error = $dir_error = $sfv_error = FALSE;
     $comment = '';
+    $ft = new file_types;
     if (!is_dir($to)) {
         $status = QUEUE_FAILED;
         write_log("Not a directory: $to", LOG_ERR);
@@ -1712,7 +1667,7 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
         $files = array();
         $dir_error = TRUE;
     } else {
-        $files = get_par_rar_files($db, $to, $all_files);
+        $files = $ft->get_par_rar_files($db, $to, $all_files);
         $uudecode = 1;
     }
     if ($uudecode > 0) {
@@ -1724,7 +1679,7 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
             if ($delete_files > 0) {
                 $files->delete_files(FALSE, FALSE, FALSE, TRUE);
             }
-            $files = get_par_rar_files($db, $to, $all_files); // re-read the file list, as uuencode creates new ones
+            $files = $ft->get_par_rar_files($db, $to, $all_files); // re-read the file list, as uuencode creates new ones
         }
     }
     if ($unpar > 0) {
@@ -1740,7 +1695,7 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
                 $files->delete_files(TRUE, FALSE, FALSE, FALSE);
             }
         }
-        $files = get_par_rar_files($db, $to, $all_files); // re-read the file list, as par2 may create new ones
+        $files = $ft->get_par_rar_files($db, $to, $all_files); // re-read the file list, as par2 may create new ones
     }
     if ($unpar <= 0 && $cksfv > 0) {
         $comment = 'PAR2 not run ';
@@ -1883,15 +1838,13 @@ function do_merge_sets(DatabaseConnection $db, action $item)
     try {
         $userid = $item->get_userid();
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'User not found');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, 'User not found');
 
         return UNKNOWN_ERROR;
     }
 
     if (!urd_user_rights::is_seteditor($db, $userid)) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'User is no set editor');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , 0, 100, 'User is no set editor');
 
         return NOT_ALLOWED;
     }
@@ -1900,16 +1853,15 @@ function do_merge_sets(DatabaseConnection $db, action $item)
     unset($elems[0]);
     $setid2 = $elems;
     try {
-        merge_sets($db, $setid1, $setid2);
+        $ug = new urdd_group;
+        $ug->merge_sets($db, $setid1, $setid2);
     } catch (exception $e) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Merge failed');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'Merge failed');
 
         return GROUP_NOT_FOUND;
     }
 
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Merged sets');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Merged sets');
 
     return NO_ERROR;
 }
@@ -1934,8 +1886,7 @@ function do_find_servers(DatabaseConnection $db, action $item)
 
     $servers->enable_nntp(FALSE); // disable nntp so all other nntp actions will not be allowed
     $servers->find_servers($db, $test_results, $item->get_dbid(), isset($arg_list[0]) && $arg_list[0] == 'extended', TRUE);
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Autoconfigure servers complete');
+    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, 'Autoconfigure servers complete');
 
     return NO_ERROR;
 }
@@ -1945,7 +1896,6 @@ function do_delete_set(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $setids = preg_split('/[\s]+/', $item->get_args());
 
-    $status = QUEUE_RUNNING;
     $l = count($setids);
     $cnt = 0;
     $cmt = '';
@@ -1970,15 +1920,14 @@ function do_delete_set(DatabaseConnection $db, action $item)
             $db->delete_query("parts_$group_id", '"binaryID" = ?', array($bin_id));
         }
         $groupids[$group_id] = 1;
-        update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), $cmt);
+        update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, (int) (($cnt / $l) * 100), $cmt);
     }
     foreach ($groupids as $gr => $dummy) {
         $setcount = count_sets_group($db, $gr);
         update_group_setcount($db, $gr, $setcount);
     }
 
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, ($cmt == '' ? 'Complete' : $cmt));
+    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, ($cmt == '' ? 'Complete' : $cmt));
 
     return NO_ERROR;
 }
@@ -1988,14 +1937,12 @@ function do_delete_spot(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $setids = preg_split('/[\s]+/', $item->get_args());
     $l = count($setids);
-    $status = QUEUE_RUNNING;
     $cnt = 0;
     foreach ($setids as $setid) {
         $db->delete_query('spots', '"spotid"=?', array($setid));
-        update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), 'Complete');
+        update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete');
 
     return NO_ERROR;
 }
@@ -2005,20 +1952,18 @@ function do_delete_set_rss(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $setids = preg_split('/[\s]+/', $item->get_args());
     $l = count($setids);
-    $status = QUEUE_RUNNING;
     $cnt = 0;
     foreach ($setids as $setid) {
         $feed_id = get_feedid_for_set($db, $setid);
         $feeds[$feed_id] = 1;
         $db->delete_query('rss_sets', '"setid"=?', array($setid));
-        update_queue_status($db, $item->get_dbid(), $status, 0, (int) (($cnt / $l) * 100), 'Complete');
+        update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     foreach ($feeds as $feed => $dummy) {
         $setcount = count_sets_feed($db, $feed);
         update_feed_setcount($db, $feed, $setcount);
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete');
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete');
 
     return NO_ERROR;
 }
@@ -2046,14 +1991,12 @@ function do_post_message(DatabaseConnection $db, action $item)
         $poster_name = $row['poster_name'];
         $poster_headers = unserialize($row['headers']);
         post_message( $db, $item, $poster_headers, $message, $groupid, $subject, $poster_id, $poster_name);
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete');
         add_stat_data( $db, stat_actions::POST_MSG_COUNT, 1, $userid);
     } catch (exception $e) {
         write_log($e->getMessage(), LOG_NOTICE);
 
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Failed');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , 0, 100, 'Failed');
         // and now?
     }
     $db->delete_query('post_messages', '"id"=? AND "userid"=?', array($msg_id, $userid));
@@ -2071,8 +2014,7 @@ function do_getnfo(DatabaseConnection $db, action $item)
         $server_id = $item->get_preferred_server();
     }
     if ($server_id <= 0) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'No server enabled');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, NULL, 100, 'No server enabled');
         throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
     }
     try {
@@ -2081,8 +2023,7 @@ function do_getnfo(DatabaseConnection $db, action $item)
         $sql = 'count(*) AS "cnt" FROM nfo_files';
         $res = $db->select_query($sql, $limit);
         if (!isset($res[0]['cnt'])) {
-            $status = QUEUE_FINISHED;
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No articles');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'No articles');
 
             return NO_ERROR;
         }
@@ -2123,25 +2064,22 @@ function do_getnfo(DatabaseConnection $db, action $item)
             }
             $cnt += count($res);
             $time_b = microtime(TRUE);
-            $status = QUEUE_RUNNING;
             $perc = ceil(((float) $cnt * 100) / $totalcount);
             $time_left = 0;
             if ($perc != 0 && $cnt > 0) {
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
-            update_queue_status($db, $item->get_dbid(), $status, $time_left , $perc, 'Getting nfo files');
+            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, $time_left , $perc, 'Getting nfo files');
             $db->delete_query('nfo_files', '"id" in ( ' . (str_repeat('?,', count($ids) - 1)). '? )', $ids);
         }
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. ' . $totalcount . ' articles');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete. ' . $totalcount . ' articles');
 
         return NO_ERROR;
     } catch (exception $e) {
         write_log('Update failed '. $e->getMessage(), LOG_WARNING);
         if ($e->getcode() == ERR_NNTP_AUTH_FAILED) {
-            $status = QUEUE_FAILED;
             $comment = $e->getMessage();
-            update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $comment);
 
             return NNTP_AUTH_ERROR;
         } elseif ($e->getcode() == ERR_GROUP_NOT_FOUND) {
@@ -2159,17 +2097,17 @@ function do_getspots(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
     try {
+        $ug = new urdd_group;
         $group = get_config($db, 'spots_group');
         $groupid = group_by_name($db, $group);
-        check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($db, $groupid);
         $groupArr_spots = get_group_info($db, $groupid);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
             $server_id = $item->get_preferred_server();
         }
         if ($server_id <= 0) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'No server enabled');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'No server enabled');
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
         $nzb = connect_nntp($db, $server_id);
@@ -2178,14 +2116,13 @@ function do_getspots(DatabaseConnection $db, action $item)
             return $rv;
         }
 
-        update_postcount($db, $groupArr_spots['ID']);
+        $ug->update_postcount($db, $groupArr_spots['ID']);
 
         $spots_count = urd_spots::load_spots($db, $nzb, $item);
         add_stat_data($db, stat_actions::SPOT_COUNT, $spots_count, user_status::SUPER_USERID);
 
         sets_marking::mark_interesting($db, USERSETTYPE_SPOT);
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. ' . $spots_count);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete. ' . $spots_count);
     } catch (exception $e) {
         write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
@@ -2253,8 +2190,7 @@ function do_getspot_images(DatabaseConnection $db, action $item)
             $server_id = $item->get_preferred_server();
         }
         if ($server_id <= 0) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'No server enabled');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'No server enabled');
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
         $count = get_unfetched_spot_images_count($db);
@@ -2285,8 +2221,7 @@ function do_getspot_images(DatabaseConnection $db, action $item)
             update_queue_status($db, $item->get_dbid(), NULL, 0, floor((100 * $image_count) / $count), 'Loaded ' . $image_count . ' images');
         }
         $nntp->disconnect();
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. Loaded ' . $image_count . ' images');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete. Loaded ' . $image_count . ' images');
     } catch (exception $e) {
         write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
@@ -2311,17 +2246,17 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
     try {
+        $ug = new urdd_group;
         $report_group = get_config($db, 'spots_reports_group');
         $groupid = group_by_name($db, $report_group);
-        check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($db, $groupid);
         $groupArr_reports = get_group_info($db, $groupid);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
             $server_id = $item->get_preferred_server();
         }
         if ($server_id <= 0) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'No server enabled');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'No server enabled');
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
         $nzb = connect_nntp($db, $server_id);
@@ -2330,13 +2265,13 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
         if ($rv != NO_ERROR) {
             return $rv;
         }
-        update_postcount($db, $groupArr_reports['ID']);
+
+        $ug->update_postcount($db, $groupArr_reports['ID']);
         $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
         $comment_count = urd_spots::load_spot_reports($db, $nzb, $item, $expire);
 
         $nzb->disconnect();
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. Loaded ' . $comment_count . ' reports');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, 'Complete. Loaded ' . $comment_count . ' reports');
     } catch (exception $e) {
         write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
@@ -2365,17 +2300,17 @@ function do_getspot_comments(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
     try {
+        $ug = new urdd_group;
         $comments_group = get_config($db, 'spots_comments_group');
         $groupid = group_by_name($db, $comments_group);
-        check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($db, $groupid);
         $groupArr_comments = get_group_info($db, $groupid);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
             $server_id = $item->get_preferred_server();
         }
         if ($server_id <= 0) {
-            $status = QUEUE_FAILED;
-            update_queue_status($db, $item->get_dbid(), $status, NULL, 100, 'No server enabled');
+            update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, NULL, 100, 'No server enabled');
             throw new exception('Error: no server found', ERR_NO_ACTIVE_SERVER);
         }
         $nzb = connect_nntp($db, $server_id);
@@ -2384,12 +2319,12 @@ function do_getspot_comments(DatabaseConnection $db, action $item)
         if ($rv != NO_ERROR) {
             return $rv;
         }
-        update_postcount($db, $groupArr_comments['ID']);
+        $ug = new urdd_group;
+        $ug->update_postcount($db, $groupArr_comments['ID']);
         $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
         $comment_count = urd_spots::load_spot_comments($db, $nzb, $item, $expire);
 
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete. Loaded ' . $comment_count . ' comments');
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete. Loaded ' . $comment_count . ' comments');
     } catch (exception $e) {
         write_log('Update failed '. $e->getMessage(), LOG_WARNING);
         echo_debug_trace($e, DEBUG_SERVER);
@@ -2418,15 +2353,13 @@ function do_getblacklist(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $blacklist_url = get_config($db, 'spots_blacklist', '');
     if ($blacklist_url == '') {
-        $status = QUEUE_FINISHED;
-        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No blacklist');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, 'No blacklist');
 
         return NO_ERROR;
     }
     $spotter_ids = file($blacklist_url, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
     if ($spotter_ids === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, "Connection failed to $blacklist_url");
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , NULL, 100, "Connection failed to $blacklist_url");
 
         return HTTP_CONNECT_ERROR;
     }
@@ -2459,9 +2392,8 @@ function do_getblacklist(DatabaseConnection $db, action $item)
         $db->delete_query('spot_blacklist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
     }
 
-    $status = QUEUE_FINISHED;
     write_log('Added ' . count($add_ids) . " new spotters to the blacklist, removed $cnt spotters, $old spotters kept", LOG_INFO);
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Added ' . count($add_ids) . " new spotters to the blacklist, removed $cnt spotters, $old spotters kept");
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Added ' . count($add_ids) . " new spotters to the blacklist, removed $cnt spotters, $old spotters kept");
 
     return NO_ERROR;
 }
@@ -2478,8 +2410,7 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
     }
     $spotter_ids = file($whitelist_url, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
     if ($spotter_ids === FALSE) {
-        $status = QUEUE_FAILED;
-        update_queue_status($db, $item->get_dbid(), $status, NULL, 100, "Connection failed to $whitelist_url");
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, NULL, 100, "Connection failed to $whitelist_url");
 
         return HTTP_CONNECT_ERROR;
     }
@@ -2513,9 +2444,8 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
         $db->delete_query('spot_whitelist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
     }
 
-    $status = QUEUE_FINISHED;
     write_log('Added ' . count($add_ids) . " new spotters to the whitelist, removed $cnt spotters, $old spotters kept", LOG_INFO);
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Added ' . count($add_ids) . " new spotters to the whitelist, removed $cnt spotters, $old spotters kept");
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Added ' . count($add_ids) . " new spotters to the whitelist, removed $cnt spotters, $old spotters kept");
 
     return NO_ERROR;
 }

@@ -367,9 +367,8 @@ class usenet_server
                     write_log ("Result $hostname $p $e: {$exc->getMessage()} ({$exc->getCode()})", LOG_NOTICE);
                     $test_results->add(new test_result("$hostname $p $e", FALSE, "{$exc->getMessage()} ({$exc->getCode()})"));
                 }
-                $status = QUEUE_RUNNING;
                 if ($dbid !== NULL) {
-                    update_queue_status($db, $dbid, $status, 0, floor((100 * $curr_count) / $total_count), '');
+                    update_queue_status($db, $dbid, QUEUE_RUNNING, 0, floor((100 * $curr_count) / $total_count), '');
                 }
             }
         }
@@ -455,7 +454,7 @@ class usenet_servers
             throw new exception ("Server ($server_id) does not exist", ERR_NO_SUCH_SERVER);
         }
     }
-    public function unused_servers_available(array $already_used_servers = array(), $must_to_have_free_slot = TRUE)
+    public function unused_servers_available(array $already_used_servers = array(), $must_to_have_free_slot=TRUE)
     {
         if ($must_to_have_free_slot) {
             foreach ($this->servers as $srv) {
@@ -473,7 +472,7 @@ class usenet_servers
 
         return FALSE;
     }
-    public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE, $is_download = FALSE)
+    public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE, $is_download=FALSE)
     {
         $server_id = FALSE;
         $prio = 0;
@@ -482,7 +481,7 @@ class usenet_servers
             $id = $srv->get_id();
             if ($srv->has_free_slot($this->update_server) 
                 && $srv->is_enabled() 
-                && ($srv->get_priority() > 0)
+                && ($srv_prio > 0)
                 && (($srv_prio < $prio) || ($server_id === FALSE)) 
                 && !in_array($id, $already_used_servers)
                 && (($need_posting === FALSE) || $srv->get_posting())
@@ -492,7 +491,6 @@ class usenet_servers
                 $prio = $srv_prio;
             }
         }
-
         return $server_id;
     }
     public function add_server(usenet_server $server)

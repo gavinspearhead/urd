@@ -2136,7 +2136,6 @@ function get_uploaded_files()
         throw new exception (file_upload_error_message(UPLOAD_ERR_INI_SIZE));
     }
     if ($_FILES['upfile']['error'] !== UPLOAD_ERR_OK) {
-        print_r($_FILES);
         throw new exception(file_upload_error_message($_FILES['upfile']['error']));
     }
 
@@ -2224,3 +2223,12 @@ function urdd_connected(DatabaseConnection $db, $userid)
 
     return $uc->is_connected();
 }
+
+function group_exists(DatabaseConnection $db, $groupid)
+{
+    assert(is_numeric($groupid));
+    $res = $db->select_query('"ID" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
+
+    return isset($res['ID']);
+}
+

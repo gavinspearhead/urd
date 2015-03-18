@@ -79,8 +79,9 @@ function do_getsetinfo(DatabaseConnection $db, action $item)
     if ($use_newsgroup) {
         $group = get_config($db, 'extset_group');
         $groupid = group_by_name($db, $group);
+        $ug = new urdd_group;
 
-        check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($db, $groupid);
         try {
             $userid = get_admin_userid($db); // get admin user
             $uc = new urdd_client($db, get_config($db, 'urdd_host'), get_config($db,'urdd_port'), $userid);
@@ -92,8 +93,7 @@ function do_getsetinfo(DatabaseConnection $db, action $item)
         $comment .= "Done preparing update of group $group to get ext set info";
         write_log($comment, LOG_INFO);
     }
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, $comment);
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, $comment);
 
     return NO_ERROR;
 }
@@ -158,7 +158,8 @@ function write_setinfo(DatabaseConnection $db, array $setinfo)
     $subject = $basename;
     $poster = 'URD daemon';
     $email = 'urd@urd.com';
-    check_group_subscribed($db, $groupid);
+    $ug = new urdd_group;
+    $ug->check_group_subscribed($db, $groupid);
 
     $post_id = $db->insert_query('post_messages',
         array('userid', 'groupid', 'subject', 'poster_id', 'poster_name', 'message'),
@@ -232,7 +233,6 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
     }
     $counter = 0;
     $total = $sql_arr[0][1] + $sql_arr[1][1] + $sql_arr[2][1]+ $sql_arr[3][1];;
-    $status = QUEUE_RUNNING;
     $step = 100;
     foreach ($sql_arr as $sql) {
         $cnt = $sql[1];
@@ -248,7 +248,7 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
             if ($use_newsgroup) {
                 write_setinfo($db, $setinfo);
             }
-            update_queue_status($db, $item->get_dbid(), $status, 0, floor(100 * (($counter + $step + $start) / $total)), "Done, sent $counter tags.");
+            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, floor(100 * (($counter + $step + $start) / $total)), "Done, sent $counter tags.");
         }
         $counter += $sql[1];
     }
@@ -257,8 +257,7 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
     write_log('Extsetdata sending succeeded.', LOG_INFO);
     $res = $db->update_query_2('extsetdata', array('committed'=>ESI_COMMITTED), '"committed"=?', array(ESI_NOT_COMMITTED));
     $res = $db->update_query_2('merged_sets', array('committed'=>ESI_COMMITTED), '"committed"=?', array(ESI_NOT_COMMITTED));
-    $status = QUEUE_FINISHED;
-    update_queue_status($db, $item->get_dbid(), $status, 0, 100, "Done, sent $counter tags.");
+    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Done, sent $counter tags.");
 
     return NO_ERROR;
 }

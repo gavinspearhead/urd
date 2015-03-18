@@ -62,6 +62,7 @@ define('HTTP_CONNECT_ERROR',        23); //
 define('GETARTICLE_ERROR',          24); //
 define('SERVER_INACTIVE',           25);
 define('PIPE_ERROR',                26);
+define('SIGNAL_TERM',               27);
 
 // debug values
 define('DEBUG_ALL',         255); // all debug messages

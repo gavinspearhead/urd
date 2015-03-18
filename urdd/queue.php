@@ -40,18 +40,31 @@ class queue
         $this->qq = array();
         $this->max_size = (int) $max_size;
     }
+
     public function __destruct()
     {
         $this->qq = NULL;
     }
+        
+    public function to_string()
+    {
+        $s = '';
+        foreach ($this->qq as $q) {
+            $s .= $q->to_string() . "\n";
+        }
+        return $s;
+    }
+
     public function size()
     {
         return count($this->qq);
     }
+
     public function is_empty()
     {
         return count($this->qq) == 0;
     }
+
     public function get_queue()
     {
         $qq = array();
@@ -69,18 +82,18 @@ class queue
 
         return $qq;
     }
+
     private static function update_download_position(DatabaseConnection $db, action $item, $position)
     {
-        $command = $item->get_command_code();
-        if ($command == urdd_protocol::COMMAND_DOWNLOAD || $command == urdd_protocol::COMMAND_DOWNLOAD_ACTION) {
+        if ($item->is_download()) {
             $id = $item->get_args();
-            $db->update_query_2('downloadinfo', array('position'=>$position), '"ID"=?', array($id));
+            $db->update_query_2('downloadinfo', array('position' => $position), '"ID"=?', array($id));
         }
     }
 
     public function update_all_download_position(DatabaseConnection $db)
     {
-        $db->update_query_2('downloadinfo', array('position'=>0));
+        $db->update_query_2('downloadinfo', array('position' => 0));
         $cnt = 0;
 
         foreach ($this->qq as $q) {
@@ -91,10 +104,11 @@ class queue
 
     public function move_down(DatabaseConnection $db, $cmd, $arg, $userid)
     {
-        assert (is_numeric($userid));
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+        assert(is_numeric($userid));
         $prev = $next = NULL;
         // first find the previous one
-        foreach ($this->qq as $k=>&$q) {
+        foreach ($this->qq as $k => &$q) {
             if ($prev !== NULL && $prev->is_equal($cmd, $arg) && !$q->is_equal($cmd, $arg)) {
                 if ($q->match_userid($userid)) {
                     $next = $q;
@@ -146,7 +160,8 @@ class queue
 
     public function move_up(DatabaseConnection $db, $cmd, $arg, $userid)
     {
-        assert (is_numeric($userid));
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+        assert(is_numeric($userid));
         $prev = $curr = NULL;
         // first find the previous one
         foreach ($this->qq as $k=>&$q) {
@@ -203,6 +218,7 @@ class queue
 
     public function move(DatabaseConnection $db, $cmd, $arg, $userid, $direction)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert (is_numeric($userid));
         if ($direction == self::MOVE_DOWN) {
             $rv = $this->move_down($db, $cmd, $arg, $userid);
@@ -216,6 +232,7 @@ class queue
 
     public function push(action $item, DatabaseConnection $db, $increase_counter=TRUE, $priority=NULL)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($increase_counter));
         if ($priority != NULL) {
             assert(is_numeric($priority));
@@ -223,17 +240,22 @@ class queue
             update_queue_priority($db, $item->get_dbid(), $priority);
         }
 
-        return $this->add_prio($item, $db, $increase_counter);
+        $rv = $this->add_prio($item, $db, $increase_counter);
+        return $rv;
     }
+
     public function push_top(action $item, DatabaseConnection $db, $increase_counter=TRUE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($increase_counter));
         $item->set_priority(1, $item->get_userid());
 
         return $this->add_prio($item, $db, $increase_counter);
     }
+
     public function move_top(DatabaseConnection$db, $index, $userid)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_numeric($index) && is_numeric($userid));
         foreach ($this->qq as $k => $q) {
             if ($q->get_id() == $index) {
@@ -250,6 +272,7 @@ class queue
         }
         throw new exception('Item not found', ERR_ITEM_NOT_FOUND);
     }
+
     public function has_equal(action $a)
     {
         foreach ($this->qq as $q) {
@@ -261,6 +284,7 @@ class queue
         return FALSE;
 
     }
+
     public function get_ids_all($userid)
     {
         assert (is_numeric($userid));
@@ -273,6 +297,7 @@ class queue
 
         return $keys;
     }
+
     public function get_ids_cmd($cmd, $arg, $userid)
     {
         assert (is_numeric($userid));
@@ -285,6 +310,7 @@ class queue
 
         return $keys;
     }
+
     public function get_ids_action($action_id, $userid)
     {
         assert (is_numeric($action_id) && is_numeric($userid));
@@ -297,8 +323,10 @@ class queue
 
         return $keys;
     }
+
     public function delete_ids(DatabaseConnection $db, array $ids, $userid, $delete_db=FALSE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($delete_db) && is_numeric($userid));
         $cnt = 0;
         foreach ($ids as $id) {
@@ -320,8 +348,10 @@ class queue
 
         return $cnt;
     }
+
     public function get_queue_item($id)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_numeric($id));
         if (isset($this->qq[$id])) {
             return $this->qq[$id];
@@ -330,9 +360,9 @@ class queue
         }
     }
 
-
     public function delete_cmd(DatabaseConnection $db, $cmd, $arg, $userid, $delete_db = FALSE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($delete_db) && is_numeric($userid));
         $kk = array();
         foreach ($this->qq as $k => $q) {
@@ -374,6 +404,7 @@ class queue
 
     public function delete(DatabaseConnection $db, $action_id, $userid, $delete_db = FALSE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($delete_db) && is_numeric($action_id) && is_numeric($userid));
         $kk = NULL;
         foreach ($this->qq as $k => $q) {
@@ -401,6 +432,7 @@ class queue
 
     public function pause(DatabaseConnection $db, $action_id, $do_pause, $userid)// $do_pause == true then pause, else {  continue (unpause)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($do_pause) && is_numeric($action_id) && is_numeric($userid));
         $status = $do_pause ? QUEUE_PAUSED : QUEUE_QUEUED;
         foreach ($this->qq as $q) {
@@ -421,6 +453,7 @@ class queue
 
     public function pause_cmd(DatabaseConnection $db, $cmd, $arg, $do_pause, $userid)// $do_pause == true then pause, else {  continue (unpause)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($do_pause) && is_numeric($userid));
         $cnt = 0;
         $status = $do_pause ? QUEUE_PAUSED : QUEUE_QUEUED;
@@ -447,6 +480,7 @@ class queue
 
     public function pause_all(DatabaseConnection $db, $do_pause, $userid)// $do_pause == true then pause, else {  continue (unpause)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($do_pause) && is_numeric($userid));
         $status = $do_pause ? QUEUE_PAUSED : QUEUE_QUEUED;
         foreach ($this->qq as $q) {
@@ -467,13 +501,13 @@ class queue
 
     protected function add_prio(action $item, DatabaseConnection $db, $increase_counter=TRUE)
     {
+        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($increase_counter));
         if (($this->max_size > 0) && ($this->size() >= $this->max_size)) {
             throw new exception ('Queue full', ERR_QUEUE_FULL);
         }
         if ($item->max_exceeded(self::MAX_REQUEUE_COUNT)) {
-            $status = QUEUE_CANCELLED;
-            update_queue_status($db, $item->get_dbid(), $status);
+            update_queue_status($db, $item->get_dbid(), QUEUE_CANCELLED);
             write_log('Item queued too often, task cancelled: ' . "{$item->get_command()} {$item->get_args()}", LOG_NOTICE);
 
             return FALSE;
@@ -481,9 +515,7 @@ class queue
         $item->inc_counter();
         if ($increase_counter === TRUE) { // false if we cancel a thread and push it back to the queue
             echo_debug('pushing on the queue', DEBUG_SERVER);
-            $status = QUEUE_QUEUED;
-            //$dir = $item->get_dlpath();
-            $dbid = insert_queue_status($db, $item->get_id(), "{$item->get_command()} {$item->get_args()}", $status, $item->get_command_code(), $item->get_userid(), 0, '', $item->get_priority());
+            $dbid = insert_queue_status($db, $item->get_id(), "{$item->get_command()} {$item->get_args()}", QUEUE_QUEUED, $item->get_command_code(), $item->get_userid(), 0, '', $item->get_priority());
             if ($dbid !== FALSE) {
                 $item->set_dbid($dbid);
                 echo_debug("Pushing on the queue $dbid", DEBUG_SERVER);

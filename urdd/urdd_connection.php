@@ -54,6 +54,7 @@ class connection
     );
     public function __destruct()
     {
+        $this->close();
         $this->buffer = NULL;
         $this->last_line = NULL;
     }
@@ -110,7 +111,9 @@ class connection
     }
     public function close()
     {
-        socket_close($this->socket);
+        if (is_resource($this->socket)){ 
+            socket_close($this->socket);
+        }
         $this->socket = NULL;
     }
     public function get_socket()

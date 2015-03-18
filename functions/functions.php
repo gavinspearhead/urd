@@ -57,18 +57,54 @@ function format_size($value, $format, $suffix='B', $base=1024, $dec=1)
     return array($value, $t . $suffix, $divisor);
 }
 
-function get_download_size(DatabaseConnection $db, $dlid)
+function unformat_size($val, $base = 1024, $default_mul='')
 {
+    // default_mul is the default multiplier from SI: M=1000^2, K=1000, G=100^3 etc if no multiplier is found like in 100M ==> 100 * 1000^2
     global $LN;
-    assert(is_numeric($dlid));
-    $sql = '"size" FROM downloadinfo WHERE "ID" = :dlid';
-    $res = $db->select_query($sql, 1, array(':dlid' => $dlid));
-    if (!isset($res[0]['size'])) {
-        throw new exception($LN['error_downloadnotfound'] . ": $dlid");
+    assert(is_numeric($base));
+    $val = trim($val);
+    if ($val == '') {
+        throw new exception($LN['error_notanumber']);
     }
 
-    return $res[0]['size'];
+    list($val, $last, $rem) = sscanf($val, '%f%c%s');
+    if ($val === NULL) {
+        throw new exception($LN['error_notanumber']);
+    }
+
+    if ($last == ''|| $last === NULL) {
+        $last = $default_mul;
+    }
+    if ($rem != '') {
+        throw new exception('Trailing characters found:' . ' ' . $rem);
+    }
+
+    $last = strtolower($last);
+    $val = round($val);
+
+    if ($last == 'y') {
+        $val = $val * $base * $base * $base * $base * $base * $base * $base * $base;
+    } elseif ($last == 'z') {
+        $val = $val * $base * $base * $base * $base * $base * $base * $base;
+    } elseif ($last == 'e') {
+        $val = $val * $base * $base * $base * $base * $base * $base;
+    } elseif ($last == 'p') {
+        $val = $val * $base * $base * $base * $base * $base;
+    } elseif ($last == 't') {
+        $val = $val * $base * $base * $base * $base;
+    } elseif ($last == 'g') {
+        $val = $val * $base * $base * $base;
+    } elseif ($last == 'm') {
+        $val = $val * $base * $base;
+    } elseif ($last == 'k') {
+        $val = $val * $base;
+    } elseif ($last != '' && $last !== NULL) {
+        throw new exception ("Unknown quantifier $last");
+    }
+
+    return $val;
 }
+
 
 function one_or_more($val, $one, $more)
 {
@@ -270,14 +306,14 @@ function set_userfeedinfo_value(DatabaseConnection $db, $userid, $feedid, $optio
     if ($res === FALSE) {
         $db->insert_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'feedid', 'userid', 'category'), array(0, 0, 1, $feedid, $userid, 0));
     }
-    $db->update_query('userfeedinfo', array($option), array($value), '"feedid"=:? AND "userid"=?', array($feedid,$userid));
+    $db->update_query_2('userfeedinfo', array($option=>$value), '"feedid"=:? AND "userid"=?', array($feedid,$userid));
 }
 
 function set_usergroupinfo(DatabaseConnection $db, $userid, $groupid, $minsetsize, $maxsetsize, $visible, $category)
 {
     assert(is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize) && is_numeric($groupid));
-    $sql = '"groupid" FROM usergroupinfo WHERE "groupid"=? AND "userid"=?';
-    $res = $db->select_query($sql, 1, array($groupid, $userid));
+    $sql = '"groupid" FROM usergroupinfo WHERE "groupid"=:groupid AND "userid"=:userid';
+    $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=>$userid));
     if ($res === FALSE) {
         $db->insert_query('usergroupinfo', array('minsetsize', 'maxsetsize', 'visible', 'groupid', 'userid', 'category'), array($minsetsize, $maxsetsize, $visible, $groupid, $userid, $category));
     } else {
@@ -297,7 +333,7 @@ function set_usergroup_value(DatabaseConnection $db, $userid, $groupid, $option,
     if ($res === FALSE) {
         $db->insert_query('usergroupinfo', array('minsetsize', 'maxsetsize', 'visible', 'groupid', 'userid', 'category'), array(0, 0, 1, $groupid, $userid, 0));
     }
-    $db->update_query('usergroupinfo', array($option), array($value), '"groupid"=? AND "userid"=?', array($groupid, $userid));
+    $db->update_query_2('usergroupinfo', array($option=>$value), '"groupid"=? AND "userid"=?', array($groupid, $userid));
 }
 
 function category_by_name(DatabaseConnection $db, $category, $userid)
@@ -473,120 +509,6 @@ function get_set_size($name)
     return 0;
 }
 
-/* read last X lines of a given text file
-   $filename = full path + filename (i.e. /home/marco/file.txt)
-   $lines    = number of lines (i.e. 10)
- */
-function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
-{
-    global $log_str;
-    assert(is_numeric($maxlines));
-    /* freely customisable number of lines read per time*/
-    $bufferlength = 5000;
-
-    $handle = @fopen($filename, 'r');
-    if (!$handle) {
-        $error = URD_FILENOTFOUND;
-
-        return -1;
-    }
-
-    /*get the file size with a trick*/
-    fseek($handle, 0, SEEK_END);
-    $filesize = ftell($handle);
-
-    /*don't want to get past the start-of-file*/
-    $position = - min($bufferlength, $filesize);
-    $aliq = '';
-    $lines = array();
-
-    while ($maxlines > 0) {
-        if (fseek($handle, $position, SEEK_END)) {  /* should not happen but it's better if we check it*/
-            $error = URD_SEEKERROR;
-            fclose($handle);
-
-            return $lines;
-        }
-
-        /* big read*/
-        $buffer = fread($handle, $bufferlength);
-
-        /* small split*/
-        $tmp2 = explode("\n", $buffer);
-
-        /*previous read could have stored a partial line in $aliq*/
-        if ($aliq != '') {
-            /*concatenate current last line with the piece left from the previous read*/
-            $cnt = count($tmp2);
-            if ($cnt > 0) {
-                $tmp2[$cnt - 1] .= $aliq;
-            } else {
-                $tmp2[] = $aliq;
-            }
-        }
-
-        /*drop first line because it may not be complete*/
-        $aliq = array_shift($tmp2);
-
-        $tmp = array();
-        $read = 0;
-        foreach ($tmp2 as $line) {
-            if ($match != '' && stripos($line, $match) === FALSE) {
-                continue;
-            }
-            if ($min_log_level !== FALSE) {
-
-                $t = explode (' ', $line);
-                if (!isset($t[5])) {
-                    continue;
-                }
-                $log_level = array_search($t[5], $log_str);
-                if ($log_level === FALSE || $log_level > $min_log_level) {
-                    continue;
-                }
-            }
-            $tmp[] = $line;
-            $read++;
-        }
-        if ($read >= $maxlines) {   /*have read too much!*/
-            $tmp2 = array_slice($tmp, $read-$maxlines);
-            /* merge it with the array which will be returned by the function*/
-            $lines = array_merge($tmp2, $lines);
-
-            /* break the cycle*/
-            $maxlines = 0;
-        } elseif (-$position >= $filesize) {  /* haven't read enough but arrived at the start of file*/
-
-            //get back $aliq which contains the very first line of the file
-            if (!is_array($aliq)) {
-                $aliq = array();
-            }
-            if (!is_array($tmp)) {
-                $tmp = array();
-            }
-            $lines = array_merge($aliq, $tmp, $lines);
-
-            //force it to stop reading
-            $maxlines = 0;
-
-        } else {   /*continue reading...*/
-
-            //add the freshly grabbed lines on top of the others
-            $lines = array_merge($tmp, $lines);
-            $maxlines -= $read;
-
-            //next time we want to read another block
-            $position -= $bufferlength;
-
-            //don't want to get past the start of file
-            $position = max($position, -$filesize);
-        }
-    }
-    fclose($handle);
-    $error = URD_NOERROR;
-
-    return $lines;
-}
 
 function create_binary_id($subject, $poster)
 {
@@ -851,7 +773,7 @@ function feed_name(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"name" FROM rss_urls WHERE "id"=?', 1, array($id));
+    $res = $db->select_query('"name" FROM rss_urls WHERE "id"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_feednotfound'] . ": $id", ERR_RSS_NOT_FOUND);
     }
@@ -863,7 +785,7 @@ function group_expire(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"expire" FROM groups WHERE "ID"=?', 1, array($id));
+    $res = $db->select_query('"expire" FROM groups WHERE "ID"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['expire'])) {
         throw new exception($LN['error_groupnotfound'] . ": $id", ERR_GROUP_NOT_FOUND);
     }
@@ -874,7 +796,7 @@ function group_expire(DatabaseConnection $db, $id)
 function group_by_name(DatabaseConnection $db, $name)
 {
     global $LN;
-    $res = $db->select_query('"ID" FROM groups WHERE "name"=?', 1, array($name));
+    $res = $db->select_query('"ID" FROM groups WHERE "name"=:name', 1, array(':name'=>$name));
     if (!isset($res[0]['ID'])) {
         throw new exception($LN['error_groupnotfound'] . " '$name'", ERR_GROUP_NOT_FOUND);
     }
@@ -885,7 +807,7 @@ function group_by_name(DatabaseConnection $db, $name)
 function get_feed_by_name(DatabaseConnection $db, $name)
 {
     global $LN;
-    $res = $db->select_query('"id" FROM rss_urls WHERE "name"=?', 1, array($name));
+    $res = $db->select_query('"id" FROM rss_urls WHERE "name"=:name', 1, array(':name'=>$name));
     if (!isset($res[0]['id'])) {
         throw new exception($LN['error_feednotfound'] . " '$name'", ERR_RSS_NOT_FOUND);
     }
@@ -897,7 +819,7 @@ function get_feed_by_id(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"name" FROM rss_urls WHERE "id"=?', 1, array($id));
+    $res = $db->select_query('"name" FROM rss_urls WHERE "id"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_feednotfound'] . " '$id'", ERR_RSS_NOT_FOUND);
     }
@@ -925,7 +847,7 @@ function group_category(DatabaseConnection $db, $groupid, $userid)
     global $LN;
     assert(is_numeric($groupid) && is_numeric($userid));
     $sql = 'categories."name" AS "name" FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" AND usergroupinfo."userid" = categories."userid"' .
-           ' WHERE usergroupinfo."groupid"=:groupid AND categories."userid" = :userid';
+        ' WHERE usergroupinfo."groupid"=:groupid AND categories."userid" = :userid';
     $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=> $userid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
@@ -938,7 +860,7 @@ function group_name(DatabaseConnection $db, $groupid)
 {
     global $LN;
     assert(is_numeric($groupid));
-    $res = $db->select_query('"name" FROM groups WHERE "ID"=?', 1, array($groupid));
+    $res = $db->select_query('"name" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
     }
@@ -946,28 +868,11 @@ function group_name(DatabaseConnection $db, $groupid)
     return $res[0]['name'];
 }
 
-function group_exists(DatabaseConnection $db, $groupid)
-{
-    assert(is_numeric($groupid));
-    $res = $db->select_query('"ID" FROM groups WHERE "ID"=?', 1, array($groupid));
-
-    return $res !== FALSE;
-}
-
-function check_group_subscribed(DatabaseConnection $db, $groupid)
-{
-    if (!group_subscribed($db, $groupid)) {
-        write_log("Subscribing to group: $groupid", LOG_NOTICE);
-        $exp = get_config($db, 'default_expire_time');
-        subscribe($db, $groupid, $exp);
-    }
-}
-
 function feed_subscribed(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"subscribed" FROM rss_urls WHERE "id"=?', 1, array($id));
+    $res = $db->select_query('"subscribed" FROM rss_urls WHERE "id"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['subscribed'])) {
         throw new exception($LN['error_feednotfound'] . " $id", ERR_RSS_NOT_FOUND);
     }
@@ -979,7 +884,7 @@ function group_subscribed(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"active" FROM groups WHERE "ID"=?', 1, array($id));
+    $res = $db->select_query('"active" FROM groups WHERE "ID"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['active'])) {
         throw new exception($LN['error_groupnotfound'] . " $id", ERR_GROUP_NOT_FOUND);
     }
@@ -1009,8 +914,8 @@ function update_group_state(DatabaseConnection $db, $id, $state, $exp, $minsetsi
 function get_rar_files(DatabaseConnection $db, $postid)
 {
     assert(is_numeric($postid));
-    $sql = '"rarfile", count("id") AS "rar_count" FROM post_files WHERE "postid"=? GROUP BY "rarfile"';
-    $res = $db->select_query($sql, array($postid));
+    $sql = '"rarfile", count("id") AS "rar_count" FROM post_files WHERE "postid"=:postid GROUP BY "rarfile"';
+    $res = $db->select_query($sql, array(':postid'=>$postid));
     if ($res === FALSE) {
         throw new exception('No files to post'); // Xxx make $LN var
     }
@@ -1026,15 +931,14 @@ function get_rar_files(DatabaseConnection $db, $postid)
 function get_post_articles_count(DatabaseConnection $db, $postid)
 {
     assert(is_numeric($postid));
-    $sql = 'count("id") AS "total_count" FROM post_files WHERE "postid"=?';
-    $res = $db->select_query($sql, 1, array($postid));
+    $sql = 'count("id") AS "total_count" FROM post_files WHERE "postid"=:postid';
+    $res = $db->select_query($sql, 1, array(':postid'=>$postid));
     if ($res === FALSE || !isset($res[0]['total_count'])) {
         throw new exception('No files to post'); // Xxx make $LN var
     }
 
     return $res[0]['total_count'];
 }
-
 
 function get_post_articles_count_status(DatabaseConnection $db, $id, $status)
 {
@@ -1121,8 +1025,8 @@ function get_download_password(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $query = '"password" FROM downloadinfo WHERE "ID"=?';
-    $res = $db->select_query($query, 1, array($id));
+    $query = '"password" FROM downloadinfo WHERE "ID"=:id';
+    $res = $db->select_query($query, 1, array(':id'=>$id));
     if ($res === FALSE) {
         throw new exception ($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
@@ -1159,8 +1063,8 @@ function get_download_par_files(DatabaseConnection $db, $id)
 {
     assert(is_numeric($id));
 
-    $query = '"download_par" FROM downloadinfo WHERE "ID"=?';
-    $res = $db->select_query($query, 1, array($id));
+    $query = '"download_par" FROM downloadinfo WHERE "ID"=:id';
+    $res = $db->select_query($query, 1, array(':id'=>$id));
     if ($res === FALSE) {
         global $LN;
         throw new exception ($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
@@ -1312,7 +1216,7 @@ function get_start_time(DatabaseConnection $db, $dlid)
 function set_start_time(DatabaseConnection $db, $dlid, $start_time)
 {
     assert(is_numeric($dlid) && is_numeric($start_time));
-    $db->update_query('downloadinfo', array('start_time'), array($start_time), '"ID"=?', array($dlid));
+    $db->update_query_2('downloadinfo', array('start_time'=>$start_time), '"ID"=?', array($dlid));
 }
 
 function get_dlinfo_status(DatabaseConnection $db, $dlid)
@@ -1411,7 +1315,6 @@ function get_all_group_by_name(DatabaseConnection $db, $name)
 
     return $res[0]['ID'];
 }
-
 
 function get_group_by_name(DatabaseConnection $db, $name)
 {
@@ -1626,11 +1529,6 @@ function get_all_spots_whitelist(DatabaseConnection $db, $userid=NULL)
     return $res;
 }
 
-function wait_for_child($sec=2,$nsec=0)
-{
-    pcntl_sigtimedwait(array(SIGCHLD), $dummy, $sec, $nsec);
-}
-
 function ch_group($fn, $group)
 {
     $fgroup = filegroup($fn);
@@ -1717,54 +1615,6 @@ function real_mime_content_type(DatabaseConnection $db, $file, $force_file=FALSE
     }
 }
 
-function unformat_size($val, $base = 1024, $default_mul='')
-{
-    // default_mul is the default multiplier from SI: M=1000^2, K=1000, G=100^3 etc if no multiplier is found like in 100M ==> 100 * 1000^2
-    global $LN;
-    assert(is_numeric($base));
-    $val = trim($val);
-    if ($val == '') {
-        throw new exception($LN['error_notanumber']);
-    }
-
-    list($val, $last, $rem) = sscanf($val, '%f%c%s');
-    if ($val === NULL) {
-        throw new exception($LN['error_notanumber']);
-    }
-
-    if ($last == ''|| $last === NULL) {
-        $last = $default_mul;
-    }
-    if ($rem != '') {
-        throw new exception('Trailing characters found:' . ' ' . $rem);
-    }
-
-    $last = strtolower($last);
-    $val = round($val);
-
-    if ($last == 'y') {
-        $val = $val * $base * $base * $base * $base * $base * $base * $base * $base;
-    } elseif ($last == 'z') {
-        $val = $val * $base * $base * $base * $base * $base * $base * $base;
-    } elseif ($last == 'e') {
-        $val = $val * $base * $base * $base * $base * $base * $base;
-    } elseif ($last == 'p') {
-        $val = $val * $base * $base * $base * $base * $base;
-    } elseif ($last == 't') {
-        $val = $val * $base * $base * $base * $base;
-    } elseif ($last == 'g') {
-        $val = $val * $base * $base * $base;
-    } elseif ($last == 'm') {
-        $val = $val * $base * $base;
-    } elseif ($last == 'k') {
-        $val = $val * $base;
-    } elseif ($last != '' && $last !== NULL) {
-        throw new exception ("Unknown quantifier $last");
-    }
-
-    return $val;
-}
-
 function get_stat_id(DatabaseConnection $db, $dlid, $is_post=FALSE)
 {
     assert(is_numeric($dlid));
@@ -1797,7 +1647,7 @@ function update_dlstats(DatabaseConnection $db, $stat_id, $value)
 function get_groupid_for_set(DatabaseConnection $db, $setid)
 {
     global $LN;
-    $res = $db->select_query('"groupID" FROM setdata WHERE "ID"=?', 1, array($setid));
+    $res = $db->select_query('"groupID" FROM setdata WHERE "ID"=:id', 1, array(':id'=>$setid));
     if (!isset($res[0]['groupID'])) {
         throw new exception($LN['error_groupnotfound'], ERR_GROUP_NOT_FOUND);
     }
@@ -1808,7 +1658,7 @@ function get_groupid_for_set(DatabaseConnection $db, $setid)
 function get_feedid_for_set(DatabaseConnection $db, $setid)
 {
     global $LN;
-    $res = $db->select_query('"rss_id" FROM rss_sets WHERE "setid"=?', 1, array($setid));
+    $res = $db->select_query('"rss_id" FROM rss_sets WHERE "setid"=:id', 1, array(':id'=>$setid));
     if (!isset($res[0]['rss_id'])) {
         throw new exception($LN['error_groupnotfound'], ERR_RSS_NOT_FOUND);
     }
@@ -2775,8 +2625,8 @@ function get_array(array $arr, $key, $default=NULL)
 function get_compressed_headers(DatabaseConnection $db, $server_id)
 {
     assert(is_numeric($server_id));
-    $sql = '"compressed_headers" FROM usenet_servers WHERE "id"=?';
-    $rv = $db->select_query($sql, 1, array($server_id));
+    $sql = '"compressed_headers" FROM usenet_servers WHERE "id"=:id';
+    $rv = $db->select_query($sql, 1, array(':id'=>$server_id));
     if (!isset($rv[0]['compressed_headers'])) {
         throw new exception('No such Server', ERR_NO_SUCH_SERVER);
     }
@@ -3027,7 +2877,6 @@ function special_zip_str($line)
 {
     return str_replace(array('=', "\n", "\r", "\0"), array('=D', '=C', '=B', '=A'), $line);
 } 
-
 
 function download_exists(DatabaseConnection $db, $dlid)
 {

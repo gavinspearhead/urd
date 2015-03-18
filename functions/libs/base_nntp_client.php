@@ -573,7 +573,6 @@ class Base_NNTP_Client
     {
         // Tell the server to close the connection
         $response = $this->_send_command('QUIT');
-
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED: // RFC977: 'closing connection - goodbye!'
                 // If socket is still open, close it.

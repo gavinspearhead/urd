@@ -3427,6 +3427,7 @@ function load_subscriptions(options)
 
 function close_browse_divs()
 {
+    close_suggest('suggest_div');
     close_quickmenu();
     hide_small_help();
     hide_help();
@@ -6236,10 +6237,16 @@ function do_command(command, message)
     }
 }
 
+function close_suggest(suggest_div)
+{
+    $('#' + suggest_div).addClass('hidden');
+}
+
+
 function suggest(type, suggest_div, text_bar, e) 
 { 
     if (text_bar.val() == ''|| e.which == 27) { // don't show suggestions if the textbar is empty or the key pressed is esc
-        $('#' + suggest_div).addClass('hidden');
+        close_suggest(suggest_div);
         return;
     }
     var url = 'ajax_suggest_text.php';
@@ -6260,12 +6267,12 @@ function suggest(type, suggest_div, text_bar, e)
             $('#' + suggest_div).removeClass('hidden');
             $('div[name="suggestion"]').mousedown( function () { 
                 text_bar.val( $(this).text()); 
-                $('#' + suggest_div).addClass('hidden'); 
+                close_suggest(suggest_div);
                 load_sets( { 'offset':'0', 'setid':'' } ); 
             } );
-            text_bar.blur( function () { $('#' + suggest_div).addClass('hidden'); return false; } );
+            text_bar.blur( function () { close_suggest(suggest_div); return false; } );
             $(document).keydown(function(e) { // close on ESC
-                if (e.which == 27) { $('#' + suggest_div).addClass('hidden'); return false; } } );
+                if (e.which == 27) { close_suggest(suggest_div); return false; } } );
             $('div[name="suggestion"]').mouseover( function () { $(this).addClass('highlight2'); } );
             $('div[name="suggestion"]').mouseout( function () { $(this).removeClass('highlight2'); } );
         } else {

@@ -23,6 +23,7 @@
  */
 define('ORIGINAL_PAGE', 'URDD');
 
+declare(ticks = 1); // we need this for the signals to work properly.... all hail the splendid php documentation :-|
 
 $pathu = realpath(dirname(__FILE__));
 
@@ -122,7 +123,7 @@ function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
     $rv = NO_ERROR;
     $cmd_code = $item->get_command_code();
     if (get_command($cmd_code) === FALSE) {
-        urdd_exit (INTERNAL_FAILURE);
+        urdd_exit(INTERNAL_FAILURE);
     }
 
     if ($nntp_enabled !== TRUE && $item->need_nntp()) {
@@ -205,7 +206,8 @@ function get_exit_code($status, $pid)
         $rc = pcntl_wexitstatus($status);
     } elseif (pcntl_wifsignaled($status)) {
         echo_debug('Signal happened', DEBUG_SERVER);
-        $rc = pcntl_wexitstatus($status);
+        $sig = pcntl_wtermsig($status);
+        $rc = SIGNAL_TERM;
     } else {
         write_log('What now? Status is not a normal exit???', LOG_WARNING);
         // is it sane to set it to -1??? // we assume it crashed
@@ -229,6 +231,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
     try {
         while (($pid = pcntl_waitpid(-1, $proc_status, WNOHANG)) > 0) { // we check if there is a signal
             $rc = get_exit_code($proc_status, $pid);
+            $servers->remove_kill_list($pid);
             list ($item, $server_id, $status) = $servers->delete_thread($db, $pid, TRUE);
             echo_debug("Thread status $status; server: $server_id", DEBUG_SERVER);
             if ($rc == DB_FAILURE) {
@@ -305,8 +308,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                     // we have to try another server
                     $servers->recreate_command($db, $item, $item->get_command(), FALSE, TRUE);
                 } else {
-                    $status = QUEUE_FAILED;
-                    update_queue_status($db, $item->get_dbid(), $status, 0, 0, '');
+                    update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 0, '');
                     $args = split_args($item->get_args());
                     $dlid = $args[0];
                     dec_dl_lock($db, $dlid);
@@ -369,6 +371,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
             } else {
                 echo_debug("Something weird happened ($rc). Finishing up thread.", DEBUG_SERVER);
             }
+            usleep(000);
         }
     } catch (exception $e) {
         write_log($e->getMessage(), LOG_ERR);
@@ -398,7 +401,7 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
         return FALSE;
     } elseif ($command == urdd_protocol::COMMAND_ADDDATA) {
         if ($item->get_preview()) { // if no server is available or no total free slot, we simple force one
-            if (!$servers->slots_available()) {
+            if ($servers->slots_available() === FALSE) {
                 try {
                     $servers->preempt($par_db, $item, $item->get_userid());
                     usleep(5000);// wait so that the chld signal is delivered and the reap function calls it
@@ -441,8 +444,7 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
     }
     $pid = pcntl_fork();
     if ($pid < 0) { //error
-        $status = QUEUE_FAILED;
-        update_queue_status($par_db, $item->get_dbid(), $status);
+        update_queue_status($par_db, $item->get_dbid(), QUEUE_FAILED);
         write_log('Error: fork failed');
         urdd_exit(INTERNAL_FAILURE);
     } elseif ($pid != 0) { // parent
@@ -477,20 +479,24 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
     return FALSE;
 }
 
+function child_sig_handler($foo)
+{
+    exit(0);
+}
+
 function start_child(action $item, conn_list $conn_list, $nntp_enabled)
 {
     global $is_child;
     assert(is_bool($nntp_enabled));
     try {
         $is_child = TRUE; // for overriding the shutdown function
-        $status = QUEUE_RUNNING;
-        pcntl_signal(SIGTERM, SIG_DFL);
+        pcntl_signal(SIGTERM, 'child_sig_handler');
         pcntl_signal(SIGCHLD, SIG_DFL);
         pcntl_signal(SIGINT, SIG_DFL);
         set_error_handler('urdd_error_handler'); // needed as we close stderr... and php will crash if something writes to stderr/out
         $conn_list->close_all(); // needed otherwise quit will not exit if children are running
         $child_db = connect_db(TRUE);
-        update_queue_status($child_db, $item->get_dbid(), $status);
+        update_queue_status($child_db, $item->get_dbid(), QUEUE_RUNNING);
         handle_queue_item($child_db, $item, $nntp_enabled);
         // doesn't return here,
         write_log('You should never see this', LOG_ERR);
@@ -504,7 +510,7 @@ function start_child(action $item, conn_list $conn_list, $nntp_enabled)
 
 function check_schedule(DatabaseConnection $db, conn_list &$conn_list, server_data &$servers)
 {
-//    echo_debug_function(DEBUG_MAIN, __FUNCTION__);
+    //    echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     global $config;
     if ($config['scheduler'] !== TRUE) {
         return;
@@ -535,7 +541,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
     $conn_list = new conn_list(get_config($db, 'urdd_timeout', socket::DEFAULT_SOCKET_TIMEOUT));
     $restart = $config['urdd_restart'];
     reset_download_status($db);
-    
+
     restore_old_queue($db, $servers, $conn_list, $restart);
     $username = get_config($db, 'run_update');
     if ($username != '0') { // some install magic, after the install we run update group automagically with the user given by the installer
@@ -555,7 +561,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
         $conn_list->close_timedout();
         nzb_poller::poll_nzb_dir($db, $servers); // see if there are nzb files in any of the spool directors
         check_schedule($db, $conn_list, $servers); // check if there are scheduled jobs to run
-      //  $servers->check_conn_time(); 
+        //  $servers->check_conn_time(); 
         $queue_ready = check_queue($db, $conn_list, $servers);
         if ($queue_ready === TRUE) {
             $timeout = $conn_list->first_timeout();
@@ -603,10 +609,10 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
     assert(is_bool($restart));
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     try {
-        $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE ?';
-        $res_running = $db->select_query($query, array(QUEUE_RUNNING));
-        $query = '"description", "ID", "userid", "status", "restart", "priority" FROM queueinfo WHERE ("status" LIKE ? OR "status" LIKE ?)';
-        $res_queued = $db->select_query($query, array(QUEUE_PAUSED, QUEUE_QUEUED));
+        $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE :qr';
+        $res_running = $db->select_query($query, array(':qr'=>QUEUE_RUNNING));
+        $query = '"description", "ID", "userid", "status", "restart", "priority" FROM queueinfo WHERE ("status" LIKE :qq OR "status" LIKE :qp)';
+        $res_queued = $db->select_query($query, array(':qp'=>QUEUE_PAUSED, ':qq'=>QUEUE_QUEUED));
         if (is_array($res_running)) {
             $response = '';
             foreach ($res_running as $row) {
@@ -722,15 +728,12 @@ function set_urdd_userid(DatabaseConnection $db)
 function stupid_php_crap()
 {
     date_default_timezone_set(date_default_timezone_get()); // silly but otherwise we get tons of notices for each time fn call with E_STRICT
-    declare(ticks = 1); // we need this for the signals to work properly.... all hail the splendid php documentation :-|
 }
 
 function find_server(DatabaseConnection $db, server_data $servers, test_result_list $test_results)
 {
     global $config;
     $servers->find_servers($db, $test_results, NULL, ($config['find_servers_type'] == 'extended'), TRUE);
-    echo "\n\nResults:\n";
-    echo $test_results->get_all_as_string();
 }
 
 function get_server_data(DatabaseConnection $db)
@@ -897,8 +900,6 @@ try {
     echo_debug_trace($e, DEBUG_SERVER);
     urdd_exit($e->getcode());
 }
-
-
 
 try {
     $listen_sock = new urdd_sockets();

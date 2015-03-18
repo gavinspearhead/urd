@@ -166,7 +166,7 @@ function set_handlers()
 {
     echo_debug_function(DEBUG_SIGNAL, __FUNCTION__);
 
-    pcntl_signal(SIGCHLD, 'sig_handler'); // we want the signal ... but it needn't do anything
+    pcntl_signal(SIGCHLD, 'sig_handler', FALSE); // we want the signal ... but it needn't do anything
     pcntl_signal(SIGTERM, 'kill_handler', FALSE);
     pcntl_signal(SIGINT,  'kill_handler', FALSE);
     pcntl_signal(SIGHUP,  'hup_handler',  FALSE);

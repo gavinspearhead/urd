@@ -977,7 +977,7 @@ class urd_extsetinfo
         if ($res === FALSE) {
             $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, 'setname', $newsetname, $commit, $type));
         } else {
-            $db->update_query('extsetdata', array('value'=>$newsetname, 'committed'=>$commit), '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
+            $db->update_query_2('extsetdata', array('value'=>$newsetname, 'committed'=>$commit), '"setID"=? AND "name"=? AND "type"=?', array($setid, 'setname', $type));
         }
         // Return newsetname so we can use ajax to show it in the browse page without reloading it.
         return $newsetname; // Unsafe version, we don't want the added quotes thank you.

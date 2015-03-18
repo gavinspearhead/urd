@@ -67,7 +67,7 @@ class URD_NNTP
 
     public function __destruct()
     {
-        $this->disconnect();
+        $this->disconnect(TRUE);
         $this->downloadspeedArr = NULL;
         $this->downloadspeedArr_b = NULL;
         $this->db = NULL;
@@ -126,18 +126,19 @@ class URD_NNTP
         $this->extset_headers = array();
     }
 
-    public function disconnect()
+    public function disconnect($silent=FALSE)
     {
-        echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         if ($this->nntp !== NULL && ($this->nntp instanceof NNTP_Client)) {
             $msg = $this->nntp->disconnect();
-            write_log('Disconnect message: ' . $msg, LOG_INFO);
+            if (!$silent) {
+                write_log('Disconnect message: ' . $msg, LOG_INFO);
+            }
         }
         $this->nntp = NULL;
     }
     public function is_connected()
     {
-        return is_a($this->nntp, 'NNTP_Client') && $this->nntp->is_connected();
+        return ($this->nntp instanceof NNTP_Client) && $this->nntp->is_connected();
     }
 
     public function reconnect()
@@ -776,7 +777,8 @@ Array
         echo_debug("$_blacklist_counter of " . $total_counter_1 . ' articles matched the blacklist', DEBUG_NNTP);
         $blacklist_counter = gmp_add($blacklist_counter, $_blacklist_counter);
         unset($spot_comments, $spot_reports, $spot_ids);
-        add_parts($this->db, $allParts, $this->groupID);
+        $ug = new urdd_group;
+        $ug->add_parts($this->db, $allParts, $this->groupID);
 
         return TRUE;
     }

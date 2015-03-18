@@ -318,10 +318,9 @@ function start_download(DatabaseConnection $db, action $item)
                     echo_debug('No more articles found', DEBUG_NNTP);
                     $comment = "Processed $cnt batches";
                     write_log($comment, LOG_DEBUG);
-                    $status = QUEUE_FINISHED;
                     $progress = NULL; // not set the progress... other threads may still be running....
                     $error_no = NO_ERROR;
-                    update_queue_status($db, $item->get_dbid(), $status, 0, $progress, $comment);
+                    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED , 0, $progress, $comment);
 
                     return $error_no;
                 }
@@ -340,11 +339,10 @@ function start_download(DatabaseConnection $db, action $item)
                 list($bytes) = download_batch($db, $res, $dir, $nzb, $groupid, $userid, $connected, $check_for_rar_encryption, $download_par_files);
             } catch (exception $e) {
                 if ($e->getCode() == ENCRYPTED_RAR) {
-                    $status = QUEUE_CANCELLED;
                     $progress = 0;
                     $comment = $e->getMessage();
                     write_log('Cancelling download: ' . $e->getmessage(), LOG_NOTICE);
-                    update_queue_status($db, $item->get_dbid(), $status, 0, $progress, $comment);
+                    update_queue_status($db, $item->get_dbid(),QUEUE_CANCELLED , 0, $progress, $comment);
                     urdd_exit(ENCRYPTED_RAR);
                 } else {
                     throw $e;
@@ -391,10 +389,8 @@ function start_download(DatabaseConnection $db, action $item)
     }
 
     // Bad exit:
-    $status = QUEUE_FAILED;
     $comment = 'Connection failed';
-    $progress = 0;
-    update_queue_status($db, $item->get_dbid(), $status, 0, $progress, $comment);
+    update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 0, $comment);
 
     return $error_no;
 }
@@ -466,8 +462,7 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
                 }
             }
         } elseif ($status == DOWNLOAD_CANCELLED) {
-            $done_status = DOWNLOAD_CANCELLED; // a cancel is permanent
-            update_dlinfo_status ($db, $done_status, $dlid);
+            update_dlinfo_status ($db, DOWNLOAD_CANCELLED, $dlid);
             cleanup_download_articles($db, $dlid);
         } else {
             echo_debug("Unhandled status of download = $status", DEBUG_SERVER);
@@ -542,7 +537,6 @@ function do_create_download(DatabaseConnection $db, server_data &$servers, $user
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     assert(is_numeric($userid));
-    $status = DOWNLOAD_READY;
     $r = get_pref($db, 'unrar', $userid);
     $unrar = ($r !== FALSE) ? $r : 0; // default off?
     $r = get_pref($db, 'unpar', $userid);
@@ -552,7 +546,7 @@ function do_create_download(DatabaseConnection $db, server_data &$servers, $user
     $r = get_pref($db, 'delete_files', $userid);
     $delete_files = ($r !== FALSE) ? $r : 0; // default off?
     $download_par_files = get_pref($db, 'download_par', $userid);
-    $id = add_download($db, $userid, $unpar, $unrar, $subdl, $delete_files, $status, '', $preview ? download_types::PREVIEW : download_types::NORMAL, TRUE, $download_par_files);
+    $id = add_download($db, $userid, $unpar, $unrar, $subdl, $delete_files, DOWNLOAD_READY, '', $preview ? download_types::PREVIEW : download_types::NORMAL, TRUE, $download_par_files);
 
     $dl_path_basis = get_dlpath($db);
     $username = get_username($db, $userid);
@@ -604,12 +598,9 @@ function restart_download(DatabaseConnection $db, server_data &$servers, $userid
         if ($servers->has_equal($item)) {
             return urdd_protocol::get_response(406);
         }
-        $dl_status = DOWNLOAD_ACTIVE;
-        $ready_status = DOWNLOAD_READY;
-        update_dlinfo_status ($db, $ready_status, $id, $dl_status);
+        update_dlinfo_status ($db, DOWNLOAD_READY, $id, DOWNLOAD_ACTIVE);
         if ($item->is_paused()) {
-            $status = DOWNLOAD_PAUSED;
-            update_dlinfo_status ($db, $status, $id);
+            update_dlinfo_status ($db, DOWNLOAD_PAUSED, $id);
         }
         $dl_path = get_download_destination($db, $id);
         $rv = is_dir($dl_path) && is_writable($dl_path);
@@ -668,7 +659,6 @@ function verify_cksfv(DatabaseConnection $db, $dir, $dlid, pr_list $files, actio
         $endtime = time();
         $t_time = $endtime - $starttime;
         $error = FALSE;
-        $status = QUEUE_RUNNING;
         if ($count > 0) {
             unlink($log_file);
         }
@@ -721,7 +711,6 @@ function verify_par(DatabaseConnection $db, $dir, $dlid, pr_list $files, action 
         $comment = 'PAR2 complete ';
         $endtime = time();
         $t_time = $endtime - $starttime;
-        //$status = QUEUE_RUNNING;
         $error = FALSE;
         unlink($log_file);
         update_queue_status($db, $item->get_dbid(), NULL, $t_time, 50, $comment);
@@ -1175,3 +1164,18 @@ function download_subs(DatabaseConnection $db, $dir, $userid)
     move_sub_files($dir . $addedsubs, $dir);
     @rmdir($dir . $addedsubs);
 }
+
+function get_download_size(DatabaseConnection $db, $dlid)
+{
+    global $LN;
+    assert(is_numeric($dlid));
+    $sql = '"size" FROM downloadinfo WHERE "ID" = :dlid';
+    $res = $db->select_query($sql, 1, array(':dlid' => $dlid));
+    if (!isset($res[0]['size'])) {
+        throw new exception($LN['error_downloadnotfound'] . ": $dlid");
+    }
+
+    return $res[0]['size'];
+}
+
+

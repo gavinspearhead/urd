@@ -363,9 +363,10 @@ class urd_spots
 
         echo_debug("Deleted $spots_cnt spots, $comment_cnt comments, $report_cnt reports and $image_cnt images", DEBUG_DATABASE);
         update_queue_status ($db, $dbid, NULL, 0, 100);
-        purge_binaries($db, $groupid);
-        purge_binaries($db, $comments_groupid);
-        purge_binaries($db, $reports_groupid);
+        $ug = new urdd_group;
+        $ug->purge_binaries($db, $groupid);
+        $ug->purge_binaries($db, $comments_groupid);
+        $ug->purge_binaries($db, $reports_groupid);
 
         return $spots_cnt;
     }

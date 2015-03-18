@@ -7,3 +7,4 @@ dbconfig.php*
 tools/*.tar.gz
 tools/*.tgz
 login.txt
+tags
