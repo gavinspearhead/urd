@@ -1112,7 +1112,7 @@ function do_adddata(DatabaseConnection $db, action $item)
             $res2 = $db->execute_query($sql, array($setid));
 
             $sql = '"value" FROM extsetdata WHERE "setID"=:setid AND "name"=:name';
-            $res3 = $db->select_query($sql, 1, array(':sedit'=>$setid, ':name'=>'password'));
+            $res3 = $db->select_query($sql, 1, array(':setid'=>$setid, ':name'=>'password'));
             if (isset($res3[0]['value'])) {
                 $pw = $res3[0]['value'];
                 $db->update_query_2('downloadinfo', array('password'=>$pw), '"ID"=? AND "password"=?', array($dlid, ''));
