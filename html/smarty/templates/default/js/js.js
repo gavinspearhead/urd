@@ -6266,9 +6266,8 @@ function suggest(type, suggest_div, text_bar, e)
             $('#' + suggest_div).html(r.content);
             $('#' + suggest_div).removeClass('hidden');
             $('div[name="suggestion"]').mousedown( function () { 
-                text_bar.val( $(this).text()); 
                 close_suggest(suggest_div);
-                load_sets( { 'offset':'0', 'setid':'' } ); 
+                load_sets( { 'offset':'0', 'setid':$("input", this).val()} ); 
             } );
             text_bar.blur( function () { close_suggest(suggest_div); return false; } );
             $(document).keydown(function(e) { // close on ESC

@@ -424,9 +424,8 @@ function store_ETA(DatabaseConnection $db, $eta, $percentage, $speed, $dbid)
 {
     assert(is_numeric($eta) && is_numeric($percentage) && is_numeric($dbid));
     $eta = max(0, floor($eta));
-    $time = time();
     $qry = 'UPDATE queueinfo SET "ETA"=((:eta + "ETA") / 2), "progress"=:percentage, "comment"=:speed, "lastupdate"=:time WHERE "ID"=:dbid';
-    $db->execute_query($qry, array(':dbid'=>$dbid, ':eta'=>$eta, ':percentage'=>$percentage, ':speed'=>$speed, ':time'=>$time));
+    $db->execute_query($qry, array(':dbid'=>$dbid, ':eta'=>$eta, ':percentage'=>$percentage, ':speed'=>$speed, ':time'=>time()));
 }
 
 function add_schedule(DatabaseConnection $db, $cmd, $stime, $repeat, $userid)

@@ -29,6 +29,18 @@ $pathab = realpath(dirname(__FILE__));
 
 require_once "$pathab/../functions/html_includes.php";
 
+function filter_secret_data($arr)
+{
+    foreach ($arr as $k => $p) {
+        if (is_array($p)) { 
+            $arr[$k] = filter_secret_data($p);
+        }
+        if (strstr($k, 'password') || strstr($k, 'privatekey'))
+            $arr[$k] = 'xxxxxx';
+    }
+    return $arr;
+}
+
 function print_perms($perms)
 {
     if (($perms & 0xC000) == 0xC000) {
@@ -335,22 +347,14 @@ $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 
 if ($isadmin) {
     echo "<h3>Global configuration</h3>\n";
-    foreach ($prefs as $k => $p) {
-        if (strstr($k, 'password') ||strstr($k, 'privatekey'))
-            $prefs[$k] = 'xxxxxx';
-    }
+    $prefs = filter_secret_data($prefs) ;
     ksort($prefs);
     debug_dump_str_key($prefs);
 }
 
 echo "<h3>User preferences</h3>\n";
 $uprefs = load_prefs($db, $userid);
-foreach ($uprefs as $k => $p) {
-    if (strstr($k, 'password') ||strstr($k, 'privatekey') ) {
-        $uprefs[$k] = 'xxxxxx';
-    }
-}
-
+$uprefs = filter_secret_data($uprefs) ;
 ksort($uprefs);
 debug_dump_str_key($uprefs);
 
@@ -435,7 +439,9 @@ try {
 }
 
 echo "<h3>Session info</h3>\n";
-debug_dump_str_key($_SESSION);
+$session_data = filter_secret_data($_SESSION);
+sort($session_data);
+debug_dump_str_key($session_data);
 
 echo "<br/>--------------- copy to here ----------------<br/>\n";
 echo "</body>\n";

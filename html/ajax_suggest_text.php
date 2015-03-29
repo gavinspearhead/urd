@@ -63,7 +63,7 @@ function get_spot_suggestions(DatabaseConnection $db, $text, $cat, $is_adult)
         $q_cat = 'AND "category" = :cat';
         $input_arr [':cat'] = $cat;
     }
-    $sql = "\"title\" FROM spots WHERE 1=1 $q_search $q_cat $q_adult ORDER BY \"stamp\" DESC";
+    $sql = "\"title\", \"spotid\" AS \"setid\" FROM spots WHERE 1=1 $q_search $q_cat $q_adult ORDER BY \"stamp\" DESC";
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
         $res = array();
@@ -88,7 +88,7 @@ function get_group_suggestions(DatabaseConnection $db, $text, $group_id, $is_adu
         $q_group = 'AND "groupID" = :group';
         $input_arr[':group'] = $group_id;
     }
-    $sql = "\"subject\" AS \"title\" FROM setdata $q_adult_join WHERE 1=1 $q_search $q_group $q_adult ORDER BY \"date\" DESC";
+    $sql = "\"subject\" AS \"title\", \"ID\" AS \"setid\" FROM setdata $q_adult_join WHERE 1=1 $q_search $q_group $q_adult ORDER BY \"date\" DESC";
     //echo $q_search;
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
@@ -106,14 +106,15 @@ function get_rss_suggestions(DatabaseConnection $db, $text, $feed_id, $is_adult)
     $q_adult_join = '';
     if (!$is_adult) {
         $q_adult_join = 'LEFT JOIN rss_urls ON rss_urls."id" = rss_sets."rss_id"';
-        $q_adult = 'AND rss_urls.adult != ' . ADULT_ON;
+        $q_adult = 'AND rss_urls.adult != :adult';
+        $input_arr[':adult'] = ADULT_ON;
     }
     $q_feed = '';
     if (is_numeric($feed_id) && $feed_id != 0) {
         $q_feed = 'AND "rss_id" = :feed';
         $input_arr[':feed']= $feed_id;
     }
-    $sql = "\"setname\" AS \"title\" FROM rss_sets $q_adult_join WHERE \"setname\" $like :text $q_feed $q_adult ORDER BY \"timestamp\" DESC";
+    $sql = "\"setname\" AS \"title\", \"setid\" AS \"setid\" FROM rss_sets $q_adult_join WHERE \"setname\" $like :text $q_feed $q_adult ORDER BY \"timestamp\" DESC";
     $res = $db->select_query($sql, 16, $input_arr); 
     if ($res === FALSE) {
         $res = array();
@@ -145,7 +146,7 @@ try {
     }
     init_smarty('', 0);
     foreach ($suggestions as $k => &$s) { 
-        $suggestions[$k] = strip_tags(preg_replace(array('/&#?[a-z0-9]{2,8};/i', '/[;.,+]/i'),' ',$s['title']));
+        $suggestions[$k] = array('title'=> strip_tags(preg_replace(array('/&#?[a-z0-9]{2,8};/i', '/[;.,+]/i'),' ',$s['title'])), 'setid'=> $s['setid']);
     }
     $smarty->assign('suggestions', $suggestions);
     $content = $smarty->fetch('ajax_suggest_text.tpl');

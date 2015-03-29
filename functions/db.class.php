@@ -208,7 +208,6 @@ abstract class DatabaseConnection
     abstract public function connect();
     abstract public function create_function($function_name, $callback, $num_args);
     abstract protected function execute_if_exists($table, $qry);
-    //abstract protected function select_limit($sql, $num_rows=-1, $offset=-1, $inputarr=FALSE);
 
     public function get_error_code()
     {
@@ -218,16 +217,16 @@ abstract class DatabaseConnection
     {
         if (is_numeric($num_rows) && $num_rows > 0) {
             $sql .= " LIMIT $num_rows";
-            if (is_numeric($offset) && $offset > 0) {
-                $sql .= " OFFSET $offset";
-            }
+        }
+        if (is_numeric($offset) && $offset > 0) {
+            $sql .= " OFFSET $offset";
         }
         $this->set_emulate_prepare(FALSE);
         $rv = $this->execute_query($sql, $inputarr);
         $this->set_emulate_prepare(TRUE);
         return $rv;
     }
-        
+
     private function _execute($query, $values=FALSE)
     {
         if (is_array($values)) {

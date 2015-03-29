@@ -527,7 +527,6 @@ class usenet_servers
             return TRUE;
         }
         assert (is_numeric($id) && $id > 0);
-	echo_debug('### add thread to server ' . $id, DEBUG_ALL);
         if (!isset($this->servers[$id])) {
             throw new exception ("Server ($id) does not exist", ERR_NO_SUCH_SERVER);
         }
@@ -550,7 +549,6 @@ class usenet_servers
             throw new exception ("Server ($id) does not exist", ERR_NO_SUCH_SERVER);
         }
 
-	echo_debug('#### remove thread to server ' . $id, DEBUG_ALL);
         return $this->servers[$id]->delete_thread();
     }
     public function enable_posting($server_id)

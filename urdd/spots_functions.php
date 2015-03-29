@@ -142,8 +142,7 @@ class urd_spots
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
-                echo_debug("Something wrong with the header", DEBUG_SERVER);
-                //echo "something wrong with the header\n";
+                echo_debug('Something wrong with the header', DEBUG_SERVER);
                 continue;
             }
 
@@ -178,7 +177,7 @@ class urd_spots
                         $spot_data['user-key']['modulo'] = (string) $xml->Modulus;
                     }
                     break;
-                case 'x-user-signature' :
+                case 'x-user-signature':
                     $spot_data['user-signature'] = spotparser::unspecial_string(substr($line, 18));
                     break;
                 case 'x-xml':
@@ -194,7 +193,7 @@ class urd_spots
                 $spot_data['xml'] == '' ||
                 $spot_data['user-key'] == '' ||
                 $spot_data['user-signature'] == '') {
-            echo_debug("No valid signature", DEBUG_SERVER);
+            echo_debug('No valid signature', DEBUG_SERVER);
             return FALSE;
         }
         
@@ -269,7 +268,7 @@ class urd_spots
         echo_debug('Deleting expired spots', DEBUG_DATABASE);
 
         $sql = "count(\"spotid\") AS cnt FROM spots WHERE (\"stamp\" < :stamp $spam_count ) $keep_int";
-        $res = $db->select_query($sql, -1, -1, $inputarr);
+        $res = $db->select_query($sql, $inputarr);
         $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
         write_log('Deleting ' . $cnt . ' spots');
         update_queue_status ($db, $dbid, NULL, 0, 1);
@@ -390,7 +389,7 @@ class urd_spots
                 $sql = '"spotid" FROM spots WHERE "spotid" = :id';
                 $res = $db->select_query($sql, 1, array(':id' => $id));
                 if (!isset($res[0]['spotid'])) {
-                    $cnt ++;
+                    $cnt++;
                     if (file_exists($filename)) {
                         @unlink($filename);
                     }
@@ -545,8 +544,8 @@ class urd_spots
     public static function load_spot_comments(DatabaseConnection $db, URD_NNTP $nzb, action $item, $expire)
     {
         assert(is_numeric($expire));
-        $sql = 'COUNT(*) AS "cnt" FROM spot_comments WHERE "spotid"=? OR "spotid"=?';
-        $res = $db->select_query($sql, array('', '0'));
+        $sql = 'COUNT(*) AS "cnt" FROM spot_comments WHERE "spotid"=:spotid1 OR "spotid"=:spotid2';
+        $res = $db->select_query($sql, array(':spotid1'=> '', ':spotid2'=>'0'));
         if (!isset($res[0]['cnt'])) {
             $status = QUEUE_FINISHED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spot comments');
@@ -573,7 +572,7 @@ class urd_spots
 
         $time_a = microtime(TRUE);
         while (TRUE) {
-            $res = $db->select_query($sql, $limit, array(':spotid1' => '',':spotid2' => '0'));
+            $res = $db->select_query($sql, $limit, array(':spotid1' => '', ':spotid2' => '0'));
             if (!is_array($res)) {
                 break;
             }
@@ -676,8 +675,8 @@ class urd_spots
     static function load_spot_reports(DatabaseConnection $db, URD_NNTP $nzb, action $item, $expire)
     {
         assert(is_numeric($expire));
-        $sql = 'COUNT(*) AS "cnt" FROM spot_reports WHERE "reference"=? OR "spotid"=?';
-        $res = $db->select_query($sql, array('', '0'));
+        $sql = 'COUNT(*) AS "cnt" FROM spot_reports WHERE "reference"=:ref OR "spotid"=:spotid';
+        $res = $db->select_query($sql, array(':ref'=>'', ':spotid'=>'0'));
         if (!isset($res[0]['cnt'])) {
             $status = QUEUE_FINISHED;
             update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No spot reports');
@@ -692,7 +691,7 @@ class urd_spots
         $expire_timestamp = time() - ($expire * 24 * 3600);
         $time_a = microtime(TRUE);
         while (TRUE) {
-            $res = $db->select_query($sql, $limit, array(':ref' => '',':spotid' => '0'));
+            $res = $db->select_query($sql, $limit, array(':ref' => '', ':spotid' => '0'));
             if (!is_array($res)) {
                 break;
             }

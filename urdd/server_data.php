@@ -569,7 +569,6 @@ class server_data { // lots of cleaning up to do
 
     public function find_free_slot(array $already_used_servers=array(), $need_posting=FALSE, $is_download=FALSE)
     {
-        echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         return $this->servers->find_free_slot($already_used_servers, $need_posting, $is_download);
     }
     // queue wrappers
