@@ -30,7 +30,7 @@ define ('URDD_DOWNLOAD_LOCKFILE',   '.urdd_lock');
 define ('URDD_PORT',                11666);
 
 define ('MIN_PHP_VERSION',          '5.3.0');
-define ('RECOMMENDED_PHP_VERSION',  '5.5.18');
+define ('RECOMMENDED_PHP_VERSION',  '5.5.23');
 
 define ('SERVER_CONNECTION_TIMEOUT', 300);
 
