@@ -97,7 +97,7 @@ function task_action(action, task)
         'task': task
     };
     if (action !== null) {
-        $.post( url, data).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 load_tasks();
@@ -328,7 +328,7 @@ function toggle_set(setID, type)
 
     var url = 'ajax_processbasket.php';
 
-    $.post( url, {
+    $.post(url, {
         setID: setID,
         type: type,
         command: command,
@@ -687,7 +687,7 @@ function show_users(order, direction)
         data.sort_dir = direction;
     }
 
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'usersdiv');
@@ -820,7 +820,7 @@ function show_files(options)
     }
     $('#search').keypress(function(event) { do_keypress_viewfiles(event); });
     var url = 'ajax_editviewfiles.php';
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -910,7 +910,7 @@ function show_usenet_servers(order, direction)
     if (direction != null) {
         data.sort_dir = direction;
     }
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'usenetserversdiv');
@@ -938,7 +938,7 @@ function show_post_message(type, spotid)
         }
     }
     data.groupid = $('#select_groupid>option:selected').val();
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -957,7 +957,7 @@ function show_uploadnzb(dir, name)
         data.dir = dir;
         data.filename = name;
     }
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -981,7 +981,7 @@ function show_uploadnzb(dir, name)
 function show_edit_post(postid)
 {
     var url = 'ajax_show_post.php';
-    $.post( url, {
+    $.post(url, {
         cmd: 'showrename', 
         postid: postid
     }).done(function(html) {
@@ -1045,7 +1045,7 @@ function load_jobs(order, direction)
     if (direction != null) {
         data.sort_dir = direction;
     }
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'jobsdiv');
@@ -1088,7 +1088,7 @@ function load_tasks(order, direction, clear_offset)
     if (offsetval != '' && clear_offset !== true) {
         data.offset = offsetval;
     }
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'tasksdiv');
@@ -1153,7 +1153,7 @@ function update_control()
 function load_disk_status()
 {
     var url = 'ajax_showstatus.php';
-    $.post( url, { type: 'disk' }).done(function(html) {
+    $.post(url, { type: 'disk' }).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             if (!x.connected) {
@@ -1248,7 +1248,7 @@ function add_search(type)
         srch = srch.replace(/[\]\[_"+.]/g, ' ');
         var challenge = get_value_from_id('challenge', '');
         var url = 'ajax_action.php';
-        $.post( url, {
+        $.post(url, {
              cmd: 'add_search',
              value: srch,
              type: type,
@@ -1369,7 +1369,7 @@ function which_button(buttonval, e)
             set_ids.push($(this).val());
         });
         var data = { whichbutton: 'checksize', 'set_ids' : set_ids };
-        $.post( url, data).done(function(html) {
+        $.post(url, data).done(function(html) {
             var content = $.parseJSON(html);
             if (content.error != 0){ /*&& content.message != '') {
                 show_confirm(content.message, function() {
@@ -1413,7 +1413,7 @@ function process_whichbutton(buttonval, rightclick)
     );
     data.set_ids = set_ids;
 
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var content = $.parseJSON(html);
         if (content.error == 0) {
             update_basket_display();
@@ -1470,7 +1470,7 @@ function select_preview(binid, gid)
         preview_group_id: gid,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             blink_status();
@@ -1519,7 +1519,7 @@ function delete_preview(dlid)
         dlid: dlid,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
          if (x.error == 0) {
              load_activity_status(1);
@@ -1547,7 +1547,7 @@ function delete_blacklist(id, msg)
         challenge: challenge
     };
     var f = function() {
-        $.post( url, data).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 if (x.action == 'delete') {
@@ -1584,7 +1584,7 @@ function enable_blacklist(id)
         id: id,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             if (x.action == 'hide') {
@@ -1629,7 +1629,7 @@ function buttons_action(action, uid)
         cmd: action,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             if (action == 'edit') {
@@ -1655,7 +1655,7 @@ function user_update_setting(uid, action, value)
         value: value,
         challenge: challenge
     };
-     $.post( url, data).done(function(html) {
+     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_users();
@@ -1682,7 +1682,7 @@ function user_action(action, uid)
         cmd: action,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             if (action == 'edit') {
@@ -1714,7 +1714,7 @@ function usenet_action(action, uid)
         cmd: action,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_usenet_servers();
@@ -1797,7 +1797,7 @@ function show_popup_remote(referrer, command)
     if (command !== null) {
         data.cmd = command;
     }
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -1830,7 +1830,7 @@ function hide_popup(itemname, baseclass)
 function show_rename_transfer(dlid)
 {
     var url = 'ajax_edittransfers.php';
-    $.post( url, {
+    $.post(url, {
             cmd: 'showrename',
             dlid: dlid
         }
@@ -1902,7 +1902,7 @@ function edit_usenet_server(id, only_auth)
 {
     var url = 'ajax_edit_usenet_servers.php';
     var data = { cmd: 'showeditusenetserver', id: id, only_auth: (only_auth ? '1' : '0') };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -1939,7 +1939,7 @@ function update_group()
         group_subscribed: group_subscribed,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -1979,7 +1979,7 @@ function update_rss()
         rss_subscribed: rss_subscribed,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -2049,7 +2049,7 @@ function update_user()
         fileedit: fileedit,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -2130,7 +2130,7 @@ function post_message()
         groupid: $('#groupid>option:selected').val(),
         challenge: challenge
     };
-     $.post( url, data).done(function(html) {
+     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -2207,7 +2207,7 @@ function rename_transfer()
         starttime: starttime,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -2275,7 +2275,7 @@ function rename_file_form(fileid)
         filename: name,
         challenge: challenge
     };
-    $.post( url,data).done(function(html) {
+    $.post(url,data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup525x300');
@@ -2304,7 +2304,7 @@ function update_filename()
         rights: rights,
         group: group
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -2433,7 +2433,7 @@ function show_quick_display(srctype, subject, e, type)
 {
     // Fill menu
     var url = 'ajax_showquickdisplay.php';
-    $.post( url, {
+    $.post(url, {
             type: type,
             srctype: srctype,
             subject: subject
@@ -2473,7 +2473,7 @@ function guess_extset_info_safe(setID, type)
         show_alert('Please select the set name before clicking this button.');
     } else {
         var url = 'ajax_showquickdisplay.php';
-        $.post( url, {
+        $.post(url, {
                 type: type,
                 srctype: 'setguessesisafe',
                 setname: setname,
@@ -2503,7 +2503,7 @@ function guess_basket_extset_info(setID, type)
             type: 'undefined',
             setname: setname
         };
-        $.post( url, data).done(function() {
+        $.post(url, data).done(function() {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 // Reload to show the new info:
@@ -2530,7 +2530,7 @@ function guess_extset_info(setID, type)
             type: type,
             setname: setname
         };
-        $.post( url, data).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 close_quickmenu();
@@ -2554,7 +2554,7 @@ function save_extset_binary_type(setID, sel, srctype, type)
         type: type,
         'values[binarytype]' : binarytype
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_quick_display('seteditesi', setID, '', type);
@@ -2850,7 +2850,7 @@ function edit_file(fileid)
         challenge: challenge
     };
 
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
@@ -2889,7 +2889,7 @@ function save_file()
         newdir: newdir,
         challenge: challenge
     };
-    $.post( url, data ).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -2936,7 +2936,7 @@ function get_category_name()
         cmd: 'get_name',
         id: idx
     };
-    $.post( url, data ).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             cat_name.val(x.name);
@@ -2964,7 +2964,7 @@ function update_category_name()
         name: cat_name,
         challenge: challenge
     };
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             load_subscriptions();
@@ -3454,7 +3454,7 @@ function update_search_names(name)
         type: type,
         current: name
     };
-     $.post( url, data).done(function(html) {
+     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error != 0 || x.count == 0) {
             $('#save_search_outer').addClass('hidden');
@@ -3555,7 +3555,7 @@ function save_browse_search()
     data.type = type;
     data.search = search;
     hide_overlayed_content();
-    $.post( url, data ).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_search_names(sname);
@@ -3970,7 +3970,7 @@ function load_groupsets(options)
     data.flag = flag;
     data.order = order;
     $('#suggest_div').addClass('hidden'); 
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -4245,7 +4245,7 @@ function insert_at_every(str, ins, pos)
 function show_confirm(msg, fn)
 {
     var url = 'ajax_alert.php';
-    $.post( url, { msg: msg, allow_cancel: 1 }).done(function(html) {
+    $.post(url, { msg: msg, allow_cancel: 1 }).done(function(html) {
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'alertdiv');
         $('#cancelbutton').click(function() { hide_overlayed_content(); });
@@ -4314,7 +4314,7 @@ function load_groups(options)
         data.page_tab = page_tab;
     }
 
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'groupsdiv');
@@ -4421,7 +4421,7 @@ function show_contents(file, idx)
 {
     var url = 'ajax_get_textfile.php';
     var challenge = get_value_from_id('challenge', '');
-    $.post( url, {
+    $.post(url, {
         file: file,
         idx: idx,
         challenge: challenge
@@ -4456,7 +4456,7 @@ function show_image(file, idx)
     var width = Math.floor($(window).width() * 0.9);
     var height = Math.floor($(window).height() * 0.9);
 
-    $.post( url, {
+    $.post(url, {
             file: file,
             preview: preview,
             idx: idx,
@@ -4704,7 +4704,7 @@ function add_whitelist(id, type)
     data.challenge = challenge;
     var confirmmsg = get_value_from_id('whitelist_confirm_msg', 'Add spotter to whitelist?');
     show_confirm(confirmmsg, function() {
-        $.post( url, data ).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 update_message_bar(x.message);
@@ -4726,7 +4726,7 @@ function add_poster_blacklist(id)
     };
     var confirmmsg = get_value_from_id('blacklist_confirm_msg', 'Add poster to blacklist?');
     show_confirm(confirmmsg, function() {
-        $.post( url, data ).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 update_message_bar(x.message);
@@ -4817,7 +4817,7 @@ function toggle_textarea(ta_id, checkboxid)
 
 function start_updatedb()
 {
-    $.post( 'ajax_update_db.php', { }).done(function(html) {
+    $.post('ajax_update_db.php', { }).done(function(html) {
         $('#updatedbdiv').html(html);
     });
 }
@@ -4939,7 +4939,7 @@ function delete_setting(name)
     }
     var challenge = get_value_from_id('challenge', '');
 
-    $.post( url, {
+    $.post(url, {
         cmd: 'delete',
         challenge: challenge,
         option: name }
@@ -5016,7 +5016,7 @@ function update_setting(id, type, optionals)
     data.value = value;
     data.type = type;
     var send_data = function() {
-        $.post( url, data).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 $('#stop_mark_' + id).hide();
@@ -5077,7 +5077,6 @@ function handle_passwords_register(npw_id1, npw_id2, username_id)
         if (npw2 == '') {
             pwd.removeClass('passwordincorrect');
             pwd.removeClass('passwordcorrect');
-
             $('#pwcorrect').hide();
             $('#pwincorrect').hide();
         } else if (npw1 != '' && npw2 != '' && npw1 == npw2) {
@@ -5197,7 +5196,7 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
         var challenge = get_value_from_id('challenge', '');
 
         var url = 'ajax_prefs.php';
-        $.post( url, {
+        $.post(url, {
             cmd: 'change_password',
             oldpass: opw,
             newpass1: npw1,
@@ -5235,7 +5234,7 @@ function load_prefs()
     } else if (source == 'config') {
         url = 'ajax_admin_config.php';
     }
-    $.post( url, {
+    $.post(url, {
         cmd: 'show',
         current_tab: current_tab
     }).done(function(html) {
@@ -5426,7 +5425,7 @@ function submit_registration()
     var fullname = $('#fullname').val();
     var captcha = $('#captcha').val();
     var url = 'ajax_register.php';
-    $.post( url, {
+    $.post(url, {
         username: username,
         email: email,
         password1: pass1,
@@ -5541,7 +5540,7 @@ function subscribe_ng(groupid)
         };
     }
     var url = 'ajax_groups.php';
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_message_bar(x.message);
@@ -5579,7 +5578,7 @@ function update_ng_value(type, option, group_id)
         };
     }
 
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_message_bar(x.message);
@@ -5676,7 +5675,7 @@ function update_category(type, group_id)
             value: $('#category_' + group_id + '>option:selected').val()
         };
     }
-    $.post( url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             update_message_bar(x.message);
@@ -5723,7 +5722,7 @@ function update_ng_time(type, group_id)
     }
     timeout = 2500;
     var send_data = function() {
-        $.post( url, data).done(function(html) {
+        $.post(url, data).done(function(html) {
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 update_message_bar(x.error);
@@ -5772,7 +5771,7 @@ function change_spotsubcats()
 {
     var url = 'ajax_post_spot.php';
 
-    $.post( url, {
+    $.post(url, {
         cmd: 'category_info',
         category: $('#category>option:selected').val()
     }).done(function(html) {
@@ -5862,7 +5861,7 @@ function post_spot()
     // upload image
     var nzb = $('#nzbfile').val();
     var img = $('#imagefile').val();
-    $.post( url, {
+    $.post(url, {
         cmd: 'post',
         category: cat,
         subject: subject,
@@ -5905,7 +5904,7 @@ function post_spot()
 function cancel_post(post_id)
 {
     var url = 'ajax_post_spot.php';
-    $.post( url, {
+    $.post(url, {
         cmd: 'start_post',
         postid: post_id
     }).done(function(html) {
@@ -5919,7 +5918,7 @@ function cancel_post(post_id)
 function start_post(post_id)
 {
     var url = 'ajax_post_spot.php';
-    $.post( url, {
+    $.post(url, {
         cmd: 'start_post',
         postid: post_id
     }).done(function(html) {
@@ -5959,7 +5958,6 @@ function show_sidebar(display)
         $('#topcontent').animate({ left: side_bar_width }, 500, function() {
             sidebar = 1;
             $('#sidebar_button').text('<<');
-
         }); 
         $('#contentleft').outerWidth(side_bar_width);
         $('#topcontent').width($('#topcontent').width() - side_bar_width);
@@ -6004,7 +6002,7 @@ function load_side_bar(fn)
     $('#sidebar_button').css('display', 'block');
     if (type == 'spots') {
         url = 'ajax_load_spot_sidebar.php';
-        $.post( url).done(function(html) {
+        $.post(url).done(function(html) {
             var r = $.parseJSON(html);
             if (r.error != 0) {
                 update_message_bar(r.error);
@@ -6253,7 +6251,7 @@ function suggest(type, suggest_div, text_bar, e)
     var cat_id = get_selected_cat();
     var group_id = $('#select_groupid>option:selected').val();
     var feed_id = $('#select_feedid>option:selected').val();
-    $.post( url, {
+    $.post(url, {
         text: text_bar.val(), 
         cat: cat_id,
         group: group_id,

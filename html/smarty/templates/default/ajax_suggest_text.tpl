@@ -23,4 +23,3 @@
 {foreach $suggestions as $sug}
 <div name="suggestion" class="suggestion">{$sug.title|escape:htmlall:"UTF-8"}<input type="hidden" id="{$sug.setid|escape}" value="{$sug.setid|escape}"/></div>
 {/foreach}
-

@@ -250,8 +250,6 @@ class urd_spots
         $expire = $time - $expire_time;
         echo_debug("Expire $expire seconds", DEBUG_SERVER);
         $safety_expire = $time - (24 * 3600); // we always take a day in advance so images or reports etc may not yet have been retrieved
-        $type = USERSETTYPE_SPOT;
-        $marking_on = sets_marking::MARKING_ON;
         $spam_count = $keep_int = '';
         $inputarr = array(':stamp' => $expire);
         $spot_expire_spam_count = get_config($db, 'spot_expire_spam_count', 0);
@@ -261,16 +259,16 @@ class urd_spots
         }
         if (get_config($db, 'keep_interesting', FALSE)) {
             $keep_int = ' AND "spotid" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type" = :type AND "statusint" = :marking) ';
-            $inputarr[':type'] = $type;
-            $inputarr[':marking'] = $marking_on;
+            $inputarr[':type'] = USERSETTYPE_SPOT;
+            $inputarr[':marking'] = sets_marking::MARKING_ON;
         }
 
         echo_debug('Deleting expired spots', DEBUG_DATABASE);
 
-        $sql = "count(\"spotid\") AS cnt FROM spots WHERE (\"stamp\" < :stamp $spam_count ) $keep_int";
+        $sql = "count(*) AS cnt FROM spots WHERE (\"stamp\" < :stamp $spam_count ) $keep_int";
         $res = $db->select_query($sql, $inputarr);
         $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
-        write_log('Deleting ' . $cnt . ' spots');
+        write_log('Deleting ' . $cnt . ' spots', LOG_INFO);
         update_queue_status ($db, $dbid, NULL, 0, 1);
 
         // expiring
@@ -286,9 +284,11 @@ class urd_spots
         update_queue_status ($db, $dbid, NULL, 0, 20);
         // delete files from cache too
 
-        write_log('Deleting '. $cnt . ' spot images');
-        $res = $db->delete_query('spot_images', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
-        echo_debug("Deleted {$cnt} spot images", DEBUG_DATABASE);
+        if ($cnt > 0) {
+            write_log('Deleting '. $cnt . ' spot images', LOG_INFO);
+            $res = $db->delete_query('spot_images', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
+            echo_debug("Deleted {$cnt} spot images", DEBUG_DATABASE);
+        }
 
         update_queue_status ($db, $dbid, NULL, 0, 40);
         $sql = 'count(*) AS cnt FROM spot_comments WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp';
@@ -296,22 +296,27 @@ class urd_spots
         $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
 
         update_queue_status ($db, $dbid, NULL, 0, 60);
-        write_log('Deleting '. $cnt . ' spot comments');
-        $res = $db->delete_query('spot_comments', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
-        echo_debug("Deleted {$cnt} spot comments", DEBUG_DATABASE);
+        if ($cnt > 0) {
+            write_log('Deleting '. $cnt . ' spot comments', LOG_INFO);
+            $res = $db->delete_query('spot_comments', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
+            echo_debug("Deleted {$cnt} spot comments", DEBUG_DATABASE);
+        }
 
-        update_queue_status ($db, $dbid, NULL, 0, 80);
+        update_queue_status ($db, $dbid, NULL, 0, 70);
         // expiring reports
         $sql = 'count(*) AS cnt FROM spot_reports WHERE "spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp';
         $res = $db->select_query($sql, array(':stamp'=>$safety_expire));
         $cnt = (isset($res[0]['cnt'])) ? $res[0]['cnt'] : 0;
+        update_queue_status ($db, $dbid, NULL, 0, 80);
 
-        $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type" = :type', array(':type'=>$type));
+        $res = $db->delete_query('extsetdata', '"setID" NOT IN (SELECT "spotid" FROM spots) AND "type" = :type', array(':type'=>USERSETTYPE_SPOT));
         update_queue_status ($db, $dbid, NULL, 0, 90);
 
-        write_log('Deleting ' . $cnt . ' spot reports');
-        $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
-        echo_debug("Deleted {$cnt} spot reports", DEBUG_DATABASE);
+        if ($cnt > 0) {
+            write_log('Deleting ' . $cnt . ' spot reports', LOG_INFO);
+            $res = $db->delete_query('spot_reports', '"spotid" NOT IN (SELECT "spotid" FROM spots) AND "stamp" < :stamp', array(':stamp'=>$safety_expire));
+            echo_debug("Deleted {$cnt} spot reports", DEBUG_DATABASE);
+        }
         self::update_spots_report_count($db);
         self::update_spots_comment_count($db);
         update_queue_status ($db, $dbid, NULL, 0, 100);
@@ -401,9 +406,10 @@ class urd_spots
 
     public static function parse_spot_comment(array $header, array $spot_blacklist)
     {
-        $res = array();
-        $res['rating'] = 0; // default rating is 0
-        $res['user-avatar'] = '';
+        $res = array(
+            'rating' => 0, // default rating is 0
+            'user-avatar' => ''
+        );
         foreach ($header as $line) {
             $line = explode(':', $line, 2);
             switch (strtolower($line[0])) {
@@ -421,16 +427,15 @@ class urd_spots
                     break;
                 case 'from':
                     $from = trim($line[1]);
-                    $res['fullfrom'] = $from;
                     $pos = strpos($from, '<');
-                    $res['from'] = trim(substr($from, 0, $pos - 1));
                     $spotter_id = self::parse_spotterid(substr($from, $pos));
-
                     if (isset($spot_blacklist[$spotter_id])) {
                         echo_debug("User $spotter_id on blacklist - spot comment not added", DEBUG_SERVER);
 
                         throw new exception('Poster blacklisted');
                     }
+                    $res['fullfrom'] = $from;
+                    $res['from'] = trim(substr($from, 0, $pos - 1));
                     $res['spotter_id'] = $spotter_id;
                     break;
                 case 'x-user-key':
@@ -532,8 +537,8 @@ class urd_spots
 
     public static function get_spot_by_messageid(DatabaseConnection $db, $message_id)
     {
-        $sql = '"spotid" FROM spots WHERE "messageid"=?';
-        $res = $db->select_query($sql, 1, array($message_id));
+        $sql = '"spotid" FROM spots WHERE "messageid"=:msg_id';
+        $res = $db->select_query($sql, 1, array(':msg_id' => $message_id));
         if (!isset($res[0]['spotid'])) {
             throw new exception ('Spot not found ' . $message_id, ERR_SPOT_NOT_FOUND);
         }
