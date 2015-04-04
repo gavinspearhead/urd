@@ -603,7 +603,7 @@ class urdd_group
         if (!group_subscribed($db, $groupid)) {
             write_log("Subscribing to group: $groupid", LOG_NOTICE);
             $exp = get_config($db, 'default_expire_time');
-            subscribe($db, $groupid, $exp);
+            $this->subscribe($db, $groupid, $exp);
         }
     }
 
