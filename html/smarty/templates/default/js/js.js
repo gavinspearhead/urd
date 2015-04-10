@@ -470,8 +470,14 @@ function submit_viewfiles_action(fileid, command)
             }
         ).done(function(html) {
            var x = $.parseJSON(html);
-           show_files({ 'curdir': dir, 'reset_offset': false });
-           update_message_bar(x.error);
+           if (x.error == 0) {
+           console.log(x);
+               show_files({ 'curdir': dir, 'reset_offset': false });
+               update_message_bar(x.message);
+           } else {
+               update_message_bar(x.error);
+           }
+
         });
     }
 }

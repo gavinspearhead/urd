@@ -2744,6 +2744,9 @@ function add_default_schedules(DatabaseConnection $db, $userid)
     if ($prefArray_root['period_getspots'] > 0) {
         create_schedule($db, get_command(urdd_protocol::COMMAND_GETSPOTS), $prefArray_root['time1_getspots'], $prefArray_root['time2_getspots'], $prefArray_root['period_getspots'], $userid);
     }
+    if ($prefArray_root['period_expirespots'] > 0) {
+        create_schedule($db, get_command(urdd_protocol::COMMAND_EXPIRE_SPOTS), $prefArray_root['time1_expirespots'], $prefArray_root['time2_expirespots'], $prefArray_root['period_expirespots'], $userid);
+    }
     if ($prefArray_root['period_getspots_blacklist'] > 0) {
         create_schedule($db, get_command(urdd_protocol::COMMAND_GETBLACKLIST), $prefArray_root['time1_getspots_blacklist'], $prefArray_root['time2_getspots_blacklist'], $prefArray_root['period_getspots_blacklist'], $userid);
     }

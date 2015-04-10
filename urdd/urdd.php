@@ -355,9 +355,6 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
                         if (get_config($db, 'download_spots_comments') == 1 && !$item->is_paused()) {
                             queue_getspot_comments($db, $servers, $item->get_userid(), DEFAULT_PRIORITY);
                         }
-                        if (get_config($db, 'auto_expire') == 1 && !$item->is_paused()) {
-                            queue_expire_spots($db, $servers, $item->get_userid(), DEFAULT_PRIORITY + 2);
-                        }
                     } elseif (compare_command($cmd, urdd_protocol::COMMAND_PARSE_NZB)) {
                         $args = split_args($item->get_args());
                         if (get_start_time($db, $args[0]) <= time()) {// needed otherwise dl in browse with timestamp won't work,

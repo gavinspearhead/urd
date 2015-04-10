@@ -427,6 +427,14 @@ function show_config(DatabaseConnection $db, $userid)
         }
     }
 
+    $expirespots_msg = '';
+    if ($prefArray_root['period_expirespots'] > 0) {
+        if (!isset($expirespots_msg)) {
+            $expirespots_msg = verify_numeric($prefArray_root['time1_expirespots'], 0, 23);
+            $expirespots_msg .= verify_numeric($prefArray_root['time2_expirespots'], 0, 59);
+        }
+    }
+
     $getspots_msg = '';
     if ($prefArray_root['period_getspots'] > 0) {
         if (!isset($getspots_msg)) {
@@ -796,6 +804,8 @@ function show_config(DatabaseConnection $db, $userid)
                 $spots_max_categories_msg, $prefArray_root['spots_max_categories'], NUMBER_BOX_SIZE);
         $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_getspots'], $LN['config_period_getspots_msg'],
                 $getspots_msg, 'period_getspots', $prefArray_root['period_getspots'], 'time1_getspots', $prefArray_root['time1_getspots'], 'time2_getspots', $prefArray_root['time2_getspots']);
+        $spots_settings[] = new pref_period(user_levels::CONFIG_LEVEL_BASIC, $LN['config_period_expirespots'], $LN['config_period_expirespots_msg'],
+                $getspots_msg, 'period_expirespots', $prefArray_root['period_expirespots'], 'time1_expirespots', $prefArray_root['time1_expirespots'], 'time2_expirespots', $prefArray_root['time2_expirespots']);
         $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_reports'], 'download_spots_reports', $LN['config_download_spots_reports_msg'],
                 $download_spots_reports_msg, $prefArray_root['download_spots_reports']);
         $spots_settings[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_download_spots_images'], 'download_spots_images', $LN['config_download_spots_images_msg'],
@@ -1352,6 +1362,9 @@ function set_period_configs(DatabaseConnection $db, urdd_client $uc, $name, $val
         case 'period_getspots_whitelist':
             $cmd = urdd_protocol::COMMAND_GETWHITELIST;
             break;
+        case 'period_expirespots':
+            $cmd = urdd_protocol::COMMAND_EXPIRE_SPOTS;
+            break;
         case 'period_getspots':
             $cmd = urdd_protocol::COMMAND_GETSPOTS;
             break;
@@ -1398,7 +1411,9 @@ function set_period_configs(DatabaseConnection $db, urdd_client $uc, $name, $val
         set_config($db, $name, 0);
         set_config($db, $t1, '');
         set_config($db, $t2, '');
-        $uc->unschedule(get_command($cmd), $par3);
+        if ($uc->is_connected()) { 
+            $uc->unschedule(get_command($cmd), $par3);
+        }
     }
 }
 
@@ -1407,39 +1422,57 @@ function verify_bool(DatabaseConnection $db, $name, urdd_client $uc, $value)
     switch ($name) {
         case 'module[' . urd_modules::URD_CLASS_USENZB . ']':
             $mod = urd_modules::URD_CLASS_USENZB;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_GROUPS. ']':
             $mod = urd_modules::URD_CLASS_GROUPS;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_SPOTS . ']':
             $mod = urd_modules::URD_CLASS_SPOTS;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_MAKENZB. ']':
             $mod = urd_modules::URD_CLASS_MAKENZB;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_RSS . ']':
             $mod = urd_modules::URD_CLASS_RSS;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_POST . ']':
             $mod = urd_modules::URD_CLASS_POST;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_SYNC . ']':
             $mod = urd_modules::URD_CLASS_SYNC;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_DOWNLOAD . ']':
             $mod = urd_modules::URD_CLASS_DOWNLOAD;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         case 'module[' . urd_modules::URD_CLASS_VIEWFILES. ']':
             $mod = urd_modules::URD_CLASS_VIEWFILES;
-            $uc->set('module', $mod, $value ? 'on' : 'off');
+            if ($uc->is_connected()) { 
+                $uc->set('module', $mod, $value ? 'on' : 'off');
+            }
             break;
         default:
             set_config($db, $name, $value);

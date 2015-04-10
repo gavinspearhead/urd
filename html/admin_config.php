@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  *  This file is part of Urd.
  *  vim:ts=4:expandtab:cindent
  *

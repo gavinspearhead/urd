@@ -496,6 +496,7 @@ try {
             if ($rv === FALSE) {
                 throw new exception($LN['error_noremovefile']. ': ' . htmlentities($file));
             }
+            return_result(array('message'=> ($LN['deleted'] . ' ' . htmlentities($dirname . $file, ENT_QUOTES, 'UTF-8'))));
             break;
         case 'delete_dir':
             if (!$is_admin && !$is_fileeditor) {
@@ -527,6 +528,7 @@ try {
             if ($error != '') {
                 throw new exception($error);
             }
+            return_result(array('message'=> ($LN['deleted'] . ' ' . htmlentities($dirname . $subdir, ENT_QUOTES, 'UTF-8'))));
             break;
         case 'zip_dir': // not very neat now....
             if ($rprefs['webdownload'] != 1) {

@@ -179,6 +179,9 @@ function get_default_config()
     $prefArray_root['period_getspots']      = 1;		// interval update urd in days
     $prefArray_root['time1_getspots']       = '1';		// hours update urd
     $prefArray_root['time2_getspots']       = '15';		// mins update urd
+    $prefArray_root['period_expirespots']      = 2;		// interval update urd in days
+    $prefArray_root['time1_expirespots']       = '1';		// hours update urd
+    $prefArray_root['time2_expirespots']       = '45';		// mins update urd
     $prefArray_root['period_getspots_blacklist']    = 2;		// interval update urd in days
     $prefArray_root['time1_getspots_blacklist']     = '1';		// hours update urd
     $prefArray_root['time2_getspots_blacklist']     = '10';		// mins update urd

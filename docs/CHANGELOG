@@ -8,6 +8,7 @@
 - Fixed a bug in detecting compressed headers
 - Fixed issue of doubleclicking to repetively opening the quickmenu
 - Fixed an issue with automatic scrolling in the sets pages
+- Spots are not automatically expired after updating the spots, but are scheduled seperately
 - Usenet servers with a priority of >= 50 are now only used when as a back up server for missing articles
 - Added download options to uploading nzb dialog
 - Added search suggestions to browse and search pages

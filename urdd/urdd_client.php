@@ -131,14 +131,14 @@ class urdd_client
                 $this->sock->disconnect();
                 $this->cleanup();
                 write_log('Wrong username and password', LOG_ERR);
-                throw new exception('Wrong username and password', ERR_ACCESS_DENIED);
+                throw new exception('331 Wrong username and password', ERR_ACCESS_DENIED);
             }
             list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_PASS) . ' ' . $this->password);
             if ($code != 240) {
                 $this->sock->disconnect();
                 $this->cleanup();
                 write_log('Wrong username and password', LOG_ERR);
-                throw new exception('Wrong username and password', ERR_ACCESS_DENIED);
+                throw new exception('240 Wrong username and password ' . $code, ERR_ACCESS_DENIED);
             }
         } else {
             throw new exception ('Needs a username and password', ERR_NOT_LOGGED_IN);

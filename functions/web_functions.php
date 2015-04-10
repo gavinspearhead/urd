@@ -557,6 +557,9 @@ function process_schedule(urdd_client $uc, $period, $time1, $time2, $command, $a
 {
     assert(is_numeric($period) && is_numeric($time1) && is_numeric($time2));
     global $periods;
+    if (!$uc->is_connected()) { 
+        return -1;
+    }
 
     $period = $periods->get($period);
     $period_hours = $period->get_interval();
