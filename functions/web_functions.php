@@ -553,11 +553,13 @@ function get_search_options(DatabaseConnection $db)
     return $searchoptions;
 }
 
-function process_schedule(urdd_client $uc, $period, $time1, $time2, $command, $arg_unschedule, $arg_schedule)
+function process_schedule(DatabaseConnection $db, urdd_client $uc, $period, $time1, $time2, $command, $arg_unschedule, $arg_schedule, $userid)
 {
     assert(is_numeric($period) && is_numeric($time1) && is_numeric($time2));
     global $periods;
     if (!$uc->is_connected()) { 
+        create_schedule($db, $command . ' ' . $arg_schedule, $time1, $time2, $period, $userid);
+
         return -1;
     }
 
@@ -577,8 +579,8 @@ function start_preview(DatabaseConnection $db, $pbin_id, $pgroup_id, $userid)
     global $LN;
 
     $rprefs = load_config($db);
-    $sql = "\"subject\", \"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\"=?";
-    $res = $db->select_query($sql, array($pbin_id));
+    $sql = "\"subject\", \"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\"=:binid";
+    $res = $db->select_query($sql, array(':binid' => $pbin_id));
     if (!isset($res[0])) {
         throw new exception($LN['error_binariesnotfound']);
     }
@@ -683,15 +685,15 @@ function get_setsize(DatabaseConnection $db, $setid, $type)
 {
     global $LN;
     if ($type == 'group') {
-        $sql = '"size" FROM setdata WHERE "ID"=?';
+        $sql = '"size" FROM setdata WHERE "ID"=:setid';
     } elseif ($type == 'rss') {
-        $sql = '"size" FROM rss_sets WHERE "setid"=?';
+        $sql = '"size" FROM rss_sets WHERE "setid"=:setid';
     } elseif ($type == 'spot') {
-        $sql = '"size" AS "size" FROM spots WHERE "spotid"=?';
+        $sql = '"size" AS "size" FROM spots WHERE "spotid"=:setid';
     } else {
         throw new exception ($LN['error_invalidsetid']);
     }
-    $res = $db->select_query($sql, 1, array($setid));
+    $res = $db->select_query($sql, 1, array(':setid'=>$setid));
     if ($res === FALSE) {
         throw new exception($LN['error_invalidsetid']);
     }

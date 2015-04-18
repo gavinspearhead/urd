@@ -71,33 +71,33 @@ function unformat_size($val, $base = 1024, $default_mul='')
     if ($val === NULL) {
         throw new exception($LN['error_notanumber']);
     }
-
-    if ($last == ''|| $last === NULL) {
-        $last = $default_mul;
-    }
     if ($rem != '') {
-        throw new exception('Trailing characters found:' . ' ' . $rem);
+        throw new exception('Trailing characters found: ' . $rem);
+    }
+
+    if ($last == '' || $last === NULL) {
+        $last = $default_mul;
     }
 
     $last = strtolower($last);
     $val = round($val);
 
     if ($last == 'y') {
-        $val = $val * $base * $base * $base * $base * $base * $base * $base * $base;
+        $val *= $base * $base * $base * $base * $base * $base * $base * $base;
     } elseif ($last == 'z') {
-        $val = $val * $base * $base * $base * $base * $base * $base * $base;
+        $val *= $base * $base * $base * $base * $base * $base * $base;
     } elseif ($last == 'e') {
-        $val = $val * $base * $base * $base * $base * $base * $base;
+        $val *= $base * $base * $base * $base * $base * $base;
     } elseif ($last == 'p') {
-        $val = $val * $base * $base * $base * $base * $base;
+        $val *= $base * $base * $base * $base * $base;
     } elseif ($last == 't') {
-        $val = $val * $base * $base * $base * $base;
+        $val *= $base * $base * $base * $base;
     } elseif ($last == 'g') {
-        $val = $val * $base * $base * $base;
+        $val *= $base * $base * $base;
     } elseif ($last == 'm') {
-        $val = $val * $base * $base;
+        $val *= $base * $base;
     } elseif ($last == 'k') {
-        $val = $val * $base;
+        $val *= $base;
     } elseif ($last != '' && $last !== NULL) {
         throw new exception ("Unknown quantifier $last");
     }
@@ -125,6 +125,26 @@ function readable_time($timediff, $value = 'specific')
     switch ($value) {
     default:
         assert(FALSE);
+    case 'largest':
+        $years = (int) ($timediff / (3600 * 24 * 365));
+        $timediff -= ($years * 3600 * 24 * 365);
+        $weeks = (int) ($timediff / (3600 * 24 * 7));
+        $timediff -= ($weeks * 3600 * 24 * 7);
+        $days = (int) ($timediff / (3600 * 24));
+        $timediff -= ($days * 3600 * 24);
+        $hours = (int) ($timediff / 3600);
+        $timediff -= ($hours * 3600);
+        $minutes = (int) ($timediff / 60);
+        $timediff -= ($minutes * 60);
+        $seconds = $timediff;
+        if ($years > 0) { return $years . ' ' . $LN['year_short'];}
+        if ($weeks > 0) { return $weeks . ' ' . $LN['week_short'];}
+        if ($days > 0) { return $days . ' ' . $LN['day_short'];}
+        if ($hours > 0) { return $hours . ' ' . $LN['hour_short'];}
+        if ($minutes > 0) { return $minutes . ' ' . $LN['minute_short'];}
+
+        return $seconds . ' ' . $LN['second' . ($seconds == 1 ? '' : 's')];
+        break;
     case 'largest_long':
         $years = (int) ($timediff / (3600 * 24 * 365));
         $timediff -= ($years * 3600 * 24 * 365);
@@ -158,10 +178,10 @@ function readable_time($timediff, $value = 'specific')
         $timediff -= ($minutes * 60);
         $seconds = $timediff;
         if ($years > 0) { return one_or_more($years, $LN['year'], $LN['years']) . (($weeks > 0) ? ' ' . one_or_more($weeks, $LN['week'], $LN['weeks']) : ''); }
-        if ($weeks > 0) { return one_or_more($weeks, $LN['week'], $LN['weeks']); }
-        if ($days > 0) { return one_or_more($days, $LN['day'], $LN['days']);}
-        if ($hours > 0) { return one_or_more($hours, $LN['hour'], $LN['hours']);}
-        if ($minutes > 0) { return one_or_more($minutes, $LN['minute'], $LN['minutes']);}
+        if ($weeks > 0) { return one_or_more($weeks, $LN['week'], $LN['weeks']) . (($days > 0) ? ' ' . one_or_more($days, $LN['day'], $LN['days']) : ''); }
+        if ($days > 0) { return one_or_more($days, $LN['day'], $LN['days']) . (($hours > 0) ? ' ' . one_or_more($hours, $LN['hour'], $LN['hours']) : '');}
+        if ($hours > 0) { return one_or_more($hours, $LN['hour'], $LN['hours']) . (($minutes > 0) ? ' ' . one_or_more($minutes, $LN['minute'], $LN['minutes']) : '');}
+        if ($minutes > 0) { return one_or_more($minutes, $LN['minute'], $LN['minutes']) . (($seconds > 0) ? ' ' . one_or_more($seconds, $LN['second'], $LN['seconds']) : '');}
 
         return one_or_more($seconds, $LN['second'], $LN['seconds']);
         break;
@@ -179,10 +199,10 @@ function readable_time($timediff, $value = 'specific')
         $seconds = $timediff;
         $return = '';
         if ($years > 0) { return $years . ' ' . $LN['year_short'] . (($weeks > 0) ? ' ' . $weeks . ' ' . $LN['week_short'] : ''); }
-        if ($weeks > 0) { return $weeks . ' ' . $LN['week_short']; }
-        if ($days > 0) { return $days . ' ' . $LN['day_short'];}
-        if ($hours > 0) { return $hours . ' ' . $LN['hour_short'];}
-        if ($minutes > 0) { return $minutes . ' ' . $LN['minute_short'];}
+        if ($weeks > 0) { return $weeks . ' ' . $LN['week_short']. (($days > 0) ? ' ' . $days . ' ' . $LN['day_short'] : ''); }
+        if ($days > 0) { return $days . ' ' . $LN['day_short']. (($hours > 0) ? ' ' . $hours . ' ' . $LN['hour_short'] : '');}
+        if ($hours > 0) { return $hours . ' ' . $LN['hour_short']. (($minutes > 0) ? ' ' . $minutes . ' ' . $LN['minute_short'] : '');}
+        if ($minutes > 0) { return $minutes . ' ' . $LN['minute_short'. (($seconds > 0) ? ' ' . $seconds . ' ' . $LN['second_short'] : '')];}
 
         return $seconds . ' ' . $LN['second_short'];
         break;

@@ -133,7 +133,7 @@ function control_action(action)
 {
     var challenge = get_value_from_id('challenge', '');
     if (action !== null) {
-        $.post( 'ajax_action.php', {
+        $.post('ajax_action.php', {
             cmd: action,
             challenge: challenge
         }).done(function(html) {

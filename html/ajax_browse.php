@@ -241,7 +241,7 @@ class group_viewer
             }
             $age = ($this->now > $arr['date']) ? $this->now - $arr['date'] : 0;
 
-            $thisset['age'] = readable_time($age, 'largest_two');
+            $thisset['age'] = readable_time($age, 'largest');
             list($_size, $suffix) = format_size($arr['size'], 'h', $LN['byte_short'], 1024, 1);
             $thisset['size'] = $_size . ' ' . $suffix;
             $thisset['number'] = ++$number;

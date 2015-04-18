@@ -1406,13 +1406,14 @@ function set_period_configs(DatabaseConnection $db, urdd_client $uc, $name, $val
         set_config($db, $name, $value);
         set_config($db, $t1, $time1);
         set_config($db, $t2, $time2);
-        process_schedule($uc, $value, $time1, $time2, $cmd, $par1, $par2);
+        process_schedule($db, $uc, $value, $time1, $time2, $cmd, $par1, $par2, $userid);
     } else {
         set_config($db, $name, 0);
         set_config($db, $t1, '');
         set_config($db, $t2, '');
         if ($uc->is_connected()) { 
             $uc->unschedule(get_command($cmd), $par3);
+        } else {
         }
     }
 }

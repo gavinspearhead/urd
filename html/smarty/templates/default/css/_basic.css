@@ -21,8 +21,7 @@
  * $Id$
  */
 
-html
-{
+body, html {
     border: none;
     overflow: hidden;
 }

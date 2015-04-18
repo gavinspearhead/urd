@@ -111,7 +111,7 @@
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
 </head>
 {urd_flush}
-<body>
+<body id="urdbody">
 <noscript><div id="nojs" class="centered_nojs down100">{$LN_login_jserror}</div></noscript>
 
 <div id="message_bar" class="Message hidden">
@@ -171,6 +171,7 @@
 <script type="text/javascript">
 $(document).ready( function() { 
     init(); 
+    $(window).scroll(function(e) { $(window).scrollTop(0); });
     $('#sbdiv').click( function() { show_sidebar(); });
 });
 </script>
