@@ -425,7 +425,7 @@ function do_update_rss(DatabaseConnection $db, action $item)
         $args = $item->get_args();
         $rss_info = get_rss_info($db, $args);
         $name = $rss_info['name'];
-        $cnt = $rss->rss_update($db, $rss_info);
+        $cnt = $rss->rss_update($rss_info);
         update_rss_status($db, $args, time());
         write_log("RSS Update $name: $cnt new sets", LOG_NOTICE);
         add_stat_data($db, stat_actions::RSS_COUNT, $cnt, user_status::SUPER_USERID);
@@ -494,8 +494,8 @@ function do_update(DatabaseConnection $db, action $item)
             load_extset_data($db, $nzb, $extset_headers);
         }
         $nzb->disconnect();
-        $ug = new urdd_group;
-        $ug->update_postcount($db, $groupArr['ID']);
+        $ug = new urdd_group($db);
+        $ug->update_postcount($groupArr['ID']);
         update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100);
     } catch (exception $e) {
         write_log('Update failed ' . $e->getMessage(), LOG_WARNING);
@@ -559,8 +559,8 @@ function do_gensets(DatabaseConnection $db, action $item)
     $groupid = $groupArr['ID'];
     $expire = time() - ($groupArr['expire'] * 24 * 3600);
     try {
-        $ug = new urdd_group;
-        $ug->update_binary_info($db, $args, $groupname, $do_expire, $expire, $item, $minsetsize, $maxsetsize);
+        $ug = new urdd_group($db);
+        $ug->update_binary_info($args, $groupname, $do_expire, $expire, $item, $minsetsize, $maxsetsize);
         $old_setcount = get_sets_count_group($db, $groupid);
         $setcount = count_sets_group($db, $groupid);
         $new_sets = $setcount - $old_setcount;
@@ -589,7 +589,8 @@ function do_purge_spots(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
     // Check if group exists
     try {
-        $count = urd_spots::purge_spots($db, $item->get_dbid());
+        $us = new urd_spots($db);;
+        $count = $us->purge_spots($item->get_dbid());
         update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count spots");
 
         return NO_ERROR;
@@ -608,7 +609,8 @@ function do_expire_spots(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
     // Check if group exists
-    $count = urd_spots::expire_spots($db, $item->get_dbid());
+    $us = new urd_spots($db);
+    $count = $us->expire_spots($item->get_dbid());
     update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count spots");
 
     return NO_ERROR;
@@ -626,7 +628,7 @@ function do_expire_rss(DatabaseConnection $db, action $item)
 
         return FEED_NOT_FOUND;
     }
-    $count = $rss->expire_rss($db, $args, $item->get_dbid());
+    $count = $rss->expire_rss($args, $item->get_dbid());
     update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count articles");
 
     return NO_ERROR;
@@ -644,8 +646,8 @@ function do_expire(DatabaseConnection $db, action $item)
 
         return GROUP_NOT_FOUND;
     }
-    $ug = new urdd_group;
-    $count = $ug->expire_binaries($db, $groupid, $item->get_dbid());
+    $ug = new urdd_group($db);
+    $count = $ug->expire_binaries($groupid, $item->get_dbid());
     $setcount = count_sets_group($db, $groupid);
     update_group_setcount($db, $groupid, $setcount);
     update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Deleted $count articles");
@@ -881,7 +883,7 @@ function do_purge_rss(DatabaseConnection $db, action $item)
         return FEED_NOT_FOUND;
     }
     try {
-        $rss->purge_rss($db, $args, $item->get_dbid());
+        $rss->purge_rss($args, $item->get_dbid());
     } catch (exception $e) {
         update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, 'Purge failed: ' . $e->getMessage());
 
@@ -904,8 +906,8 @@ function do_purge(DatabaseConnection $db, action $item)
         return GROUP_NOT_FOUND;
     }
     try {
-        $ug = new urdd_group;
-        $ug->purge_binaries($db, $args);
+        $ug = new urdd_group($db);
+        $ug->purge_binaries( $args);
         update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Finished');
     } catch (exception $e) {
         update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'Purge failed: ' . $e->getMessage());
@@ -1580,7 +1582,7 @@ function do_subscribe_rss(DatabaseConnection $db, array $arg_list, server_data &
                 return $response;
             } elseif (strtolower($arg_list[1]) == 'off' && $is_subscribed !== FALSE) {
                 $rss = new urdd_rss($db);
-                $rss->purge_rss($db, $id);
+                $rss->purge_rss($id);
                 update_feed_state($db, $id, rssfeed_status::RSS_UNSUBSCRIBED, $def_exp);
                 $response = urdd_protocol::get_response(200);
 
@@ -1610,20 +1612,20 @@ function do_subscribe(DatabaseConnection $db, array $arg_list, server_data &$ser
             $minsetsize = (isset($arg_list[3]) && is_numeric($arg_list[3])) ? $arg_list[3] : 0;
             $maxsetsize = (isset($arg_list[4]) && is_numeric($arg_list[4])) ? $arg_list[4] : 0;
             $adult = (isset($arg_list[5]) && is_numeric($arg_list[5])) ? $arg_list[5] : ADULT_OFF;
-            $ug = new urdd_group;
+            $ug = new urdd_group($db);
             if ($onoff && $is_subscribed === TRUE) {
                 set_group_expire($db, $id, $exp);
                 set_group_adult($db, $id, $adult);
                 set_group_minsetsize($db, $id, $minsetsize);
                 set_group_maxsetsize($db, $id, $maxsetsize);
             } elseif (isset($arg_list[1]) && strtolower($arg_list[1]) == 'on' && $is_subscribed === FALSE) {
-                $ug->subscribe($db, $id, $exp, $minsetsize, $maxsetsize);
+                $ug->subscribe($id, $exp, $minsetsize, $maxsetsize);
                 $response = queue_update($db, urdd_protocol::COMMAND_UPDATE, array($id), $userid, $servers);
 
                 return $response;
             } elseif (!$onoff && $is_subscribed !== FALSE) {
                 $res = $ug->unsubscribe($db, $id);
-                $ug->purge_binaries($db, $id);
+                $ug->purge_binaries($id);
 
                 return urdd_protocol::get_response($res ? 200 : 402);
             }
@@ -1853,8 +1855,8 @@ function do_merge_sets(DatabaseConnection $db, action $item)
     unset($elems[0]);
     $setid2 = $elems;
     try {
-        $ug = new urdd_group;
-        $ug->merge_sets($db, $setid1, $setid2);
+        $ug = new urdd_group($db);
+        $ug->merge_sets($setid1, $setid2);
     } catch (exception $e) {
         update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'Merge failed');
 
@@ -2097,10 +2099,10 @@ function do_getspots(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
     try {
-        $ug = new urdd_group;
+        $ug = new urdd_group($db);
         $group = get_config($db, 'spots_group');
         $groupid = group_by_name($db, $group);
-        $ug->check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($groupid);
         $groupArr_spots = get_group_info($db, $groupid);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
@@ -2116,9 +2118,9 @@ function do_getspots(DatabaseConnection $db, action $item)
             return $rv;
         }
 
-        $ug->update_postcount($db, $groupArr_spots['ID']);
-
-        $spots_count = urd_spots::load_spots($db, $nzb, $item);
+        $ug->update_postcount($groupArr_spots['ID']);
+        $us = new urd_spots($db);
+        $spots_count = $us->load_spots($nzb, $item);
         add_stat_data($db, stat_actions::SPOT_COUNT, $spots_count, user_status::SUPER_USERID);
 
         sets_marking::mark_interesting($db, USERSETTYPE_SPOT);
@@ -2246,10 +2248,10 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
     try {
-        $ug = new urdd_group;
+        $ug = new urdd_group($db);
         $report_group = get_config($db, 'spots_reports_group');
         $groupid = group_by_name($db, $report_group);
-        $ug->check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($groupid);
         $groupArr_reports = get_group_info($db, $groupid);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
@@ -2266,9 +2268,10 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
             return $rv;
         }
 
-        $ug->update_postcount($db, $groupArr_reports['ID']);
+        $ug->update_postcount($groupArr_reports['ID']);
         $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
-        $comment_count = urd_spots::load_spot_reports($db, $nzb, $item, $expire);
+        $us = new urd_spots($db);
+        $comment_count = $us->load_spot_reports($nzb, $item, $expire);
 
         $nzb->disconnect();
         update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, 'Complete. Loaded ' . $comment_count . ' reports');
@@ -2300,10 +2303,10 @@ function do_getspot_comments(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
     try {
-        $ug = new urdd_group;
+        $ug = new urdd_group($db);
         $comments_group = get_config($db, 'spots_comments_group');
         $groupid = group_by_name($db, $comments_group);
-        $ug->check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($groupid);
         $groupArr_comments = get_group_info($db, $groupid);
         $server_id = $item->get_active_server();
         if ($server_id == 0) {
@@ -2319,10 +2322,10 @@ function do_getspot_comments(DatabaseConnection $db, action $item)
         if ($rv != NO_ERROR) {
             return $rv;
         }
-        $ug = new urdd_group;
-        $ug->update_postcount($db, $groupArr_comments['ID']);
+        $ug->update_postcount($groupArr_comments['ID']);
         $expire = get_config($db, 'spots_expire_time', DEFAULT_SPOTS_EXPIRE_TIME);
-        $comment_count = urd_spots::load_spot_comments($db, $nzb, $item, $expire);
+        $us = new urd_spots($db);
+        $comment_count = $us->load_spot_comments($nzb, $item, $expire);
 
         update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete. Loaded ' . $comment_count . ' comments');
     } catch (exception $e) {

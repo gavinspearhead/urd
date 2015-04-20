@@ -30,7 +30,7 @@ require_once "$pathaet/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_RSS, TRUE, '', $userid, TRUE);
 
-function deleterssfeed(DatabaseConnection $db, $id)
+function deleterssfeed(DatabaseConnection $db, $id, $userid)
 {
     global $LN;
     if (is_numeric($id) && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -43,7 +43,7 @@ function deleterssfeed(DatabaseConnection $db, $id)
         remove_schedule($db, $uc, $id, urdd_protocol::COMMAND_UPDATE_RSS);
         $uc->disconnect();
     } else {
-        throw new exception($LN['error_invalidfeedid']);
+        throw new exception($LN['error_invalidfeedid'] .  ' X' . $id . 'Y' );
     }
 }
 
@@ -179,7 +179,7 @@ try {
     switch (strtolower($cmd)) {
         case 'delete' :
             challenge::verify_challenge($_POST['challenge']);
-            deleterssfeed($db, $id);
+            deleterssfeed($db, $id, $userid);
             break;
         case 'showeditrss':
             $contents = show_edit_rss($db, $id);

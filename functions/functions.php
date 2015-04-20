@@ -59,15 +59,16 @@ function format_size($value, $format, $suffix='B', $base=1024, $dec=1)
 
 function unformat_size($val, $base = 1024, $default_mul='')
 {
-    // default_mul is the default multiplier from SI: M=1000^2, K=1000, G=100^3 etc if no multiplier is found like in 100M ==> 100 * 1000^2
+     // default_mul is the default multiplier from SI: M=1000^2, K=1000, G=100^3 etc if no multiplier is found like in 100M ==> 100 * 1000^2
     global $LN;
     assert(is_numeric($base));
+    static $exps = array('y' => 8, 'z'=> 7, 'e'=> 6, 'p'=> 5, 't'=>4, 'g' => 3, 'm'=>2, 'k'=>1);
     $val = trim($val);
     if ($val == '') {
         throw new exception($LN['error_notanumber']);
     }
 
-    list($val, $last, $rem) = sscanf($val, '%f%c%s');
+    sscanf($val, '%f%c%c', $val, $last, $rem);
     if ($val === NULL) {
         throw new exception($LN['error_notanumber']);
     }
@@ -75,34 +76,20 @@ function unformat_size($val, $base = 1024, $default_mul='')
         throw new exception('Trailing characters found: ' . $rem);
     }
 
-    if ($last == '' || $last === NULL) {
+    if ($last == '') {
         $last = $default_mul;
     }
 
-    $last = strtolower($last);
     $val = round($val);
-
-    if ($last == 'y') {
-        $val *= $base * $base * $base * $base * $base * $base * $base * $base;
-    } elseif ($last == 'z') {
-        $val *= $base * $base * $base * $base * $base * $base * $base;
-    } elseif ($last == 'e') {
-        $val *= $base * $base * $base * $base * $base * $base;
-    } elseif ($last == 'p') {
-        $val *= $base * $base * $base * $base * $base;
-    } elseif ($last == 't') {
-        $val *= $base * $base * $base * $base;
-    } elseif ($last == 'g') {
-        $val *= $base * $base * $base;
-    } elseif ($last == 'm') {
-        $val *= $base * $base;
-    } elseif ($last == 'k') {
-        $val *= $base;
-    } elseif ($last != '' && $last !== NULL) {
+    $last = strtolower($last);
+    if (isset($exps[$last])) {
+        return $val * pow ($base, $exps[$last]);
+    } elseif ($last != '') {
         throw new exception ("Unknown quantifier $last");
     }
 
     return $val;
+
 }
 
 

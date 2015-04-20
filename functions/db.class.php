@@ -99,18 +99,10 @@ abstract class DatabaseConnection
     protected $result;
     protected $error_code;
 
-    const MAX_INSERT_PARTS          = 200;
     const DB_LOCK_TIMEOUT_PREVIEW   = 2;
     const DB_LOCK_TIMEOUT_DEFAULT   = 15;
-    const GENSETS_STEPSIZE          = 50;
     const QUERY_LOG_FILE            = '/tmp/urd_query.log';
 
-    const DIRTY = 1;
-    const CLEAN = 0;
-    // Dirty flags:
-    const CONSISTENT =    0;
-    const BINARYCHANGED = 1;
-    const SETCHANGED =    2;
     public function __construct ($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
         $this->error_code = 0;

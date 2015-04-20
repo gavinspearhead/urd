@@ -79,9 +79,9 @@ function do_getsetinfo(DatabaseConnection $db, action $item)
     if ($use_newsgroup) {
         $group = get_config($db, 'extset_group');
         $groupid = group_by_name($db, $group);
-        $ug = new urdd_group;
+        $ug = new urdd_group($db);
 
-        $ug->check_group_subscribed($db, $groupid);
+        $ug->check_group_subscribed($groupid);
         try {
             $userid = get_admin_userid($db); // get admin user
             $uc = new urdd_client($db, get_config($db, 'urdd_host'), get_config($db,'urdd_port'), $userid);
@@ -158,8 +158,8 @@ function write_setinfo(DatabaseConnection $db, array $setinfo)
     $subject = $basename;
     $poster = 'URD daemon';
     $email = 'urd@urd.com';
-    $ug = new urdd_group;
-    $ug->check_group_subscribed($db, $groupid);
+    $ug = new urdd_group($db);
+    $ug->check_group_subscribed($groupid);
 
     $post_id = $db->insert_query('post_messages',
         array('userid', 'groupid', 'subject', 'poster_id', 'poster_name', 'message'),

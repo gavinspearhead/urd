@@ -43,6 +43,7 @@ class urdd_client
     private $password;
     private $timeout;
     private $can_connect;
+
     private function get_username_password(DatabaseConnection $db, $userid)
     {
         assert(is_numeric($userid));
@@ -57,6 +58,7 @@ class urdd_client
     public function __construct(DatabaseConnection $db, $hostname, $port, $userid=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
     {
         echo_debug ("$hostname $port $userid", DEBUG_HTTP);
+        echo_debug_var_file('/tmp/foo',"$hostname $port $userid\n" );
         assert(is_numeric($port) && is_numeric($userid) && is_numeric($timeout));
         if ($userid > 0) {
             list($username, $md5pass) = $this->get_username_password($db, $userid);

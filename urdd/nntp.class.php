@@ -777,8 +777,8 @@ Array
         echo_debug("$_blacklist_counter of " . $total_counter_1 . ' articles matched the blacklist', DEBUG_NNTP);
         $blacklist_counter = gmp_add($blacklist_counter, $_blacklist_counter);
         unset($spot_comments, $spot_reports, $spot_ids);
-        $ug = new urdd_group;
-        $ug->add_parts($this->db, $allParts, $this->groupID);
+        $ug = new urdd_group($this->db);
+        $ug->add_parts($allParts, $this->groupID);
 
         return TRUE;
     }

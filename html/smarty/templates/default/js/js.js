@@ -2600,6 +2600,7 @@ function remove_rss(id, msg)
         var challenge = get_value_from_id('challenge');
         $.post('ajax_editrss.php', {
             cmd: 'delete',
+            id: id,
             challenge: challenge
         }).done(function(html) {
             var x = $.parseJSON(html);
