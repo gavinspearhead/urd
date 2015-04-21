@@ -36,13 +36,13 @@ $(document).ready(function() {
 
 <div class="sets_inner" id="td_sets">
 {if $show_image && $image != '' && $image_from_db == 0}
-<div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max100x100" alt=""/> </div>
+<div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max180x180" alt=""/> </div>
 {/if}
 {if  $show_image && $image_from_db == 1}
-<div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" id="image_db" class="max100x100" alt=""/></div>
+<div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" id="image_db" class="max180x180" alt=""/></div>
 {/if}
 {if $show_image && $image_file != ''}
-<div class="spot_thumbnail noborder buttonlike"><img src="getfile.php?raw=1&amp;file={$image_file}" id="image_file" class="max100x100" alt=""/></div>
+<div class="spot_thumbnail noborder buttonlike"><img src="getfile.php?raw=1&amp;file={$image_file}" id="image_file" class="max180x180" alt=""/></div>
 {/if}
 <input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
 

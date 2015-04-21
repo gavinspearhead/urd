@@ -454,6 +454,12 @@ td.user, th.user
 {
     top:20px;
 }
+img.max180x180 
+{
+    max-width: 180px;
+    max-height: 180px;
+}
+
 img.max100x100 
 {
     max-width: 100px;
