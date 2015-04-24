@@ -265,7 +265,8 @@ class a_file
     public function __construct($n, $t, $s, $m, $i, $p, $prm, $o, $g, $d, $nl)
     {
         global $LN;
-        $this->name = utf8_decode($n);
+        //$this->name = utf8_decode($n);
+        $this->name = utf8_encode($n);
         $this->type = $t;
         $this->size = $s;
         if ($s == '') {
@@ -283,7 +284,7 @@ class a_file
         $this->show_edit = (in_array($i, array('urdd_script', 'html', 'text'))) ? TRUE : FALSE;
         $this->perms_num = $prm;
         $this->perms = '';
-        $this->nfo_link = $nl;
+        $this->nfo_link = utf8_decode($nl);
         if ($prm !== NULL) {
             $this->perms = perms_to_string($prm);
         }
