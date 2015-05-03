@@ -283,7 +283,7 @@ class a_file
         $this->show_edit = (in_array($i, array('urdd_script', 'html', 'text'))) ? TRUE : FALSE;
         $this->perms_num = $prm;
         $this->perms = '';
-        $this->nfo_link = $nl;
+        $this->nfo_link = utf8_decode($nl);
         if ($prm !== NULL) {
             $this->perms = perms_to_string($prm);
         }
