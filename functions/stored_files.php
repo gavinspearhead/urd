@@ -265,7 +265,8 @@ class a_file
     public function __construct($n, $t, $s, $m, $i, $p, $prm, $o, $g, $d, $nl)
     {
         global $LN;
-        $this->name = utf8_decode($n);
+        //$this->name = utf8_decode($n);
+        $this->name = utf8_encode($n);
         $this->type = $t;
         $this->size = $s;
         if ($s == '') {
