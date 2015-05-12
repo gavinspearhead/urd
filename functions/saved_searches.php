@@ -65,11 +65,11 @@ class saved_searches
             if (!isset($item['category'])) {
                 $item['category'] = '';
             }
-            if (!isset($item['options']['cat'], $item['cat'])) {
+            if (!isset($item['options']['cat']) && isset($item['cat'])) {
                 $item['options']['cat'] = $item['cat'];
                 unset($item['cat']);
             }
-            if (!isset($item['options']['search'], $item['search'])) {
+            if (!isset($item['options']['search']) && isset($item['search'])) {
                 $item['options']['search'] = $item['search'];
                 unset($item['search']);
             }

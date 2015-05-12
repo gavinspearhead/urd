@@ -121,7 +121,7 @@ try {
     // Process commands:
     if (isset($_REQUEST['type'], $_REQUEST['subject'], $_REQUEST['srctype'])) {
         $type = get_request('type');
-        $srctype = get_request('srctype', 'x ');
+        $srctype = get_request('srctype');
         $subject = get_request('subject');
         $killflag = get_request('killflag');
         $isposter = urd_user_rights::is_poster($db, $userid);
