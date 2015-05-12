@@ -3690,6 +3690,7 @@ function update_spot_searches(name)
         }
     ).done(function(html) {
         var x = $.parseJSON(html);
+        console.log(x);
         setvalbyid('save_category', '');
         update_search_names(name);
         if (x.error == 0) {

@@ -44,7 +44,7 @@ class saved_searches
 
     public function store($name, array $subcats, $type, array $options, $category='')
     {
-        if (isset($saved_searches[ $name ]) && ($saved_searches[ $name ]['type'] != $type) ) {
+        if (isset($saved_searches[ $name ]) && ($saved_searches[ $name ]['type'] != $type)) {
             throw new exception("Cannot add $name - already exists");
         }
         $this->saved_searches[ $name ] = array('subcats' => $subcats, 'type' => $type, 'options' => $options, 'category' => $category);

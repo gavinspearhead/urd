@@ -353,7 +353,7 @@ function check_for_update(DatabaseConnection $db)
                 $status_bugfix = 1;
                 $status = 1;
             }
-            if (($update_type & pdate_types::NEW_FEATURE) != 0) {
+            if (($update_type & update_types::NEW_FEATURE) != 0) {
                 $status_newfeature = 1;
                 $status = 1;
             }
