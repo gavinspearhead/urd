@@ -57,13 +57,13 @@ class command
         assert(is_bool($need_nntp) && is_bool($primary_nntp) && is_bool($auth) && is_bool($admin) && is_numeric($code));
         $this->command = $cmd;
         $this->need_auth = $auth;
-	$this->code = (int) $code;
-	$this->help_msg = $help_message;
-	$this->syntax = $syntax;
-	$this->need_admin = $admin;
-	$this->need_nntp = $need_nntp;
-	$this->arg_str = $arg_str;
-	$this->primary_nntp = $primary_nntp;
+        $this->code = (int) $code;
+        $this->help_msg = $help_message;
+        $this->syntax = $syntax;
+        $this->need_admin = $admin;
+        $this->need_nntp = $need_nntp;
+        $this->arg_str = $arg_str;
+        $this->primary_nntp = $primary_nntp;
         $this->db_intensive = $db_intensive;
         $this->need_posting = $need_posting;
         $this->enabled = TRUE;
@@ -889,7 +889,7 @@ class commands_list
     public static function command_merge_sets(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
     {
         $arg_list = split_args($args);
-        if (!isset($arg_list[0]) || !isset($arg_list[1])) {
+        if (!isset($arg_list[0], $arg_list[1])) {
             $response = urdd_protocol::get_response(501);
         } else {
             $response = queue_merge_sets($db, $servers, $args, $userid, $priority);

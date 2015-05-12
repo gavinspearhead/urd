@@ -108,8 +108,7 @@ class urd_spots
 
     private static function parse_spot_report(array $lines)
     {
-        $header = array();
-        $report = array();
+        $header = $report = array();
         foreach ($lines as $line) {
             $hdr = explode(':', $line, 2);
             if (count($hdr) < 2) {
@@ -191,7 +190,6 @@ class urd_spots
                     break;
                 case 'x-user-avatar':
                     $spot_data['user-avatar'] .= substr($line, 15);
-
                     break;
             }
         }
@@ -488,7 +486,7 @@ class urd_spots
         $rv = preg_match_all('|(https?:\/\/[-a-z0-9_:./&%!@#$?^()+=\\;]+)|i', $data, $matches);
         if ($rv > 0) {
             foreach ($matches[1] as $match) {
-                $links [] = $match;
+                $links[] = $match;
             }
         }
         foreach ($links as $link) {
@@ -535,7 +533,6 @@ class urd_spots
         }
         $sig = explode('.', $addr[0]);
         $pubkey = spotparser::unspecial_string($sig[0]);
-
         $spotterid = self::calculate_spotter_id($pubkey);
 
         return $spotterid;
@@ -558,8 +555,7 @@ class urd_spots
         $sql = 'COUNT(*) AS "cnt" FROM spot_comments WHERE "spotid"=:spotid1 OR "spotid"=:spotid2';
         $res = $this->db->select_query($sql, array(':spotid1'=> '', ':spotid2'=>'0'));
         if (!isset($res[0]['cnt'])) {
-            $status = QUEUE_FINISHED;
-            update_queue_status($this->db, $item->get_dbid(), $status, 0, 100, 'No spot comments');
+            update_queue_status($this->db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'No spot comments');
 
             return NO_ERROR;
         }
@@ -579,11 +575,12 @@ class urd_spots
         $expire_timestamp = time() - ($expire * 24 * 3600);
         echo_debug("Expire $expire_timestamp seconds", DEBUG_SERVER);
         static $cols = array('spotid', 'from', 'comment', 'userid', 'stamp', 'user_avatar');
+        $arr1 = array(':spotid1' => '', ':spotid2' => '0');
         $sql = '"id", "message_id", "spotid" FROM spot_comments WHERE "spotid"=:spotid1 OR "spotid"=:spotid2';
 
         $time_a = microtime(TRUE);
         while (TRUE) {
-            $res = $this->db->select_query($sql, $limit, array(':spotid1' => '', ':spotid2' => '0'));
+            $res = $this->db->select_query($sql, $limit, $arr1);
             if (!is_array($res)) {
                 break;
             }
@@ -641,10 +638,10 @@ class urd_spots
                         $from = utf8_encode($comment['from']);
 
                         $comment['verified'] = $spotSigning->verifyComment($comment);
-                        $userid = $comment['userid'] = $spotSigning->calculate_userid($comment['user-key']['modulo']);
                         if (!$comment['verified']) {
                             throw new exception('Comment signature invalid for spot ' . $spotid);
                         }
+                        $userid = $comment['userid'] = $spotSigning->calculate_userid($comment['user-key']['modulo']);
                         if ($comment['rating'] > 0 && $comment['rating'] <= 10) {
                             $ratings[$spotid][] = $comment['rating'];
                         }
@@ -667,11 +664,10 @@ class urd_spots
                 $this->db->delete_query('spot_comments', '"id" IN (' . (str_repeat('?,', $del_count - 1) . '?') . ')', $delete_ids);
             }
 
-            $time_b = microtime(TRUE);
-            $status = QUEUE_RUNNING;
             $perc = ceil(((float) $cnt * 100) / $totalcount);
             $time_left = 0;
             if ($perc != 0 && $cnt > 0) {
+                $time_b = microtime(TRUE);
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
             $this->update_spot_comment_ratings($ratings);
@@ -752,11 +748,11 @@ class urd_spots
                 $this->db->delete_query('spot_reports', '"id" IN (' . (str_repeat('?,',  $del_count - 1)) . '?)', $delete_ids);
             }
 
-            $time_b = microtime(TRUE);
             $status = QUEUE_RUNNING;
             $perc = ceil(((float) $cnt * 100) / $totalcount);
             $time_left = 0;
             if ($perc != 0 && $cnt > 0) {
+                $time_b = microtime(TRUE);
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
             update_queue_status($this->db, $item->get_dbid(), NULL, $time_left, $perc, 'Getting spot reports');
@@ -864,11 +860,11 @@ class urd_spots
             if (count($ids) > 0) {
                 $this->db->delete_query('spot_messages', '"id" IN (' . (str_repeat('?,', count($ids) - 1) . '?') . ')', $ids);
             }
-            $time_b = microtime(TRUE);
             $status = QUEUE_RUNNING;
             $perc = ceil(((float) $cnt * 100) / $totalcount);
             $time_left = 0;
             if ($perc != 0 && $cnt > 0) {
+                $time_b = microtime(TRUE);
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
             update_queue_status($this->db, $item->get_dbid(), NULL, $time_left, $perc, 'Getting spots');

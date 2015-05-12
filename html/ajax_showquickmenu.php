@@ -36,13 +36,15 @@ class QuickMenuItem
     public $name;
     public $type;
     public $extra;
+    public $submenu;
 
-    public function __construct($id,$name, $type, $extra='')
+    public function __construct($id, $name, $type, $extra='', $submenu=FALSE)
     {
         $this->id = $id;
         $this->name = $name;
         $this->type = $type;
         $this->extra = $extra;
+        $this->submenu = $submenu;
     }
 }
 
@@ -82,8 +84,8 @@ function get_search_options_for_user(DatabaseConnection $db, $userid)
 
 function find_special_file(DatabaseConnection $db, $setID)
 {
-    $sql = '* FROM setdata WHERE "ID"=?';
-    $res = $db->select_query($sql, 1, array($setID));
+    $sql = '"groupID" FROM setdata WHERE "ID"=:setid';
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID));
     if ($res === FALSE) {
         return array(FALSE, FALSE, FALSE, FALSE);
     }
@@ -117,9 +119,9 @@ function find_special_file(DatabaseConnection $db, $setID)
  
 try {
     // Process commands:
-    if (isset($_REQUEST['type']) && isset($_REQUEST['subject']) && isset($_REQUEST['srctype'])) {
+    if (isset($_REQUEST['type'], $_REQUEST['subject'], $_REQUEST['srctype'])) {
         $type = get_request('type');
-        $srctype = get_request('srctype');
+        $srctype = get_request('srctype', 'x ');
         $subject = get_request('subject');
         $killflag = get_request('killflag');
         $isposter = urd_user_rights::is_poster($db, $userid);
@@ -134,7 +136,7 @@ try {
                         $search_option = end($search_options); // the last will be the first
                         $items[] = new QuickMenuItem('search' . $search_option['name'], $LN['quickmenu_setsearch'] . ' ' . $search_option['name'], 'searchbutton', $search_option);
                     } elseif ($search_options_count > 1) {
-                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
+                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons', TRUE);
                     }
                     $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
                     $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');
@@ -147,7 +149,7 @@ try {
                         $search_option = end($search_options); // the last will be the first
                         $items[] = new QuickMenuItem('search' . $search_option['name'], $LN['quickmenu_setsearch'] . ' ' . $search_option['name'], 'searchbutton', $search_option);
                     } elseif ($search_options_count > 1) {
-                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
+                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons', TRUE);
                     }
                     $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
                     $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
@@ -161,7 +163,7 @@ try {
                         $search_option = end($search_options); // the last will be the first
                         $items[] = new QuickMenuItem('search' . $search_option['name'], $LN['quickmenu_setsearch'] . ' ' . $search_option['name'], 'searchbutton', $search_option);
                     } elseif ($search_options_count > 1) {
-                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons');
+                        $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'], 'quickmenu', 'searchbuttons', TRUE);
                     }
                     $items[] = new QuickMenuItem('setsearch', $LN['quickmenu_setsearch'] . ' ' . $LN['urdname'], 'urd_search');
                 }

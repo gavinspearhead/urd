@@ -267,7 +267,7 @@ function time_format($time)
 
     // Language specific settings:
     global $LN;
-    if (isset($LN['dateformat']) && isset($LN['timeformat'])) {
+    if (isset($LN['dateformat'], $LN['timeformat'])) {
         $dateformat = $LN['dateformat'];
         $timeformat = $LN['timeformat'];
     }

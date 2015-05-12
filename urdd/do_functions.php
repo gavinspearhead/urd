@@ -28,7 +28,7 @@ if (!defined('ORIGINAL_PAGE')) {
 
 function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
-    assert (is_numeric($dlid));
+    assert(is_numeric($dlid));
     $cols = array('downloadID', 'groupID', 'partnumber', 'name', 'status', 'messageID', 'binaryID', 'size');
     $total_size = $count = 0;
     foreach ($xml as $section) {
@@ -133,7 +133,7 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
 
 function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts, $subject, $file, $dlid)
 {
-    assert (is_resource($file) && is_numeric($groupid) && is_numeric($dlid));
+    assert(is_resource($file) && is_numeric($groupid) && is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $res = $db->select_query('"active" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
     if ($res === FALSE || $res[0]['active'] != newsgroup_status::NG_SUBSCRIBED) {
@@ -155,17 +155,16 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
         $bin_data = $res[0];
     }
 
-    $str = '';
     $total_parts = $bin_data['totalParts'];
     $date = $bin_data['unixdate'];
     $name = preg_replace("/[^a-zA-Z0-9\(\)\! .]/", '', str_replace('"', '', $bin_data['subject']));
-    $str .= "\t<file poster=\"who@no.com\" date=\"$date\" subject=\"$name (1/{$total_parts})\">\n";
+    $str = "\t<file poster=\"who@no.com\" date=\"$date\" subject=\"$name (1/{$total_parts})\">\n";
     $str .= "\t<groups>\n";
     $str .= "\t\t<group>{$group}</group>\n";
     $str .= "\t</groups>\n";
     $str .= "\t<segments>\n";
-    $sql = '"ID", "messageID", "partnumber", "size" FROM downloadarticles WHERE "binaryID"=? AND "downloadID"=? ORDER BY "partnumber"';
-    $res2 = $db->select_query($sql, array($binaryid, $dlid));
+    $sql = '"ID", "messageID", "partnumber", "size" FROM downloadarticles WHERE "binaryID"=:binid AND "downloadID"=:dlid ORDER BY "partnumber"';
+    $res2 = $db->select_query($sql, array(':binid'=>$binaryid, ':dlid'=>$dlid));
     if ($res2 === FALSE) {
         $res2 = array();
     }
@@ -262,7 +261,7 @@ function do_make_nzb(DatabaseConnection $db, action $item)
         }
     }
 
-    $str = '</nzb>' . "\n";
+    $str = "</nzb>\n";
     $size += fwrite($file, $str);
     if ($compression === TRUE) {
         pclose($file);

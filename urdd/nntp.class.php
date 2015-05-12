@@ -329,7 +329,8 @@ class URD_NNTP
 
     private function get_headers(array $groupArr, $orig_start, $orig_stop, $dbid, $mindate, $total, $done, $update_last_updated, $total_max, $total_counter, $compressed_headers)
     {
-        assert(is_resource($orig_start) && is_resource($orig_stop) && is_numeric($mindate) && is_resource($total) && is_resource($done));
+        //assert(is_resource($orig_start) && is_resource($orig_stop) && is_numeric($mindate) && is_resource($total) && is_resource($done));
+        assert(is_numeric($mindate) );
 
         $GREATEST = $this->db->get_greatest_function();
         // Download headers, to update local info

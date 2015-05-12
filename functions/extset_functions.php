@@ -983,7 +983,7 @@ class urd_extsetinfo
         return $newsetname; // Unsafe version, we don't want the added quotes thank you.
     }
 
-    public function add_ext_setdata(DatabaseConnection $db, $setid, array $save, $type, $commit = ESI_COMMITTED, $overwrite=FALSE)
+    public static function add_ext_setdata(DatabaseConnection $db, $setid, array $save, $type, $commit = ESI_COMMITTED, $overwrite=FALSE)
     {
         foreach ($save as $name => $value) {
             $value_x = trim($value);

@@ -39,7 +39,7 @@ class menu_item
     private $url;
     private $settings;
     private $category;
-    public function __construct(array $items, $name = '', $type=urd_modules::URD_CLASS_GENERIC, $category= '')
+    public function __construct(array $items, $name='', $type=urd_modules::URD_CLASS_GENERIC, $category='')
     {
         static $settings = NULL;
         if ($settings === NULL) {
@@ -164,9 +164,9 @@ class menu
             $do_viewfiles = FALSE;
         }
 
-        if (isset($_SESSION['urd_username']) && isset($_SESSION['urd_pass'])) {
+        if (isset($_SESSION['urd_username'], $_SESSION['urd_pass'])) {
             $username = $_SESSION['urd_username'];
-        } elseif (isset($_COOKIE['urd_username']) && isset($_COOKIE['urd_pass'])) { // it's always in the session but check the cookie anyway
+        } elseif (isset($_COOKIE['urd_username'], $_COOKIE['urd_pass'])) { // it's always in the session but check the cookie anyway
             $username = $_COOKIE['urd_username'];
         }
         $menu = new menu(get_config($db, 'modules'));
@@ -349,19 +349,19 @@ function check_for_update(DatabaseConnection $db)
                 $status_newversion = 1;
                 $status = 1;
             }
-            if (($update_type &  update_types::BUG_FIX) != 0) {
+            if (($update_type & update_types::BUG_FIX) != 0) {
                 $status_bugfix = 1;
                 $status = 1;
             }
-            if (($update_type &  update_types::NEW_FEATURE) != 0) {
+            if (($update_type & pdate_types::NEW_FEATURE) != 0) {
                 $status_newfeature = 1;
                 $status = 1;
             }
-            if (($update_type &  update_types::OTHER) != 0) {
+            if (($update_type & update_types::OTHER) != 0) {
                 $status_other = 1;
                 $status = 2;
             }
-            if (($update_type &  update_types::SECURITY_FIX) != 0) {
+            if (($update_type & update_types::SECURITY_FIX) != 0) {
                 $status_security = 1;
                 $status = 2;
             }

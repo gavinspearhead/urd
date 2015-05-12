@@ -827,7 +827,6 @@ function show_files(options)
     $('#search').keypress(function(event) { do_keypress_viewfiles(event); });
     var url = 'ajax_editviewfiles.php';
     $.post(url, data).done(function(html) {
-            console.log(html);
         var x = $.parseJSON(html);
         if (x.error != 0) {
             update_message_bar(x.error);
@@ -2384,6 +2383,7 @@ function show_quickmenu(type, subject, srctype, e)
             subject: subject
         }
     ).done(function(html) {
+        console.log(html);
         has_quickmenu = 0;
         var x = $.parseJSON(html);
         if (x.error == 0) {

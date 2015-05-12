@@ -29,11 +29,11 @@
 
 {* Action? *}
 {if $item->type == 'quickmenu'}
-<button class="quickmenubutton" onclick="javascript:show_quickmenu('{$item->id}','{$subject}', {$srctype},event); return false;">
+<button class="quickmenubutton" onclick="javascript:show_quickmenu('{$item->id}','{$subject}', '{$srctype}', event); return false;">
 {/if}
 
 {if $item->type == 'quickdisplay'}
-<button class="quickmenubutton" onclick="javascript:show_quick_display('{$item->id}','{$subject}',event, {$srctype});close_quickmenu(); return false;">
+<button class="quickmenubutton" onclick="javascript:show_quick_display('{$item->id}','{$subject}',event, '{$srctype}');close_quickmenu(); return false;">
 {/if}
 
 {if $item->type == 'newpage'}
@@ -109,7 +109,8 @@
 {/if}
 
 {$item->name}
-
+{if $item->submenu} <div class="floatright">&gt;</div>
+{/if}
 </button>
 {/strip}
 </div>
