@@ -42,6 +42,43 @@ function get_menu_display()
     return $_SESSION['menudisplay'];
 }
 
+function get_template(DatabaseConnection $db, $userid)
+{
+    if (isset($userid)) {
+        $template = select_template($db, $userid);
+    } else {
+        $template = select_template($db, NULL);
+    }
+    if ($template === NULL) {
+        $template = DEFAULT_TEMPLATE;
+    }
+
+    return $template;
+}
+
+function get_smarty_dirs($template)
+{
+    global $pathsm;
+    $tpl_dir = realpath("$pathsm/../html/smarty/templates/$template/");
+    $ctpl_dir = realpath("$pathsm/../html/smarty/c_templates" . "/$template/");
+    $cache_dir = realpath("$pathsm/../html/smarty/cache");
+    $config_dir = realpath("$pathsm/../html/smarty/configs");
+    if ($tpl_dir === FALSE) { 
+        throw new exception('Smarty template directory not accessible');
+    }
+    if ($ctpl_dir === FALSE) { 
+        throw new exception('Smarty compiled template directory not accessible');
+    }
+    if ($cache_dir === FALSE) { 
+        throw new exception('Smarty cache directory not accessible');
+    }
+    if ($config_dir === FALSE) { 
+        throw new exception('Smarty config directory not accessible');
+    }
+    return array($tpl_dir, $ctpl_dir, $cache_dir, $config_dir);
+}
+
+
 function init_smarty($title, $show_menu=1, $custom_menu=NULL, $enable_caching=FALSE)
 {
     global $LN, $smarty, $db, $isadmin, $config, $userid, $pathsm, $tpldir, $langdir;
@@ -63,34 +100,10 @@ function init_smarty($title, $show_menu=1, $custom_menu=NULL, $enable_caching=FA
     $stylesheet = get_active_stylesheet($db, $userid);
     $urdd_online = check_urdd_online($db);
     $challenge = challenge::set_challenge();
-
-    if (isset($userid)) {
-        $template = select_template($db, $userid);
-    } else {
-        $template = select_template($db, NULL);
-    }
-    if ($template === NULL) {
-        $template = DEFAULT_TEMPLATE;
-    }
-
+    $template = get_template($db, $userid);
     register_smarty_extensions($smarty);
+    list($tpl_dir, $ctpl_dir, $cache_dir, $config_dir) = get_smarty_dirs($template);
 
-    $tpl_dir = realpath("$pathsm/../html/smarty/templates/$template/");
-    $ctpl_dir = realpath("$pathsm/../html/smarty/c_templates" . "/$template/");
-    $cache_dir = realpath("$pathsm/../html/smarty/cache");
-    $config_dir = realpath("$pathsm/../html/smarty/configs");
-    if ($tpl_dir === FALSE) { 
-        throw new exception('Smarty template directory not accessible');
-    }
-    if ($ctpl_dir === FALSE) { 
-        throw new exception('Smarty compiled template directory not accessible');
-    }
-    if ($cache_dir === FALSE) { 
-        throw new exception('Smarty cache directory not accessible');
-    }
-    if ($config_dir === FALSE) { 
-        throw new exception('Smarty config directory not accessible');
-    }
     $smarty->assign(array(
         'TPLDIR' => $tpldir . $template,
         'IMGDIR' => $tpldir . $template . '/img',
@@ -112,7 +125,6 @@ function init_smarty($title, $show_menu=1, $custom_menu=NULL, $enable_caching=FA
     } else {
         $menu =	array();
     }
-
     $smarty->enableSecurity();
     $smarty->setCompileCheck(isset($config['smarty_compile_check']) ? $config['smarty_compile_check'] : TRUE);
     $smarty->assign(array(

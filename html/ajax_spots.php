@@ -29,7 +29,6 @@ $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
 require_once "$pathidx/../functions/ajax_includes.php";
-file_put_contents('/tmp/foo',var_export($_POST, TRUE), FILE_APPEND);
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();

@@ -1364,12 +1364,11 @@ function get_mail_templates()
     return $mail_templates;
 }
 
-function get_stylesheets()
+function get_stylesheets(DatabaseConnection $db, $userid)
 {
-    global $smarty;
-    $template_dir = $smarty->getTemplateDir();
-    echo_debug_var_file('/tmp/foo', $template_dir);
-    $sheets = glob($template_dir[0] . '/css/*');
+    $template = get_template($db, $userid);
+    list($template_dir) = get_smarty_dirs($template);
+    $sheets = glob($template_dir . '/css/*');
     $stylesheets = array();
     foreach ($sheets as $sheet) {
         $name = basename($sheet);
@@ -1377,7 +1376,6 @@ function get_stylesheets()
             $stylesheets[$name] = ucfirst($name);
         }
     }
-
     return $stylesheets;
 }
 
@@ -1385,9 +1383,9 @@ function get_active_stylesheet(DatabaseConnection $db, $userid)
 {
     global $smarty;
     $stylesheet = ($userid > 0) ? get_pref($db, 'stylesheet', $userid, '') : '';
-    $template_dir = $smarty->getTemplateDir();
-    $template_dir = $template_dir[0] . '/css';
-
+    $template = get_template($db, $userid);
+    list($template_dir) = get_smarty_dirs($template) ;
+    $template_dir .= '/css';
     $default_stylesheet = get_config($db, 'default_stylesheet', 'light.css');
     if ($stylesheet == '' || !file_exists($template_dir . '/' . $stylesheet . '/' . $stylesheet . '.css') || !is_file($template_dir . '/' . $stylesheet. '/' . $stylesheet . '.css')) {
         if (!file_exists($template_dir . '/' . $default_stylesheet . '/'. $default_stylesheet . '.css') || !is_file($template_dir . '/' . $default_stylesheet . '/' .$default_stylesheet . '.css')) {

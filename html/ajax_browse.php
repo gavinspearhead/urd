@@ -518,7 +518,6 @@ try {
     $maxsetsize = get_request('maxsetsize', NULL);
     $groupID = get_request('groupID', 0);
     $view_size  = get_request('view_size', 1024);
-echo_debug_var_file('/tmp/foo', $_POST);
     $maxrating = get_request('maxrating', '');
     $minrating = get_request('minrating', '');
     $maxcomplete = get_request('maxcomplete', '');

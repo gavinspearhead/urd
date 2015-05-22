@@ -148,7 +148,7 @@ function show_config(DatabaseConnection $db, $userid)
     $on_off = get_on_off_array();
     $log_levels = get_log_levels_array();
     $languages = get_languages();
-    $stylesheets = get_stylesheets();
+    $stylesheets = get_stylesheets($db, $userid);
     $mail_templates = get_mail_templates();
     $templates = get_templates();
     $users = get_users_array($db);
@@ -1272,7 +1272,7 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
 
             return $rv;
         case 'default_stylesheet':
-            $rv = verify_array($value, array_keys(get_stylesheets()));
+            $rv = verify_array($value, array_keys(get_stylesheets($db, $userid)));
 
             return $rv;
         case 'urdd_pars':

@@ -37,5 +37,5 @@ $add_menu = array (
 );
 
 init_smarty($LN['pref_title'], 1, $add_menu);
-$smarty->assign('source', 	    'prefs');
+$smarty->assign('source', 'prefs');
 $smarty->display('settings.tpl');

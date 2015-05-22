@@ -143,6 +143,7 @@ function get_sort_array()
 function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
 {
     global $LN;
+
     switch ($name) {
         case 'spot_spam_limit':
             $rv = verify_numeric($value, 0, NULL, 1000);
@@ -215,7 +216,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
         case 'template':
             return verify_array($value, array_keys(get_templates($db, $userid)));
         case 'stylesheet':
-            return verify_array($value, array_keys(get_stylesheets()));
+            return verify_array($value, array_keys(get_stylesheets($db, $userid)));
         case 'pref_level':
             return verify_array($value, array_keys(user_levels::get_user_levels()));
         case 'index_page':
@@ -413,7 +414,7 @@ function show_preferences(DatabaseConnection $db, $userid)
     }
 
     $index_page_array = get_index_page_array($isadmin, $modules);
-    $stylesheets = get_stylesheets();
+    $stylesheets = get_stylesheets($db, $userid);
     $saved_searches = new saved_searches($userid);
     $saved_searches->load($db);
     $spot_array = $saved_searches->get_all_names(USERSETTYPE_SPOT);
