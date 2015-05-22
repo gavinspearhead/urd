@@ -331,10 +331,10 @@ class URD_NNTP
     {
         //assert(is_resource($orig_start) && is_resource($orig_stop) && is_numeric($mindate) && is_resource($total) && is_resource($done));
         assert(is_numeric($mindate) );
+        echo_debug_function(DEBUG_NNTP, __FUNCTION__);
 
         $GREATEST = $this->db->get_greatest_function();
         // Download headers, to update local info
-        echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         $poster_blacklist = get_config($this->db, 'poster_blacklist');
         $poster_blacklist = unserialize($poster_blacklist);
         if (!is_array($poster_blacklist)) {
@@ -361,11 +361,11 @@ class URD_NNTP
         $stop = $orig_stop;
         $start = gmp_max($orig_start, gmp_sub($stop, $this->maxMssgs));
         echo_debug('Getting articles ' . gmp_strval($orig_start) . ' - ' . gmp_strval($orig_stop), DEBUG_MAIN);
-        $older_counter = 0;
         if (gmp_cmp($orig_start, 0) == 0 && gmp_cmp($orig_stop, 0) == 0) {
             return 0;
         }
 
+        $older_counter = 0;
         // if 5% is older in one go we quit adding articles + 1000 articles for small ngs
         $older_top = gmp_min(self::MAX_OLDER_COUNTER, (gmp_add(1000, gmp_div($total, 20))));
         $blacklist_counter = gmp_init(0);

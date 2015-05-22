@@ -46,11 +46,11 @@ class nzb_poller
                 $path = $dl_path . $user . DIRECTORY_SEPARATOR;
                 if (is_dir($path)) {
                     $d = dir($path);
+                    $userid = get_userid($db, $user);
                     while (FALSE !== ($entry = $d->read())) {
                         if (substr($entry, -4) == '.nzb') {
                             $new_name = find_unique_name($path, '', $entry, '.processing', TRUE);
                             rename($path . $entry, $new_name);
-                            $userid = get_userid($db, $user);
                             $new_name = addslashes($new_name);
                             queue_parse_nzb($db, $servers, array($new_name), $userid);
                         }

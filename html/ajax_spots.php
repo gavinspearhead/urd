@@ -29,6 +29,7 @@ $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
 require_once "$pathidx/../functions/ajax_includes.php";
+file_put_contents('/tmp/foo',var_export($_POST, TRUE), FILE_APPEND);
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
     $_SESSION['setdata'] = array();
@@ -111,7 +112,7 @@ class spot_viewer
 
         return $basic_browse_query;
     }
-    private function get_spots($interesting_only)
+    private function get_spots($interesting_only=FALSE)
     {
         $sql = '"title", spots."size", spots."spotid", "stamp", spots."reports", spots."comments", spots."poster",' .
             '"category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz", spots."url", ' . 
@@ -127,7 +128,6 @@ class spot_viewer
             $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL)';
         }
         $sql .= " ORDER BY {$this->Qorder}";
-        //echo "select " . $sql .";<br><br>";
         return $sql;
     }
     private function get_spots_count($interesting_only)
@@ -138,10 +138,7 @@ class spot_viewer
         if ($interesting_only) {
             $sql .= ' AND usersetinfo."statusint" = 1';
         }
-        //echo "select " . $sql .";<br><br>";
-        //print_r($sql); print_r($this->input_arr);
         $res = $this->db->select_query($sql, $this->input_arr);
-        //print_r($res);
         if (!isset($res[0]['cnt'])) {
             throw new exception($LN['error_setsnumberunknown']);
         }
@@ -509,6 +506,7 @@ try {
     $perpage    = get_request('perpage', $perpage);
     $only_rows  = get_request('only_rows', 0);
     $offset     = get_request('offset', 0);
+    $view_size  = get_request('view_size', 1024);
 
     $spots_viewer = new spot_viewer($db, $userid);
     $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order);
@@ -530,6 +528,7 @@ try {
     }
 
     $smarty->assign('only_rows',        $only_rows);
+    $smarty->assign('view_size',        $view_size);
     $smarty->assign('categoryID',	    $categoryID);
     $smarty->assign('allsets',		    $allsets);
     $smarty->assign('show_subcats',     get_pref($db, 'show_subcats', $userid, 0));

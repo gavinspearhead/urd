@@ -179,12 +179,13 @@ try {
             $start_time = NULL;
             if ($newstarttime !== FALSE) {
                 $uc->unschedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid\"");
-                if ($newstarttime > time()) {
+                $now = time();
+                if ($newstarttime > $now) {
                     $start_time = $newstarttime;
                     $uc->schedule(get_command(urdd_protocol::COMMAND_CONTINUE), '"' . get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid\"", get_post('starttime'));
-                } elseif ($oldstarttime > time()) {// if the start is in the future we have to start it if the new start time isn't
+                } elseif ($oldstarttime > $now) {// if the start is in the future we have to start it if the new start time isn't
                     $uc->continue(get_command(urdd_protocol::COMMAND_DOWNLOAD), $dlid);
-                    $start_time = $time();
+                    $start_time = $now;
                 }
             }
             $unpar = (get_post('unpar', '0') == '1') ? 1 : 0;

@@ -19,7 +19,7 @@
 - Added submenu indicator to quickmenu
 - Improved parsing search strings in browse pages
 - Reduces memory footprint slightly
-- Updated to jquery 2.1.3 
+- Updated to jquery 2.1.4 
 
 
 1.12

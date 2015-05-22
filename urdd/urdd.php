@@ -118,18 +118,17 @@ function update_user_last_seen_group(DatabaseConnection $db, $group_id)
 
 function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
 {
-    assert(is_bool($nntp_enabled));
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
-    $rv = NO_ERROR;
+    assert(is_bool($nntp_enabled));
     $cmd_code = $item->get_command_code();
     if (get_command($cmd_code) === FALSE) {
         urdd_exit(INTERNAL_FAILURE);
     }
 
     if ($nntp_enabled !== TRUE && $item->need_nntp()) {
-        //$response = urdd_protocol::get_response(410);
         urdd_exit(URDD_NOERROR);
     }
+    $rv = NO_ERROR;
     static $cmd_table = array(
         urdd_protocol::COMMAND_ADDDATA             => 'do_adddata',
         urdd_protocol::COMMAND_ADDSPOTDATA         => 'do_addspotdata',
@@ -383,18 +382,15 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
 
     $item = $servers->get_first_runnable_on_queue($par_db);
     if ($item === FALSE || $item === TRUE) { // FALSE : no thread can run; TRUE: queue empty
-
         return $item;
     }
     $command = $item->get_command_code();
     // if it is a download request, select the server it will run on then make n new queued download actions and run these on the server
     if ($command == urdd_protocol::COMMAND_DOWNLOAD) {
         create_download_threads($par_db, $servers, $item);
-
         return FALSE;
     } elseif ($command == urdd_protocol::COMMAND_START_POST) {
         create_post_threads($par_db, $servers, $item);
-
         return FALSE;
     } elseif ($command == urdd_protocol::COMMAND_ADDDATA) {
         if ($item->get_preview()) { // if no server is available or no total free slot, we simple force one
@@ -402,11 +398,9 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
                 try {
                     $servers->preempt($par_db, $item, $item->get_userid());
                     usleep(5000);// wait so that the chld signal is delivered and the reap function calls it
-
                     return FALSE;
                 } catch (exception $e) {
                     write_log('Cannot preempt', LOG_INFO);
-
                     return FALSE;
                 }
             }
@@ -423,11 +417,9 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
                     }
                     $item->set_preferred_server($srv_id);
                     usleep(5000); // wait so that the chld signal is delivered and the reap function calls it
-
                     return FALSE;
                 } catch (exception $e) {
                     write_log('Cannot preempt: ' . $e->getMessage(), LOG_INFO);
-
                     return FALSE;
                 }
             }
@@ -578,7 +570,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
         if ($timeout === NULL) {
             $timeout = $sched_timeout;
         } elseif ($sched_timeout != 0) {
-            $timeout = min ($timeout, $sched_timeout);
+            $timeout = min($timeout, $sched_timeout);
         }
         $timeout *= 1000000; // to microseconds
         $timeout_us = max(min($timeout, urdd_sockets::DEFAULT_CHECK_TIMEOUT), 1000); // we at least wait 100 us

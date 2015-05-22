@@ -32,34 +32,6 @@ require_once "$pathadt/../functions/pref_functions.php";
 
 verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
-function build_task_skipper($perpage, $offset, $total)
-{
-    assert(is_numeric($perpage) && is_numeric($offset) && is_numeric($total));
-    // Normal size, if there are more pages, a 1st and/or last page indicator can be added:
-    $size = SKIPPER_SIZE;
-
-    // First get all the rows:
-    $totalpages = ceil($total / $perpage);		// Total number of pages.
-    $activepage = ceil(($offset + 1) / $perpage); 	// This is the page we're on. (+1 because 0/100 = page 1)
-
-    $start = max($activepage - floor($size / 2), 1);	// We start at 1 unless we're now on page 12, then we show page 2.
-    $end = min($start + $size, $totalpages);	// We don't go beyond 'totalpages' ofcourse.
-    $start = max($end - $size, 1);			// Re-check $start, in case the pagenumber is near the end
-
-    $pages = array();
-    for ($i = 1; $i <= $totalpages; $i++) {
-        $thispage = array();
-        $thispage['number'] = $i;
-        $pageoffset = ($i - 1) * $perpage;          // For page 1, offset = 0.
-
-        $thispage['offset'] = $pageoffset;
-        // distance is the distance from the current page, maximum of 5. Used to colour close pagenumbers:
-        $thispage['distance'] = min(abs($activepage - $i), 5);
-        $pages[] = $thispage;
-    }
-
-    return array($pages, $totalpages, $activepage);
-}
 
 try { 
     $urdd_online = check_urdd_online($db);
@@ -168,7 +140,7 @@ try {
         }
     }
 
-    list($pages, $lastpage, $currentpage) = build_task_skipper($perpage, $offset, $cnt);
+    list($pages, $currentpage, $lastpage) = get_pages($cnt, $perpage, $offset);
 
     init_smarty('', 0);
     $smarty->assign('alltasks',	        $tasks);

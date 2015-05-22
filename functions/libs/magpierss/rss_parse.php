@@ -158,7 +158,7 @@ class MagpieRSS
             } elseif ($el == 'feed') {
                 $this->feed_type = self::ATOM;
                 $this->feed_version = $attrs['version'];
-                $this->inchannel = true;
+                $this->inchannel = TRUE;
             }
 
             return;
@@ -196,7 +196,7 @@ class MagpieRSS
         // if inside an Atom content construct (e.g. content or summary) field treat tags as text
         elseif ($this->feed_type == self::ATOM && $this->incontent) {
             // if tags are inlined, then flatten
-            $attrs_str = join(' ',
+            $attrs_str = implode(' ',
                 array_map('map_attrs',
                 array_keys($attrs),
                 array_values($attrs) ) );
@@ -221,12 +221,12 @@ class MagpieRSS
         }
     }
 
-    public function feed_cdata ($p, $text)
+    public function feed_cdata($p, $text)
     {
         if ($this->feed_type == self::ATOM && $this->incontent) {
             $this->append_content( $text );
         } else {
-            $current_el = join('_', array_reverse($this->stack));
+            $current_el = implode('_', array_reverse($this->stack));
             $this->append($current_el, $text);
         }
     }
@@ -256,9 +256,9 @@ class MagpieRSS
                 $this->append_content("<$el />");
             }
 
-            array_shift( $this->stack );
+            array_shift($this->stack);
         } else {
-            array_shift( $this->stack );
+            array_shift($this->stack);
         }
 
         $this->current_namespace = FALSE;
@@ -302,7 +302,7 @@ class MagpieRSS
         }
     }
 
-    public function normalize ()
+    public function normalize()
     {
         // if atom populate rss fields
         if ( $this->is_atom() ) {
@@ -319,7 +319,7 @@ class MagpieRSS
                 $atom_date = (isset($item['issued']) ) ? $item['issued'] : $item['modified'];
                 if ($atom_date) {
                     $epoch = @strtotime($atom_date);
-                    if ($epoch and $epoch > 0) {
+                    if ($epoch && $epoch > 0) {
                         $item['date_timestamp'] = $epoch;
                     }
                 }
@@ -338,10 +338,10 @@ class MagpieRSS
                 }
                 if ( $this->is_rss() == '1.0' && isset($item['dc']['date']) ) {
                     $epoch = @strtotime($item['dc']['date']);
-                    if ($epoch and $epoch > 0) {
+                    if ($epoch && $epoch > 0) {
                         $item['date_timestamp'] = $epoch;
                     }
-                } elseif ( isset($item['pubdate']) ) {
+                } elseif (isset($item['pubdate']) ) {
                     $epoch = @strtotime($item['pubdate']);
                     if ($epoch > 0) {
                         $item['date_timestamp'] = $epoch;
@@ -357,18 +357,16 @@ class MagpieRSS
     {
         if ($this->feed_type == self::RSS) {
             return $this->feed_version;
-        } else {
-            return FALSE;
-        }
+        } 
+        return FALSE;
     }
 
     public function is_atom()
     {
         if ($this->feed_type == self::ATOM) {
             return $this->feed_version;
-        } else {
-            return FALSE;
-        }
+        } 
+        return FALSE;
     }
 
     /**
@@ -377,11 +375,11 @@ class MagpieRSS
      */
     public function create_parser($source, $out_enc, $in_enc, $detect)
     {
-        if(!$detect && $in_enc)
+        if(!$detect && $in_enc) {
             $this->parser = xml_parser_create($in_enc);
-        else
+        } else {
             $this->parser = xml_parser_create('');
-
+        }
         if ($out_enc) {
             $this->encoding = $out_enc;
             xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, $out_enc);
@@ -393,10 +391,10 @@ class MagpieRSS
     public function known_encoding($enc)
     {
         $enc = strtoupper($enc);
-        if ( in_array($enc, self::$_KNOWN_ENCODINGS) )
+        if (in_array($enc, self::$_KNOWN_ENCODINGS)) {
             return $enc;
-         else
-            return FALSE;
+        }
+        return FALSE;
     }
 
 } // end class RSS

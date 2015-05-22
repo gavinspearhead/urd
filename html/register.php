@@ -78,15 +78,15 @@ if (isset($_GET['activate']) && isset($_GET['username'])) {
     $username = $_GET['username'];
     $token = $_GET['activate'];
     $time = time();
-    $sql = '* FROM users WHERE "name"=? AND "token"=? AND "active" = ?';
-    $res = $db->select_query($sql, 1, array($username, $token, user_status::USER_PENDING));
+    $sql = '* FROM users WHERE "name"=:name AND "token"=:token AND "active" = :active';
+    $res = $db->select_query($sql, 1, array(':name'=>$username, ':token'=>$token, ':active'=>user_status::USER_PENDING));
     if ($res === FALSE) {
         throw new exception($LN['error_nosuchuser']);
     }
     $row = $res[0];
     $id = $row['ID'];
     $email = $row['email'];
-    if (($row['regtime'] + (60 * 60 * 24)) <= $time) {
+    if (($row['regtime'] + (3600 * 24)) <= $time) {
         delete_user($db, $id);
         throw new exception($LN['error_acctexpired']);
     }

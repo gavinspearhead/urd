@@ -28,12 +28,12 @@
 <form id="searchform">
 <div id="ng_subscribedgroups">
 {foreach $subscribedgroups as $item}
-<input type="hidden" id="ng_id_{$item.type}_{$item.id}" value="{$item.shortname|escape:htmlall}"/>
+    <input type="hidden" id="ng_id_{$item.type}_{$item.id}" value="{$item.shortname|escape:htmlall}"/>
 {/foreach}
 </div>
 	<input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
-    <input type="button" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"} id="prev_group"/>&nbsp;
+    <input type="button" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_previous type="small"} id="prev_group"/>&nbsp;
 	<select name="groupID" class="search" id="select_groupid">
     <option value="">{$LN_browse_allgroups} ({$total_articles})</option>
     {foreach $subscribedgroups as $item}
@@ -44,7 +44,7 @@
 	{/foreach}
 	</select>&nbsp;
 
-    <input type="button" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"} id="next_group"/>&nbsp;
+    <input type="button" class="submitsmall" value="&nbsp;&gt;&nbsp;" {urd_popup text=$LN_next type="small"} id="next_group"/>&nbsp;
     &nbsp;
 
 <input type="text" id="search" name="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/>&nbsp;
@@ -55,16 +55,16 @@
 &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"}/> 
+<input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_previous type="small"}/> 
 <span id="save_search_span">
 <select id="saved_search">
 <option value=""></option>
 {foreach $saved_searches as $saved_search}
-<option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}</option>
+    <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}</option>
 {/foreach}
 </select>
 </span> 
-<input type="button" id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
+<input type="button" id="next_search" class="submitsmall" value="&nbsp;&gt;&nbsp;" {urd_popup text=$LN_next type="small"}/>
 </span> 
 
 <div id="minibasketdiv" class="hidden"></div>
@@ -73,7 +73,7 @@
 {/capture}
 
 {capture assign="rss_link"}
-<div id="rss"><table class="rss"><tr><td class="rssleft"><a href="rss.php" id="rss_id" class="rss">RSS</a></td><td class="rssright">2.0</td></tr></table> </div>
+<div id="rss"><table class="rss"><tr><td class="rssleft"><a href="rss.php" id="rss_id" class="rss">RSS</a></td><td class="rssright">2.0</td></tr></table></div>
 {/capture}
 
 {capture assign="basketform"}
@@ -89,6 +89,7 @@
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
 <input type="hidden" name="type" id="type" value="groups"/>
 <input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE|escape:htmlall}"/>
+<input type="hidden" id="view_size" value=""/>
 </div>
 {/capture}
 
@@ -119,9 +120,11 @@
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 <input type="hidden" id="last_line" value=""/>
+<input type="hidden" id="view_size" value=""/>
 
 <script type="text/javascript">
 $(document).ready(function() {
+   $('#view_size').val($(window).width());
    load_side_bar(function() {
       load_sets( {
           'offset':'0'

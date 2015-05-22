@@ -37,6 +37,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
 {
     assert(is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+    $download_text_file = get_pref($db, 'download_text_file', $userid);
     $yydecode = my_escapeshellcmd (get_config($db, 'yydecode_path'));
     $yydecode_pars = my_escapeshellarg(get_config($db, 'yydecode_pars', ''), FALSE);
     if ($yydecode === FALSE) {
@@ -61,7 +62,6 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
         write_log('Could not create pipe', LOG_WARNING);
         urdd_exit(PIPE_ERROR);
     }
-    $download_text_file = get_pref($db, 'download_text_file', $userid);
 
     $p = $pipes[0];
     add_dir_separator($dir);
@@ -186,17 +186,17 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
             }
         }
     }
-    if ($a_cnt > 0) {
-        write_log("Downloaded $a_cnt articles", LOG_INFO);
-    }
-    if ($e_cnt > 0) {
-        write_log("Failed to download $e_cnt articles", LOG_INFO);
-    }
     pclose($p);
     $rv = proc_close($process);
     if ($rv > 1) {
         // yydecode has weird exitcode behaviour, and not documented
         write_log("YYdecode was not successful (exit code $rv) - disk full?", LOG_WARNING);
+    }
+    if ($a_cnt > 0) {
+        write_log("Downloaded $a_cnt articles", LOG_INFO);
+    }
+    if ($e_cnt > 0) {
+        write_log("Failed to download $e_cnt articles", LOG_INFO);
     }
 
     // Should update download status here, errors/completed/todo/in progress XXX XXX XXX ?????

@@ -67,11 +67,11 @@ if (FALSE === in_array($sort_dir, array ('asc', 'desc'))) {
 
 init_smarty($LN['log_title'], 1);
 
-$smarty->assign('search', $search);
-$smarty->assign('lines', $lines);
-$smarty->assign('log_str', $log_str);
-$smarty->assign('log_level', $min_log_level);
-$smarty->assign('sort',	$sort);
-$smarty->assign('sort_dir', $sort_dir_orig);
+$smarty->assign(array('search'=> $search,
+            'lines' => $lines,
+            'log_str' => $log_str,
+            'log_level' => $min_log_level,
+            'sort'=> $sort,
+            'sort_dir' => $sort_dir_orig));
 
 $smarty->display('admin_log.tpl');

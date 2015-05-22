@@ -34,7 +34,7 @@
 
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
-    <input type="button" id="prev_group" value="&lt;" class="submitsmall" {urd_popup type="small" text=$LN_previous }/>&thinsp;
+    <input type="button" id="prev_group" value="&nbsp;&lt;&nbsp;" class="submitsmall" {urd_popup type="small" text=$LN_previous }/>&thinsp;
     <select name="feed_id" class="search" id="select_feedid">
     <option value="">{$LN_feeds_allgroups} ({$total_articles})</option>
     {foreach $subscribedfeeds as $item}
@@ -44,7 +44,7 @@
         </option>
     {/foreach}
 	</select>&thinsp;
-    <input type="button" id="next_group" value="&gt;" class="submitsmall" {urd_popup type="small" text=$LN_next }/>&nbsp;
+    <input type="button" id="next_group" value="&nbsp;&gt;&nbsp;" class="submitsmall" {urd_popup type="small" text=$LN_next }/>&nbsp;
    	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/> &nbsp;
     <div class="hidden suggest" id="suggest_div"></div>
 	<input type="hidden" value="" name="maxage"/>
@@ -53,7 +53,7 @@
     &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_next type="small"}/>
+<input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_next type="small"}/>
 <span id="save_search_span">
 <select id="saved_search" _onchange="javascript:update_browse_searches();">
 <option value=""></option>
@@ -62,7 +62,7 @@
 {/foreach}
 </select>
 </span>
-<input type="button" id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
+<input type="button" id="next_search" class="submitsmall" value="&nbsp;&gt;&nbsp;" {urd_popup text=$LN_next type="small"}/>
 </span>
 &nbsp;
 <div id="minibasketdiv" class="hidden"></div>
@@ -119,10 +119,12 @@
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage|escape:htmlall}"/>
 <input type="hidden" id="last_line" value=""/>
+<input type="hidden" id="view_size" value=""/>
 
 {* Load basket: *}
 <script type="text/javascript">
 $(document).ready(function() {
+   $('#view_size').val($(window).width());
     load_side_bar( function() {
         update_basket_display();
         load_sets( {

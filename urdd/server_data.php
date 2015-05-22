@@ -323,7 +323,7 @@ class server_data { // lots of cleaning up to do
             // this is the last running one
             $now = time();
             if ($this->conn_check_time == 0 ||$this->conn_check_time < $now) {// set the connection retry timeout if not set
-                $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
+                $this->conn_check_time = $now + self::CONNECT_CHECK_TIME;
             }
             $this->queue->delete_cmd($db, $item->get_command(), $item->get_args(), user_status::SUPER_USERID, TRUE); // remove all equal from queue
             if ($this->servers->unused_servers_available($item->get_all_failed_servers()) !== FALSE) {// we can try other servers
@@ -345,7 +345,7 @@ class server_data { // lots of cleaning up to do
         assert(is_numeric($server_id));
         $now = time();
         if ($this->conn_check_time == 0 || $this->conn_check_time < $now) {// set the connection retry timeout if not set
-            $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
+            $this->conn_check_time = $now + self::CONNECT_CHECK_TIME;
         }
         if ($this->servers->unused_servers_available($item->get_all_failed_servers()) !== FALSE) {// we can try other servers
             $this->recreate_addspotdata($db, $item, FALSE, FALSE);
@@ -381,7 +381,7 @@ class server_data { // lots of cleaning up to do
         assert(is_numeric($server_id));
         $now = time();
         if ($this->conn_check_time == 0 ||$this->conn_check_time < $now) {// set the connection retry timeout if not set
-            $this->conn_check_time = time() + self::CONNECT_CHECK_TIME;
+            $this->conn_check_time = $now + self::CONNECT_CHECK_TIME;
         }
         echo_debug('Requeueing paused', DEBUG_SERVER);
         $item->pause(TRUE, user_status::SUPER_USERID);
@@ -398,6 +398,8 @@ class server_data { // lots of cleaning up to do
         if (!isset($res[0])) {
             return;
         }
+
+        $now = time();
         foreach ($res as $sched) {
             $command = $sched['command'];
             $c = explode(' ', $command, 2);
@@ -407,7 +409,7 @@ class server_data { // lots of cleaning up to do
             $stime = $sched['at_time'];
             $repeat = $sched['interval'];
             $id = $sched['id'];
-            $ctime = time();
+            $ctime = $now;
             if ($repeat > 0) {
                 while (($ctime + min(60, $repeat)) > $stime) {
                     $stime += $repeat;
@@ -538,10 +540,11 @@ class server_data { // lots of cleaning up to do
     public function schedule_enable_server(DatabaseConnection $db, $server_id, $userid, $timeout=3600, $priority=DEFAULT_USENET_SERVER_PRIORITY)
     {
         assert(is_numeric($server_id) && is_numeric($userid) && is_numeric($timeout) && is_numeric($priority));
+        $now = time();
         $item_unpause = new action(urdd_protocol::COMMAND_SET, "SERVER ENABLE $server_id $priority", $userid, TRUE, DEFAULT_PRIORITY);
-        echo_debug("Scheduling 'SERVER ENABLE $server_id $priority' at " . date('r', time() + $timeout), DEBUG_SERVER);
+        echo_debug("Scheduling 'SERVER ENABLE $server_id $priority' at " . date('r', $now + $timeout), DEBUG_SERVER);
         if (!$this->schedule->has_equal($item_unpause)) {
-            $job_unpause = new job($item_unpause, time() + $timeout, 0);
+            $job_unpause = new job($item_unpause, $now + $timeout, 0);
             $this->add_schedule($db, $job_unpause);
         }
     }

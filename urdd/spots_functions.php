@@ -193,10 +193,7 @@ class urd_spots
                     break;
             }
         }
-        if ($spot_data['xml-signature'] == '' ||
-                $spot_data['xml'] == '' ||
-                $spot_data['user-key'] == '' ||
-                $spot_data['user-signature'] == '') {
+        if ($spot_data['xml-signature'] == '' || $spot_data['xml'] == '' || $spot_data['user-key'] == '' || $spot_data['user-signature'] == '') {
             echo_debug('No valid signature', DEBUG_SERVER);
             return FALSE;
         }
@@ -217,7 +214,7 @@ class urd_spots
         $spot_data['verified'] = $spotSigning->verifyFullSpot($spot_data);
         // als de spot verified is, toon dan de userid van deze user
         if ($spot_data['verified']) {
-            $spot_data['userid'] = $spotSigning->calculate_userid($spot_data['user-key']['modulo']);
+            $spot_data['userid'] = self::calculate_spotter_id($spot_data['user-key']['modulo']);
             echo_debug('verified spot for ' . $spot_data['userid'], DEBUG_SERVER);
         } else {
             echo_debug('Unverified spot', DEBUG_SERVER);
@@ -435,7 +432,6 @@ class urd_spots
                     $spotter_id = self::parse_spotterid(substr($from, $pos));
                     if (isset($spot_blacklist[$spotter_id])) {
                         echo_debug("User $spotter_id on blacklist - spot comment not added", DEBUG_SERVER);
-
                         throw new exception('Poster blacklisted');
                     }
                     $res['fullfrom'] = $from;
@@ -475,7 +471,7 @@ class urd_spots
         foreach($ratings as $spotid => $rating) {
             $cnt = count($rating);
             $sum = array_sum($rating);
-            $this->db->execute_query($sql, array(':cnt1' => $cnt,':cnt2' => $cnt, ':sum' => $sum, ':spotid' => $spotid));
+            $this->db->execute_query($sql, array(':cnt1' => $cnt, ':cnt2' => $cnt, ':sum' => $sum, ':spotid' => $spotid));
         }
     }
 
@@ -528,7 +524,7 @@ class urd_spots
     {
         $from = ltrim(trim($from), '<');
         $addr = explode('@', $from, 2);
-        if (count($addr) < 2) {
+        if (isset($addr[1])) {
             return '';
         }
         $sig = explode('.', $addr[0]);
@@ -641,7 +637,7 @@ class urd_spots
                         if (!$comment['verified']) {
                             throw new exception('Comment signature invalid for spot ' . $spotid);
                         }
-                        $userid = $comment['userid'] = $spotSigning->calculate_userid($comment['user-key']['modulo']);
+                        $userid = $comment['userid'] = self::calculate_spotter_id($comment['user-key']['modulo']);
                         if ($comment['rating'] > 0 && $comment['rating'] <= 10) {
                             $ratings[$spotid][] = $comment['rating'];
                         }

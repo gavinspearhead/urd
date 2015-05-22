@@ -1120,12 +1120,13 @@ function get_stats_by_day(DatabaseConnection $db, $userid, $type, $admin, $year,
     $ystr = $db->get_extract('year', '"timestamp"');
     $mstr = $db->get_extract('month', '"timestamp"');
     $dstr = $db->get_extract('day', '"timestamp"');
+    $now = time();
 
     if ($year === NULL) {
-        $year = date('Y', time());
+        $year = date('Y', $now);
     }
     if ($month === NULL) {
-        $month = date('m', time());
+        $month = date('m', $now);
     }
     $input_arr = array(':type1'=>$type, ':type2'=>$type, ':year1'=>$year, ':year2'=>$year, ':month1'=>$month, ':month2'=>$month);
     $timestamp = strtotime("$year/$month/1 00:00");

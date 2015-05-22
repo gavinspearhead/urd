@@ -635,7 +635,7 @@ table.browsetoptable
     margin: 0px;
     padding: 0px 4px 1px 4px;
     width: 250px;
-    height: 18px;
+    height: 24px;
     color: #555555;
     text-align: left;
     vertical-align: top;
@@ -652,7 +652,7 @@ table.browsetoptable
     background: #aaaaaa;
     border: 1px solid #111111;
     font-size: x-small;
-    height: 18px;
+    height: 24px;
 }
 .quickwindowoff
 {
@@ -1518,8 +1518,8 @@ div.bottom {
 
 .pulldown ul li:hover ul li.plain
 {
-    background: #2D2D2D;
-    height: 22px;
+    background: #3a3a3a;
+    height: 24px;
     width: 250px;
     z-index: 2000;
     border: none;
@@ -1530,16 +1530,16 @@ div.bottom {
 .pulldown ul li:hover ul li.plain:hover,
 .pulldown ul li:hover ul li.activity:hover
 {
-    background:#4c4c4c;
-    height: 22px;
+    background:#585858;
+    height: 24px;
     overflow: hidden;
     list-style-type:none; 
 }
 
 .pulldown ul li:hover ul li.activity
 {
-    background:#2d2d2d;
-    height: 22px;
+    background:#3a3a3a;
+    height: 24px;
     width: 450px;
     z-index: 2000;
     overflow: hidden;

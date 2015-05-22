@@ -73,7 +73,7 @@ echo <<<CT
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="SHORTCUT ICON" href="../html/favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" href="install.css" type="text/css"/>
-<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="install.js"></script>
 </head>
 <body>
@@ -106,7 +106,7 @@ $OUT = <<<CT
 <link rel="SHORTCUT ICON" href="../html/favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" href="install.css" type="text/css"/>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="install.js"></script>
 </head>
 <body>
@@ -157,6 +157,9 @@ BDY;
 	$OUT .= '<tr><td class="install2">Smarty cache directory can be written to</td>';
     $OUT .= GenRetVal(@touch('../html/smarty/c_templates/default/installcheck'), $rv2);
     @unlink('../html/smarty/c_templates/default/installcheck');
+	
+    $OUT .= '<tr><td class="install2">Smarty template directory can be read</td>';
+    $OUT .= GenRetVal(FALSE!==file_get_contents('../html/smarty/templates/default/about.tpl'), $rv2a);
     
     $OUT .= '<tr><td class="install2">URD PID directory</td>';
     $OUT .= GenRetVal(@touch('../urdd/pid/installcheck'), $rv3);
@@ -176,7 +179,7 @@ BDY;
         'run the command <br/>chmod a+w ' . realpath('../urdd/pid/'));
 	}
 
-	if (!$rv1 || !$rv2 || !$rv3) {
+	if (!$rv1 || !$rv2 || !$rv3 || !$rv2a) {
 		$OUT .= ShowHelp('The installer will not work until this has been fixed. You can refresh to check again.');
 		$OUT .= '<tr><td><a href="install.php" class="noborder" title="Refresh">' . $refreshpic . '</a></td></tr>';
 	} else {

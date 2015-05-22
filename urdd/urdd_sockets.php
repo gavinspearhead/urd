@@ -161,6 +161,7 @@ class urdd_sockets
     {
         $connections = array_merge($this->listen_sock, $connections);
         socket_clear_error(); // clear it just in case
+        $null_array = array();
         disable_log(); // needed so the select error doesn't show... bad solution, I know but it confuses users
         $res = @socket_select($connections, $null_array, $null_array, $timeout, $timeout_us); // we always give the timeout in microseconds
         enable_log();

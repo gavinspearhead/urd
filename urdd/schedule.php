@@ -144,27 +144,19 @@ class schedule
     }
     public function get_first_ready_job(DatabaseConnection $db)
     {
-        $ft = FALSE;
         $t = time();
         foreach ($this->jobs as $k => $j) {
             if ($j->get_time() <= $t) {
-                $kk = $k;
-                $ft = TRUE;
-                break;
-            }
-        }
-        if ($ft) {
-            $j = $this->jobs[$kk];
-            $id = $j->get_id();
-            if ($id !== 0) {
-                delete_schedule($db, $id);
-            }
-            unset($this->jobs[$kk]);
+                $id = $j->get_id();
+                if ($id !== 0) {
+                    delete_schedule($db, $id);
+                }
+                unset($this->jobs[$k]);
 
-            return $j;
-        } else {
-            return FALSE;
+                return $j;
+            }
         }
+        return FALSE;
     }
     public function get_first_timeout()
     {
@@ -180,28 +172,21 @@ class schedule
 
     public function unschedule(DatabaseConnection $db, $userid, $id)
     {
-        assert(is_numeric($userid));
-        assert(is_numeric($id));
-        $kk = NULL;
+        assert(is_numeric($userid) && is_numeric($id));
         foreach ($this->jobs as $k => $j) {
             if ($j->get_action()->get_id() == $id) {
                 if (!$j->get_action()->match_userid($userid)) {
                     throw new exception ('Not allowed', ERR_ACCESS_DENIED);
                 }
-                $kk = $k;
-                break;
-            }
-        }
-        if ($kk !== NULL) {
-            $id = $this->jobs[$kk]->get_id();
-            if ($id !== 0) {
-                delete_schedule($db, $id);
-            }
-            unset($this->jobs[$kk]);
+                $id = $j->get_id();
+                if ($id !== 0) {
+                    delete_schedule($db, $id);
+                }
+                unset($this->jobs[$k]);
 
-            return TRUE;
-        }
-
+                return TRUE;
+            }
+        } 
         return FALSE;
     }
 
@@ -211,8 +196,7 @@ class schedule
         $kk = array();
         foreach ($this->jobs as $k => $j) {
             $a = $j->get_action();
-            if (strcasecmp($a->get_command(),$cmd) == 0 && (strcasecmp($a->get_args(), $arg) == 0 || strcasecmp($arg, '__all') == 0)
-                && $a->match_userid($userid)) {
+            if (strcasecmp($a->get_command(),$cmd) == 0 && (strcasecmp($a->get_args(), $arg) == 0 || strcasecmp($arg, '__all') == 0) && $a->match_userid($userid)) {
                 $kk[] = $k;
             }
         }

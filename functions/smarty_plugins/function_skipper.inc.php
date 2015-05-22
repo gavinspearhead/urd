@@ -37,6 +37,7 @@ function smarty_function_urd_skipper($params, &$smarty)
 {
     $rv = array();
     $current_page = isset($params['current']) ? $params['current'] : 0;
+    $size = isset($params['size']) ? $params['size'] : 30;
     $last_page = isset($params['last']) ? $params['last'] : 0;
     $pages = isset($params['pages']) ? $params['pages'] : 0;
     $position = (isset($params['position']) && $params['position'] == 'bottom') ? $params['position'] : 'top';
@@ -45,15 +46,15 @@ function smarty_function_urd_skipper($params, &$smarty)
     $extra_class = isset($params['extra_class']) ? $params['extra_class'] : '';
     $table_class = ($position != 'bottom') ? 'pageskip' : 'pageskipbottom';
 
-    $start_page = $current_page - 10;
+    $start_page = $current_page - (floor($size/3));
     if ($start_page <= 0) {
         $start_page = 1;
     }
-    $stop_page = $start_page + 20;
+    $stop_page = $start_page + (floor($size/3) * 2);
     if ($stop_page > $last_page) {
         $stop_page = $last_page;
     }
-    $start_page = $stop_page - 20;
+    $start_page = $stop_page - (floor($size/3) * 2);
     if ($start_page < 1) {
         $start_page = 1;
     }

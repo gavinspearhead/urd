@@ -57,15 +57,13 @@ function my_escapeshellcmd($str, $hide_space=TRUE)
 function my_escapeshellarg($str, $hide_space=TRUE)
 { // you really have to do everything yourself in php...
     // note that this isn't a proper command line escape thingie as it doesn't handle piping and quoting by it self. It just escapes all the naughty characters.
-    $chars = array ('\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"');
+    $chars = array('\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"');
+    $sub_chars = array('\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"');
     if ($hide_space) {
         $chars[] = ' ';
+        $sub_chars = '\\ ';
     }
-    foreach ($chars as $c) {
-        $str = str_replace($c, '\\' . $c, $str);
-    }
-
-    return $str;
+    return str_replace($chars, $sub_chars, $str);
 }
 
 function add_dir_separator(&$path)
@@ -162,7 +160,7 @@ function rmdirtree($dirname, $age=0, $delete_top_dir = FALSE) // age in seconds 
 
                     $error .= $error_in;
                 } else {
-                    throw new exception ($LN['error_noremovefile2'] . ': ' . $path, ERR_PATH_NOT_FOUND);
+                    throw new exception($LN['error_noremovefile2'] . ': ' . $path, ERR_PATH_NOT_FOUND);
                 }
             } else {
                 $mtime = filemtime($path);
@@ -170,7 +168,7 @@ function rmdirtree($dirname, $age=0, $delete_top_dir = FALSE) // age in seconds 
                 if ($age == 0 || (($now - $mtime) > $age)) {
                     $rv = @unlink($path);
                     if ($rv === FALSE) {
-                        throw new exception ($LN['error_noremovefile'] . ': '. $path, ERR_FILE_NOT_FOUND);
+                        throw new exception($LN['error_noremovefile'] . ': '. $path, ERR_FILE_NOT_FOUND);
                     }
                 } else {
                     $count++;
@@ -184,7 +182,7 @@ function rmdirtree($dirname, $age=0, $delete_top_dir = FALSE) // age in seconds 
     if ($delete_top_dir === TRUE) {
         $rv = @rmdir($dirname);
         if ($rv === FALSE) {
-            throw new exception ($LN['error_noremovedir']   . ': '. $dirname, ERR_PATH_NOT_FOUND);
+            throw new exception($LN['error_noremovedir'] . ': '. $dirname, ERR_PATH_NOT_FOUND);
         }
     }
 
@@ -312,11 +310,9 @@ function set_group(DatabaseConnection $db, $dir)
         $group = get_config($db, 'group');
     } catch (exception $e) {
         write_log('Cannot set group; db value not set', LOG_NOTICE);
-
         return;
     }
     if ($group == '') { // if it is blank we don't set it
-
         return;
     }
     if (posix_getgrnam($group) === FALSE) { // check if it is a valid group

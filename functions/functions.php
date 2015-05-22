@@ -89,9 +89,7 @@ function unformat_size($val, $base = 1024, $default_mul='')
     }
 
     return $val;
-
 }
-
 
 function one_or_more($val, $one, $more)
 {
@@ -109,137 +107,64 @@ function readable_time($timediff, $value = 'specific')
     if ($timediff < 0) {
         return '?';
     }
+    $otimediff = $timediff;
+    $years = (int) ($timediff / (3600 * 24 * 365));
+    $timediff -= ($years * 3600 * 24 * 365);
+    $weeks = (int) ($timediff / (3600 * 24 * 7));
+    $timediff -= ($weeks * 3600 * 24 * 7);
+    $days = (int) ($timediff / (3600 * 24));
+    $timediff -= ($days * 3600 * 24);
+    $hours = (int) ($timediff / 3600);
+    $timediff -= ($hours * 3600);
+    $minutes = (int) ($timediff / 60);
+    $timediff -= ($minutes * 60);
+    $seconds = $timediff;
+
     switch ($value) {
     default:
         assert(FALSE);
     case 'largest':
-        $years = (int) ($timediff / (3600 * 24 * 365));
-        $timediff -= ($years * 3600 * 24 * 365);
-        $weeks = (int) ($timediff / (3600 * 24 * 7));
-        $timediff -= ($weeks * 3600 * 24 * 7);
-        $days = (int) ($timediff / (3600 * 24));
-        $timediff -= ($days * 3600 * 24);
-        $hours = (int) ($timediff / 3600);
-        $timediff -= ($hours * 3600);
-        $minutes = (int) ($timediff / 60);
-        $timediff -= ($minutes * 60);
-        $seconds = $timediff;
-        if ($years > 0) { return $years . ' ' . $LN['year_short'];}
-        if ($weeks > 0) { return $weeks . ' ' . $LN['week_short'];}
-        if ($days > 0) { return $days . ' ' . $LN['day_short'];}
-        if ($hours > 0) { return $hours . ' ' . $LN['hour_short'];}
+        if ($years > 0)   { return $years . ' ' . $LN['year_short'];}
+        if ($weeks > 0)   { return $weeks . ' ' . $LN['week_short'];}
+        if ($days > 0)    { return $days . ' ' . $LN['day_short'];}
+        if ($hours > 0)   { return $hours . ' ' . $LN['hour_short'];}
         if ($minutes > 0) { return $minutes . ' ' . $LN['minute_short'];}
-
-        return $seconds . ' ' . $LN['second' . ($seconds == 1 ? '' : 's')];
+        return $seconds . ' ' . $LN['second_short'];
         break;
     case 'largest_long':
-        $years = (int) ($timediff / (3600 * 24 * 365));
-        $timediff -= ($years * 3600 * 24 * 365);
-        $weeks = (int) ($timediff / (3600 * 24 * 7));
-        $timediff -= ($weeks * 3600 * 24 * 7);
-        $days = (int) ($timediff / (3600 * 24));
-        $timediff -= ($days * 3600 * 24);
-        $hours = (int) ($timediff / 3600);
-        $timediff -= ($hours * 3600);
-        $minutes = (int) ($timediff / 60);
-        $timediff -= ($minutes * 60);
-        $seconds = $timediff;
-        if ($years > 0) { return $years . ' ' . $LN['year' . ($years == 1? '':'s')];}
-        if ($weeks > 0) { return $weeks . ' ' . $LN['week' . ($weeks == 1? '':'s')];}
-        if ($days > 0) { return $days . ' ' . $LN['day' . ($days == 1? '':'s')];}
-        if ($hours > 0) { return $hours . ' ' . $LN['hour' . ($hours == 1? '':'s')];}
+        if ($years > 0)   { return $years . ' ' . $LN['year' . ($years == 1? '':'s')];}
+        if ($weeks > 0)   { return $weeks . ' ' . $LN['week' . ($weeks == 1? '':'s')];}
+        if ($days > 0)    { return $days . ' ' . $LN['day' . ($days == 1? '':'s')];}
+        if ($hours > 0)   { return $hours . ' ' . $LN['hour' . ($hours == 1? '':'s')];}
         if ($minutes > 0) { return $minutes . ' ' . $LN['minute' . ($minutes == 1? '':'s')];}
-
-        return $seconds . ' ' . $LN['second' . ($seconds == 1 ? '' : 's')];
+        return one_or_more($seconds, $LN['second'], $LN['seconds']);
         break;
     case 'largest_two_long':
-        $years = (int) ($timediff / (3600 * 24 * 365));
-        $timediff -= ($years * 3600 * 24 * 365);
-        $weeks = (int) ($timediff / (3600 * 24 * 7));
-        $timediff -= ($weeks * 3600 * 24 * 7);
-        $days = (int) ($timediff / (3600 * 24));
-        $timediff -= ($days * 3600 * 24);
-        $hours = (int) ($timediff / 3600);
-        $timediff -= ($hours * 3600);
-        $minutes = (int) ($timediff / 60);
-        $timediff -= ($minutes * 60);
-        $seconds = $timediff;
-        if ($years > 0) { return one_or_more($years, $LN['year'], $LN['years']) . (($weeks > 0) ? ' ' . one_or_more($weeks, $LN['week'], $LN['weeks']) : ''); }
-        if ($weeks > 0) { return one_or_more($weeks, $LN['week'], $LN['weeks']) . (($days > 0) ? ' ' . one_or_more($days, $LN['day'], $LN['days']) : ''); }
-        if ($days > 0) { return one_or_more($days, $LN['day'], $LN['days']) . (($hours > 0) ? ' ' . one_or_more($hours, $LN['hour'], $LN['hours']) : '');}
-        if ($hours > 0) { return one_or_more($hours, $LN['hour'], $LN['hours']) . (($minutes > 0) ? ' ' . one_or_more($minutes, $LN['minute'], $LN['minutes']) : '');}
+        if ($years > 0)   { return one_or_more($years, $LN['year'], $LN['years']) . (($weeks > 0) ? ' ' . one_or_more($weeks, $LN['week'], $LN['weeks']) : ''); }
+        if ($weeks > 0)   { return one_or_more($weeks, $LN['week'], $LN['weeks']) . (($days > 0) ? ' ' . one_or_more($days, $LN['day'], $LN['days']) : ''); }
+        if ($days > 0)    { return one_or_more($days, $LN['day'], $LN['days']) . (($hours > 0) ? ' ' . one_or_more($hours, $LN['hour'], $LN['hours']) : '');}
+        if ($hours > 0)   { return one_or_more($hours, $LN['hour'], $LN['hours']) . (($minutes > 0) ? ' ' . one_or_more($minutes, $LN['minute'], $LN['minutes']) : '');}
         if ($minutes > 0) { return one_or_more($minutes, $LN['minute'], $LN['minutes']) . (($seconds > 0) ? ' ' . one_or_more($seconds, $LN['second'], $LN['seconds']) : '');}
 
         return one_or_more($seconds, $LN['second'], $LN['seconds']);
         break;
     case 'largest_two':
-        $years = (int) ($timediff / (3600 * 24 * 365));
-        $timediff -= ($years * 3600 * 24 * 365);
-        $weeks = (int) ($timediff / (3600 * 24 * 7));
-        $timediff -= ($weeks * 3600 * 24 * 7);
-        $days = (int) ($timediff / (3600 * 24));
-        $timediff -= ($days * 3600 * 24);
-        $hours = (int) ($timediff / 3600);
-        $timediff -= ($hours * 3600);
-        $minutes = (int) ($timediff / 60);
-        $timediff -= ($minutes * 60);
-        $seconds = $timediff;
-        $return = '';
-        if ($years > 0) { return $years . ' ' . $LN['year_short'] . (($weeks > 0) ? ' ' . $weeks . ' ' . $LN['week_short'] : ''); }
-        if ($weeks > 0) { return $weeks . ' ' . $LN['week_short']. (($days > 0) ? ' ' . $days . ' ' . $LN['day_short'] : ''); }
-        if ($days > 0) { return $days . ' ' . $LN['day_short']. (($hours > 0) ? ' ' . $hours . ' ' . $LN['hour_short'] : '');}
-        if ($hours > 0) { return $hours . ' ' . $LN['hour_short']. (($minutes > 0) ? ' ' . $minutes . ' ' . $LN['minute_short'] : '');}
-        if ($minutes > 0) { return $minutes . ' ' . $LN['minute_short'. (($seconds > 0) ? ' ' . $seconds . ' ' . $LN['second_short'] : '')];}
+        if ($years > 0)   { return $years . ' ' . $LN['year_short'] . (($weeks > 0) ? ' ' . $weeks . ' ' . $LN['week_short'] : ''); }
+        if ($weeks > 0)   { return $weeks . ' ' . $LN['week_short'] . (($days > 0) ? ' ' . $days . ' ' . $LN['day_short'] : ''); }
+        if ($days > 0)    { return $days . ' ' . $LN['day_short'] . (($hours > 0) ? ' ' . $hours . ' ' . $LN['hour_short'] : '');}
+        if ($hours > 0)   { return $hours . ' ' . $LN['hour_short'] . (($minutes > 0) ? ' ' . $minutes . ' ' . $LN['minute_short'] : '');}
+        if ($minutes > 0) { return $minutes . ' ' . $LN['minute_short'] . (($seconds > 0) ? ' ' . $seconds . ' ' . $LN['second_short'] : '');}
 
         return $seconds . ' ' . $LN['second_short'];
         break;
-    case 'specific':
-        $years = (int) ($timediff / (3600 * 24 * 365));
-        $timediff -= ($years * 3600 * 24 * 365);
-        $weeks = (int) ($timediff / (3600 * 24 * 7));
-        $timediff -= ($weeks * 3600 * 24 * 7);
-        $days = (int) ($timediff / (3600 * 24));
-        $timediff -= ($days * 3600 * 24);
-        $hours = (int) ($timediff / 3600);
-        $timediff -= ($hours * 3600);
-        $minutes = (int) ($timediff / 60);
-        $timediff -= ($minutes * 60);
-        $seconds = $timediff;
-
-        $return = '';
-        if ($years > 0) {$return .= $years . $LN['year_short'] . ' ';}
-        if ($weeks > 0) {$return .= $weeks . $LN['week_short'] . ' ';}
-        if ($days > 0) {$return .= $days . $LN['day_short'] . ' ';}
-        if ($hours > 0) {$return .= $hours . $LN['hour_short'] . ' ';}
-        if ($minutes > 0) { $return .= $minutes . $LN['minute_short'] . ' ';}
-        if ($return == '' || $seconds > 0) {
-            $return .= $seconds . $LN['second_short'];
-        }
-        break;
-    case 'hours':
-        $hr = (int) ($timediff / 3600);
-        $mn = (int) ($timediff % 60);
-        $return = $hr . $LN['hour_short'] . ":$mn" . $LN['minute_short'];
-        break;
-    case 'minutes':
-        $val = $timediff / 60;
-        $return = round($val, 1) . $LN['minute_short'];
-        break;
     case 'fancy':
-        if ($timediff < 60) {
+        if ($otimediff < 60) {
             $return = '0:';
-            if ($timediff < 10) {
+            if ($otimediff < 10) {
                 $return .= '0';
             }
-            $return .= $timediff;
+            $return .= $otimediff;
         } else {
-            $days = (int) ($timediff / (3600 * 24));
-            $timediff -= ($days * 3600 * 24);
-            $hours = (int) ($timediff / 3600);
-            $timediff -= ($hours * 3600);
-            $minutes = (int) ($timediff / 60);
-            $timediff -= ($minutes * 60);
-            $seconds = $timediff;
             if ($minutes < 10) {
                 $minutes = '0' . $minutes;
             }
@@ -364,8 +289,8 @@ function update_queue_priority(DatabaseConnection $db, $id, $priority)
 function insert_queue_status(DatabaseConnection $db, $id, $description, $status, $command_id, $userid, $paused, $comments=NULL, $priority=1, $restart = TRUE)
 {
     assert (is_numeric($id) && is_numeric($priority) && is_bool($restart) && is_numeric($userid));
-    $time = time();
     $restart = ($restart === TRUE) ? 1 : 0;
+    $time = time();
     $cols = array ('status', 'description', 'lastupdate', 'starttime', 'paused', 'username', 'userid', 'progress', 'ETA', 'urdd_id', 'comment', 'priority', 'command_id', 'restart');
     $vals = array ($status, $description, $time, $time, $paused, '', $userid, 0, 0, $id, ($comments === NULL ? '' : $comments), $priority, $command_id, $restart);
 
@@ -662,8 +587,10 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
             $stat_id = add_stat_data($db, stat_actions::DOWNLOAD, 0, $userid);
             set_stat_id($db, $dlid, $stat_id);
         }
+
+        $now = time();
         foreach ($dlthreads as $id) {
-            set_start_time($db, $dlid, time());
+            set_start_time($db, $dlid, $now);
             usleep(500000);
             $uc->unpause($id);
         }
@@ -2400,6 +2327,8 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
     }
     //var_dump($category);
     if ($extended_paths) {
+
+        $now = time();
         $format_string = get_pref($db, 'format_dl_dir', $userid, '');
         $values['u'] = $username;
         $values['n'] = $setname;
@@ -2409,16 +2338,16 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
         $values['s'] = $dlname;
         $values['N'] = $genre;
         $values['x'] = $xrated;
-        $values['D'] = date('Y-m-d', time()); // date
-        $values['y'] = date('y', time()); // year 2 digits
-        $values['Y'] = date('Y', time()); // year 4 digits
-        $values['m'] = date('m', time()); // month numeric
-        $values['d'] = date('d', time()); // day of month
-        $values['M'] = date('M', time()); // month short name
-        $values['F'] = date('F', time()); // month long name
-        $values['w'] = date('w', time()); // day of the week
-        $values['W'] = date('W', time()); // week number
-        $values['z'] = date('z', time()); // day of the year
+        $values['D'] = date('Y-m-d', $now); // date
+        $values['y'] = date('y', $now); // year 2 digits
+        $values['Y'] = date('Y', $now); // year 4 digits
+        $values['m'] = date('m', $now); // month numeric
+        $values['d'] = date('d', $now); // day of month
+        $values['M'] = date('M', $now); // month short name
+        $values['F'] = date('F', $now); // month long name
+        $values['w'] = date('w', $now); // day of the week
+        $values['W'] = date('W', $now); // week number
+        $values['z'] = date('z', $now); // day of the year
 
         $str = format_setname($format_string, $format_chars, $values);
         $str = str_replace('..' . DIRECTORY_SEPARATOR, '', $str); // remove nasty subdirs
@@ -2457,8 +2386,8 @@ function update_group_setcount(DatabaseConnection $db, $groupid, $setcount)
 function get_sets_count_group(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
-    $sql = '"setcount" AS "cnt" FROM groups WHERE "ID"=?';
-    $res = $db->select_query($sql, array($groupid));
+    $sql = '"setcount" AS "cnt" FROM groups WHERE "ID"=:groupid';
+    $res = $db->select_query($sql, array(':groupid'=> $groupid));
 
     return (!isset($res[0]['cnt'])) ? FALSE : $res[0]['cnt'];
 }
@@ -2466,8 +2395,8 @@ function get_sets_count_group(DatabaseConnection $db, $groupid)
 function count_sets_group(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
-    $sql = 'COUNT("ID") AS "cnt" FROM setdata WHERE "groupID"=?';
-    $res = $db->select_query($sql, array($groupid));
+    $sql = 'COUNT("ID") AS "cnt" FROM setdata WHERE "groupID"=:groupid';
+    $res = $db->select_query($sql, array(':groupid'=>$groupid));
 
     return (!isset($res[0]['cnt'])) ? FALSE : $res[0]['cnt'];
 }
@@ -2573,7 +2502,7 @@ function split_args($args)
             }
             continue;
         } elseif ($c == ' ' && $quote == '') {
-            if (strlen($item) == 0) {
+            if ($item == '') {
                 continue;
             } else {
                 $arg_list[] = $item;
@@ -2583,7 +2512,7 @@ function split_args($args)
             $item .= $c;
         }
     }
-    if (strlen($item) != 0) {
+    if ($item != '') {
         $arg_list[] = $item;
     }
 
@@ -2601,8 +2530,8 @@ function delete_category(DatabaseConnection $db, $id, $userid)
 function get_category(DatabaseConnection $db, $cat_id, $userid)
 {
     assert(is_numeric($userid) && is_numeric($cat_id));
-    $sql = '"name" FROM categories WHERE "userid"=? AND "id"=?';
-    $res = $db->select_query($sql, 1, array($userid, $cat_id));
+    $sql = '"name" FROM categories WHERE "userid"=:userid AND "id"=:cat_id';
+    $res = $db->select_query($sql, 1, array(':userid'=> $userid, ':cat_id'=>$cat_id));
     if (!isset($res[0]['name'])) {
         return '';
     }
@@ -2613,8 +2542,8 @@ function get_category(DatabaseConnection $db, $cat_id, $userid)
 function get_server_name(DatabaseConnection $db, $server_id)
 {
     assert(is_numeric($server_id));
-    $sql = '"name" FROM usenet_servers WHERE "id"=?';
-    $res = $db->select_query($sql, 1, array($server_id));
+    $sql = '"name" FROM usenet_servers WHERE "id"=:id';
+    $res = $db->select_query($sql, 1, array(':id'=>$server_id));
     if (!isset($res[0]['name'])) {
         return '';
     }
@@ -2642,7 +2571,7 @@ function get_compressed_headers(DatabaseConnection $db, $server_id)
 
 function check_xrated($groupname)
 {
-    $is_xrated = array('erotic', 'sex', 'nude', 'porn', 'gay', 'xxx', 'nudism', 'seks');
+    $is_xrated = array('erotic', 'sex', 'nude', 'porn', 'gay', 'xxx', 'nudism', 'seks', 'milf');
     foreach ($is_xrated as $str) {
         if (stripos($groupname, $str) !== FALSE) {
             return TRUE;

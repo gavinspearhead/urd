@@ -358,7 +358,7 @@ class urdd_group
                 $set_array->date = $arr['date'];        // 1st hit also determines the set date.
                 $set_list[] = $set_array;
             }
-            $this->add_sets($this->db, $set_list);
+            $this->add_sets($set_list);
             $this->db->update_query_2("binaries_$groupID", array('dirty' => self::CONSISTENT), "\"setID\" IN ($binary_str)", $l);
             $t_time = microtime(TRUE);
             $ETA = floor((($total - $cnt) * ($t_time - $s_time) / $cnt));
@@ -398,12 +398,12 @@ class urdd_group
                 $set_array->date = $arr['date'];        // 1st hit also determines the set date.
                 $set_list[] = $set_array;
                 if (count($set_list) >= $stepsize) {
-                    $this->add_sets($this->db, $set_list);
+                    $this->add_sets($set_list);
                     $set_list = array();
                 }
             }
             if (count($set_list) > 0) {
-                $this->add_sets($this->db, $set_list);
+                $this->add_sets($set_list);
             }
         }
 
@@ -614,7 +614,7 @@ class urdd_group
         if (!group_subscribed($this->db, $groupid)) {
             write_log("Subscribing to group: $groupid", LOG_NOTICE);
             $exp = get_config($this->db, 'default_expire_time');
-            $this->subscribe($this->db, $groupid, $exp);
+            $this->subscribe($groupid, $exp);
         }
     }
 

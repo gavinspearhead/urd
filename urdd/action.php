@@ -57,9 +57,9 @@ class action
         return "{$this->id} {$this->command} '{$this->args}' Pr:{$this->priority} pv:" . ($this->preview?1:0);
     }
 
-    public function __construct ($cmd, $args,  $userid, $paused=FALSE, $priority=DEFAULT_PRIORITY)
+    public function __construct ($cmd, $args, $userid, $paused=FALSE, $priority=DEFAULT_PRIORITY)
     {
-        assert(is_numeric($priority) && $priority >= 0 && is_bool($paused) &&  (is_numeric($userid) || ($cmd === NULL && $args === NULL && $userid === NULL)));
+        assert(is_numeric($priority) && $priority >= 0 && is_bool($paused) && (is_numeric($userid) || ($cmd === NULL && $args === NULL && $userid === NULL)));
         if ($cmd === NULL) {
             $this->command_code = NULL;
             $this->command = NULL;

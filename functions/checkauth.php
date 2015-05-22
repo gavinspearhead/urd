@@ -147,12 +147,12 @@ try {
 
             // Set cookie:
             switch ($_POST['period']) {
+            default: 
             case 0: $period = NULL; break;
             case 1: $period = time() + 3600 * 24 * 7; break;
             case 2: $period = time() + 3600 * 24 * 30; break;
             case 3: $period = time() + 3600 * 24 * 365; break;
             case 4: $period = mktime(23, 59, 59, 12, 31, 2037);break;
-            default: $period = NULL; break;
             }
             session_regenerate_id();
             // Set cookie variable for the current context
@@ -190,11 +190,11 @@ try {
                 // if we use the cookie, we make sure the IP address is the same... otherwise user needs to login again
                 $valid = TRUE;
             }
-            $cur_time = time();
             if ($valid === TRUE) {
                 $userid = $res[0]['ID'];
                 $isadmin = ($res[0]['isadmin'] == user_status::USER_ADMIN);
                 $username = $res[0]['name'];
+                $cur_time = time();
 
                 if (isset($_SESSION['last_login'])) {
                     $last_login = $_SESSION['last_login'];
@@ -255,7 +255,7 @@ try {
         $onehourago = time() - 3600;
         @setcookie('urd_username', 0, $onehourago);
         @setcookie('urd_pass', 0, $onehourago);
-        @setcookie('urd_period', 0,$onehourago);
+        @setcookie('urd_period', 0, $onehourago);
         @setcookie('urd_cookie', 0, $onehourago);
         unset($_COOKIE['urd_username'], $_COOKIE['urd_pass'], $_COOKIE['urd_token'], $username, $isadmin, $userid);
         $_SESSION['urd_username'] = $_SESSION['urd_pass'] = $_SESSION['urd_period'] = $_SESSION['urd_token'] = '';

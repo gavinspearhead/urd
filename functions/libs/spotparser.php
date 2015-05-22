@@ -35,11 +35,10 @@ class spotparser
 {
     private function correct_elm_contents($xmlStr, $elems) {
 		$cdataStart = '<![CDATA[';
+        $cdata_len = strlen($cdataStart);
 		$cdataEnd = ']]>';
 
-		/*
-		 * replace low-ascii characters, see messageid KNCuzvnxJJErJibUAAxQJ@spot.net
-		 */
+		/* replace low-ascii characters, see messageid KNCuzvnxJJErJibUAAxQJ@spot.net */
 		$xmlStr = preg_replace('/[\x00-\x1F]/', '', $xmlStr);
 
 		/* and loop through all elements and fix them up */
@@ -48,7 +47,7 @@ class spotparser
 			$startElem = stripos($xmlStr, '<' . $elementName . '>');
 			$endElem = stripos($xmlStr, '</' . $elementName . '>');
 
-			if (($startElem === false) || ($endElem === false)) {
+			if (($startElem === FALSE) || ($endElem === FALSE)) {
 				continue;
 			}
 
@@ -56,13 +55,13 @@ class spotparser
 			 * Make sure this elements content is not preceeded by the
 			 * required CDATA header
 			 */ 
-			if (substr($xmlStr, $startElem + strlen($elementName) + 2, strlen($cdataStart)) !== $cdataStart) {
+			if (substr($xmlStr, $startElem + strlen($elementName) + 2, $cdata_len) !== $cdataStart) {
 				$xmlStr = str_replace(
-					Array('<' . $elementName . '>', '</' . $elementName . '>'),
-					Array('<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'),
+					array('<' . $elementName . '>', '</' . $elementName . '>'),
+					array('<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'),
 					$xmlStr);
-			} // if
-		} # foreach
+			}
+		} 
 
 		return $xmlStr;
 	} # correctElmContents
@@ -95,11 +94,7 @@ class spotparser
             'spotter_id'=> '',
         );
         if (strpos($xmlStr, 'spot.net></Segment') !== FALSE) {
-			$xmlStr = str_replace(
-				Array('spot.net></Segment>', 'spot.ne</Segment>'),
-				Array('spot.net</Segment>', 'spot.net</Segment>'),
-				$xmlStr
-			);
+			$xmlStr = str_replace(array('spot.net></Segment>', 'spot.ne</Segment>'), array('spot.net</Segment>', 'spot.net</Segment>'), $xmlStr);
 		} 
 		$xmlStr = $this->correct_elm_contents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
         /*  Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net> */

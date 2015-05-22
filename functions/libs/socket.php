@@ -56,7 +56,7 @@ class socket
     private $timeout;
 
     /* Number of bytes to read at a time in readLine() and readAll(). Defaults to 2048.  */
-    private $lineLength;
+    private $line_length;
 
     public function __construct ()
     {
@@ -71,7 +71,7 @@ class socket
         $this->addr = '';
         $this->persistent = FALSE;
         $this->blocking = TRUE;
-        $this->lineLength = (int) 2048;
+        $this->line_length = (int) 2048;
     }
     public function __destruct ()
     {
@@ -260,7 +260,7 @@ class socket
         $null = NULL;
         $r = array ($this->fp);
         // do a quick check first, typically this succeeds and we do less expensive time() calls
-        $rv = stream_select($r, $null, $null, 0, 1);
+        $rv = stream_select($r, $null, $null, 0, 10);
         if (count($r) > 0) {
             return TRUE;
         }
@@ -292,8 +292,8 @@ class socket
             return TRUE;
         }
         $null = NULL;
-        $w = array ($this->fp);
-        $rv = stream_select($null, $w, $null, 0, 1); // do a quick check first
+        $w = array($this->fp);
+        $rv = stream_select($null, $w, $null, 0, 10); // do a quick check first
         if (count($w) > 0) {
             return TRUE;
         }
@@ -310,6 +310,7 @@ class socket
                 return (count($w) > 0) ? TRUE : FALSE;
             }
         }
+        return FALSE;
     }
 
     /**
@@ -369,7 +370,7 @@ public function get_status()
  */
 public function gets2()
 {
-    $this->check_connected();
+#$this->check_connected();
     $this->check_readable();
 
     return fgets($this->fp);
@@ -377,7 +378,7 @@ public function gets2()
 public function gets($size)
 {
     assert(is_numeric($size));
-    $this->check_connected();
+#$this->check_connected();
     $this->check_readable();
 
     return fgets($this->fp, $size);
@@ -396,7 +397,7 @@ public function gets($size)
 public function read($size)
 {
     assert(is_numeric($size));
-    $this->check_connected();
+#    $this->check_connected();
     $this->check_readable();
 
     return stream_get_contents($this->fp, $size);
@@ -553,13 +554,13 @@ public function read_line()
     $line = '';
     while (!feof($this->fp)) {
         $this->check_readable();
-        $buf = @fgets($this->fp, $this->lineLength);
+        $buf = @fgets($this->fp, $this->line_length);
         if ($buf === FALSE) {
             return FALSE;
         }
 
         $line .= $buf;
-        if (substr_compare($line, "\n", -1) == 0) {
+        if (substr_compare($buf, "\n", -1) == 0) {
             return rtrim($line, "\r\n");
         }
         if (($this->timeout !== NULL) && $this->has_timedout()) {
@@ -588,7 +589,7 @@ public function read_all()
     $data = '';
     while (!feof($this->fp)) {
         $this->check_readable();
-        $data .= @stream_get_contents($this->fp, $this->lineLength);
+        $data .= @stream_get_contents($this->fp, $this->line_length);
         if ($data === FALSE) {
             return FALSE;
         }

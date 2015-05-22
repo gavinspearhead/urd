@@ -47,7 +47,7 @@ class urdd_client
     private function get_username_password(DatabaseConnection $db, $userid)
     {
         assert(is_numeric($userid));
-        $res = $db->select_query('"name", "pass" FROM users WHERE "ID"=?', 1, array($userid));
+        $res = $db->select_query('"name", "pass" FROM users WHERE "ID"=:userid', 1, array(':userid'=>$userid));
         if (!isset($res[0]['name'])) {
             throw new exception("Invalid userID $userid given in urdd_client constructor", ERR_INVALID_USERNAME);
         }
@@ -58,7 +58,6 @@ class urdd_client
     public function __construct(DatabaseConnection $db, $hostname, $port, $userid=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
     {
         echo_debug ("$hostname $port $userid", DEBUG_HTTP);
-        echo_debug_var_file('/tmp/foo',"$hostname $port $userid\n" );
         assert(is_numeric($port) && is_numeric($userid) && is_numeric($timeout));
         if ($userid > 0) {
             list($username, $md5pass) = $this->get_username_password($db, $userid);
@@ -180,7 +179,7 @@ class urdd_client
     protected function send_multi_command($cmd)
     {
         // Check if we have a connection:
-        if ($this->sock == NULL) {
+        if ($this->sock === NULL) {
             $this->connect($this->hostname, $this->port, $this->username, $this->password, $this->timeout);
         }
         // Send command:
@@ -195,7 +194,7 @@ class urdd_client
         while (1) {
             // Read the result
             $line = $this->sock->read_line();
-            if ($line === FALSE || time() > ($timeout)) { // if we have a timeout or readline timesout
+            if ($line === FALSE || time() > $timeout) { // if we have a timeout or readline timesout
                 $this->disconnect();
                 $this->cleanup();
                 throw new exception('Waited too long', ERR_WAITED_TOO_LONG);
@@ -203,7 +202,7 @@ class urdd_client
 
             $bufferlines[] = $line;
 
-            if (preg_match("/^([0-9])([0-9])([0-9]) (.+)$/", $bufferlines[0], $res)) {
+            if (preg_match('/^([0-9])([0-9])([0-9]) (.+)$/', $bufferlines[0], $res)) {
                 // Only if the second value is 5 or more, there is a multi-line response
                 if ($res[2] < 5) {
                     break;
@@ -225,12 +224,12 @@ class urdd_client
         // $string can be "(6) [1] [2] [3] Download scheduled.", returning the right values:
         $return = array();
 
-        if (preg_match("/^\(([0-9]+)\)/", $string, $res)) {
+        if (preg_match('/^\(([0-9]+)\)/', $string, $res)) {
             $return[] = $res[1];
         } else {
             $return[] = array();
         }
-        if (preg_match_all("|\[([^[]+)\]|U", $string, $res)) {
+        if (preg_match_all('|\[([^[]+)\]|U', $string, $res)) {
             $return[] = $res[1];
         } else {
             $return[] = array();
@@ -334,7 +333,7 @@ class urdd_client
         }
         list($code, $resp, $data) = $this->send_multi_command(get_command($cmd) . ' ' . $msg_id);
 
-        return ($code == 201|| $code == 202) ? TRUE : FALSE;
+        return ($code == 201 || $code == 202) ? TRUE : FALSE;
     }
 
     public function stop($msg_id)
@@ -354,7 +353,7 @@ class urdd_client
 
         list($code, $resp, $data) = $this->send_multi_command(get_command($cmd) . ' ' . $msg_id);
 
-        return ($code == 201|| $code == 202) ? TRUE : FALSE;
+        return ($code == 201 || $code == 202) ? TRUE : FALSE;
     }
 
     public function preempt($msg_start, $msg_stop = '')
@@ -367,7 +366,7 @@ class urdd_client
     {
         list($code, $resp, $data) = $this->send_multi_command(get_command (urdd_protocol::COMMAND_UNSCHEDULE) . " $cmd $arg");
 
-        return ($code == 201|| $code == 202) ? TRUE : FALSE;
+        return ($code == 201 || $code == 202) ? TRUE : FALSE;
     }
     public function schedule($cmd, $arg, $timestamp, $recurrence=NULL)
     {
@@ -377,7 +376,7 @@ class urdd_client
         }
         list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_SCHEDULE) . " $cmd $arg @ \"$timestamp\" $rec_str");
 
-        return ($code == 201|| $code == 202) ? TRUE : FALSE;
+        return ($code == 201 || $code == 202) ? TRUE : FALSE;
     }
     public function show($var = 'threads', $output_type='text')
     {

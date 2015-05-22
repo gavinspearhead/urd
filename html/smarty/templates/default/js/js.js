@@ -471,7 +471,6 @@ function submit_viewfiles_action(fileid, command)
         ).done(function(html) {
            var x = $.parseJSON(html);
            if (x.error == 0) {
-           console.log(x);
                show_files({ 'curdir': dir, 'reset_offset': false });
                update_message_bar(x.message);
            } else {
@@ -660,7 +659,6 @@ function load_control()
 {
     var url = 'ajax_admincontrol.php';
     $.post(url).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'controldiv');
@@ -2328,8 +2326,7 @@ function update_quick_menu_images()
     var theinnerdiv = $('#quickmenuinner');
 
     // Assuming 400x10
-    var height = 18,
-        i;
+    var height = 24, i;
     var thediv;
 
     // Number of items to show:
@@ -2337,6 +2334,10 @@ function update_quick_menu_images()
     if (quicks <= 0) {
         close_quickmenu();
         return;
+    }
+    var h = $('#quickmenuitem_1').height();
+    if ($.isNumeric(h)) { 
+        height = h;
     }
     for (i = 1; i <= quicks; i++) {
         thediv = $('#quickmenuitem_' + i);
@@ -2383,7 +2384,6 @@ function show_quickmenu(type, subject, srctype, e)
             subject: subject
         }
     ).done(function(html) {
-        console.log(html);
         has_quickmenu = 0;
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -3690,7 +3690,6 @@ function update_spot_searches(name)
         }
     ).done(function(html) {
         var x = $.parseJSON(html);
-        console.log(x);
         setvalbyid('save_category', '');
         update_search_names(name);
         if (x.error == 0) {
@@ -3754,8 +3753,9 @@ function load_spots(options)
     var spotid = get_value_from_id('spotid', '');
     var poster = get_value_from_id('poster', '');
     var order = get_value_from_id('searchorder', '');
+    var view_size = get_value_from_id('view_size', '');
     var cat_id = get_selected_cat();
-    var data;
+    var data = {};
     var flag = $('#flag>option:selected').val();
     var per_page = $('#perpage').val();
     var add_rows = 0;
@@ -3786,6 +3786,9 @@ function load_spots(options)
         }
         if (options.maxage !== undefined) {
             maxage = options.maxage;
+        }
+        if (options.view_size !== undefined) {
+            view_size = options.view_size;
         }
         if (options.minrating !== undefined) {
             minrating = options.minrating;
@@ -3832,6 +3835,8 @@ function load_spots(options)
         $('#waitingdiv').removeClass('hidden');
         $('#setsdiv').addClass('hidden');
     }
+    $('#suggest_div').addClass('hidden');  
+    hide_overlayed_content();
     var url = 'ajax_spots.php';
     data.search = search;
     data.minsetsize = minsetsize;
@@ -3844,10 +3849,9 @@ function load_spots(options)
     data.categoryID = cat_id;
     data.offset = offset;
     data.spotid = spotid;
+    data.view_size = view_size;
     data.flag = flag;
     data.order = order;
-    hide_overlayed_content();
-    $('#suggest_div').addClass('hidden');  
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -3898,6 +3902,7 @@ function load_groupsets(options)
     var flag = $('#flag>option:selected').val();
     var group_id = $('#select_groupid>option:selected').val();
     var per_page = $('#perpage').val();
+    var view_size = get_value_from_id('view_size', '');
     var add_rows = 0;
     $('#suggest_div').addClass('hidden'); 
     if (options !== undefined) {
@@ -3907,6 +3912,9 @@ function load_groupsets(options)
             data.perpage = per_page;
             offset = parseInt($('#last_line').val());
             if (!$.isNumeric(offset)) { offset = 0; }
+        }
+        if (options.view_size !== undefined) {
+            view_size = options.view_size;
         }
         if (options.minsetsize !== undefined) {
             minsetsize = options.minsetsize;
@@ -3963,7 +3971,6 @@ function load_groupsets(options)
         $('#setsdiv').addClass('hidden');
     }
     var url = 'ajax_browse.php';
-
     data.search = search;
     data.minsetsize = minsetsize;
     data.maxsetsize = maxsetsize;
@@ -3978,6 +3985,8 @@ function load_groupsets(options)
     data.setid = setid;
     data.flag = flag;
     data.order = order;
+    data.view_size = view_size;
+    console.log(data);
     $('#suggest_div').addClass('hidden'); 
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
@@ -4088,8 +4097,12 @@ function load_rsssets(options)
     var add_rows = 0;
     var flag = $('#flag>option:selected').val();
     var feed_id = $('#select_feedid>option:selected').val();
+    var view_size = get_value_from_id('view_size', '');
 
     if (options !== undefined) {
+        if (options.view_size !== undefined) {
+            view_size = options.view_size;
+        }
         if (options.add_rows !== undefined) {
             add_rows = 1;
             data.only_rows = 1;
@@ -4158,6 +4171,7 @@ function load_rsssets(options)
     data.order = order;
     data.setid = setid;
     data.flag = flag;
+    data.view_size = view_size;
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -5247,6 +5261,7 @@ function load_prefs()
         cmd: 'show',
         current_tab: current_tab
     }).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();

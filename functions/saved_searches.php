@@ -54,7 +54,7 @@ class saved_searches
         $saved_searches = get_pref($db, 'saved_spot_searches', $this->userID, array());
         $this->saved_searches = unserialize($saved_searches);
         if (!is_array($this->saved_searches) ) { return; }
-        // temp debug code
+        /*/ temp debug code
         foreach ($this->saved_searches as &$item) {
             if (!isset($item['type'])) {
                 $item['type'] = USERSETTYPE_SPOT;
@@ -75,11 +75,11 @@ class saved_searches
             }
         }
         $this->save($db);
-        // end temp debug code
+        // end temp debug code */
     }
     public function save(DatabaseConnection $db)
     {
-        if (!is_array($this->saved_searches) ) {
+        if (!is_array($this->saved_searches)) {
             $this->saved_searches = array();
         }
         $saved_searches = serialize($this->saved_searches);
@@ -106,7 +106,7 @@ class saved_searches
 
     public function get()
     {
-        if (!is_array($this->saved_searches) ) {
+        if (!is_array($this->saved_searches)) {
             $this->saved_searches = array();
         }
 
@@ -123,7 +123,7 @@ class saved_searches
     public function get_names($type)
     {
         $names = array();
-        if (!is_array($this->saved_searches) ) { return array(); }
+        if (!is_array($this->saved_searches)) { return array(); }
         foreach ($this->saved_searches as $key => $item) {
             if ($item['type'] == $type) {
                 $names[] = $key;
@@ -136,7 +136,7 @@ class saved_searches
     public function get_all_names($type=NULL)
     {
         $names = array();
-        if (!is_array($this->saved_searches) ) { return array(); }
+        if (!is_array($this->saved_searches)) { return array(); }
         foreach ($this->saved_searches as $key => $item) {
             if ($type === NULL || $item['type'] == $type) {
                 $names[$key] = $key;

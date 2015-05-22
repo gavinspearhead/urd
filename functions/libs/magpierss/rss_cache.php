@@ -112,12 +112,12 @@ class RSSCache
     Input:      url from wich the rss file was fetched
     Output:     cached object on HIT, false on MISS
 \*=======================================================================*/
-    public function check_cache ( $url )
+    public function check_cache( $url )
     {
         assert(is_string($url));
         $filename = $this->file_name( $url );
 
-        if ( file_exists( $filename ) ) {
+        if (file_exists($filename)) {
             // find how long ago the file was added to the cache
             // and whether that is longer then MAX_AGE
             $mtime = filemtime( $filename );
@@ -138,9 +138,9 @@ class RSSCache
 
     public function cache_age($cache_key)
     {
-        $filename = $this->file_name( $cache_key );
-        if ( file_exists( $filename ) ) {
-            $mtime = filemtime( $filename );
+        $filename = $this->file_name($cache_key);
+        if (file_exists($filename)) {
+            $mtime = filemtime($filename);
             $age = time() - $mtime;
 
             return $age;

@@ -443,5 +443,9 @@ $session_data = filter_secret_data($_SESSION);
 sort($session_data);
 debug_dump_str_key($session_data);
 
+echo "<h3>Smarty test</h3>\n";
+init_smarty(0);
+$smarty->testInstall();
+
 echo "<br/>--------------- copy to here ----------------<br/>\n";
 echo "</body>\n";

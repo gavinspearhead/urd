@@ -179,7 +179,7 @@ class logfile
 {
     private $logging_enabled;
     private $urd_log_opt;
-    private $LOGFILE;
+    private $log_file;
     private $process_name;
     private $last_line;
     public function __construct($process_name)
@@ -187,7 +187,7 @@ class logfile
         global $config;
         $this->logging_enabled = TRUE;
         $this->urd_log_opt = NULL;
-        $this->LOGFILE = NULL;
+        $this->log_file = NULL;
         $this->get_logoption($config['urdd_log']);
         $this->process_name = $process_name;
         $this->last_line = '';
@@ -213,13 +213,13 @@ class logfile
     public function write_log($message, $priority=LOG_INFO) // do  not add a newline; this fn prints one line if you want to write multi line msgs do more write_logs
     {
         global $config, $log_str;
-        $hostname = php_uname('n');
         if ($this->logging_enabled === FALSE || $priority > $config['urdd_min_loglevel']) {
             return;
         }
         if ($this->last_line == $message) {
             return;
         }
+        $hostname = php_uname('n');
         $pid = posix_getpid();
         $date = date('M d H:i:s');
         $this->last_line = $message;
@@ -233,12 +233,12 @@ class logfile
                     if (!isset($config['log_file'])) {
                         continue;
                     }
-                    if (!is_resource($this->LOGFILE) ) {
-                        $this->open_logfile($config['log_file'], $this->process_name);
+                    if (!is_resource($this->log_file) ) {
+                        $this->open_log_file($config['log_file'], $this->process_name);
                     }
 
-                    fwrite($this->LOGFILE, $date . ' ' . $hostname . " $this->process_name: " . $log_str[$priority] . ' ' . $msg . " (pid: $pid)\n");
-                    fflush($this->LOGFILE);
+                    fwrite($this->log_file, $date . ' ' . $hostname . " $this->process_name: " . $log_str[$priority] . ' ' . $msg . " (pid: $pid)\n");
+                    fflush($this->log_file);
                     break;
                 case 'stderr':
                     if ((!isset($config['urdd_daemonise']) || ($config['urdd_daemonise'] === FALSE)) && ((defined('ORIGINAL_PAGE') === FALSE) || ORIGINAL_PAGE === 'URDD')) {
@@ -257,7 +257,7 @@ class logfile
             }
         }
     }
-    public function open_logfile($filename)
+    public function open_log_file($filename)
     {
         openlog($this->process_name, LOG_ODELAY, LOG_LOCAL7);
         $f = @fopen($filename, 'a');
@@ -265,23 +265,23 @@ class logfile
             $filename = '/dev/null'; // we simply log to dev/null
             $f = @fopen($filename, 'a');
             if ($f === FALSE) {//if _that_ fails we exit
-                echo "Error: cannot open logfile ($filename) for appending\n";
+                echo "Error: cannot open log_file ($filename) for appending\n";
                 urdd_exit(CONFIG_ERROR);
             }
         }
-        $this->LOGFILE = $f;
+        $this->log_file = $f;
         write_log("Opening log file: $filename", LOG_INFO);
 
         // Also try a chmod:
-        $rv = @chmod($filename, 0660); // TODO fix logfiles properly
+        $rv = @chmod($filename, 0660); // TODO fix log_files properly
         if ($rv === FALSE) {
-            write_log('Warning: cannot set permissions on logfile', LOG_WARNING);
+            write_log('Warning: cannot set permissions on log_file', LOG_WARNING);
         }
     }
 
-    public function reopen_logfile($filename)
+    public function reopen_log_file($filename)
     {
-        fclose($this->LOGFILE);
-        $this->open_logfile($filename);
+        fclose($this->log_file);
+        $this->open_log_file($filename);
     }
 }

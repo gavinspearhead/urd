@@ -23,11 +23,18 @@
  *}
 
 {include 'include_bin_image.tpl' scope='parent'}
+{if $view_size >= 1024}
+{$small=0}
+{$skippersize= 30}
+{else}
+{$small=1}
+{$skippersize= 18}
+{/if}
 
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10" size=$skippersize}
 {else}<br/>
 {/if}
 {/if}
@@ -38,7 +45,7 @@
 {capture assign=bottomskipper}{strip}
 {if $only_rows == 0}
 {if count($pages) > 1}
-{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10"}
+{urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10" size=$skippersize}
 {else}<br/>
 {/if}
 {/if}

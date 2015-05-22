@@ -8,3 +8,4 @@ tools/*.tar.gz
 tools/*.tgz
 login.txt
 tags
+html/smarty/cache/*.tpl.php

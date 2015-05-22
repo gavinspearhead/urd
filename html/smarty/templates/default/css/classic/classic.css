@@ -614,7 +614,7 @@ table.browsetoptable
     background: #660000;
     border: 1px solid #000;
     font-size: x-small;
-    height: 18px;
+    height: 24px;
 }
 .quickmenubutton:hover
 {
@@ -628,7 +628,7 @@ table.browsetoptable
     margin: 0;
     padding: 0 4px 1px 4px;
     width: 250px;
-    height: 18px;
+    height: 24px;
     color: #ffffff;
     text-align: left;
     vertical-align: top;
@@ -1488,7 +1488,7 @@ div.bottom {
     background-image: -o-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
     background-image: linear-gradient(to bottom, #3f0000, #2D0000 50%, #040000);
     width: 250px;
-    height: 22px;
+    height: 24px;
     z-index: 2000;
     overflow: hidden;
 }
@@ -1502,7 +1502,7 @@ div.bottom {
     background-image: -o-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
     background-image: linear-gradient(to bottom, #3f0000, #2D0000 50%, #040000);
     width: 450px;
-    height: 22px;
+    height: 24px;
     z-index: 2000;
     overflow: hidden;
 }
@@ -1517,7 +1517,7 @@ div.bottom {
     background-image: -o-linear-gradient(top, #970000, #610000 50%, #320000);
     background-image: linear-gradient(to bottom, #970000, #610000 50%, #320000);
     overflow: hidden;
-    height: 22px;
+    height: 24px;
 }
 
 .pulldown_last_item
@@ -1808,14 +1808,14 @@ input.passwordcorrect
   z-index: 1000;
 }
 .grey {
-background: #888888;
+  background: #888888;
   background-image: -webkit-linear-gradient(top, #d0d0d0, #ababab 70%, #888888);
   background-image: -moz-linear-gradient(top, #d0d0d0, #ababab 70%, #888888);
   background-image: -o-linear-gradient(top, #d0d0d0, #ababab 70%, #888888);
   background-image: linear-gradient(to bottom, #d0d0d0, #ababab 70%, #888888);
 }
 .green {
-   background: #5a8529; /* Old browsers */
+    background: #5a8529; /* Old browsers */
     background: -moz-linear-gradient(top, #5a8529 0%, #496e22 70%, #3f5f1d 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5a8529), color-stop(70%,#496e22), color-stop(100%,#3f5f1d)); /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, #5a8529 0%,#496e22 70%,#3f5f1d 100%); /* Chrome10+,Safari5.1+ */
@@ -1826,7 +1826,7 @@ background: #888888;
 }
 
 .red {
-  background: #a42a1a;
+    background: #a42a1a;
     background: #b31f0b;
     background: -moz-linear-gradient(top, #b31f0b 0%, #96180a 70%, #801408 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b31f0b), color-stop(70%,#96180a), color-stop(100%,#801408));

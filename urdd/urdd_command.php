@@ -130,7 +130,7 @@ class commands_list
         );
         $this->update_settings($settings);
     }
-    public function update_settings (array $settings)
+    public function update_settings(array $settings)
     {
         foreach ($settings as $key => $setting) {
             if (isset($this->settings[$key])) {
@@ -154,7 +154,7 @@ class commands_list
     {
     }
 
-    public function enable ($type, $enable)
+    public function enable($type, $enable)
     {
         foreach ($this->commands as &$command) {
             if ($command->get_type() == $type) {

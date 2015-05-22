@@ -266,7 +266,7 @@ class nfo_parser
             $file_nfo[$index] = trim($value);
             $pos = strpos($file_nfo[$index], '   ');
             if ($pos > 10) {
-                $file_nfo[$index] = trim(substr($file_nfo[$index], 0 , $pos));
+                $file_nfo[$index] = trim(substr($file_nfo[$index], 0, $pos));
             }
         }
     }

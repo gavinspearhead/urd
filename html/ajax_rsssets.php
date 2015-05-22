@@ -461,10 +461,10 @@ class feed_viewer
 try {
     $perpage = get_maxperpage($db, $userid);
     $perpage = get_request('perpage', $perpage);
-    $only_rows  = get_request('only_rows', 0);
-    $adult = urd_user_rights::is_adult($db, $userid);
+    $only_rows = get_request('only_rows', 0);
+    $adult   = urd_user_rights::is_adult($db, $userid);
     $feed_id = get_request('feed_id', 0);
-    $search = html_entity_decode(get_request('search', ''));
+    $search  = html_entity_decode(get_request('search', ''));
     $offset  = get_request('offset', 0);
     $maxage  = get_request('maxage', 0);
     $order   = get_request('order', '');
@@ -475,7 +475,8 @@ try {
     $maxsetsize = get_request('maxsetsize', '');
     $maxrating  = get_request('maxrating', '');
     $minrating  = get_request('minrating', '');
-    $setid   = get_request('setid','');
+    $setid      = get_request('setid','');
+    $view_size  = get_request('view_size', 1024);
 
     $sets_viewer = new feed_viewer($db, $userid);
     $sets_viewer->set_search_options($search, $feed_id, $adult, $minage, $maxage, $setid, $minrating, $maxrating, $flag, $minsetsize, $maxsetsize, $order);
@@ -494,10 +495,11 @@ try {
         $smarty->assign('lastpage',     $totalpages);
         $smarty->assign('currentpage',  $activepage);
     }
-    $smarty->assign('allsets',      $allsets);
+    $smarty->assign('allsets',               $allsets);
     $smarty->assign('USERSETTYPE_GROUP',    USERSETTYPE_GROUP);
     $smarty->assign('USERSETTYPE_RSS',      USERSETTYPE_RSS);
-    $smarty->assign('only_rows',    $only_rows);
+    $smarty->assign('only_rows',            $only_rows);
+    $smarty->assign('view_size',            $view_size);
 
     $content = $smarty->fetch('ajax_rsssets.tpl');
 

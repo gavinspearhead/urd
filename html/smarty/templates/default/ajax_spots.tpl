@@ -24,10 +24,18 @@
 {* These icon images are a copy of the code in formatsetname.tpl *}
 {include 'include_bin_image.tpl' scope='parent'}
 
+{if $view_size >= 1024}
+{$small=0}
+{$skippersize= 30}
+{else}
+{$small=1}
+{$skippersize= 18}
+{/if}
+
 {capture assign=topskipper}{strip}
 {if $only_rows == 0}
     {if count($pages) > 1}
-        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10"}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=set_offset extra_class="margin10" size=$skippersize}
     {else}
         <br/>
     {/if}
@@ -39,7 +47,7 @@
 {capture assign=bottomskipper}{strip}
 {if $only_rows == 0}
     {if count($pages) > 1}
-        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10"}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=set_offset extra_class="margin10" size=$skippersize}
     {else}
         <br/>
     {/if}
@@ -54,7 +62,9 @@
     <div class="inline iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset}></div>
 {/if}
 {if $isadmin}
-    <div class="inline iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    {if not $small}
+        <div class="inline iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    {/if}
     <div class="inline iconsizeplus sadicon buttonlike" id="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
 {/if}
 {/strip}
@@ -74,9 +84,11 @@
 <th class="head round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
 <th class="head buttonlike" id="browsesubjecttd">{$LN_browse_subject} {$title_sort}</th>
+{if $small == 0}
 <th class="head fixwidth1 buttonlike" id="head_reports">{$LN_spamreporttag}</th>
 <th class="head">{$LN_whitelisttag}</th>
-{if $show_comments > 0}
+{/if}
+{if $show_comments > 0 && $small == 0}
 <th class="head fixwidth1 buttonlike" id="head_comments">#</th>
 {/if}
 <th class="fixwidth2a nowrap buttonlike head right" id="head_stamp">{$LN_browse_age} {$stamp_sort}</th>
@@ -200,9 +212,10 @@ $(document).ready(function() {
 {$linkpic="ratingicon_$rating"}
 {if $rating == ""}{$linkpic="followicon"}{/if}
 
-    <div class="inline">{$setdesc}</div>
+    <div class="inline">{$setdesc}</div> 
     </div>
     </td>
+    {if $small == 0}
     <td class="width20">
     {if $set.reports gt 0}{$spamreports=$set.reports}<div {urd_popup type="small" text="$spamreports $LN_spam_reports"} class="highlight_spam inline center width15">{$set.reports}</div>{/if}
     </td>
@@ -210,7 +223,8 @@ $(document).ready(function() {
     {if $set.whitelisted}{$setwhitelisted=$set.whitelisted}{$poster=$set.poster}<div {urd_popup type="small" text="$LN_browse_userwhitelisted:<br> $poster (<i>{$setwhitelisted}</i>)"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}
     </div>
     </td>
-    {if $show_comments > 0}
+    {/if}
+    {if $show_comments > 0 && $small == 0}
     <td class="width32">
         {$setcomments=$set.comments}
         <div class="inline highlight_comments center width25" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$set.comments}</div>
@@ -232,7 +246,9 @@ $(document).ready(function() {
 	<td class="nowrap">
     <div class="floatright">
     {if $isadmin}
+    {if not $small}
     <div id="wipe_img_{$set.sid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    {/if}
     {/if}
     <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
     </div>

@@ -95,8 +95,9 @@ try {
                 $year = NULL;
             }
             $timestamp = strtotime($timestamp);
-            if ($timestamp !== FALSE && $timestamp < time()) {
-                while ($timestamp < time()) {
+            $now = time();
+            if ($timestamp !== FALSE && $timestamp < $now) {
+                while ($timestamp < $now) {
                     $timestamp += 3600 * 24;
                 }
             }
@@ -139,7 +140,7 @@ try {
             $smarty->assign('minute', 		    $minute);
             $smarty->assign('month',		    $month);
             $contents = $smarty->fetch('ajax_calendar.tpl');
-            return_result(array('contents' => $contents, 'hour' => $hour, 'minute'=>$minute));
+            return_result(array('contents' => $contents, 'hour' => $hour, 'minute' => $minute));
             break;
         default:
             throw new exception($LN['error_invalidaction']);

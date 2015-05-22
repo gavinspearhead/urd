@@ -146,14 +146,10 @@ class connection
         $lines = preg_split("/[\n\r]+/", $this->buffer, 2);
         if (count($lines) == 2) {
             $this->buffer = $lines[1];
-            if (strlen($lines[0]) == 0) {
-                return FALSE;
-            } else {
-                return ltrim($lines[0]);
-            }
-        } else {
-            return FALSE;
+            $line = ltrim($lines[0]);
+            return ($line == '') ? FALSE : $line;
         }
+        return FALSE;
     }
     public function get_last_cmd()
     {
@@ -226,8 +222,9 @@ class conn_list
     {
         $timeout = NULL;
         foreach ($this->conns as $conn) {
-            if ($timeout === NULL || $conn->get_last_recv() < $timeout) {
-                $timeout = $conn->get_last_recv();
+            $t = $conn->get_last_recv();
+            if ($timeout === NULL || $t < $timeout) {
+                $timeout = $t;
             }
         }
         if ($timeout !== NULL) {
@@ -264,16 +261,12 @@ class conn_list
     }
     public function close_timedout()  // close all timed out connection;
     {
-        $keys = array();
         $timestamp = time();
         foreach ($this->conns as $key => $conn) {
             if ($conn->get_last_recv() + $this->default_timeout < $timestamp) {
                 socket_close($conn->get_socket());
-                $keys[] = $key;
+                unset($this->conns[$key]);
             }
-        }
-        foreach ($keys as $key) {
-            unset($this->conns[$key]);
         }
     }
     public function add_buffer($sock, $line)
@@ -332,13 +325,13 @@ class conn_list
                     return FALSE;
                 }
 
-                if (strlen($password) > 4 && substr_compare($password, 'hash:', 0, 4) == 0) {
+                if (isset($password[4]) && substr_compare($password, 'hash:', 0, 5) == 0) {
                     $hash_pw = substr($password, 5);
                 } else {
                     $hash_pw = hash('sha256', $salt . $password . $salt);
                 }
-                $sql = '"ID" FROM users WHERE "name"=? AND "pass"=? AND "active"=?';
-                $res = $db->select_query($sql, 1, array($username, $hash_pw, user_status::USER_ACTIVE));
+                $sql = '"ID" FROM users WHERE "name"=:uname AND "pass"=:pass AND "active"=:act';
+                $res = $db->select_query($sql, 1, array(':uname'=>$username, ':pass'=>$hash_pw, ':act'=>user_status::USER_ACTIVE));
                 if ($conn->check_state(connection::STATE_GOT_USERNAME) && $res !== FALSE) {
                     $conn->set_userid($res[0]['ID']);
                     $conn->set_state(connection::STATE_AUTHENTICATED);
@@ -368,7 +361,7 @@ class conn_list
     public function get_username($sock)
     {
         foreach ($this->conns as $conn) {
-            if ($sock == $conn->get_socket()) {
+            if ($sock === $conn->get_socket()) {
                 return $conn->get_username();
             }
         }

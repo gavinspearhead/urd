@@ -66,7 +66,7 @@ class fetch_rss
     const MAGPIE_FETCH_TIME_OUT = 60;
     const MAGPIE_FETCHCONNECT_TIME_OUT = 30;
     const MAGPIE_OUTPUT_ENCODING = 'ISO-8859-1';
-    const MAGPIE_CACHE_AGE =  3600; // one hour
+    const MAGPIE_CACHE_AGE = 3600; // one hour
 
     const MAGPIE_USER_AGENT = 'URD-MAGPIE/0.73 (Cached)';
 
@@ -83,7 +83,7 @@ class fetch_rss
         assert(is_string($url) && is_string($cache_dir));
 
         if ( !isset($url) ) {
-            throw new exception ('fetch_rss called without a url', ERR_MAGPIE_FAILED);
+            throw new exception ('Fetch_rss called without a url', ERR_MAGPIE_FAILED);
         }
         // Flow
         // 1. check cache
@@ -99,7 +99,7 @@ class fetch_rss
         try {
             $cache = new RSSCache($cache_dir, self::MAGPIE_CACHE_AGE );
             $cache_key = $url . self::MAGPIE_OUTPUT_ENCODING;
-            $cache_status = $cache->check_cache( $cache_key);
+            $cache_status = $cache->check_cache($cache_key);
         } catch (exception $e) {
             write_log('Retrieving cached RSS failed', LOG_NOTICE);
         }
@@ -121,8 +121,8 @@ class fetch_rss
 
         // setup headers
         if ($cache_status == 'STALE') {
-            $rss = $cache->get( $cache_key );
-            if (isset($rss) &&  $rss && isset($rss->eta) && isset($rss->last_modified)&& $rss->etag && $rss->last_modified ) {
+            $rss = $cache->get($cache_key);
+            if (isset($rss) &&  $rss && isset($rss->eta) && isset($rss->last_modified) && $rss->etag && $rss->last_modified ) {
                 $request_headers['If-None-Match'] = $rss->etag;
                 $request_headers['If-Last-Modified'] = $rss->last_modified;
             }
@@ -130,9 +130,9 @@ class fetch_rss
 
         $resp = new http_doc();
 
-        $resp->fetch_remote_file( $url, $request_headers, $username , $password);
+        $resp->fetch_remote_file($url, $request_headers, $username , $password);
 
-        if ($resp->get_status() == '304' ) {
+        if ($resp->get_status() == '304') {
             // we have the most current copy
             // reset cache on 304 (at minutillo insistent prodding)
             try {
@@ -142,7 +142,7 @@ class fetch_rss
             }
 
             return $rss;
-        } elseif ( is_success( $resp->get_status() ) ) {
+        } elseif (is_success($resp->get_status())) {
             $rss = $resp->response_to_rss();
             if ($rss) {
                 // add object to cache

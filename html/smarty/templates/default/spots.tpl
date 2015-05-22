@@ -34,7 +34,7 @@
 &nbsp;
 
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
-<input type="button" id="prev_search" class="submitsmall" value="&lt;" {urd_popup text=$LN_previous type="small"}/>
+<input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_previous type="small"}/>
 <span id="save_search_span">
 <select id="saved_search">
 <option value="" label="all"></option>
@@ -43,7 +43,7 @@
 {/foreach}
 </select>
 </span>
-<input type="button" id="next_search" class="submitsmall" value="&gt;" {urd_popup text=$LN_next type="small"}/>
+<input type="button" id="next_search" class="submitsmall" value="&nbsp;&gt;&nbsp;" {urd_popup text=$LN_next type="small"}/>
 </span>
 
 <div id="minibasketdiv" class="hidden"></div>
@@ -98,9 +98,11 @@
 <input type="hidden" id="ln_delete_search" value="{$LN_delete_search}"/>
 <input type="hidden" id="perpage" value="{$perpage}"/>
 <input type="hidden" id="last_line" value=""/>
+<input type="hidden" id="view_size" value=""/>
 
 <script type="text/javascript">
 $(document).ready(function() {
+   $('#view_size').val($(window).width());
    load_side_bar( function() {
        {if ($categoryID == '') && ($_saved_search != '')}
            update_search_names('{$_saved_search|escape:javascript}');

@@ -517,7 +517,8 @@ try {
     $minsetsize = get_request('minsetsize', NULL);
     $maxsetsize = get_request('maxsetsize', NULL);
     $groupID = get_request('groupID', 0);
-
+    $view_size  = get_request('view_size', 1024);
+echo_debug_var_file('/tmp/foo', $_POST);
     $maxrating = get_request('maxrating', '');
     $minrating = get_request('minrating', '');
     $maxcomplete = get_request('maxcomplete', '');
@@ -545,6 +546,7 @@ try {
         $smarty->assign('lastpage',		    $totalpages);
         $smarty->assign('currentpage',	    $activepage);
     }
+    $smarty->assign('view_size',            $view_size);
     $smarty->assign('allsets',		        $allsets);
     $smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
     $smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);

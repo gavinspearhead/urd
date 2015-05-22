@@ -29,15 +29,16 @@ $pathajss = realpath(dirname(__FILE__));
 require_once "$pathajss/../functions/ajax_includes.php";
 
 try {
-    $root_prefs = load_config($db);
-
-    $startup_perc = get_config($db, 'urdd_startup', NULL, TRUE);
     $type = get_request('type', 'normal');
-
     if (!in_array($type, array('quick', 'disk', 'activity', 'icon'))) {
         throw new exception($LN['error_unknowntype']);
     }
+    $root_prefs = load_config($db);
 
+    $startup_perc = get_config($db, 'urdd_startup', NULL, TRUE);
+
+
+    init_smarty('', 0);
     // First: Basic stats.
     // can we connect?
     try {
@@ -46,7 +47,6 @@ try {
     } catch (exception $e) {
         $isconnected = FALSE;
     }
-    init_smarty('', 0);
     if ($type == 'quick' || $type == 'icon') {
         $counter = 0;
         if ($isconnected) {
@@ -60,11 +60,11 @@ try {
             $diskspace = $uc->diskfree('h');
             $disk_perc = $uc->diskfree('p1');
             $nodisk_perc = 100 - $disk_perc;
-            $smarty->assign('diskfree',	   $diskspace[0] . ' ' . $diskspace[1]);
-            $smarty->assign('diskused',	   $diskspace[4] . ' ' . $diskspace[5]);
-            $smarty->assign('disktotal',   $diskspace[2] . ' ' . $diskspace[3]);
-            $smarty->assign('disk_perc',   $disk_perc);
-            $smarty->assign('nodisk_perc', $nodisk_perc);
+            $smarty->assign(array('diskfree' => $diskspace[0] . ' ' . $diskspace[1], 
+                                 'diskused' => $diskspace[4] . ' ' . $diskspace[5],
+                                 'disktotal' => $diskspace[2] . ' ' . $diskspace[3],
+                                 'disk_perc' => $disk_perc,
+                                 'nodisk_perc' => $nodisk_perc));
         }
     } elseif ($type == 'activity') {
         $tasks = array();
@@ -108,8 +108,8 @@ try {
             }
             unset($res);
             $cnt = count($tasks);
-            $input_arr = array();
-            $sql = '* FROM downloadinfo WHERE "preview" = 2 AND "hidden" = 0';
+            $input_arr = array(':preview'=>2, ':hidden'=>0);
+            $sql = '* FROM downloadinfo WHERE "preview" = :preview AND "hidden" = :hidden';
             if (!$isadmin) {
                 $input_arr[':userid'] = $userid;
                 $sql .= ' AND "userid"=:userid ';
@@ -152,17 +152,19 @@ try {
                 $previews[] = $preview;
             }
 
-            $smarty->assign('tasks',	$tasks);
-            $smarty->assign('previews',	$previews);
-            $smarty->assign('counter',	$cnt);
+            $smarty->assign(array (
+                        'tasks'	=> $tasks,
+                        'previews'=> $previews,
+                        'counter'=>	$cnt)
+            );
         }
     }
 
     $uc->disconnect();
-    $smarty->assign('startup_perc',	 $startup_perc);
-    $smarty->assign('isconnected',	 $isconnected);
-    $smarty->assign('isadmin',	   	 $isadmin);
-    $smarty->assign('type',	         $type);
+    $smarty->assign(array('startup_perc'=>	 $startup_perc,
+    'isconnected' => $isconnected,
+    'isadmin' => $isadmin,
+    'type' => $type));
 
     $contents = $smarty->fetch('ajax_showstatus.tpl');
     return_result(array('contents' => $contents, 'connected' => $isconnected));

@@ -404,6 +404,7 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
     $url = $dlid = NULL;
     $start_time = 0;
     $last_idx = 0;
+
     if (isset($arg_list[0])) {
         if (is_numeric($arg_list[0])) {
             $dlid = $arg_list[0];
@@ -415,9 +416,10 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
             $url = $arg_list[0];
         }
     }
+    $now = time();
     if (isset($arg_list[$last_idx + 1]) && is_numeric($arg_list[$last_idx + 1])) {
         $start_time = $arg_list[$last_idx + 1];
-        if ($start_time < time()) {
+        if ($start_time < $now) {
             $start_time = 0;
         }
     }
@@ -425,7 +427,7 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
         if ($dlid === NULL) {
             list($code, $dlid) = do_create_download($db, $servers, $userid, NULL, FALSE);
             if ($start_time == 0) {
-                set_start_time($db, $dlid, time());
+                set_start_time($db, $dlid, $now);
             } else {
                 set_start_time($db, $dlid, $start_time);
                 $item_unpause = new action (urdd_protocol::COMMAND_CONTINUE, get_command(urdd_protocol::COMMAND_DOWNLOAD) . " $dlid", $userid, TRUE);

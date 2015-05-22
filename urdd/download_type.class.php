@@ -27,7 +27,7 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-define ('RAR_MARKHEADER_SIGN_', 'Rar!' . chr(0x1a) . chr(0x07) . chr(0x00)); // nasty
+define('RAR_MARKHEADER_SIGN_', 'Rar!' . chr(0x1a) . chr(0x07) . chr(0x00)); // nasty
 
 
 class download_type
@@ -53,10 +53,10 @@ class download_type
         $possible_uuencode = FALSE;
         $cnt = 0;
         foreach ($article as $line) {
-            if (!isset($line[0])) { // empty line
-                continue;
-            } elseif (isset($line[1]) && substr_compare($line, '=y', 0, 2) == 0) {
+            if (isset($line[1]) && substr_compare($line, '=y', 0, 2) == 0) {
                 return self::TYPE_YYENCODED;
+            } elseif (!isset($line[0])) { // empty line
+                continue;
             } elseif ($line[0] == 'M') {
                 if ($possible_uuencode === TRUE) {
                     return self::TYPE_UUENCODED;

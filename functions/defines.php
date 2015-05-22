@@ -147,7 +147,6 @@ define ('DEFAULT_PER_PAGE', 50);
 
 define ('MIN_PASSWORD_LENGTH', 8);
 define ('MAX_DL_NAME', 42);
-define ('SKIPPER_SIZE', 19);
 
 class batch_size
 {

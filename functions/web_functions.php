@@ -664,18 +664,19 @@ function get_timestamp()
 {
     global $LN;
     $timestamp = trim(get_request('timestamp', ''));
+    $now = time();
     if ($timestamp != '') {
         $time_int = strtotime($timestamp);
         if ($time_int === FALSE) {
             $timestamp = NULL;
-            $time_int = time();
-        } elseif ($time_int < time() && $time_int > 0) { // the time is before now, so probably means tomorrow
+            $time_int = $now;
+        } elseif ($time_int < $now && $time_int > 0) { // the time is before now, so probably means tomorrow
             $time_int += 24 * 3600; // next day
             $timestamp .= ' +1 day';
         }
     } else {
         $timestamp = NULL;
-        $time_int = time();
+        $time_int = $now;
     }
 
     return array($timestamp, $time_int);
@@ -833,9 +834,10 @@ function create_nzb(DatabaseConnection $db, $userid)
     $dlname = substr($dlname, 0, $max_dl_name); // DL names are no longer than X characters when auto-generated
     set_download_name($db, $dlid, $dlname);
     add_set_data($db, $uc, $userid, $dlid, 'create_nzb');
+    $now = time();
     foreach ($dlthreads as $id) {
         usleep(500000);
-        set_start_time($db, $dlid, time());
+        set_start_time($db, $dlid, $now);
         $uc->unpause($id);
     }
     $_SESSION['setdata'] = array();
@@ -1366,6 +1368,7 @@ function get_stylesheets()
 {
     global $smarty;
     $template_dir = $smarty->getTemplateDir();
+    echo_debug_var_file('/tmp/foo', $template_dir);
     $sheets = glob($template_dir[0] . '/css/*');
     $stylesheets = array();
     foreach ($sheets as $sheet) {
@@ -1558,8 +1561,8 @@ function add_to_whitelist(DatabaseConnection $db, $spotterID, $userid, $global, 
 
 function get_spotterid_from_spot(DatabaseConnection $db, $spotid)
 {
-    $sql = '"spotter_id" FROM spots WHERE "spotid"=?';
-    $res = $db->select_query($sql, 1, array($spotid));
+    $sql = '"spotter_id" FROM spots WHERE "spotid"=:spotid';
+    $res = $db->select_query($sql, 1, array(':spotid'=>$spotid));
     if (!isset($res[0]['spotter_id'])) {
         return FALSE;
     }
@@ -1570,13 +1573,9 @@ function get_spotterid_from_spot(DatabaseConnection $db, $spotid)
 function get_pages($totalsets, $perpage, $offset)
 {
     assert (is_numeric($totalsets) && is_numeric($perpage) && is_numeric($offset));
-    $size = SKIPPER_SIZE;
+    
     $totalpages = max(1, ceil($totalsets / $perpage));      // Total number of pages.
     $activepage = ceil(($offset + 1) / $perpage);     // This is the page we're on. (+1 because 0/100 = page 1)
-    $start = max($activepage - floor($size / 2), 1);  // We start at 1 unless we're now on page 12, then we show page 2.
-    $end = min($start + $size, $totalpages);        // We don't go beyond 'totalpages' ofcourse.
-    $start = max($end - $size, 1);                  // Re-check $start, in case the pagenumber is near the end
-
     $pages = array();
     foreach (range(1, $totalpages) as $i) {
         $thispage = array();
