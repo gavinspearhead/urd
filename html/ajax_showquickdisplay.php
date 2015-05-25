@@ -145,7 +145,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     assert(is_numeric($userid));
     assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
     // First the extended info:
-    $sql = '* FROM extsetdata WHERE "setID":setid AND "type"=:type';
+    $sql = '* FROM extsetdata WHERE "setID" = :setid AND "type"=:type';
     $res = $db->select_query($sql, array(':setid'=>$setID, ':type'=>$type));
     // Store it in an easy to use array:
     $extsetinfo = array();
