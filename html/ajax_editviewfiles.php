@@ -425,7 +425,7 @@ try {
                 $file_contents = $filename = '';
                 $_SESSION['viewfiles']['file_edit'] = '';
             }
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('error',            '');
             $smarty->assign('textboxsize',		TEXT_BOX_SIZE);
             $smarty->assign('directory',		$currentdir);
@@ -585,7 +585,7 @@ try {
 
             $allow_edit = $rprefs['webeditfile'] && $is_fileeditor;
 
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('allow_edit',	$allow_edit);
             $smarty->assign('search',		$search);
             $smarty->assign('pages',		$pages);
@@ -617,7 +617,7 @@ try {
                 $groups["$g"] = $g;
             }
 
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('textboxsize',	TEXT_BOX_SIZE);
             $smarty->assign('directory',	$currentdir);
             $smarty->assign('maxstrlen',	((int) $prefs['maxsetname'])/3);

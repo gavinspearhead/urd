@@ -51,7 +51,7 @@ try {
     $base_dlpath = $base_dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
     $dl_dir = substr($dl_dir, strlen($base_dlpath));
 
-    init_smarty('', 0);
+    init_smarty();
 
     if (!$smarty->getTemplateVars('urdd_online')) {
         throw new exception($LN['urdddisabled']);

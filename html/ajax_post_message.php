@@ -161,7 +161,7 @@ try {
                 }
                 natsort($groups);
             }
-            init_smarty('', 0);
+            init_smarty();
             if (!$smarty->getTemplateVars('urdd_online')) {
                 throw new exception($LN['urdddisabled']);
             }

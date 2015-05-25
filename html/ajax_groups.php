@@ -334,7 +334,7 @@ function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
     }
     $uc->disconnect();
 
-    init_smarty('', 0);
+    init_smarty();
 
     $smarty->assign('urdd_online',	    (int) $urdd_online);
     $smarty->assign('periods_texts',	$ptexts);

@@ -1137,8 +1137,8 @@ function get_userfeed_settings(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     $sql = 'categories."name" AS c_name, rss_urls."name" AS f_name, userfeedinfo."minsetsize", userfeedinfo."maxsetsize", userfeedinfo."visible" ' .
         'FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category" = categories."id" LEFT JOIN rss_urls ON userfeedinfo.feedid = rss_urls."id" ' .
-        'WHERE userfeedinfo."userid"=?';
-    $res = $db->select_query($sql, array($userid));
+        'WHERE userfeedinfo."userid"=:userid';
+    $res = $db->select_query($sql, array(':userid'=>$userid));
     if (!is_array($res)) {
         return array();
     }
@@ -1151,8 +1151,8 @@ function get_usergroup_settings(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     $sql = 'categories."name" AS c_name, groups."name" AS g_name, usergroupinfo."minsetsize", usergroupinfo."maxsetsize", usergroupinfo."visible" ' .
         'FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" LEFT JOIN groups ON usergroupinfo."groupid" = groups."ID" ' .
-        'WHERE usergroupinfo."userid"=?';
-    $res = $db->select_query($sql, array($userid));
+        'WHERE usergroupinfo."userid"=:userid';
+    $res = $db->select_query($sql, array(':userid'=>$userid));
     if (!is_array($res)) {
         return array();
     }
@@ -1942,8 +1942,8 @@ function nearest($val, $up)
 function get_poster_from_set(DatabaseConnection $db, $setid)
 {
     $groupid = get_groupid_for_set($db, $setid);
-    $sql = "\"fromname\" FROM parts_$groupid LEFT JOIN binaries_$groupid ON parts_$groupid.\"binaryID\" = binaries_$groupid.\"binaryID\" where setID = ? AND fromname != ''";
-    $res = $db->select_query($sql, 1, array($setid));
+    $sql = "\"fromname\" FROM parts_$groupid LEFT JOIN binaries_$groupid ON parts_$groupid.\"binaryID\" = binaries_$groupid.\"binaryID\" WHERE setID = :setid AND fromname != ''";
+    $res = $db->select_query($sql, 1, array(':setid'=>$setid));
     if (!isset($res[0]['fromname'])) {
         throw new exception($LN['error_binariesnotfound']);
     }

@@ -35,8 +35,8 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $sql = '"stamp", "category", "url", "reports", "title", "subcat", "subcata", "subcatb", "subcatc", "subcatd", "size", "spotid", "poster", "tag", "description", ' .
         'spots."spotter_id" AS "spotterid", spot_whitelist."spotter_id" AS "whitelisted" ' .
         'FROM spots LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id") ' .
-        'WHERE "spotid"=?';
-    $res = $db->select_query($sql, 1, array($setID));
+        'WHERE "spotid"=:setid';
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID));
     if (!isset($res[0])) {
         throw new exception($LN['error_spotnotfound'] . ': '.$setID);
     }
@@ -60,8 +60,8 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $subcatc = get_subcats($row['category'], $row['subcatc']);
     $subcatd = get_subcats($row['category'], $row['subcatd']);
     $whitelisted = $row['whitelisted'] == NULL ? 0 : 1;
-    $sql = 'image_file, image FROM spot_images WHERE "spotid"=? AND "fetched"=?';
-    $img_res = $db->select_query($sql, array($setID, 1));
+    $sql = 'image_file, image FROM spot_images WHERE "spotid"=:setid AND "fetched"=:fetched';
+    $img_res = $db->select_query($sql, array(':setid'=>$setID, ':fetched'=>1));
     $sql = '* FROM spot_comments WHERE "spotid"=? ORDER BY "stamp" ASC';
     $spotres = $db->select_query($sql, array($setID));
     $comments = array();
@@ -145,8 +145,8 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     assert(is_numeric($userid));
     assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
     // First the extended info:
-    $sql = '* FROM extsetdata WHERE "setID"=? AND "type"=?';
-    $res = $db->select_query($sql, array($setID, $type));
+    $sql = '* FROM extsetdata WHERE "setID":setid AND "type"=:type';
+    $res = $db->select_query($sql, array(':setid'=>$setID, ':type'=>$type));
     // Store it in an easy to use array:
     $extsetinfo = array();
     $extsetinfo['binarytype'] = 0;
@@ -160,8 +160,8 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 
     // files by default:
     if ($type == USERSETTYPE_GROUP) {
-        $sql = '* FROM setdata WHERE "ID"=?';
-        $res = $db->select_query($sql, 1, array($setID));
+        $sql = '* FROM setdata WHERE "ID"=:setid';
+        $res = $db->select_query($sql, 1, array(':setid'=>$setID));
         if (!is_array($res)) {
             throw new exception($LN['error_setnotfound'] . ': '.$setID);
         }
@@ -176,8 +176,8 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         $binaries = $res['binaries'];
         $setname = $res['subject'];
     } elseif ($type == USERSETTYPE_RSS) {
-        $sql = '"size", "rss_id", "setname" FROM rss_sets WHERE "setid"=?';
-        $res = $db->select_query($sql, 1, array($setID));
+        $sql = '"size", "rss_id", "setname" FROM rss_sets WHERE "setid"=:setid';
+        $res = $db->select_query($sql, 1, array(':setid'=>$setID));
         if (!is_array($res)) {
             throw new exception($LN['error_setnotfound'] . ': '.$setID);
         }
@@ -215,14 +215,14 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 
     if ($type == USERSETTYPE_GROUP) {
         $groupname = group_name($db, $groupID);
-        $sql = "* FROM binaries_{$groupID} WHERE \"setID\"=? ORDER BY \"subject\" ASC";
-        $res = $db->select_query($sql, array($setID));
+        $sql = "* FROM binaries_{$groupID} WHERE \"setID\"=:setid ORDER BY \"subject\" ASC";
+        $res = $db->select_query($sql, array(':setid'=>$setID));
         if (!isset($res[0])) {
             throw new exception($LN['error_binariesnotfound']);
         }
         $bin_id = $res[0]['binaryID'];
-        $sql = "MAX(\"fromname\") AS \"poster\" FROM parts_{$groupID} WHERE \"binaryID\"=?";
-        $res1 = $db->select_query($sql, 1, array($bin_id));
+        $sql = "MAX(\"fromname\") AS \"poster\" FROM parts_{$groupID} WHERE \"binaryID\"=:bin_id";
+        $res1 = $db->select_query($sql, 1, array(':bin_id'=>$bin_id));
         if (isset($res1[0]['poster'])) {
             $poster = $res1[0]['poster'];
         }
@@ -289,20 +289,20 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
     assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
     // Get the default name: set subject
     if ($type == USERSETTYPE_GROUP) {
-        $sql = '"subject" AS "setname" FROM setdata WHERE "ID"=?';
+        $sql = '"subject" AS "setname" FROM setdata WHERE "ID"=:setid?';
     } elseif ($type == USERSETTYPE_RSS) {
-        $sql = '"setname" FROM rss_sets WHERE "setid"=?';
+        $sql = '"setname" FROM rss_sets WHERE "setid"=:setid?';
     } elseif ($type == USERSETTYPE_SPOT) {
-        $sql = '"title" AS "setname" FROM spots WHERE "spotid"=?';
+        $sql = '"title" AS "setname" FROM spots WHERE "spotid"=:setid';
     }
-    $res = $db->select_query($sql, array($setid));
+    $res = $db->select_query($sql, array(':setid'=>$setid));
     if (!is_array($res)) {
         throw new exception($LN['error_setnotfound'] . ': '.$setid);
     }
     $setname = $res[0]['setname'];
 
-    $sql = '* FROM extsetdata WHERE "setID"=? AND "type"=?';
-    $res = $db->select_query($sql, array($setid, $type));
+    $sql = '* FROM extsetdata WHERE "setID"=:setid AND "type"=:type';
+    $res = $db->select_query($sql, array(':setid'=>$setid, ':type'=>$type));
     // Store it in an easy to use array:
     $extsetinfo = array();
     // Set default values:
@@ -329,7 +329,7 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
     $smarty->assign('display',          $display);      // All values
     return $smarty->fetch('ajax_showextsetinfo.tpl');
 }
-init_smarty('', 0);
+init_smarty();
 
 $subject = '';
 // Process commands:

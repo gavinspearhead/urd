@@ -64,7 +64,7 @@ try {
     }
 
     $urdd_online = check_urdd_online($db);
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('alljobs',	    $jobs);
     $smarty->assign('sort',	        $sort);
     $smarty->assign('sort_dir',	    $sort_dir);

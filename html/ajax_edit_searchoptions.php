@@ -134,7 +134,7 @@ function show_search_options(DatabaseConnection $db, $userid)
         $id = $row['id'];
         $search_options[] = new search_options_c($id, $name, $search_url);
     }
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
     $smarty->assign('sort', $order);
     $smarty->assign('sort_dir', $order_dir);

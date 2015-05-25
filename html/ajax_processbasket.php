@@ -221,7 +221,7 @@ function display_basket(DatabaseConnection $db, $userid)
     $default_basket_type = get_pref($db, 'basket_type', $userid, basket_type::LARGE);
     $basket_type = get_request('basket_type', $default_basket_type);
     $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL ? basket_type::SMALL : basket_type::LARGE);
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('dlsetname',        $dlsetname);
     $smarty->assign('nrofsets',         $nrofsets);
     $smarty->assign('show_merge',       $show_merge);

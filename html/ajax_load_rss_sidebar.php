@@ -30,7 +30,7 @@ require_once "$pathaet/../functions/ajax_includes.php";
 try {
     verify_access($db, urd_modules::URD_CLASS_RSS, FALSE, '', $userid);
 
-    init_smarty('', 0);
+    init_smarty();
 
     $content = $smarty->fetch('ajax_load_rss_sidebar.tpl');
     return_result(array('contents' => $content));

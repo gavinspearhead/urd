@@ -159,7 +159,7 @@ try {
     }
 
     $_SESSION['control_status'] = $control_status = get_session('control_status', 0);
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('isconnected',      $isconnected);
     $smarty->assign('disable_urdland',  $disable_urdland);
     $smarty->assign('queue_info',       $queue_info);

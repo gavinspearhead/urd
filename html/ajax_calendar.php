@@ -131,6 +131,7 @@ try {
                 $selected_day = $show_day = date('j', $timestamp);
             }
             $dates = calendar($month, $year);
+            init_smarty();
             $smarty->assign('dates',		    $dates);
             $smarty->assign('today',		    $today);
             $smarty->assign('selected_day',	    $selected_day);

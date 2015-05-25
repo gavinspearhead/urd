@@ -75,7 +75,7 @@ function showeditgroup(DatabaseConnection $db, $id)
     }
 
     list($pkeys, $ptexts) = $periods->get_periods();
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('id',		        $id);
     $smarty->assign('oldname',	        $oldname);
     $smarty->assign('oldminsetsize',	$oldminsetsize);

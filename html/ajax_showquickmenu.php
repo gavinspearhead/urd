@@ -252,7 +252,7 @@ try {
        Extra can be the URL (newpage), or a searchoption array (searchoption).
      */
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('items',	 $items);
     $smarty->assign('srctype',   $srctype);     // group or rss or spot
     $smarty->assign('subject',   $subject);

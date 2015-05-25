@@ -77,7 +77,7 @@ try {
             foreach ($categories as &$cat) {
                 $cat['name'] = $cat['name'];
             }
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('categories',	    $categories);
             $smarty->assign('text_box_size',	TEXT_BOX_SIZE);
             $contents = $smarty->fetch('ajax_editcategories.tpl');

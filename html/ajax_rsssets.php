@@ -484,7 +484,7 @@ try {
     $allsets = $sets_viewer->get_set_data($perpage, $offset, $last_line);
     $rssurl = $sets_viewer->get_rss_url($perpage);
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('rssurl',       $rssurl);
     $smarty->assign('sort',         $sets_viewer->get_sort());
     $smarty->assign('killflag',		$sets_viewer->get_killflag());

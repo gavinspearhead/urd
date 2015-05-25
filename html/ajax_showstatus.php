@@ -34,11 +34,9 @@ try {
         throw new exception($LN['error_unknowntype']);
     }
     $root_prefs = load_config($db);
-
     $startup_perc = get_config($db, 'urdd_startup', NULL, TRUE);
 
-
-    init_smarty('', 0);
+    init_smarty();
     // First: Basic stats.
     // can we connect?
     try {
@@ -60,11 +58,12 @@ try {
             $diskspace = $uc->diskfree('h');
             $disk_perc = $uc->diskfree('p1');
             $nodisk_perc = 100 - $disk_perc;
-            $smarty->assign(array('diskfree' => $diskspace[0] . ' ' . $diskspace[1], 
-                                 'diskused' => $diskspace[4] . ' ' . $diskspace[5],
-                                 'disktotal' => $diskspace[2] . ' ' . $diskspace[3],
-                                 'disk_perc' => $disk_perc,
-                                 'nodisk_perc' => $nodisk_perc));
+            $smarty->assign(array(
+                        'diskfree' => $diskspace[0] . ' ' . $diskspace[1], 
+                        'diskused' => $diskspace[4] . ' ' . $diskspace[5],
+                        'disktotal' => $diskspace[2] . ' ' . $diskspace[3],
+                        'disk_perc' => $disk_perc,
+                        'nodisk_perc' => $nodisk_perc));
         }
     } elseif ($type == 'activity') {
         $tasks = array();

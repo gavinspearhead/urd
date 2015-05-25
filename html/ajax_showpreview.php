@@ -150,7 +150,7 @@ try {
     $group_id = get_request('group_id', 0);
 
     $preview_data = get_preview_data($db, $dlid, $binary_id, $group_id, $userid);
-
+    init_smarty();
     $smarty->assign('do_reload',	$preview_data->do_reload);
     $smarty->assign('finished',	    $preview_data->finished);
     $smarty->assign('path',		    $preview_data->path);

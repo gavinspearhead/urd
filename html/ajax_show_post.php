@@ -100,7 +100,7 @@ try {
         $default_nzb_group = NULL;
     }
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('postid',      	    $postid);
     $smarty->assign('groups',    	    $groups);
     $smarty->assign('group',    	    $group);

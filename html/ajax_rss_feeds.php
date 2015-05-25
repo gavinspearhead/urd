@@ -274,7 +274,7 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
         $message = $LN['enableurddfirst'];
     }
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('periods_texts',	$ptexts);
     $smarty->assign('categories',		$categories);
     $smarty->assign('urdd_online',	    (int) $urdd_online);

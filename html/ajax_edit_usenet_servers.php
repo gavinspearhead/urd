@@ -76,8 +76,8 @@ function verify_usenet_server_id(DatabaseConnection $db, $id)
     if (!is_numeric($id)) {
         throw new exception($LN['error_nosuchserver']);
     }
-    $sql = 'COUNT(*) AS cnt FROM usenet_servers WHERE "id"=?';
-    $res = $db->select_query($sql, array($id));
+    $sql = 'COUNT(*) AS cnt FROM usenet_servers WHERE "id"=:id';
+    $res = $db->select_query($sql, array(':id'=>$id));
     if ($res === FALSE) {
         throw new exception($LN['error_nosuchserver']);
     }
@@ -93,10 +93,10 @@ try {
 
     $prefs_root = load_config($db);
     $connection_types = array (
-            'off'=>$LN['off'],
-            'ssl'=>'SSL',
-            'tls'=>'TLS'
-            );
+        'off'=>$LN['off'],
+        'ssl'=>'SSL',
+        'tls'=>'TLS'
+    );
 
     $cmd = get_request('cmd');
     $id = get_request('id');
@@ -236,7 +236,7 @@ try {
                 $authentication = 1;
             }
 
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('id', $id);
             $smarty->assign('name', $name);
             $smarty->assign('only_auth', $only_auth);
@@ -400,7 +400,7 @@ try {
                 $priority = $row['priority'];
                 $usenet_servers[] = new usenet_servers_c(0, $id, $name, $hostname, $port, $sec_port, (bool) $auth, $threads, $conn, $conn_raw, $username, $password, $priority, $compressed_headers, $posting);
             }
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('maxstrlen',    $prefs['maxsetname']/2);
             $smarty->assign('usenet_servers', $usenet_servers);
             $smarty->assign('sort',	        $sort);

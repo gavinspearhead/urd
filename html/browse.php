@@ -46,19 +46,19 @@ if ($saved_search == '' && $groupID == '' && $search == '') {
 }
 
 if ($isadmin) {
-    $add_menu['actions'][] = new menu_item2 ('update_ng','update',urd_modules::URD_CLASS_GROUPS, '', 'command');
-    $add_menu['actions'][] = new menu_item2 ('gensets_ng','ng_gensets',urd_modules::URD_CLASS_GROUPS, '', 'command');
-    $add_menu['actions'][] = new menu_item2 ('expire_ng','expire',urd_modules::URD_CLASS_GROUPS, '', 'command');
-    $add_menu['actions'][] = new menu_item2 ('purge_ng','purge', urd_modules::URD_CLASS_GROUPS, $LN['purge'] . ' ' . $LN['ng_title'], 'command');
+    $add_menu['actions'][] = new menu_item2('update_ng','update',urd_modules::URD_CLASS_GROUPS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('gensets_ng','ng_gensets',urd_modules::URD_CLASS_GROUPS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('expire_ng','expire',urd_modules::URD_CLASS_GROUPS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('purge_ng','purge', urd_modules::URD_CLASS_GROUPS, $LN['purge'] . ' ' . $LN['ng_title'], 'command');
 } elseif (urd_user_rights::is_updater($db, $userid)) {
-    $add_menu['actions'][] = new menu_item2 ('update_ng','update',urd_modules::URD_CLASS_GROUPS, '', 'command');
-    $add_menu['actions'][] = new menu_item2 ('gensets_ng','ng_gensets',urd_modules::URD_CLASS_GROUPS, '', 'command');
-    $add_menu['actions'][] = new menu_item2 ('expire_ng','expire',urd_modules::URD_CLASS_GROUPS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('update_ng','update',urd_modules::URD_CLASS_GROUPS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('gensets_ng','ng_gensets',urd_modules::URD_CLASS_GROUPS, '', 'command');
+    $add_menu['actions'][] = new menu_item2('expire_ng','expire',urd_modules::URD_CLASS_GROUPS, '', 'command');
 }
 
-$add_menu['actions'][] = new menu_item2 ('add_search','add_search', urd_modules::URD_CLASS_GROUPS, '', 'command');
-$add_menu['actions'][] = new menu_item2 ('delete_search','delete_search', urd_modules::URD_CLASS_GROUPS, '', 'command');
-$add_menu['actions'][] = new menu_item2 ('postmessage','post_message', urd_modules::URD_CLASS_POST, '', 'command');
+$add_menu['actions'][] = new menu_item2('add_search','add_search', urd_modules::URD_CLASS_GROUPS, '', 'command');
+$add_menu['actions'][] = new menu_item2('delete_search','delete_search', urd_modules::URD_CLASS_GROUPS, '', 'command');
+$add_menu['actions'][] = new menu_item2('postmessage','post_message', urd_modules::URD_CLASS_POST, '', 'command');
 
 $url = get_config($db, 'baseurl');
 $type = $rsstype = USERSETTYPE_GROUP;
@@ -72,7 +72,7 @@ if (isset($groupID[9]) && substr_compare($groupID, 'category_', 0, 9) == 0) {
     if (!is_numeric($categoryID)) {
         $categoryID = 0;
     }
-    $groupID = 0 ;
+    $groupID = 0;
     $selected = 'category';
 } elseif (isset($groupID[6]) && substr_compare($groupID, 'group_', 0, 6) == 0) {
     $groupID = substr($groupID, 6);
@@ -142,8 +142,8 @@ $minrating  = get_request('minrating', 0, 'is_numeric');
 $maxrating  = get_request('maxrating', 10, 'is_numeric');
 $mincomplete = get_request('mincomplete', 0, 'is_numeric');
 $maxcomplete = get_request('maxcomplete', 100, 'is_numeric');
-
 $setid = get_request('setid', '');
+
 $subscribedgroups = subscribed_groups_select($db, $groupID, $categoryID, $categories, $userid);
 $posting = urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST) && urd_user_rights::is_poster($db, $userid);
 
@@ -154,36 +154,38 @@ if ($order == '') {
 init_smarty($title, 1, $add_menu);
 
 list($size, $suffix) = format_size($totbin, 'h', '', 1000);
-$smarty->assign('total_articles', $size . $suffix);
-$smarty->assign('search',		$search);
-$smarty->assign('isadmin',		$isadmin);
-$smarty->assign('groupID',		$origroupID);
-$smarty->assign('offset',		$offset);
-$smarty->assign('USERSETTYPE',	USERSETTYPE_GROUP);
-$smarty->assign('minage',		$minage);
-$smarty->assign('maxage',		$maxage);
-$smarty->assign('minrating',	$minrating);
-$smarty->assign('maxrating',	$maxrating);
-$smarty->assign('minagelimit',	0);
-$smarty->assign('maxagelimit',	$maxagelimit);
-$smarty->assign('minsetsizelimit',	$minsetsizelimit);
-$smarty->assign('maxsetsizelimit',	$maxsetsizelimit);
-$smarty->assign('minratinglimit',0);
-$smarty->assign('maxratinglimit',10);
-$smarty->assign('mincompletelimit',	0);
-$smarty->assign('perpage',		$perpage);
-$smarty->assign('maxcompletelimit',	100);
-$smarty->assign('mincomplete',	$mincomplete);
-$smarty->assign('maxcomplete',	$maxcomplete);
-$smarty->assign('order',		trim($order));
-$smarty->assign('posting',		$posting?1:0);
-$smarty->assign('setid',		$setid);
-$smarty->assign('flag',			$flag);
-$smarty->assign('rssurl',		$rssurl);
-$smarty->assign('minsetsize',	$minsetsize);
-$smarty->assign('maxsetsize',	$maxsetsize);
-$smarty->assign('saved_searches',	$saved_searches);
-$smarty->assign('_saved_search',	$saved_search);
+$smarty->assign(array(
+    'total_articles' => $size . $suffix,
+    'search' =>		$search,
+    'isadmin' =>		$isadmin,
+    'groupID' =>		$origroupID,
+    'offset' =>		$offset,
+    'USERSETTYPE' =>	USERSETTYPE_GROUP,
+    'minage' =>		$minage,
+    'maxage' =>		$maxage,
+    'minrating' =>	$minrating,
+    'maxrating' =>	$maxrating,
+    'minagelimit' =>	0,
+    'maxagelimit' =>	$maxagelimit,
+    'minsetsizelimit' =>	$minsetsizelimit,
+    'maxsetsizelimit' =>	$maxsetsizelimit,
+    'minratinglimit' =>0,
+    'maxratinglimit' =>10,
+    'mincompletelimit' =>	0,
+    'perpage' =>		$perpage,
+    'maxcompletelimit' =>	100,
+    'mincomplete' =>	$mincomplete,
+    'maxcomplete' =>	$maxcomplete,
+    'order' =>		trim($order),
+    'posting' =>		$posting?1:0,
+    'setid' =>		$setid,
+    'flag' =>			$flag,
+    'rssurl' =>		$rssurl,
+    'minsetsize' =>	$minsetsize,
+    'maxsetsize' =>	$maxsetsize,
+    'saved_searches' =>	$saved_searches,
+    '_saved_search' =>	$saved_search,
+    'subscribedgroups' =>	$subscribedgroups)
+);
 
-$smarty->assign('subscribedgroups',	$subscribedgroups);
 $smarty->display('browse.tpl');

@@ -141,7 +141,7 @@ try {
             if (count($names) == 0) {
                 return_result(array('count'=>0));
             }
-            init_smarty('', 0);
+            init_smarty();
             natcasesort($names);
             $smarty->assign('saved_searches',	$names);
             $smarty->assign('current',	        (utf8_decode($current)));
@@ -169,7 +169,7 @@ try {
             return_result(array('message' => $LN['deleted'] . ' "' . htmlentities($name) . '"'));
             break;
         case 'show':
-            init_smarty('', 0);
+            init_smarty();
             $saved_searches->load($db);
             try {
                 $saved_search = $saved_searches->get_search($name, $type);
@@ -184,9 +184,6 @@ try {
             $smarty->assign('save_category',	$category_id);
             $smarty->assign('categories',		$categories);
             $smarty->assign('categories_count',	count($categories));
-            $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
-            $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
-            $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
             $contents = $smarty->fetch('ajax_savename.tpl');
             return_result(array('contents' => $contents));
     }

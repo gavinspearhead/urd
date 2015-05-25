@@ -124,7 +124,7 @@ try {
         }
     }
 
-    init_smarty('', 0);
+    init_smarty();
 
     $smarty->assign('logs', $log_array);
     $smarty->assign('search', $search);

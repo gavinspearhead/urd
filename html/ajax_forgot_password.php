@@ -61,11 +61,11 @@ try {
     require_once "$pathfp/../functions/defines.php";
 
     $status = 'show';
-    if (isset($_POST['username'])&& $_POST['username'] != '' && isset($_POST['email']) && $_POST['email'] != '' && verify_email($_POST['email'])) {
+    if (isset($_POST['username']) && $_POST['username'] != '' && isset($_POST['email']) && $_POST['email'] != '' && verify_email($_POST['email'])) {
         $username = get_post('username');
         $email = get_post('email');
-        $sql = '"ID", "fullname", "name", "email" FROM users WHERE "email"=? AND "name"=?';
-        $res = $db->select_query($sql, 1, array($email, $username));
+        $sql = '"ID", "fullname", "name", "email" FROM users WHERE "email"=:email AND "name"=:name';
+        $res = $db->select_query($sql, 1, array(':email'=>$email, ':name'=>$username));
         if ($res !== FALSE) {
             $newpw = generate_password(MIN_PASSWORD_LENGTH);
             $id = $res[0]['ID'];
@@ -79,7 +79,7 @@ try {
         }
     } else {
         $err_msg = '';
-        if (!isset($_POST['username']) ||$_POST['username'] == '') {
+        if (!isset($_POST['username']) || $_POST['username'] == '') {
             $err_msg .= 'Invalid username; ';
         }
         if (!isset($_POST['email']) || $_POST['email'] == '' || !verify_email($_POST['email'])) {

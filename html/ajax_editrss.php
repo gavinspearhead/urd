@@ -52,8 +52,8 @@ function show_edit_rss(DatabaseConnection $db, $id)
     global $smarty, $LN, $periods;
     // Get download info:
     if (is_numeric($id)) {
-        $sql = '* FROM rss_urls WHERE "id"=?';
-        $res = $db->select_query($sql, array($id));
+        $sql = '* FROM rss_urls WHERE "id"=:id';
+        $res = $db->select_query($sql, array(':id'=>$id));
         if (!isset($res[0])) {
             throw new exception($LN['error_invalidfeedid']);
         }
@@ -86,7 +86,7 @@ function show_edit_rss(DatabaseConnection $db, $id)
     }
 
     list($pkeys, $ptexts) = $periods->get_periods();
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('id',		        $id);
     $smarty->assign('oldname',	        $oldname);
     $smarty->assign('oldadult',	        $oldadult);

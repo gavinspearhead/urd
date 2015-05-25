@@ -112,8 +112,8 @@ try {
             break;
         case 'edit':
             if (is_numeric($id)) {
-                $sql = '* FROM users WHERE "ID"=?';
-                $res = $db->select_query($sql, 1, array($id));
+                $sql = '* FROM users WHERE "ID"=:id';
+                $res = $db->select_query($sql, 1, array(':id'=>$id));
                 if ($res === FALSE) {
                     throw new exception($LN['error_filenotfound']);
                 }
@@ -152,7 +152,7 @@ try {
             }
 
             $email_allowed = get_config($db, 'sendmail');
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('USER_ADMIN',   user_status::USER_ADMIN);
             $smarty->assign('USER_ACTIVE',  user_status::USER_ACTIVE);
             $smarty->assign('USER_PENDING', user_status::USER_PENDING);
@@ -181,8 +181,8 @@ try {
             $newpw = generate_password(MIN_PASSWORD_LENGTH);
             $user_id = $id;
 
-            $sql = '* FROM users WHERE "ID"=?';
-            $res = $db->select_query($sql, array($user_id));
+            $sql = '* FROM users WHERE "ID"=:id';
+            $res = $db->select_query($sql, array(':id'=>$user_id));
             if ($res === FALSE) {
                 throw new exception($LN['error_nosuchuser']);
             }
@@ -196,7 +196,7 @@ try {
                 write_log('Could not send email message', LOG_WARNING);
                 throw new exception($LN['error_pwresetnomail'] . ': ' . $e->getmessage());
             }
-            return_result(array('message' =>$LN['forgot_sent']));
+            return_result(array('message' => $LN['forgot_sent']));
             break;
         case 'delete':
             challenge::verify_challenge($_POST['challenge']);
@@ -239,8 +239,8 @@ try {
                 case 'active':
                     try {
                         $db->update_query_2('users', array('active'=>$value), '"ID"=?', array($id));
-                        $sql = '"fullname", "name", "email", "active" FROM users WHERE "ID"=?';
-                        $res = $db->select_query($sql, 1, array($id));
+                        $sql = '"fullname", "name", "email", "active" FROM users WHERE "ID"=:id';
+                        $res = $db->select_query($sql, 1, array(':id'=>$id));
                         if ($res === FALSE) {
                             throw new exception($LN['error_nosuchuser']);
                         }
@@ -297,8 +297,8 @@ try {
             }
             $email_allowed = get_config($db, 'sendmail');
             if (is_numeric($id)) {
-                $sql = '"ID", "active" FROM users WHERE "ID"=?';
-                $res = $db->select_query($sql, 1, array($id));
+                $sql = '"ID", "active" FROM users WHERE "ID"=:id';
+                $res = $db->select_query($sql, 1, array(':id'=>$id));
                 if ($res === FALSE) {
                     throw new exception($LN['error_nosuchuser']);
                 }
@@ -320,8 +320,8 @@ try {
                     }
                 }
             } elseif ($id == 'new') {
-                $query = '"ID" FROM users WHERE "name"=?';
-                $res = $db->select_query($query, 1, array($username));
+                $query = '"ID" FROM users WHERE "name"=:username';
+                $res = $db->select_query($query, 1, array(':username'=>$username));
                 if ($res === FALSE) {
                     try {
                         add_user($db, $username, $fullname, $email, $password, $isadmin, $active, $rights);
@@ -373,7 +373,7 @@ try {
                 $users[] = new users_c($id, $name, $fullname, $email, $password, $row['isadmin'], $row['active'], $rights, $last_active);
             }
             $email_allowed = get_config($db, 'sendmail');
-            init_smarty('', 0);
+            init_smarty();
             $smarty->assign('USER_ADMIN',   user_status::USER_ADMIN);
             $smarty->assign('USER_ACTIVE',  user_status::USER_ACTIVE);
             $smarty->assign('USER_PENDING', user_status::USER_PENDING);

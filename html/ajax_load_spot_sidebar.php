@@ -32,7 +32,7 @@ try {
 
     $adult = urd_user_rights::is_adult($db, $userid);
     $subcats = SpotCategories::get_allsubcats($adult);
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('subcat_list', $subcats);
     $content = $smarty->fetch('ajax_load_spot_sidebar.tpl');
     return_result(array('contents' => $content));

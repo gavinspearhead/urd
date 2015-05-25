@@ -514,27 +514,33 @@ try {
     $allsets = $spots_viewer->get_spot_data($perpage, $offset, $last_line);
     $rssurl = $spots_viewer->get_rss_url($perpage);
 
-    init_smarty('', 0);
-    $smarty->assign('rssurl',		$rssurl);
-    $smarty->assign('isadmin',		$isadmin);
-    $smarty->assign('sort',         $spots_viewer->get_sort());
-    $smarty->assign('killflag',		$spots_viewer->get_killflag() ? 1 : 0);
+    init_smarty();
+    $smarty->assign(array(
+        'rssurl' =>	        $rssurl, 
+        'isadmin' =>		$isadmin,
+        'sort' =>           $spots_viewer->get_sort(),
+        'killflag' =>		$spots_viewer->get_killflag() ? 1 : 0)
+    );
 
     if (!$only_rows) {
-        $smarty->assign('pages',		$pages);
-        $smarty->assign('lastpage',		$totalpages);
-        $smarty->assign('currentpage',	$activepage);
-    }
+        $smarty->assign(array(
+            'pages' =>	  	    $pages,
+            'lastpage' =>		$totalpages,
+            'currentpage' =>	$activepage)
+        );
+   }
 
-    $smarty->assign('only_rows',        $only_rows);
-    $smarty->assign('view_size',        $view_size);
-    $smarty->assign('categoryID',	    $categoryID);
-    $smarty->assign('allsets',		    $allsets);
-    $smarty->assign('show_subcats',     get_pref($db, 'show_subcats', $userid, 0));
-    $smarty->assign('show_comments',    get_config($db, 'download_spots_comments', 0));
-    $smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
-    $smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
-    $smarty->assign('USERSETTYPE_SPOT',   	USERSETTYPE_SPOT);
+    $smarty->assign(array(
+        'only_rows' =>          $only_rows,
+        'view_size' =>          $view_size,
+        'categoryID' =>	        $categoryID,
+        'allsets' =>		    $allsets,
+        'show_subcats' =>       get_pref($db, 'show_subcats', $userid, 0),
+        'show_comments' =>      get_config($db, 'download_spots_comments', 0),
+        'USERSETTYPE_GROUP' =>  USERSETTYPE_GROUP,
+        'USERSETTYPE_RSS' =>   	USERSETTYPE_RSS,
+        'USERSETTYPE_SPOT' =>   USERSETTYPE_SPOT)
+    );
 
     $content = $smarty->fetch('ajax_spots.tpl');
 

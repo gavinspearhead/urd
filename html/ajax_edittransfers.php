@@ -112,8 +112,8 @@ try {
 
         case 'showrename':
             // Get download info:
-            $sql = '* FROM downloadinfo WHERE "ID"=?';
-            $res = $db->select_query($sql, 1, array($dlid));
+            $sql = '* FROM downloadinfo WHERE "ID"=:dlid';
+            $res = $db->select_query($sql, 1, array(':dlid'=>$dlid));
             if (!isset($res[0]['name'])) {
                 throw new exception ($LN['error_downloadnotfound']);
             }
@@ -132,7 +132,7 @@ try {
             $add_setname = $row['add_setname'];
             $status = $row['status'];
             $start_time = $row['start_time'];
-            init_smarty('', 0);
+            init_smarty();
             if (in_array($status, array(DOWNLOAD_READY, DOWNLOAD_QUEUED, DOWNLOAD_PAUSED)) && $start_time > time()) {
                 $smarty->assign('starttime_noedit',	0);
             } else {

@@ -34,7 +34,7 @@ try {
         throw new exception ($LN['error_invalidfilename']);
     }
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('referrer', $referrer . '.php');
     $smarty->assign('command', $command);
     $contents = $smarty->fetch('ajax_import_settings.tpl');

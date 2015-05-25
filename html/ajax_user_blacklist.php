@@ -91,7 +91,7 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
             $input_arr[':status'] = $list_status_disabled;
         }
     }
-    $sql = "*, users.\"name\" AS \"username\" FROM $table LEFT JOIN users ON $table.\"userid\" = users.\"ID\" WHERE 1=1 $Qsearch $Qstatus ORDER BY \"$sort\" $sort_dir";
+    $sql = "$table.\"id\", \"source\", \"userid\", \"status\", \"spotter_id\", users.\"name\" AS \"username\" FROM $table LEFT JOIN users ON $table.\"userid\" = users.\"ID\" WHERE 1=1 $Qsearch $Qstatus ORDER BY \"$sort\" $sort_dir";
     $res = $db->select_query($sql, $perpage, $offset, $input_arr);
     if (!is_array($res)) {
         $res = array();
@@ -115,11 +115,12 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
         $blacklist[] = $user;
     }
     list($pages, $currentpage, $lastpage) = get_pages($cnt, $perpage, $offset);
-    init_smarty('', 0);
+    init_smarty();
     if (!$only_rows) {
-        $smarty->assign('pages',		    $pages);
-        $smarty->assign('currentpage',		$currentpage);
-        $smarty->assign('lastpage',		    $lastpage);
+        $smarty->assign(array(
+            'pages'=>		    $pages,
+            'currentpage' =>	$currentpage,
+            'lastpage' =>	    $lastpage));
     }
     $smarty->assign('offset',		    $offset);
     $smarty->assign('list_external',	$list_external);

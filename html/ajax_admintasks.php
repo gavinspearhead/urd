@@ -142,7 +142,7 @@ try {
 
     list($pages, $currentpage, $lastpage) = get_pages($cnt, $perpage, $offset);
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('alltasks',	        $tasks);
     $smarty->assign('sort',	            $sort);
     $smarty->assign('sort_dir',  	    $sort_dir);

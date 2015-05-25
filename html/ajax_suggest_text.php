@@ -144,9 +144,9 @@ try {
             $suggestions = array();
             break;
     }
-    init_smarty('', 0);
+    init_smarty();
     foreach ($suggestions as $k => &$s) { 
-        $suggestions[$k] = array('title'=> strip_tags(preg_replace(array('/&#?[a-z0-9]{2,8};/i', '/[;.,+]/i'),' ',$s['title'])), 'setid'=> $s['setid']);
+        $suggestions[$k] = array('title'=> strip_tags(preg_replace(array('/&#?[a-z0-9]{2,8};/i', '/[;.,+]/i'), ' ', $s['title'])), 'setid'=> $s['setid']);
     }
     $smarty->assign('suggestions', $suggestions);
     $content = $smarty->fetch('ajax_suggest_text.tpl');

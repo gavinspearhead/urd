@@ -684,7 +684,7 @@ try {
 
     switch ($cmd) {
         case 'show':
-            init_smarty('', 0);
+            init_smarty();
             $contents = show_preferences($db, $userid);
             break;
         case 'change_password':

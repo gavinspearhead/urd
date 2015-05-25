@@ -245,7 +245,7 @@ try {
             return_result(array('post_id' => $post_id, 'message'=>$LN['spots_post_started']));
             break;
         case 'show':
-            init_smarty('', 0);
+            init_smarty();
             if (!$smarty->getTemplateVars('urdd_online')) {
                 throw new exception($LN['urdddisabled']);
             }

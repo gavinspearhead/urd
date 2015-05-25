@@ -79,9 +79,9 @@ function get_smarty_dirs($template)
 }
 
 
-function init_smarty($title, $show_menu=1, $custom_menu=NULL, $enable_caching=FALSE)
+function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching=FALSE)
 {
-    global $LN, $smarty, $db, $isadmin, $config, $userid, $pathsm, $tpldir, $langdir;
+    global $LN, $smarty, $db, $isadmin, $config, $userid, $tpldir;
     ob_start();
     $clickjack = get_config($db, 'clickjack', TRUE) ? TRUE : FALSE;
     if ($clickjack) {

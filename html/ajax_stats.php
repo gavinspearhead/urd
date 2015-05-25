@@ -60,7 +60,7 @@ try {
         $thisyear = date('Y');
     }
 
-    init_smarty('', 0);
+    init_smarty();
     $smarty->assign('years',            $years);
     $smarty->assign('thisyear',         $thisyear);
     $smarty->assign('subtypes',         $types_txt);
