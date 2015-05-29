@@ -151,20 +151,21 @@ try {
 
     $preview_data = get_preview_data($db, $dlid, $binary_id, $group_id, $userid);
     init_smarty();
-    $smarty->assign('do_reload',	$preview_data->do_reload);
-    $smarty->assign('finished',	    $preview_data->finished);
-    $smarty->assign('path',		    $preview_data->path);
-    $smarty->assign('filetype',		$preview_data->filetype);
-    $smarty->assign('file',		    $preview_data->filename);
-    $smarty->assign('title_str',	$preview_data->title_str);
-    $smarty->assign('dlsize',	    $preview_data->size);
-    $smarty->assign('done_size',    $preview_data->done_size);
-    $smarty->assign('file_utf8',	utf8_encode($preview_data->filename));
-    $smarty->assign('progress',	    $preview_data->progress);
-    $smarty->assign('nroffiles',	count($preview_data->files));
+    $smarty->assign(array(
+        'do_reload'=>	$preview_data->do_reload,
+        'finished'=>	    $preview_data->finished,
+        'path'=>		    $preview_data->path,
+        'filetype'=>		$preview_data->filetype,
+        'file'=>		    $preview_data->filename,
+        'title_str'=>	$preview_data->title_str,
+        'dlsize'=>	    $preview_data->size,
+        'done_size'=>    $preview_data->done_size,
+        'file_utf8'=>	utf8_encode($preview_data->filename),
+        'progress'=>	    $preview_data->progress,
+        'nroffiles'=>	count($preview_data->files)));
 
     $contents = $smarty->fetch('ajax_preview.tpl');
-    return_result(array('contents' => $contents, 'filetype'=>$preview_data->filetype, 'file'=> $preview_data ->path . $preview_data->filename ));
+    return_result(array('contents' => $contents, 'filetype' => $preview_data->filetype, 'file' => $preview_data ->path . $preview_data->filename ));
 } catch (exception $e) {
     return_result(array('error' => $e->getMessage()));
 }

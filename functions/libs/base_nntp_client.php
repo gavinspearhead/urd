@@ -209,7 +209,7 @@ class Base_NNTP_Client
         // Retrieve a line (terminated by "\r\n") from the server.
         $response = $this->_socket->read_line();
 
-        // Trim the start of the response in case of misplased whitespace (should not be needed!!!)
+        // Trim the start of the response in case of misplaced whitespace (should not be needed!!!)
         $response = ltrim($response);
 
         $this->_current_status_response = array(
@@ -829,7 +829,6 @@ class Base_NNTP_Client
                 $message_id = substr($values[2], 1, -1); // cut of the < and >
                 switch ($response) {
                     case NNTP_PROTOCOL_RESPONSECODE_HEAD_FOLLOWS:     // 221, RFC977: 'n <a> article retrieved - head follows'
-
                         $resp  = $this->_get_text_response();
                         $resps [ $message_id ] = $resp;
                         break;

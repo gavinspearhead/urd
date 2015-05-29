@@ -143,7 +143,6 @@ class urd_spots
             'user-avatar' => '',
             'verified' => FALSE
         );
-        $spotParser = new spotparser();
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
@@ -161,6 +160,9 @@ class urd_spots
                         echo_debug("User $spotter_id on blacklist - spot not added", DEBUG_SERVER);
 
                         return FALSE;
+                    }
+                    if ($spotter_id == '') {
+                        var_dump($line);
                     }
                     $spot_data['spotter_id'] = $spotter_id;
                     break;
@@ -199,7 +201,7 @@ class urd_spots
         }
         
         // Parse nu de XML file, alles wat al gedefinieerd is eerder wordt niet overschreven
-        $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
+        $spot_data = array_merge(spotparser::parse_full($spot_data['xml']), $spot_data);
         if ($spot_data['title'] == '') {
             write_log('Something wrong with the title', LOG_INFO);
             return FALSE;
@@ -524,7 +526,7 @@ class urd_spots
     {
         $from = ltrim(trim($from), '<');
         $addr = explode('@', $from, 2);
-        if (isset($addr[1])) {
+        if (!isset($addr[1])) {
             return '';
         }
         $sig = explode('.', $addr[0]);

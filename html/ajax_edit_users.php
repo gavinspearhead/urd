@@ -153,26 +153,27 @@ try {
 
             $email_allowed = get_config($db, 'sendmail');
             init_smarty();
-            $smarty->assign('USER_ADMIN',   user_status::USER_ADMIN);
-            $smarty->assign('USER_ACTIVE',  user_status::USER_ACTIVE);
-            $smarty->assign('USER_PENDING', user_status::USER_PENDING);
-            $smarty->assign('id', $id);
-            $smarty->assign('password', $password);
-            $smarty->assign('email', $email);
-            $smarty->assign('text_box_size', TEXT_BOX_SIZE);
-            $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
-            $smarty->assign('name', $name);
-            $smarty->assign('fullname', $fullname);
-            $smarty->assign('rights', $rights);
-            $smarty->assign('emailallowed', $email_allowed?1:0);
-            $smarty->assign('post', $post);
-            $smarty->assign('file_edit', $file_edit);
-            $smarty->assign('isadmin', $isadmin);
-            $smarty->assign('allow_erotica', $allow_erotica?1:0);
-            $smarty->assign('allow_update', $allow_update?1:0);
-            $smarty->assign('autodownload', $autodownload);
-            $smarty->assign('isactive', $isactive );
-            $smarty->assign('last_active', $last_active);
+            $smarty->assign(array(
+                'USER_ADMIN'=>   user_status::USER_ADMIN,
+                'USER_ACTIVE'=>  user_status::USER_ACTIVE,
+                'USER_PENDING'=> user_status::USER_PENDING,
+                'id'=> $id,
+                'password'=> $password,
+                'email'=> $email,
+                'text_box_size'=> TEXT_BOX_SIZE,
+                'number_box_size'=> NUMBER_BOX_SIZE,
+                'name'=> $name,
+                'fullname'=> $fullname,
+                'rights'=> $rights,
+                'emailallowed'=> $email_allowed?1:0,
+                'post'=> $post,
+                'file_edit'=> $file_edit,
+                'isadmin'=> $isadmin,
+                'allow_erotica'=> $allow_erotica?1:0,
+                'allow_update'=> $allow_update?1:0,
+                'autodownload'=> $autodownload,
+                'isactive'=> $isactive ,
+                'last_active'=> $last_active));
             $contents = $smarty->fetch('ajax_edit_users.tpl');
             return_result(array('contents' => $contents));
             break;
@@ -374,16 +375,17 @@ try {
             }
             $email_allowed = get_config($db, 'sendmail');
             init_smarty();
-            $smarty->assign('USER_ADMIN',   user_status::USER_ADMIN);
-            $smarty->assign('USER_ACTIVE',  user_status::USER_ACTIVE);
-            $smarty->assign('USER_PENDING', user_status::USER_PENDING);
-            $smarty->assign('sort',         $sort);
-            $smarty->assign('sort_dir',     $sort_dir);
-            $smarty->assign('search',       $o_search);
-            $smarty->assign('users',        $users);
-            $smarty->assign('only_rows',        $only_rows);
-            $smarty->assign('emailallowed', $email_allowed?1:0);
-            $smarty->assign('maxstrlen',    $prefs['maxsetname']/3);
+            $smarty->assign(array(
+                'USER_ADMIN'=>   user_status::USER_ADMIN,
+                'USER_ACTIVE'=>  user_status::USER_ACTIVE,
+                'USER_PENDING'=> user_status::USER_PENDING,
+                'sort'=>         $sort,
+                'sort_dir'=>     $sort_dir,
+                'search'=>       $o_search,
+                'users'=>        $users,
+                'only_rows'=>    $only_rows,
+                'emailallowed'=> $email_allowed?1:0,
+                'maxstrlen'=>    $prefs['maxsetname']/3));
             $contents = $smarty->fetch('ajax_admin_users.tpl');
             return_result(array('contents' => $contents));
             die;

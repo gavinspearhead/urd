@@ -150,7 +150,6 @@ $minrating  = get_request('minrating', 0, 'is_numeric');
 $maxcomplete = get_request('maxcomplete', '', 'is_numeric');
 $mincomplete = get_request('mincomplete', '', 'is_numeric');
 
-
 if ($order == '') {
     $order = map_default_sort($prefs, array('subject' => 'title', 'date' => 'stamp', 'better_subject' => 'title'));
 }
@@ -168,39 +167,41 @@ $url = get_config($db, 'baseurl');
 $rssurl = $url . "html/rss.php?type=$type&amp;categoryID=$categoryID&amp;limit=$rss_limit&amp;minsize=$rss_minsetsize&amp;maxage=$rss_maxage&amp;userid=$userid";
 
 $saved_searches = $saved_searches->get_all_names($type);
+list($size, $suffix) = format_size($totbin, 'h', '', 1000);
+
 init_smarty($title, 1, $add_menu);
 
-list($size, $suffix) = format_size($totbin, 'h', '', 1000);
-$smarty->assign('total_articles', $size . $suffix);
-$smarty->assign('search',		$search);
-$smarty->assign('isadmin',		$isadmin);
-$smarty->assign('categoryID',	$ori_categoryID);
-$smarty->assign('offset',		$offset);
-$smarty->assign('maxage',		$maxage);
-$smarty->assign('minage',		$minage);
-$smarty->assign('poster',		$poster);
-$smarty->assign('maxrating',	$maxrating);
-$smarty->assign('minrating',	$minrating);
-$smarty->assign('maxratinglimit',10);
-$smarty->assign('minratinglimit',0);
-$smarty->assign('maxcomplete',	$maxcomplete);
-$smarty->assign('mincomplete',	$mincomplete);
-$smarty->assign('order',		trim($order));
-$smarty->assign('spotid',		$spotid);
-$smarty->assign('catid',		'');
-$smarty->assign('flag',			$flag);
-$smarty->assign('perpage',		$perpage);
-$smarty->assign('minsetsize',	$minsetsize);
-$smarty->assign('maxsetsize',	$maxsetsize);
-$smarty->assign('maxagelimit',	$maxagelimit);
-$smarty->assign('minagelimit',	$minagelimit);
-$smarty->assign('maxsetsizelimit',	$maxsetsizelimit);
-$smarty->assign('minsetsizelimit',	$minsetsizelimit);
-$smarty->assign('saved_searches',	$saved_searches);
-$smarty->assign('_saved_search',	$saved_search);
-$smarty->assign('USERSETTYPE',		$type);
-$smarty->assign('rssurl',		$rssurl);
-$smarty->assign('categories',	$subscribed_categories);
-$smarty->assign('subcats',	    $subcats);
+$smarty->assign(array(
+    'total_articles'=> $size . $suffix,
+    'search'=>		$search,
+    'isadmin'=>		$isadmin,
+    'categoryID'=>	$ori_categoryID,
+    'offset'=>		$offset,
+    'maxage'=>		$maxage,
+    'minage'=>		$minage,
+    'poster'=>		$poster,
+    'maxrating'=>	$maxrating,
+    'minrating'=>	$minrating,
+    'maxratinglimit'=>10,
+    'minratinglimit'=>0,
+    'maxcomplete'=>	$maxcomplete,
+    'mincomplete'=>	$mincomplete,
+    'order'=>		trim($order),
+    'spotid'=>		$spotid,
+    'catid'=>		'',
+    'flag'=>		$flag,
+    'perpage'=>		$perpage,
+    'minsetsize'=>	$minsetsize,
+    'maxsetsize'=>	$maxsetsize,
+    'maxagelimit'=>	$maxagelimit,
+    'minagelimit'=>	$minagelimit,
+    'maxsetsizelimit'=>	$maxsetsizelimit,
+    'minsetsizelimit'=>	$minsetsizelimit,
+    'saved_searches'=>	$saved_searches,
+    '_saved_search'=>	$saved_search,
+    'USERSETTYPE'=>		$type,
+    'rssurl'=>		$rssurl,
+    'categories'=>	$subscribed_categories,
+    'subcats'=>	    $subcats));
 
 $smarty->display('spots.tpl');

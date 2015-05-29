@@ -1526,14 +1526,17 @@ function divide_sort($sort)
 }
 
 
-function add_to_blacklist(DatabaseConnection $db, $spotterID, $userid, $global, $source =blacklist::BLACKLIST_INTERNAL, $status=blacklist::ACTIVE)
+function add_to_blacklist(DatabaseConnection $db, $spotterID, $userid, $global, $source=blacklist::BLACKLIST_INTERNAL, $status=blacklist::ACTIVE)
 {
     assert(is_bool($global) && is_numeric($userid));
     if ($global && urd_user_rights::is_admin($db, $userid)) {
         $userid = user_status::SUPER_USERID; // if it is set by the root user it is global, if by any other userid it's for that user onl
     }
-    $sql = 'count(*) AS cnt FROM spot_blacklist WHERE "spotter_id"=? AND "source"=? AND "userid"=?';
-    $res = $db->select_query($sql, array($spotterID, $source, $userid));
+    if ($spotterID == '') { 
+        return FALSE;
+    }
+    $sql = 'count(*) AS cnt FROM spot_blacklist WHERE "spotter_id"=:id AND "source"=:source AND "userid"=:userid';
+    $res = $db->select_query($sql, array(':id'=>$spotterID, ':source'=>$source, ':userid'=>$userid));
     if ($res[0]['cnt'] == 0) {
         $add_ids = array($spotterID, $source, $userid, $status);
         $cols = array('spotter_id', 'source', 'userid', 'status');
@@ -1547,9 +1550,12 @@ function add_to_whitelist(DatabaseConnection $db, $spotterID, $userid, $global, 
     if ($global && urd_user_rights::is_admin($db, $userid)) { // if it is set by the root user it is global, if by any other userid it's for that user only
         $userid == user_status::SUPER_USERID;
     }
+    if ($spotterID == '') { 
+        return FALSE;
+    }
 
-    $sql = 'count(*) AS cnt FROM spot_whitelist WHERE "spotter_id"=? AND "source"=? AND "userid"=?';
-    $res = $db->select_query($sql, array($spotterID, $source, $userid));
+    $sql = 'count(*) AS cnt FROM spot_whitelist WHERE "spotter_id"=:id AND "source"=:source AND "userid"=:userid';
+    $res = $db->select_query($sql, array(':id'=>$spotterID, ':source'=>$source, ':userid'=>$userid));
     if ($res[0]['cnt'] == 0) {
         $add_ids = array($spotterID, $source, $userid, $status);
         $cols = array('spotter_id', 'source', 'userid', 'status');

@@ -59,11 +59,11 @@ try {
             $disk_perc = $uc->diskfree('p1');
             $nodisk_perc = 100 - $disk_perc;
             $smarty->assign(array(
-                        'diskfree' => $diskspace[0] . ' ' . $diskspace[1], 
-                        'diskused' => $diskspace[4] . ' ' . $diskspace[5],
-                        'disktotal' => $diskspace[2] . ' ' . $diskspace[3],
-                        'disk_perc' => $disk_perc,
-                        'nodisk_perc' => $nodisk_perc));
+                'diskfree' => $diskspace[0] . ' ' . $diskspace[1], 
+                'diskused' => $diskspace[4] . ' ' . $diskspace[5],
+                'disktotal' => $diskspace[2] . ' ' . $diskspace[3],
+                'disk_perc' => $disk_perc,
+                'nodisk_perc' => $nodisk_perc));
         }
     } elseif ($type == 'activity') {
         $tasks = array();
@@ -160,10 +160,11 @@ try {
     }
 
     $uc->disconnect();
-    $smarty->assign(array('startup_perc'=>	 $startup_perc,
-    'isconnected' => $isconnected,
-    'isadmin' => $isadmin,
-    'type' => $type));
+    $smarty->assign(array(
+        'startup_perc' => $startup_perc,
+        'isconnected' => $isconnected,
+        'isadmin' => $isadmin,
+        'type' => $type));
 
     $contents = $smarty->fetch('ajax_showstatus.tpl');
     return_result(array('contents' => $contents, 'connected' => $isconnected));

@@ -332,9 +332,20 @@ class URD_NNTP
         //assert(is_resource($orig_start) && is_resource($orig_stop) && is_numeric($mindate) && is_resource($total) && is_resource($done));
         assert(is_numeric($mindate) );
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
+        // Start > stop ?
+        if (gmp_cmp($orig_start, $orig_stop) > 0) {
+            write_log('Odd values: ' . gmp_strval($orig_start) . ', ', gmp_strval($orig_stop), LOG_NOTICE);
+            // need to do 0-stop and start to maxint???
+        }
+        // Loop as we have a maximum number of articles we download per batch:
+        echo_debug('Getting articles ' . gmp_strval($orig_start) . ' - ' . gmp_strval($orig_stop), DEBUG_MAIN);
+        if (gmp_cmp($orig_start, 0) == 0 && gmp_cmp($orig_stop, 0) == 0) {
+            return 0;
+        }
 
         $GREATEST = $this->db->get_greatest_function();
         // Download headers, to update local info
+        $blacklist_counter = gmp_init(0);
         $poster_blacklist = get_config($this->db, 'poster_blacklist');
         $poster_blacklist = unserialize($poster_blacklist);
         if (!is_array($poster_blacklist)) {
@@ -347,28 +358,15 @@ class URD_NNTP
         $parse_spots_comments = $groupArr['parse_spots_comments'];
         $parse_spots_reports = $groupArr['parse_spots_reports'];
         $get_extsetdata = $groupArr['parse_extsetdata'];
-        // Start > stop ?
-        if (gmp_cmp($orig_start, $orig_stop) > 0) {
-            write_log('Odd values: ' . gmp_strval($orig_start) . ', ', gmp_strval($orig_stop), LOG_NOTICE);
-            // need to do 0-stop and start to maxint???
-        }
-
         echo_debug('Total max:' . gmp_strval($total_max), DEBUG_MAIN);
         // Store the xover message syntax in the class variable, used by ParseMessages:
         $this->get_overview_format();
-
-        // Loop as we have a maximum number of articles we download per batch:
         $stop = $orig_stop;
         $start = gmp_max($orig_start, gmp_sub($stop, $this->maxMssgs));
-        echo_debug('Getting articles ' . gmp_strval($orig_start) . ' - ' . gmp_strval($orig_stop), DEBUG_MAIN);
-        if (gmp_cmp($orig_start, 0) == 0 && gmp_cmp($orig_stop, 0) == 0) {
-            return 0;
-        }
 
         $older_counter = 0;
         // if 5% is older in one go we quit adding articles + 1000 articles for small ngs
         $older_top = gmp_min(self::MAX_OLDER_COUNTER, (gmp_add(1000, gmp_div($total, 20))));
-        $blacklist_counter = gmp_init(0);
         do {
             $starttime = microtime(TRUE);
 
@@ -389,7 +387,7 @@ class URD_NNTP
                 }
             } catch (exception $e) {
                 $this->disconnect();
-                write_log('Cannot get messages:', LOG_WARNING);
+                write_log('Cannot get messages:', LOG_ERR);
                 write_log("{$e->getmessage()} ({$e->getcode()})", LOG_ERR);
                 throw $e;
             }
@@ -438,8 +436,9 @@ class URD_NNTP
 
         // Update group table with update time:
         $o = gmp_strval($orig_stop);
-        $query = "UPDATE groups SET \"last_updated\" = '" . time() . "' , \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
-        $res = $this->db->execute_query($query, array($groupid));
+        $now = time();
+        $query = "UPDATE groups SET \"last_updated\" = ? , \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
+        $res = $this->db->execute_query($query, array($now, $groupid));
 
         return $total_counter;
     }

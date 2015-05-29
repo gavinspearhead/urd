@@ -270,9 +270,9 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
 
             $stoptime = 0; // Should always be in the past
             $maxperc = 0;
+            $ETA = 0;
             $minperc = 100;
             $qstatus = '';
-            $ETA = 0;
 
             // Get more information for this download (when it's in progress:)
             $sql = '* FROM queueinfo WHERE "description"= :desc1 OR ("description"= :desc2 AND "status" NOT IN (:q1,:q2))';
@@ -397,14 +397,16 @@ try {
     $poster = urd_user_rights::is_poster($db, $userid);
     if ($active_tab == 'uploads' && ($poster || $isadmin)) {
         $infoarray_upload = get_upload_status($db, $userid, $isadmin);
-        $smarty->assign('infoarray_upload', $infoarray_upload);
-        $smarty->assign('infoarray_upload_size', count($infoarray_upload));
+        $smarty->assign(array(
+            'infoarray_upload'=> $infoarray_upload,
+            'infoarray_upload_size'=> count($infoarray_upload)));
         $filename = 'ajax_showuploads.tpl';
     } else { // if active_tab == downloads)
         $active_tab = 'downloads';
         $infoarray_download = get_download_status($db, $userid, $isadmin);
-        $smarty->assign('infoarray_download', $infoarray_download);
-        $smarty->assign('infoarray_download_size', count($infoarray_download));
+        $smarty->assign(array(
+            'infoarray_download'=> $infoarray_download,
+            'infoarray_download_size'=> count($infoarray_download)));
         $filename = 'ajax_showdownloads.tpl';
     }
 
@@ -417,14 +419,14 @@ try {
     }
 
     $show_viewfiles = urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_VIEWFILES);
-    $smarty->assign('transfer_hide_status', $_SESSION['transfer_hide_status']);
-    $smarty->assign('post_hide_status',     $_SESSION['post_hide_status']);
-    $smarty->assign('active_tab',           $active_tab);
-    $smarty->assign('maxstrlen',		    $prefs['maxsetname']/2);
-    $smarty->assign('poster',         	    $poster?1:0);
-    $smarty->assign('isadmin',         	    $isadmin?1:0);
-    $smarty->assign('urdd_online',    	    (int) $urdd_online);
-    $smarty->assign('offline_message',      $LN['enableurddfirst']);
+    $smarty->assign(array('transfer_hide_status'=> $_SESSION['transfer_hide_status'],
+        'post_hide_status'=>    $_SESSION['post_hide_status'],
+        'active_tab'=>          $active_tab,
+        'maxstrlen'=>		    $prefs['maxsetname']/2,
+        'poster'=>         	    $poster?1:0,
+        'isadmin'=>         	$isadmin?1:0,
+        'urdd_online'=>    	    (int) $urdd_online,
+        'offline_message'=>     $LN['enableurddfirst']));
     $contents = $smarty->fetch($filename);
     return_result(array('contents' => $contents));
 } catch (exception $e) {

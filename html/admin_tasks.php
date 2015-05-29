@@ -69,6 +69,7 @@ foreach ($_allstatus as $s) {
 asort($allstatus);
 init_smarty($LN['tasks_title'], 1, $add_menu);
 
-$smarty->assign('allstatus',    $allstatus);
-$smarty->assign('alltimes',	    $times);
+$smarty->assign(array(
+    'allstatus' =>    $allstatus,
+    'alltimes' =>	  $times));
 $smarty->display('admin_tasks.tpl');

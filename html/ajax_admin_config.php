@@ -125,17 +125,17 @@ function show_config(DatabaseConnection $db, $userid)
     $config_download_comment_avatar_msg = '';
 
     $module_msg = array(
-            urd_modules::URD_CLASS_GENERIC      => '',
-            urd_modules::URD_CLASS_GROUPS       => '',
-            urd_modules::URD_CLASS_USENZB       => '',
-            urd_modules::URD_CLASS_MAKENZB      => '',
-            urd_modules::URD_CLASS_RSS          => '',
-            urd_modules::URD_CLASS_SYNC         => '',
-            urd_modules::URD_CLASS_SPOTS        => '',
-            urd_modules::URD_CLASS_DOWNLOAD     => '',
-            urd_modules::URD_CLASS_VIEWFILES    => '',
-            urd_modules::URD_CLASS_POST         => ''
-            );
+        urd_modules::URD_CLASS_GENERIC      => '',
+        urd_modules::URD_CLASS_GROUPS       => '',
+        urd_modules::URD_CLASS_USENZB       => '',
+        urd_modules::URD_CLASS_MAKENZB      => '',
+        urd_modules::URD_CLASS_RSS          => '',
+        urd_modules::URD_CLASS_SYNC         => '',
+        urd_modules::URD_CLASS_SPOTS        => '',
+        urd_modules::URD_CLASS_DOWNLOAD     => '',
+        urd_modules::URD_CLASS_VIEWFILES    => '',
+        urd_modules::URD_CLASS_POST         => ''
+    );
 
     $URDDONLINE = urdd_connected($db, $userid);
     $prefArray_root = get_default_config();
@@ -911,11 +911,12 @@ function show_config(DatabaseConnection $db, $userid)
         $pref_list[] = new pref_list('config_maintenance', $maintenance_offline);
     }
     $pref_list[] = new pref_list('pref_custom_values', $custom);
-    init_smarty('', 0);
     $current_tab = get_post('current_tab', '');
-    $smarty->assign('current_tab',  $current_tab);
-    $smarty->assign('level', 		$pref_level);
-    $smarty->assign('pref_list', 	$pref_list);
+    init_smarty();
+    $smarty->assign(array(
+        'current_tab' =>  $current_tab,
+        'level' => 		$pref_level,
+        'pref_list' => 	$pref_list));
     return $smarty->fetch('ajax_settings.tpl');
 }
 
@@ -1571,7 +1572,6 @@ try {
             break;
 
         case 'show':
-            init_smarty('', 0);
             $contents = show_config($db, $userid);
             break;
         case 'delete':

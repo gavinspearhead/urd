@@ -108,33 +108,34 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $spam_reports = is_numeric($row['reports']) ? $row['reports'] : 0;
     $age = ($now > $row['stamp']) ? $now - $row['stamp'] : 0;
     $age = readable_time($age, 'largest_two_long');
-    $smarty->assign('spotid',       $row['spotid']);
-    $smarty->assign('show_image',   $show_image);
-    $smarty->assign('image_file',   $image_file);
-    $smarty->assign('category',     $category);
-    $smarty->assign('category_id',  $row['category']);
-    $smarty->assign('subcat',       $row['subcat']);
-    $smarty->assign('url',          $url);
-    $smarty->assign('poster',       $row['poster']);
-    $smarty->assign('image',        $image);
-    $smarty->assign('image_from_db',$image_from_db);
-    $smarty->assign('timestamp',    date($LN['dateformat'] . ' ' . $LN['timeformat'], $row['stamp']));
-    $smarty->assign('subcata',      $subcata);
-    $smarty->assign('subcatb',      $subcatb);
-    $smarty->assign('subcatc',      $subcatc);
-    $smarty->assign('subcatd',      $subcatd);
-    $smarty->assign('whitelisted',  $whitelisted);
-    $smarty->assign('spotter_id',   $row['spotterid']);
-    $smarty->assign('spam_reports', $spam_reports);
-    $smarty->assign('title',        insert_wbr(html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8')));
-    $smarty->assign('tag',          $row['tag']);
-    $smarty->assign('age',          $age);
-    $smarty->assign('filesize',     $filesize);
-    $smarty->assign('comments',     $comments);
-    $smarty->assign('description',  (html_entity_decode(utf8_encode($description), ENT_QUOTES, 'UTF-8')));
-    $smarty->assign('binarytype',   $binarytype); // Binarytype
-    $smarty->assign('binarytypes',  $binarytypes);  // All
-    $smarty->assign('display',      $display);      // All values
+    $smarty->assign(array(
+        'spotid' =>       $row['spotid'],
+        'show_image' =>   $show_image,
+        'image_file' =>   $image_file,
+        'category' =>     $category,
+        'category_id' =>  $row['category'],
+        'subcat' =>       $row['subcat'],
+        'url' =>          $url,
+        'poster' =>       $row['poster'],
+        'image' =>        $image,
+        'image_from_db' => $image_from_db,
+        'timestamp' =>    date($LN['dateformat'] . ' ' . $LN['timeformat'], $row['stamp']),
+        'subcata' =>      $subcata,
+        'subcatb' =>      $subcatb,
+        'subcatc' =>      $subcatc,
+        'subcatd' =>      $subcatd,
+        'whitelisted' =>  $whitelisted,
+        'spotter_id' =>   $row['spotterid'],
+        'spam_reports' => $spam_reports,
+        'title' =>        insert_wbr(html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8')),
+        'tag' =>          $row['tag'],
+        'age' =>          $age,
+        'filesize' =>     $filesize,
+        'comments' =>     $comments,
+        'description' =>  (html_entity_decode(utf8_encode($description), ENT_QUOTES, 'UTF-8')),
+        'binarytype' =>   $binarytype, // Binarytype
+        'binarytypes' =>  $binarytypes,  // All
+        'display' =>      $display));      // All values
     return $smarty->fetch('ajax_showspot.tpl');
 }
 
@@ -205,12 +206,12 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         return show_spotinfo($db, $setID, $userid, $display, $extsetinfo['binarytype'], $binarytypes);
     }
 
-    $smarty->assign('srctype',        'display');         // Edit or just Display?
-    $smarty->assign('type',           $type);         // the type RSS or Groups
-    $smarty->assign('setID',          $setID);        // FYI
-    $smarty->assign('binarytype',     $extsetinfo['binarytype']); // Binarytype
-    $smarty->assign('binarytypes',    $binarytypes);  // All
-    $smarty->assign('display',        $display);      // All values
+    $smarty->assign(array('srctype' =>        'display',         // Edit or just Display?
+        'type' =>           $type,         // the type RSS or Groups
+        'setID' =>          $setID,        // FYI
+        'binarytype' =>     $extsetinfo['binarytype'], // Binarytype
+        'binarytypes' =>    $binarytypes,  // All
+        'display' =>        $display));      // All values
     $poster = '';
 
     if ($type == USERSETTYPE_GROUP) {
@@ -270,16 +271,16 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     list($_size, $suffix) = format_size($totalsize, 'h', $LN['byte_short'], 1024, 1);
     $totalsize = $_size . ' ' . $suffix;
 
-    $smarty->assign('articlesmax',          $articlesmax);
-    $smarty->assign('binaries',             $binaries);
-    $smarty->assign('groupID',              $groupID);
-    $smarty->assign('groupname',            $groupname);
-    $smarty->assign('files',                $files);
-    $smarty->assign('setname', 	        	$setname);
-    $smarty->assign('fromnames',            $poster);
-    $smarty->assign('totalsize',            $totalsize);
-    $smarty->assign('par2s',                $par2s);
-    $smarty->assign('type',                 $type);
+    $smarty->assign(array('articlesmax'=>          $articlesmax,
+        'binaries'=>             $binaries,
+        'groupID'=>              $groupID,
+        'groupname'=>            $groupname,
+        'files'=>                $files,
+        'setname'=> 	        	$setname,
+        'fromnames'=>            $poster,
+        'totalsize'=>            $totalsize,
+        'par2s'=>                $par2s,
+        'type'=>                 $type));
     return $smarty->fetch('ajax_showextsetinfo.tpl');
 }
 
@@ -289,9 +290,9 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
     assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
     // Get the default name: set subject
     if ($type == USERSETTYPE_GROUP) {
-        $sql = '"subject" AS "setname" FROM setdata WHERE "ID"=:setid?';
+        $sql = '"subject" AS "setname" FROM setdata WHERE "ID"=:setid';
     } elseif ($type == USERSETTYPE_RSS) {
-        $sql = '"setname" FROM rss_sets WHERE "setid"=:setid?';
+        $sql = '"setname" FROM rss_sets WHERE "setid"=:setid';
     } elseif ($type == USERSETTYPE_SPOT) {
         $sql = '"title" AS "setname" FROM spots WHERE "spotid"=:setid';
     }
@@ -319,14 +320,15 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
     $display = urd_extsetinfo::generate_set_info($extsetinfo);
     $binarytypes = urd_extsetinfo::get_binary_types();
 
-    $smarty->assign('setname',          $setname);        // FYI
-    $smarty->assign('setID',            $setid);        // FYI
-    $smarty->assign('srctype',          'edit');         // Edit or just Display?
-    $smarty->assign('type',             $type);         //  RSS or group
-    $smarty->assign('name',             $extsetinfo['name']); // Name
-    $smarty->assign('binarytype',       $extsetinfo['binarytype']); // Binarytype
-    $smarty->assign('binarytypes',      $binarytypes);  // All
-    $smarty->assign('display',          $display);      // All values
+    $smarty->assign(array(
+        'setname'=>          $setname,        // FYI
+        'setID'=>            $setid,        // FYI
+        'srctype'=>          'edit',         // Edit or just Display?
+        'type'=>             $type,         //  RSS or group
+        'name'=>             $extsetinfo['name'], // Name
+        'binarytype'=>       $extsetinfo['binarytype'], // Binarytype
+        'binarytypes'=>      $binarytypes,  // All
+        'display'=>          $display));      // All values
     return $smarty->fetch('ajax_showextsetinfo.tpl');
 }
 init_smarty();

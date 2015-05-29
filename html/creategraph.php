@@ -57,9 +57,10 @@ class colour_map
     public static function get_colour_map(DatabaseConnection $db, $userid)
     {
         assert(is_numeric($userid));
-        global $smarty;
         $style = get_active_stylesheet($db, $userid);
-        $stylesheet = $smarty->getTemplateVars('TPLDIR') . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $style . DIRECTORY_SEPARATOR . $style . '.css';
+        $template = get_template($db, $userid);
+        list($tpl_dir) = get_smarty_dirs($template);
+        $stylesheet = $tpl_dir . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $style . DIRECTORY_SEPARATOR . $style . '.css';
         $lines = file($stylesheet);
         if ($lines === FALSE) {
             $lines = array();

@@ -33,7 +33,7 @@ require_once "$pathspf/spot_signing.php";
 
 class spotparser
 {
-    private function correct_elm_contents($xmlStr, $elems) {
+    private static function correct_elm_contents($xmlStr, $elems) {
 		$cdataStart = '<![CDATA[';
         $cdata_len = strlen($cdataStart);
 		$cdataEnd = ']]>';
@@ -96,7 +96,7 @@ class spotparser
         if (strpos($xmlStr, 'spot.net></Segment') !== FALSE) {
 			$xmlStr = str_replace(array('spot.net></Segment>', 'spot.ne</Segment>'), array('spot.net</Segment>', 'spot.net</Segment>'), $xmlStr);
 		} 
-		$xmlStr = $this->correct_elm_contents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
+		$xmlStr = self::correct_elm_contents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
         /*  Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net> */
         $xml = @(new SimpleXMLElement($xmlStr, LIBXML_NOERROR | LIBXML_NOWARNING));
         $xml = $xml->Posting;
@@ -127,7 +127,7 @@ class spotparser
             );
             foreach ($xml->xpath('/Spotnet/Posting/Image/Segment') as $seg) {
             # Make sure the messageid's are valid so we do not throw an NNTP error
-                if (!$this->valid_message_id((string) $seg)) {
+                if (!self::valid_message_id((string) $seg)) {
                     $tpl_spot['image']['segment'] = array();
                     break;
                 } else {
@@ -191,7 +191,7 @@ class spotparser
         return $strInput;
     }
 
-    private function valid_message_id($messageId)
+    static private function valid_message_id($messageId)
     {
          return (strpos($messageId, '<') === FALSE) && (strpos($messageId, '>') === FALSE);
     }

@@ -668,9 +668,11 @@ function show_preferences(DatabaseConnection $db, $userid)
     $pref_list[] = new pref_list('pref_custom_values', $custom);
 
     $current_tab = get_post('current_tab', '');
-    $smarty->assign('current_tab',  $current_tab);
-    $smarty->assign('level', 		$pref_level);
-    $smarty->assign('pref_list', 	$pref_list);
+    init_smarty();
+    $smarty->assign(array(
+        'current_tab' =>  $current_tab,
+        'level' => 		  $pref_level,
+        'pref_list' => 	  $pref_list));
     return $smarty->fetch('ajax_settings.tpl');
 }
 
@@ -684,7 +686,6 @@ try {
 
     switch ($cmd) {
         case 'show':
-            init_smarty();
             $contents = show_preferences($db, $userid);
             break;
         case 'change_password':

@@ -509,7 +509,6 @@ try {
     $adult = urd_user_rights::is_adult($db, $userid);
     $search = html_entity_decode(trim(get_request('search', '')));
     $offset = get_request('offset', 0);
-
     $order = get_request('order', '');
     $flag = get_request('flag', '');
     $maxage = get_request('maxage', '');
@@ -522,7 +521,6 @@ try {
     $minrating = get_request('minrating', '');
     $maxcomplete = get_request('maxcomplete', '');
     $mincomplete = get_request('mincomplete', '');
-
     $setid = get_request('setid', '');
     $perpage = get_maxperpage($db, $userid);
     $perpage = get_request('perpage', $perpage);
@@ -535,21 +533,23 @@ try {
     $rssurl = $sets_viewer->get_rss_url($perpage);
 
     init_smarty();
-    $smarty->assign('rssurl',		        $rssurl);
-    $smarty->assign('sort',                 $sets_viewer->get_sort());
-    $smarty->assign('killflag',		        $sets_viewer->get_killflag());
-    $smarty->assign('isadmin',		        $isadmin);
+    $smarty->assign(array(
+        'rssurl'=>		        $rssurl,
+        'sort'=>                $sets_viewer->get_sort(),
+        'killflag'=>		    $sets_viewer->get_killflag(),
+        'isadmin'=>		        $isadmin,
+        'view_size'=>           $view_size,
+        'allsets'=>		        $allsets,
+        'USERSETTYPE_GROUP'=>  	USERSETTYPE_GROUP,
+        'USERSETTYPE_RSS'=>   	USERSETTYPE_RSS,
+        'only_rows'=>           $only_rows));
     
     if (!$only_rows) {
-        $smarty->assign('pages',		    $pages);
-        $smarty->assign('lastpage',		    $totalpages);
-        $smarty->assign('currentpage',	    $activepage);
+        $smarty->assign(array(
+            'pages'=>		    $pages,
+            'lastpage'=>		$totalpages,
+            'currentpage'=>	    $activepage));
     }
-    $smarty->assign('view_size',            $view_size);
-    $smarty->assign('allsets',		        $allsets);
-    $smarty->assign('USERSETTYPE_GROUP',   	USERSETTYPE_GROUP);
-    $smarty->assign('USERSETTYPE_RSS',   	USERSETTYPE_RSS);
-    $smarty->assign('only_rows',            $only_rows);
 
     $content = $smarty->fetch('ajax_browse.tpl');
 
