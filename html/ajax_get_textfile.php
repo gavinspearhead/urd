@@ -83,11 +83,12 @@ try {
     $base_url = get_config($db, 'baseurl');
 
     init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
-    $smarty->assign('preview', $preview);
-    $smarty->assign('output', $output);
-    $smarty->assign('directory', dirname($file));
-    $smarty->assign('size', $size . $suffix);
-    $smarty->assign('url', $base_url . 'html/getfile.php?raw=1&amp;file=' . urlencode($file));
+    $smarty->assign(array(
+        'preview'=> $preview,
+        'output'=> $output,
+        'directory'=> dirname($file),
+        'size'=> $size . $suffix,
+        'url'=> $base_url . 'html/getfile.php?raw=1&amp;file=' . urlencode($file)));
     $contents = $smarty->fetch('ajax_get_textfile.tpl');
     return_result(array('contents' => $contents));
 } catch (exception $e) {

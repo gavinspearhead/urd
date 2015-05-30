@@ -91,10 +91,11 @@ function edit_search_option(DatabaseConnection $db, $id)
         throw new exception($LN['buttons_buttonnotfound']);
     }
     init_smarty('', 0);
-    $smarty->assign('id',	$id);
-    $smarty->assign('text_box_size', TEXT_BOX_SIZE);
-    $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
-    $smarty->assign('search_option', $search_option);
+    $smarty->assign(array(
+        'id'=>	$id,
+        'text_box_size'=> TEXT_BOX_SIZE,
+        'number_box_size'=> NUMBER_BOX_SIZE,
+        'search_option'=> $search_option));
     return $smarty->fetch('ajax_edit_searchoptions.tpl');
 }
 
@@ -135,11 +136,12 @@ function show_search_options(DatabaseConnection $db, $userid)
         $search_options[] = new search_options_c($id, $name, $search_url);
     }
     init_smarty();
-    $smarty->assign('maxstrlen', get_pref($db, 'maxsetname', $userid));
-    $smarty->assign('sort', $order);
-    $smarty->assign('sort_dir', $order_dir);
-    $smarty->assign('search', $o_search);
-    $smarty->assign('search_options', $search_options);
+    $smarty->assign(array(
+        'maxstrlen'=> get_pref($db, 'maxsetname', $userid),
+        'sort'=> $order,
+        'sort_dir'=> $order_dir,
+        'search'=> $o_search,
+        'search_options'=> $search_options));
     return $smarty->fetch('ajax_show_searchoptions.tpl');
 }
 

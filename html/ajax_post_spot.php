@@ -268,12 +268,13 @@ try {
             }
             $subject = '';
 
-            $smarty->assign('content',    	    $content);
-            $smarty->assign('smileys',    	    get_smileys($smarty->getTemplateVars('IMGDIR')));
-            $smarty->assign('subject',    	    $subject);
-            $smarty->assign('poster_name',    	$poster_name);
-            $smarty->assign('poster_email',    	$poster_email);
-            $smarty->assign('categories',	    $categories);
+            $smarty->assign(array(
+                'content'=>    	    $content,
+                'smileys'=>    	    get_smileys($smarty->getTemplateVars('IMGDIR')),
+                'subject'=>    	    $subject,
+                'poster_name'=>    	$poster_name,
+                'poster_email'=>    	$poster_email,
+                'categories'=>	    $categories));
 
             $contents = $smarty->fetch('ajax_post_spot.tpl');
             return_result(array('content' => $contents));

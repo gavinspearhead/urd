@@ -275,25 +275,26 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
     }
 
     init_smarty();
-    $smarty->assign('periods_texts',	$ptexts);
-    $smarty->assign('categories',		$categories);
-    $smarty->assign('urdd_online',	    (int) $urdd_online);
-    $smarty->assign('periods_keys',		$pkeys);
-    $smarty->assign('RSS_SUBSCRIBED', 	rssfeed_status::RSS_SUBSCRIBED);
-    $smarty->assign('sort',	    	    $order);
-    $smarty->assign('sort_dir',		    $order_dir);
-    $smarty->assign('search',		    $search);
-    $smarty->assign('page_tab',         $page);
-    $smarty->assign('message',		    $message);
-    $smarty->assign('isadmin',		    (int) $isadmin);
-    $smarty->assign('unsubscribed',		$unsubscribed);
-    $smarty->assign('pages',		    $pages);
-    $smarty->assign('currentpage',		$currentpage);
-    $smarty->assign('lastpage',		    $lastpage);
-    $smarty->assign('offset',		    $offset);
-    $smarty->assign('allfeeds', 		$allfeeds);
-    $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
-    $smarty->assign('referrer', 		basename(__FILE__, '.php'));
+    $smarty->assign(array(
+        'periods_texts'=>	$ptexts,
+        'categories'=>		$categories,
+        'urdd_online'=>	    (int) $urdd_online,
+        'periods_keys'=>		$pkeys,
+        'RSS_SUBSCRIBED'=> 	rssfeed_status::RSS_SUBSCRIBED,
+        'sort'=>	    	    $order,
+        'sort_dir'=>		    $order_dir,
+        'search'=>		    $search,
+        'page_tab'=>         $page,
+        'message'=>		    $message,
+        'isadmin'=>		    (int) $isadmin,
+        'unsubscribed'=>		$unsubscribed,
+        'pages'=>		    $pages,
+        'currentpage'=>		$currentpage,
+        'lastpage'=>		    $lastpage,
+        'offset'=>		    $offset,
+        'allfeeds'=> 		$allfeeds,
+        'maxstrlen'=>		$prefs['maxsetname']/2,
+        'referrer'=> 		basename(__FILE__, '.php')));
 
     $contents = $smarty->fetch('ajax_rss_feeds.tpl');
     return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message' => $message));

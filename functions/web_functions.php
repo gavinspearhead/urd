@@ -74,7 +74,7 @@ function get_request($var, $default='', $verify_fn=NULL)
     }
 
     if (function_exists($verify_fn)) {
-        if (!$verify_fn($_POST[$var]) && !$verify_fn($_GET[$var])) {
+        if ((!isset($_POST[$var]) || !$verify_fn($_POST[$var])) && (!isset($_GET[$var]) || !$verify_fn($_GET[$var]))) {
             return $default;
         }
     }
@@ -1474,8 +1474,8 @@ function get_stats_years(DatabaseConnection $db, $userid, $isadmin)
     $input_arr = array();
     if (!$isadmin) {
         assert(is_numeric($userid));
-        $input_arr[] = $userid;
-        $quser = 'AND "userid"=?';
+        $input_arr[':userid'] = $userid;
+        $quser = 'AND "userid"=:userid';
     }
 
     $ystr = $db->get_extract('year', '"timestamp"');
@@ -1719,6 +1719,7 @@ function is_nzb_file($ext)
 {
     return in_array(strtolower($ext), array('nzb'));
 }
+
 function is_nfo_file($ext)
 {
     return in_array(strtolower($ext), array('nfo'));
@@ -2238,5 +2239,74 @@ function group_exists(DatabaseConnection $db, $groupid)
     $res = $db->select_query('"ID" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
 
     return isset($res['ID']);
+}
+
+function get_search_options_for_user(DatabaseConnection $db, $userid)
+{
+    assert(is_numeric($userid));
+    $active_search_options = array();
+    $max_search_options = get_config($db, 'maxbuttons', search_option::MAX_SEARCH_OPTIONS);
+    $search_options = array();
+    for ($i = 1; $i <= $max_search_options; $i++) {
+        $b = get_pref($db, "button$i", $userid, 'none');
+          if ($b != 'none') {
+            $search_options[] = $b;
+        }
+    }
+    if (count($search_options) == 0) {
+        return array();
+    }
+    $ids = array();
+    foreach ($search_options as $search_option) {
+        $ids[] = $search_option;
+    }
+    if (count($ids) > 0) {
+        $qry = '* FROM searchbuttons WHERE "id" IN (' . str_repeat('?,', count($ids) - 1) . '?) ORDER BY "name"';
+        $res = $db->select_query($qry, $ids);
+        if ($res === FALSE) {
+            return array();
+        }
+        foreach ($res as $row) {
+            $row['name'] = htmlentities(utf8_decode($row['name']));
+            $active_search_options[] = $row;
+        }
+    }
+
+    return $active_search_options;
+}
+
+function find_special_file(DatabaseConnection $db, $setID)
+{
+    $sql = '"groupID" FROM setdata WHERE "ID"=:setid';
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID));
+    if ($res === FALSE) {
+        return array(FALSE, FALSE, FALSE, FALSE);
+    }
+    $search_type = $db->get_pattern_search_command('REGEXP');
+    $rv1 = $rv2 = $rv3 = $rv4 = FALSE;
+
+    $groupID = $res[0]['groupID'];
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=:setid AND \"subject\" $search_type :search ";
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID, ':search'=>'.*[.](jpg|gif|png|jpeg)([^.].*)?$'));
+    if ($res !== FALSE) {
+        $rv1 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
+    }
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=:setid AND \"subject\" $search_type :search";
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID, ':search'=>'.*[.]nfo([^.].*)?$'));
+    if ($res !== FALSE) {
+        $rv2 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
+    }
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=:setid AND \"subject\" $search_type :search";
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID, ':search'=>'.*[.]nzb([^.].*)?$'));
+    if ($res !== FALSE) {
+        $rv3 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
+    }
+    $sql = "* FROM binaries_$groupID WHERE \"setID\"=:setid AND \"subject\" $search_type :search";
+    $res = $db->select_query($sql, 1, array(':setid'=>$setID, ':search'=>'sample.*[.](wmv|mpg|mp4|avi|mkv|mov|flv)([^.].*)?$'));
+    if ($res !== FALSE) {
+        $rv4 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
+    }
+
+    return array($rv2, $rv1, $rv3, $rv4);
 }
 

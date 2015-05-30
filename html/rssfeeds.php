@@ -46,7 +46,8 @@ if ($isadmin) {
 $search = utf8_decode(trim(get_request('search', '')));
 $search_all = get_request('search_all', '1');
 init_smarty($LN['feeds_title'], 1, $add_menu);
-$smarty->assign('search_all',   $search_all);
-$smarty->assign('search',	    $search);
+$smarty->assign(array(
+    'search_all' =>  $search_all,
+    'search' => $search));
 
 $smarty->display('rssfeeds.tpl');

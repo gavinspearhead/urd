@@ -101,21 +101,22 @@ try {
     }
 
     init_smarty();
-    $smarty->assign('postid',      	    $postid);
-    $smarty->assign('groups',    	    $groups);
-    $smarty->assign('group',    	    $group);
-    $smarty->assign('group_nzb',    	$group_nzb);
-    $smarty->assign('default_nzb_group',$default_nzb_group);
-    $smarty->assign('dirs',    	        $dirs);
-    $smarty->assign('readonly',         $readonly?1:0);
-    $smarty->assign('dir',    	        $dir);
-    $smarty->assign('subject',    	    $subject);
-    $smarty->assign('start_time',    	$start_time);
-    $smarty->assign('poster_name',    	$poster_name);
-    $smarty->assign('delete_files',    	$delete_files);
-    $smarty->assign('poster_email',    	$poster_email);
-    $smarty->assign('rarfile_size',    	$rarfile_size);
-    $smarty->assign('recovery_size',   	$recovery_size);
+    $smarty->assign(array(
+        'postid'=>      	$postid,
+        'groups'=>    	    $groups,
+        'group'=>    	    $group,
+        'group_nzb'=>    	$group_nzb,
+        'default_nzb_group'=> $default_nzb_group,
+        'dirs'=>    	    $dirs,
+        'readonly'=>        $readonly?1:0,
+        'dir'=>    	        $dir,
+        'subject'=>    	    $subject,
+        'start_time'=>    	$start_time,
+        'poster_name'=>    	$poster_name,
+        'delete_files'=>   	$delete_files,
+        'poster_email'=>   	$poster_email,
+        'rarfile_size'=>   	$rarfile_size,
+        'recovery_size'=>  	$recovery_size));
 
     if (!$smarty->getTemplateVars('urdd_online')) {
         throw new exception($LN['urdddisabled']);

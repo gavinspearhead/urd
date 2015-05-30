@@ -195,7 +195,8 @@ class spot_viewer
             // Show bar around interesting when applicable:
             $thisset = array();
             $thisset['interesting'] = $arr['interesting'];
-            $thisset['sid'] = $arr['spotid'];
+            $thisset['spotid'] = $arr['spotid'];
+            $thisset['sid'] = 'aoeuaoeu';
             $thisset['comments'] = is_numeric($arr['comments']) ? $arr['comments'] : 0;
             $thisset['reports'] = is_numeric($arr['reports']) ? $arr['reports'] : 0;
             $thisset['categorynr'] = $arr['category'];

@@ -48,7 +48,8 @@ $search = utf8_decode(trim(get_request('search', '')));
 $search_all = get_post('search_all', '');
 
 init_smarty($LN['ng_title'], 1, $add_menu);
-$smarty->assign('search',       $search);
-$smarty->assign('search_all',   $search_all);
+$smarty->assign(array(
+            'search' =>  $search,
+            'search_all' =>  $search_all));
 
 $smarty->display('newsgroups.tpl');

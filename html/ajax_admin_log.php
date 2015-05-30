@@ -126,14 +126,15 @@ try {
 
     init_smarty();
 
-    $smarty->assign('logs', $log_array);
-    $smarty->assign('search', $search);
-    $smarty->assign('lines', $lines);
-    $smarty->assign('logfile', $log_file);
-    $smarty->assign('log_str', $log_str);
-    $smarty->assign('log_level', $min_log_level);
-    $smarty->assign('sort',	$sort);
-    $smarty->assign('sort_dir', $sort_dir_orig);
+    $smarty->assign(array(
+        'logs'=> $log_array,
+        'search'=> $search,
+        'lines'=> $lines,
+        'logfile'=> $log_file,
+        'log_str'=> $log_str,
+        'log_level'=> $min_log_level,
+        'sort'=>	$sort,
+        'sort_dir'=> $sort_dir_orig));
 
     $contents = $smarty->fetch('ajax_admin_log.tpl');
 

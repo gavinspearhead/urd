@@ -40,7 +40,8 @@ $add_menu['actions'][] = new menu_item2 ('export_spots_blacklist', 'export_spots
 $add_menu['actions'][] = new menu_item2 ('export_spots_whitelist', 'export_spots_whitelist', urd_modules::URD_CLASS_SPOTS, '', 'command');
 
 init_smarty($LN['user_lists_title'], 1, $add_menu);
-$smarty->assign('perpage',		$perpage);
-$smarty->assign('offset',		$offset);
-$smarty->assign('status',		'');
+$smarty->assign(array(
+    'perpage'=>		$perpage,
+    'offset'=>		$offset,
+    'status'=>		''));
 $smarty->display('user_blacklist.tpl');

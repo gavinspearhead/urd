@@ -35,8 +35,9 @@ try {
     }
 
     init_smarty();
-    $smarty->assign('referrer', $referrer . '.php');
-    $smarty->assign('command', $command);
+    $smarty->assign(array(
+        'referrer' => $referrer . '.php',
+        'command' => $command));
     $contents = $smarty->fetch('ajax_import_settings.tpl');
     return_result(array('contents' => $contents));
 } catch (exception $e) {

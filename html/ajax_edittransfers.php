@@ -147,17 +147,18 @@ try {
             $directories = get_directories($db, $userid);
             $starttime = date('Y-m-d H:i:s', $start_time);
 
-            $smarty->assign('starttime', $starttime);
-            $smarty->assign('directories', $directories);
-            $smarty->assign('id',		$dlid);
-            $smarty->assign('dl_dir',	$dl_dir);
-            $smarty->assign('oldname',	$oldname);
-            $smarty->assign('add_setname',	$add_setname);
-            $smarty->assign('oldpw',	$oldpw);
-            $smarty->assign('oldunrar',	$oldunrar);
-            $smarty->assign('oldsubdl',	$oldsubdl);
-            $smarty->assign('oldunpar',	$oldunpar);
-            $smarty->assign('olddelete',	$olddelete);
+            $smarty->assign(array(
+                'starttime'=> $starttime,
+                'directories'=> $directories,
+                'id'=>		$dlid,
+                'dl_dir'=>	$dl_dir,
+                'oldname'=>	$oldname,
+                'add_setname'=>	$add_setname,
+                'oldpw'=>	$oldpw,
+                'oldunrar'=>	$oldunrar,
+                'oldsubdl'=>	$oldsubdl,
+                'oldunpar'=>	$oldunpar,
+                'olddelete'=>	$olddelete));
             $contents = $smarty->fetch('ajax_edittransfers.tpl');
             return_result(array('contents' => $contents));
             break;

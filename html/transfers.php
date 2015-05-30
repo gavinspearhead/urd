@@ -50,7 +50,8 @@ if ($active_tab == '') {
 }
 
 init_smarty($LN['transfers_title'], 1, $add_menu);
-$smarty->assign('poster',         	    $poster ? 1 : 0);
-$smarty->assign('active_tab',           $active_tab);
-$smarty->assign('offline_message',      $LN['enableurddfirst']);
+$smarty->assign(array(
+    'poster' =>       	    $poster ? 1 : 0,
+    'active_tab' =>         $active_tab,
+    'offline_message' =>    $LN['enableurddfirst']));
 $smarty->display('transfers.tpl');

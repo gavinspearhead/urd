@@ -61,15 +61,16 @@ try {
     }
 
     init_smarty();
-    $smarty->assign('years',            $years);
-    $smarty->assign('thisyear',         $thisyear);
-    $smarty->assign('subtypes',         $types_txt);
-    $smarty->assign('year',             $year);
-    $smarty->assign('width',            $width);
-    $smarty->assign('type',             $type);
-    $smarty->assign('subtype',          $subtype);
-    $smarty->assign('source',           $source);
-    $smarty->assign('period',           $period);
+    $smarty->assign(array(
+        'years'=>       $years,
+        'thisyear'=>    $thisyear,
+        'subtypes'=>    $types_txt,
+        'year'=>        $year,
+        'width'=>       $width,
+        'type'=>        $type,
+        'subtype'=>     $subtype,
+        'source'=>      $source,
+        'period'=>      $period));
     $contents = $smarty->fetch('ajax_stats.tpl');
     return_result(array('contents' => $contents));
 } catch (exception $e) {

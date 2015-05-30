@@ -132,14 +132,15 @@ try {
             }
             $dates = calendar($month, $year);
             init_smarty();
-            $smarty->assign('dates',		    $dates);
-            $smarty->assign('today',		    $today);
-            $smarty->assign('selected_day',	    $selected_day);
-            $smarty->assign('show_day',	        $show_day);
-            $smarty->assign('year', 		    $year);
-            $smarty->assign('hour',	            $hour);
-            $smarty->assign('minute', 		    $minute);
-            $smarty->assign('month',		    $month);
+            $smarty->assign(array(
+                'dates'=>		    $dates,
+                'today'=>		    $today,
+                'selected_day'=>	$selected_day,
+                'show_day'=>	    $show_day,
+                'year'=> 		    $year,
+                'hour'=>	        $hour,
+                'minute'=> 		    $minute,
+                'month'=>		    $month));
             $contents = $smarty->fetch('ajax_calendar.tpl');
             return_result(array('contents' => $contents, 'hour' => $hour, 'minute' => $minute));
             break;

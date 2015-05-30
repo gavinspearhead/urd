@@ -2446,7 +2446,6 @@ function show_quick_display(srctype, subject, e, type)
             subject: subject
         }
     ).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'quickwindowon');
@@ -2714,9 +2713,9 @@ function fold_adv_search(button_id, id)
     update_search_bar_height();
 }
 
-function clear_form(formId, except) 
+function clear_form(form_id, except) 
 {
-    $('#' + formId).find(':input').each(function()  {
+    $('#' + form_id).find(':input').each(function()  {
         var type = $(this).prop('type');
         if (type == 'text' || type == 'select-one' || type == 'textarea') {
             $(this).val('');
@@ -3149,17 +3148,6 @@ function set_checkbox(id, val)
             img.addClass('checkbox_off');
         }
     }
-}
-
-function clear_all_checkboxes(cat)
-{
-    var name = 'subcat_';
-    if (cat !== null) {
-        name = name + cat;
-    }
-    $('input[name^="' + name + '"]').each(function() {
-        clear_checkbox($(this).attr('id'));
-    });
 }
 
 function update_adult(type, id)
@@ -3987,7 +3975,6 @@ function load_groupsets(options)
     data.flag = flag;
     data.order = order;
     data.view_size = view_size;
-    console.log(data);
     $('#suggest_div').addClass('hidden'); 
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
@@ -5262,7 +5249,6 @@ function load_prefs()
         cmd: 'show',
         current_tab: current_tab
     }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
@@ -6034,8 +6020,10 @@ function load_side_bar(fn)
             } else {
                 $('#left_content').html(r.contents);
                 $('#reset_button').click(function() {
-                    clear_form('sidebar_contents');
                     clear_form('searchform');
+                    clear_form('sidebar_contents');
+                    clear_all_checkboxes(null);
+                    uncheck_all(null);
                     init_spot_sliders();
                 });
                 show_sidebar(false);
@@ -6082,9 +6070,20 @@ function load_side_bar(fn)
 function uncheck_all(cat)
 {
     $('input[name^="cat_"]').each(function() {
-        if ($(this).attr('id') != 'checkbox_cat_' + cat) {
+        if (cat === null || ($(this).attr('id') != 'checkbox_cat_' + cat)) {
             set_checkbox($(this).attr('id'), 0);
         }
+    });
+}
+
+function clear_all_checkboxes(cat)
+{
+    var name = 'subcat_';
+    if (cat !== null) {
+        name = name + cat;
+    }
+    $('input[name^="' + name + '"]').each(function() {
+        clear_checkbox($(this).attr('id'));
     });
 }
 

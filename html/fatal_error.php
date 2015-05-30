@@ -34,10 +34,13 @@ function fatal_error($msg, $link=NULL, $link_msg=NULL, $closelink='back')
     global $smarty, $LN;
     $msg = html_entity_decode($msg, ENT_QUOTES);
     init_smarty($LN['fatal_error_title'], 1);
-    $smarty->assign('__message', array($msg));
-    $smarty->assign('link', $link);
-    $smarty->assign('link_msg', $link_msg);
-    $smarty->assign('closelink', $closelink);
+        syslog(LOG_WARNING,$msg);
+    $smarty->assign(array(
+        '__message'=> array($msg),
+        'msg'=>$msg,
+        'link'=> $link,
+        'link_msg'=> $link_msg,
+        'closelink'=> $closelink));
     $smarty->display('fatal_error.tpl');
     die();
 }

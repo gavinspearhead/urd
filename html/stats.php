@@ -47,9 +47,10 @@ if ($tab == 'supply') {
 }
 
 init_smarty($title, 1);
-$smarty->assign('years',       $years);
-$smarty->assign('thisyear',    $thisyear);
-$smarty->assign('tab',         $tab);
+$smarty->assign(array(
+    'years'=>       $years,
+    'thisyear'=>    $thisyear,
+    'tab'=>         $tab));
 
 $smarty->display('statistics.tpl');
 

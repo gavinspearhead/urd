@@ -87,19 +87,20 @@ function show_edit_rss(DatabaseConnection $db, $id)
 
     list($pkeys, $ptexts) = $periods->get_periods();
     init_smarty();
-    $smarty->assign('id',		        $id);
-    $smarty->assign('oldname',	        $oldname);
-    $smarty->assign('oldadult',	        $oldadult);
-    $smarty->assign('oldtime1',	        $oldtime1);
-    $smarty->assign('oldtime2',	        $oldtime2);
-    $smarty->assign('periods_texts',	$ptexts);
-    $smarty->assign('periods_keys',		$pkeys);
-    $smarty->assign('oldrefresh',       $oldrefresh_period);
-    $smarty->assign('oldpassword',	    $oldpassword);
-    $smarty->assign('oldusername',	    $oldusername);
-    $smarty->assign('oldurl',	        $oldurl);
-    $smarty->assign('oldsubscribed',	$oldsubscribed);
-    $smarty->assign('oldexpire',	    $oldexpire);
+    $smarty->assign(array(
+        'id'=>		        $id,
+        'oldname'=>	        $oldname,
+        'oldadult'=>	    $oldadult,
+        'oldtime1'=>	    $oldtime1,
+        'oldtime2'=>	    $oldtime2,
+        'periods_texts'=>	$ptexts,
+        'periods_keys'=>    $pkeys,
+        'oldrefresh'=>      $oldrefresh_period,
+        'oldpassword'=>	    $oldpassword,
+        'oldusername'=>	    $oldusername,
+        'oldurl'=>	        $oldurl,
+        'oldsubscribed'=>	$oldsubscribed,
+        'oldexpire'=>	    $oldexpire));
     return $smarty->fetch('ajax_editrss.tpl');
 }
 

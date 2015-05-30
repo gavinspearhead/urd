@@ -95,14 +95,15 @@ if (!isset($message)) {
     $message = '';
 }
 
-init_smarty($LN['login_title'], 0);
-$smarty->assign('message',        $message);
-$smarty->assign('ip_address',     $ip_address);
-$smarty->assign('bind_ip_address',get_post('ipaddr', 0));
-$smarty->assign('username',       get_post('username', ''));
-$smarty->assign('period',         get_post('period', 0));
-$smarty->assign('register',       $register);
-$smarty->assign('token',          $token);
-$smarty->assign('languages',      $languages);
-$smarty->assign('curr_language',  $language);
+init_smarty($LN['login_title']);
+$smarty->assign(array(
+    'message'=>        $message,
+    'ip_address'=>     $ip_address,
+    'bind_ip_address'=>get_post('ipaddr', 0),
+    'username'=>       get_post('username', ''),
+    'period'=>         get_post('period', 0),
+    'register'=>       $register,
+    'token'=>          $token,
+    'languages'=>      $languages,
+    'curr_language'=>  $language));
 $smarty->display('login.tpl');

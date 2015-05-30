@@ -191,7 +191,7 @@ class feed_viewer
             // Show bar around interesting when applicable:
             $thisset = array();
             $thisset['interesting'] = $arr['interesting'];
-            $thisset['sid'] = $arr['setid'];
+            $thisset['setid'] = $arr['setid'];
             $thisset['added'] = (is_array($_SESSION['setdata']) && in_setdata($arr['setid'], 'rss', $_SESSION['setdata'])) ? 1 : 0; // todo
             $thisset['nzb'] = $arr['nzbcreated'];
             $thisset['read'] = $arr['alreadyread'];
@@ -485,21 +485,23 @@ try {
     $rssurl = $sets_viewer->get_rss_url($perpage);
 
     init_smarty();
-    $smarty->assign('rssurl',       $rssurl);
-    $smarty->assign('sort',         $sets_viewer->get_sort());
-    $smarty->assign('killflag',		$sets_viewer->get_killflag());
-    $smarty->assign('isadmin',		$isadmin);
-    $smarty->assign('feed_id',      $feed_id);
     if (!$only_rows) {
-        $smarty->assign('pages',        $pages);
-        $smarty->assign('lastpage',     $totalpages);
-        $smarty->assign('currentpage',  $activepage);
+        $smarty->assign(array(
+            'pages'=>        $pages,
+            'lastpage'=>     $totalpages,
+            'currentpage'=>  $activepage));
     }
-    $smarty->assign('allsets',               $allsets);
-    $smarty->assign('USERSETTYPE_GROUP',    USERSETTYPE_GROUP);
-    $smarty->assign('USERSETTYPE_RSS',      USERSETTYPE_RSS);
-    $smarty->assign('only_rows',            $only_rows);
-    $smarty->assign('view_size',            $view_size);
+    $smarty->assign(array(
+        'rssurl'=>              $rssurl,
+        'sort'=>                $sets_viewer->get_sort(),
+        'killflag'=>		    $sets_viewer->get_killflag(),
+        'isadmin'=>		        $isadmin,
+        'feed_id'=>             $feed_id,
+        'allsets'=>             $allsets,
+        'USERSETTYPE_GROUP'=>   USERSETTYPE_GROUP,
+        'USERSETTYPE_RSS'=>     USERSETTYPE_RSS,
+        'only_rows'=>           $only_rows,
+        'view_size'=>           $view_size));
 
     $content = $smarty->fetch('ajax_rsssets.tpl');
 

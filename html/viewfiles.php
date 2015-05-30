@@ -47,7 +47,8 @@ init_smarty($LN['viewfiles_title'], 1, $add_menu);
 $perpage = get_maxperpage($db, $userid);
 $dir = get_request('dir', '');
 
-$smarty->assign('directory',    $dir);
-$smarty->assign('maxstrlen',    $prefs['maxsetname']);
-$smarty->assign('perpage',		$perpage);
+$smarty->assign(array(
+    'directory'=>   $dir,
+    'maxstrlen'=>   $prefs['maxsetname'],
+    'perpage'=>		$perpage));
 $smarty->display('viewfiles.tpl');

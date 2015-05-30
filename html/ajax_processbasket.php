@@ -222,16 +222,17 @@ function display_basket(DatabaseConnection $db, $userid)
     $basket_type = get_request('basket_type', $default_basket_type);
     $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL ? basket_type::SMALL : basket_type::LARGE);
     init_smarty();
-    $smarty->assign('dlsetname',        $dlsetname);
-    $smarty->assign('nrofsets',         $nrofsets);
-    $smarty->assign('show_merge',       $show_merge);
-    $smarty->assign('download_delay',   $download_delay);
-    $smarty->assign('dl_dir',           $dl_dir);
-    $smarty->assign('add_setname',      $add_setname);
-    $smarty->assign('addedsets',        $addedsets);
-    $smarty->assign('directories',      $directories);
-    $smarty->assign('totalsize',        $totalsize);
-    $smarty->assign('maxstrlen',        get_pref($db, 'maxsetname', $userid));
+    $smarty->assign(array(
+        'dlsetname'=>        $dlsetname,
+        'nrofsets'=>         $nrofsets,
+        'show_merge'=>       $show_merge,
+        'download_delay'=>   $download_delay,
+        'dl_dir'=>           $dl_dir,
+        'add_setname'=>      $add_setname,
+        'addedsets'=>        $addedsets,
+        'directories'=>      $directories,
+        'totalsize'=>        $totalsize,
+        'maxstrlen'=>        get_pref($db, 'maxsetname', $userid)));
     if ($basket_type == basket_type::SMALL) {
         $contents = $smarty->fetch('ajax_showminibasket.tpl');
     } else {

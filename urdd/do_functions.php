@@ -348,9 +348,9 @@ function do_priority(DatabaseConnection $db, array $arg_list, server_data &$serv
 
 function regenerate_setnames(DatabaseConnection $db, array $setidarray)
 {
-    $sql = '"name", "value", "type" FROM extsetdata WHERE "setID"=?';
+    $sql = '"name", "value", "type" FROM extsetdata WHERE "setID"=:setid';
     foreach ($setidarray as $setid => $foo) {
-        $res = $db->select_query($sql, array($setid));
+        $res = $db->select_query($sql, array(':setid'=>$setid));
         if ($res === FALSE) {
             continue;
         }
@@ -777,8 +777,8 @@ function do_clean_users(DatabaseConnection $db)
         return TRUE;
     }
     $timestamp = time() - ($age * 3600 * 24);
-    $qry = 'count(*) AS "cnt" FROM users WHERE "isadmin" != ? AND "last_active" < ? AND "regtime" < ?';
-    $res = $db->select_query($qry, array(user_status::USER_ADMIN, $timestamp, $timestamp));
+    $qry = 'count(*) AS "cnt" FROM users WHERE "isadmin" != :status AND "last_active" < :last_active AND "regtime" < :regtime';
+    $res = $db->select_query($qry, array(':status'=> user_status::USER_ADMIN, ':last_active'=> $timestamp, ':regtime'=>$timestamp));
     $cnt = $res[0]['cnt'];
     if ($cnt > 0) {
         write_log("Deleting $cnt users", LOG_NOTICE);
@@ -1098,9 +1098,9 @@ function do_adddata(DatabaseConnection $db, action $item)
         case 'set':
             $setid = $args[2];
             $status = DOWNLOAD_READY;
-            $res = $db->select_query('"groupID", "size" FROM setdata WHERE "ID"=?', 1, array($setid));
+            $res = $db->select_query('"groupID", "size" FROM setdata WHERE "ID"=:setid', 1, array(':setid'=>$setid));
             if ($res === FALSE) {
-                throw new exception('Invalid Set ID');
+                throw new exception('Invalid set ID');
             }
             $groupid = $res[0]['groupID'];
             $size = $res[0]['size'];
@@ -1109,8 +1109,8 @@ function do_adddata(DatabaseConnection $db, action $item)
             $binaries = 'binaries_' . $groupid;
             $sql = 'INSERT INTO downloadarticles ("downloadID", "groupID", "status", "partnumber", "name", "messageID", "binaryID", "size") '
                 . "SELECT '$dlid', '$groupid', '$status', \"partnumber\", bin.\"subject\", \"messageID\", par.\"binaryID\", par.\"size\" FROM $parts AS par "
-                . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"setID\" = ?";
-            $res2 = $db->execute_query($sql, array($setid));
+                . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"setID\" = :setid";
+            $res2 = $db->execute_query($sql, array(':setid'=>$setid));
 
             $sql = '"value" FROM extsetdata WHERE "setID"=:setid AND "name"=:name';
             $res3 = $db->select_query($sql, 1, array(':setid'=>$setid, ':name'=>'password'));
@@ -1131,8 +1131,8 @@ function do_adddata(DatabaseConnection $db, action $item)
             $binaries = 'binaries_' . $groupid;
             $sql = 'INSERT INTO downloadarticles ("downloadID", "groupID", "status", "partnumber", "name", "messageID", "binaryID", "size") '
                  . "SELECT '$dlid', '$groupid', '$status', \"partnumber\", bin.\"subject\", \"messageID\", '$binid', par.\"size\" FROM $parts AS par "
-                 . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"binaryID\" = ?";
-            $res2 = $db->execute_query($sql, array($binid));
+                 . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"binaryID\" = :binid";
+            $res2 = $db->execute_query($sql, array(':binid'=>$binid));
 
             dec_dl_lock($db, $dlid);
             break;
@@ -1643,8 +1643,8 @@ function do_unpar_unrar(DatabaseConnection $db, action $item)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $args = explode (' ', $item->get_args());
     $dlid = $args[0];
-    $query = '"unpar", "unrar", "subdl", "delete_files", "destination", "first_run" FROM downloadinfo WHERE "ID"=?';
-    $res = $db->select_query($query, 1, array($dlid));
+    $query = '"unpar", "unrar", "subdl", "delete_files", "destination", "first_run" FROM downloadinfo WHERE "ID"=:dlid';
+    $res = $db->select_query($query, 1, array(':dlid' => $dlid));
     if ($res === FALSE) {
         $cksfv = $unpar = $concat = $delete_files = $first_run = $dl_subs = 0;
     } else {
@@ -1979,8 +1979,8 @@ function do_post_message(DatabaseConnection $db, action $item)
     }
     $userid = $item->get_userid();
     try {
-        $sql = '* FROM post_messages WHERE "id"=? AND "userid"=?';
-        $res = $db->select_query($sql, 1, array($msg_id, $userid));
+        $sql = '* FROM post_messages WHERE "id"=:msg_id AND "userid"=:user_id';
+        $res = $db->select_query($sql, 1, array(':msg_id'=>$msg_id, ':user_id'=>$userid));
         if (!isset($res[0]['id'])) {
             throw new exception('Message not found: '. $msg_id, ERR_MESSAGE_NOT_FOUND);
         }
@@ -2047,8 +2047,8 @@ function do_getnfo(DatabaseConnection $db, action $item)
                     $nzb->select_group($groupid, $code);
                 }
                 $ids[] = $row['id'];
-                $sql = "* FROM parts_$groupid WHERE \"binaryID\" = ?";
-                $res2 = $db->select_query($sql, array($row['binaryID']));
+                $sql = "* FROM parts_$groupid WHERE \"binaryID\" = :binid";
+                $res2 = $db->select_query($sql, array(':binid'=>$row['binaryID']));
                 if (!is_array($res2)) {
                     continue;
                 }
@@ -2172,7 +2172,7 @@ function get_unfetched_spot_images_count(DatabaseConnection $db)
     $sql = "count(*) AS cnt FROM spot_images WHERE \"fetched\"=0 AND \"image\" $like 'articles:%'";
     $res = $db->select_query($sql);
     if (!isset($res[0]['cnt'])) {
-        throw new exception('counter not set');
+        throw new exception('Counter not set');
     }
     $count = $res[0]['cnt'];
 
@@ -2367,8 +2367,9 @@ function do_getblacklist(DatabaseConnection $db, action $item)
     }
     $blacklist = load_blacklist($db, blacklist::BLACKLIST_EXTERNAL, NULL, TRUE);
     $old = 0;
+    $add_ids = array();
     foreach ($spotter_ids as $id) {
-        if (strlen($id) < 3) {
+        if (strlen($id) < 3 || strlen($id) > 10 || !preg_match('/[a-z0-9]/i', $id)) {
             continue;
         }
         if (isset($blacklist[$id])) {
@@ -2379,21 +2380,18 @@ function do_getblacklist(DatabaseConnection $db, action $item)
         }
     }
     if (count($add_ids) > 0) {
-        $cols = array('spotter_id', 'source', 'status', 'userid');
-        $db->insert_query('spot_blacklist', $cols, $add_ids);
-    }
-    $del = array();
-    $cnt = 0;
-    foreach ($blacklist as $id => $val) {
-        if ($val == 0) {
-            $cnt++;
-            $del[] = $id;
+        $del = array();
+        $cnt = 0;
+        foreach ($blacklist as $id => $val) {
+            if ($val == 0) {
+                $cnt++;
+                $del[] = $id;
+            }
+        }
+        if ($cnt > 0) {
+            $db->delete_query('spot_blacklist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
         }
     }
-    if ($cnt > 0) {
-        $db->delete_query('spot_blacklist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
-    }
-
     write_log('Added ' . count($add_ids) . " new spotters to the blacklist, removed $cnt spotters, $old spotters kept", LOG_INFO);
     update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Added ' . count($add_ids) . " new spotters to the blacklist, removed $cnt spotters, $old spotters kept");
 
@@ -2420,7 +2418,7 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
     $add_ids = array();
     $old = 0;
     foreach ($spotter_ids as $id) {
-        if (strlen($id) < 3) {
+        if (strlen($id) < 3 || strlen($id) > 10 || !preg_match('/[a-z0-9]/i', $id)) {
             continue;
         }
         if (isset($whitelist[$id])) {
@@ -2433,19 +2431,17 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
     if (count($add_ids) > 0) {
         $cols = array('spotter_id', 'source', 'status', 'userid');
         $db->insert_query('spot_whitelist', $cols, $add_ids);
-    }
-    $del = array();
-    $cnt = 0;
-    foreach ($whitelist as $id => $val) {
-        if ($val == 0) {
-            $cnt++;
-            $del[]= $id;
+        $cnt = 0;
+        foreach ($whitelist as $id => $val) {
+            if ($val == 0) {
+                $cnt++;
+                $del[]= $id;
+            }
+        }
+        if ($cnt > 0) {
+            $db->delete_query('spot_whitelist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
         }
     }
-    if ($cnt > 0) {
-        $db->delete_query('spot_whitelist', '"spotter_id" IN ( ' . str_repeat('?,', count($del) - 1) . '?)', $del);
-    }
-
     write_log('Added ' . count($add_ids) . " new spotters to the whitelist, removed $cnt spotters, $old spotters kept", LOG_INFO);
     update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Added ' . count($add_ids) . " new spotters to the whitelist, removed $cnt spotters, $old spotters kept");
 

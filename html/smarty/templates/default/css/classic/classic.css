@@ -77,7 +77,7 @@ div.light
 }
 .interesting
 {
-    background: #ba0000;
+  background: #ba0000;
   border-color: #ba0000 #410000 #6e0000;
   background-image: -webkit-linear-gradient(top, #ba0000, #ab0000 30%, #6e0000);
   background-image: -moz-linear-gradient(top, #ba0000, #ab0000 30%, #6e0000);

@@ -90,7 +90,7 @@
                 <div id="subcat_button_{$k1}_{$k2}" class="inline iconsize dynimgplus buttonlike"></div><span class="buttonlike">&nbsp;{$si.name}</span>
             </div>
 
-        <div id="subcat_items_{$k1}_{$k2}" class="hidden ">
+        <div id="subcat_items_{$k1}_{$k2}" class="hidden">
             {foreach $si.subcats as $k3 => $item2}
                 <div class="subcats lmargin10">
                     {if $item2 != '??'}

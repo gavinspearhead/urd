@@ -426,13 +426,14 @@ try {
                 $_SESSION['viewfiles']['file_edit'] = '';
             }
             init_smarty();
-            $smarty->assign('error',            '');
-            $smarty->assign('textboxsize',		TEXT_BOX_SIZE);
-            $smarty->assign('directory',		$currentdir);
-            $smarty->assign('new_file',		    $new_file);
-            $smarty->assign('file_contents',	htmlentities($file_contents));
-            $smarty->assign('maxstrlen',		((int) $prefs['maxsetname'])/3);
-            $smarty->assign('filename',		    $filename);
+            $smarty->assign(array(
+                'error'=>            '',
+                'textboxsize'=>		TEXT_BOX_SIZE,
+                'directory'=>		$currentdir,
+                'new_file'=>		    $new_file,
+                'file_contents'=>	htmlentities($file_contents),
+                'maxstrlen'=>		((int) $prefs['maxsetname'])/3,
+                'filename'=>		    $filename));
             $contents =  $smarty->fetch('ajax_editfile.tpl');
             return_result(array('contents'=>$contents));
             break;
@@ -586,19 +587,20 @@ try {
             $allow_edit = $rprefs['webeditfile'] && $is_fileeditor;
 
             init_smarty();
-            $smarty->assign('allow_edit',	$allow_edit);
-            $smarty->assign('search',		$search);
-            $smarty->assign('pages',		$pages);
-            $smarty->assign('use_tar',		$use_tar);
-            $smarty->assign('currentpage',	$currentpage);
-            $smarty->assign('lastpage',		$lastpage);
-            $smarty->assign('sort',			$sort);
-            $smarty->assign('sort_dir', 	$sort_dir);
-            $smarty->assign('offset', 		$offset);
-            $smarty->assign('directory',	$currentdir);
-            $smarty->assign('only_rows',    $only_rows);
-            $smarty->assign('files',		$ff = $files->get_files($sort, $offset, $perpage, $dir, ($only_rows == 0)));
-            $smarty->assign('last_line',    $offset + count($ff));
+            $smarty->assign(array(
+                'allow_edit'=>	$allow_edit,
+                'search'=>		$search,
+                'pages'=>		$pages,
+                'use_tar'=>		$use_tar,
+                'currentpage'=>	$currentpage,
+                'lastpage'=>		$lastpage,
+                'sort'=>			$sort,
+                'sort_dir'=> 	$sort_dir,
+                'offset'=> 		$offset,
+                'directory'=>	$currentdir,
+                'only_rows'=>    $only_rows,
+                'files'=>		$ff = $files->get_files($sort, $offset, $perpage, $dir, ($only_rows == 0)),
+                'last_line'=>    $offset + count($ff)));
             $contents = $smarty->fetch('ajax_showviewfiles.tpl');
             return_result(array('contents'=>$contents));
             break;
@@ -618,13 +620,14 @@ try {
             }
 
             init_smarty();
-            $smarty->assign('textboxsize',	TEXT_BOX_SIZE);
-            $smarty->assign('directory',	$currentdir);
-            $smarty->assign('maxstrlen',	((int) $prefs['maxsetname'])/3);
-            $smarty->assign('filename',		$filename);
-            $smarty->assign('rights', 		$rights);
-            $smarty->assign('group', 		$group);
-            $smarty->assign('groups', 		$groups);
+            $smarty->assign(array(
+                'textboxsize'=>	TEXT_BOX_SIZE,
+                'directory'=>	$currentdir,
+                'maxstrlen'=>	((int) $prefs['maxsetname'])/3,
+                'filename'=>		$filename,
+                'rights'=> 		$rights,
+                'group'=> 		$group,
+                'groups'=> 		$groups));
             $contents = $smarty->fetch('ajax_editviewfiles.tpl');
 
             return_result(array('contents'=>$contents));

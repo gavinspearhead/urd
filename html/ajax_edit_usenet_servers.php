@@ -237,23 +237,24 @@ try {
             }
 
             init_smarty();
-            $smarty->assign('id', $id);
-            $smarty->assign('name', $name);
-            $smarty->assign('only_auth', $only_auth);
-            $smarty->assign('connection_types',    $connection_types);
-            $smarty->assign('hostname', $hostname);
-            $smarty->assign('username', $username);
-            $smarty->assign('password', $password);
-            $smarty->assign('compressed_headers', $compressed_headers);
-            $smarty->assign('text_box_size', TEXT_BOX_SIZE);
-            $smarty->assign('number_box_size', NUMBER_BOX_SIZE);
-            $smarty->assign('port', $port);
-            $smarty->assign('posting', $posting);
-            $smarty->assign('threads', $threads);
-            $smarty->assign('sec_port', $sec_port);
-            $smarty->assign('authentication', $authentication);
-            $smarty->assign('priority', $priority);
-            $smarty->assign('connection', $connection);
+            $smarty->assign(array(
+                'id'=> $id,
+                'name'=> $name,
+                'only_auth'=> $only_auth,
+                'connection_types'=>    $connection_types,
+                'hostname'=> $hostname,
+                'username'=> $username,
+                'password'=> $password,
+                'compressed_headers'=> $compressed_headers,
+                'text_box_size'=> TEXT_BOX_SIZE,
+                'number_box_size'=> NUMBER_BOX_SIZE,
+                'port'=> $port,
+                'posting'=> $posting,
+                'threads'=> $threads,
+                'sec_port'=> $sec_port,
+                'authentication'=> $authentication,
+                'priority'=> $priority,
+                'connection'=> $connection));
             $contents = $smarty->fetch('ajax_edit_usenet_servers.tpl');
             return_result(array('contents' => $contents));
             break;
@@ -401,12 +402,13 @@ try {
                 $usenet_servers[] = new usenet_servers_c(0, $id, $name, $hostname, $port, $sec_port, (bool) $auth, $threads, $conn, $conn_raw, $username, $password, $priority, $compressed_headers, $posting);
             }
             init_smarty();
-            $smarty->assign('maxstrlen',    $prefs['maxsetname']/2);
-            $smarty->assign('usenet_servers', $usenet_servers);
-            $smarty->assign('sort',	        $sort);
-            $smarty->assign('sort_dir',	    $sort_dir);
-            $smarty->assign('search',       $o_search);
-            $smarty->assign('primary',      $primary);
+            $smarty->assign(array(
+                'maxstrlen'=>    $prefs['maxsetname']/2,
+                'usenet_servers'=> $usenet_servers,
+                'sort'=>	        $sort,
+                'sort_dir'=>	    $sort_dir,
+                'search'=>       $o_search,
+                'primary'=>      $primary));
             $contents = $smarty->fetch('ajax_show_usenet_servers.tpl');
             return_result(array('contents' => $contents));
             break;

@@ -94,11 +94,14 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     /// too quick and dirty --- clean up XXX
     $image_file = $image = '';
     $image_from_db = 0;
-    if (isset($img_res[0])) {
+    if (isset($img_res[0]) &&  $show_image) {
         if (substr($img_res[0]['image'], 0, 10) == 'data:image') {
             $image_from_db = 1;
         } elseif (substr($img_res[0]['image'], 0, 9) == 'articles:') {
             $image_file = get_dlpath($db). IMAGE_CACHE_PATH . $setID . '.jpg';
+            if (!file_exists($image_file)) {
+                $image_file = '';
+            }
         } else {
             $image = trim(strip_tags($img_res[0]['image']));
         }
@@ -206,7 +209,8 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         return show_spotinfo($db, $setID, $userid, $display, $extsetinfo['binarytype'], $binarytypes);
     }
 
-    $smarty->assign(array('srctype' =>        'display',         // Edit or just Display?
+    $smarty->assign(array(
+        'srctype' =>        'display',         // Edit or just Display?
         'type' =>           $type,         // the type RSS or Groups
         'setID' =>          $setID,        // FYI
         'binarytype' =>     $extsetinfo['binarytype'], // Binarytype
@@ -271,7 +275,8 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
     list($_size, $suffix) = format_size($totalsize, 'h', $LN['byte_short'], 1024, 1);
     $totalsize = $_size . ' ' . $suffix;
 
-    $smarty->assign(array('articlesmax'=>          $articlesmax,
+    $smarty->assign(array(
+        'articlesmax'=>          $articlesmax,
         'binaries'=>             $binaries,
         'groupID'=>              $groupID,
         'groupname'=>            $groupname,

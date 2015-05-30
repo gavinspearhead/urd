@@ -47,75 +47,6 @@ class QuickMenuItem
         $this->submenu = $submenu;
     }
 }
-
-function get_search_options_for_user(DatabaseConnection $db, $userid)
-{
-    assert(is_numeric($userid));
-    $active_search_options = array();
-    $max_search_options = get_config($db, 'maxbuttons', search_option::MAX_SEARCH_OPTIONS);
-    $search_options = array();
-    for ($i = 1; $i <= $max_search_options; $i++) {
-        $b = get_pref($db, "button$i", $userid, 'none');
-          if ($b != 'none') {
-            $search_options[] = $b;
-        }
-    }
-    if (count($search_options) == 0) {
-        return array();
-    }
-    $ids = array();
-    foreach ($search_options as $search_option) {
-        $ids[] = $search_option;
-    }
-    if (count($ids) > 0) {
-        $qry = '* FROM searchbuttons WHERE "id" IN (' . str_repeat('?,', count($ids) - 1) . '?) ORDER BY "name"';
-        $res = $db->select_query($qry, $ids);
-        if ($res === FALSE) {
-            return array();
-        }
-        foreach ($res as $row) {
-            $row['name'] = htmlentities(utf8_decode($row['name']));
-            $active_search_options[] = $row;
-        }
-    }
-
-    return $active_search_options;
-}
-
-function find_special_file(DatabaseConnection $db, $setID)
-{
-    $sql = '"groupID" FROM setdata WHERE "ID"=:setid';
-    $res = $db->select_query($sql, 1, array(':setid'=>$setID));
-    if ($res === FALSE) {
-        return array(FALSE, FALSE, FALSE, FALSE);
-    }
-    $search_type = $db->get_pattern_search_command('REGEXP');
-    $rv1 = $rv2 = $rv3 = $rv4 = FALSE;
-
-    $groupID = $res[0]['groupID'];
-    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ? ";
-    $res = $db->select_query($sql, 1, array($setID, '.*[.](jpg|gif|png|jpeg)([^.].*)?$'));
-    if ($res !== FALSE) {
-        $rv1 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
-    }
-    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ?";
-    $res = $db->select_query($sql, 1, array($setID, '.*[.]nfo([^.].*)?$'));
-    if ($res !== FALSE) {
-        $rv2 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
-    }
-    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ?";
-    $res = $db->select_query($sql, 1, array($setID, '.*[.]nzb([^.].*)?$'));
-    if ($res !== FALSE) {
-        $rv3 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
-    }
-    $sql = "* FROM binaries_$groupID WHERE \"setID\"=? AND \"subject\" $search_type ?";
-    $res = $db->select_query($sql, 1, array($setID, 'sample.*[.](wmv|mpg|mp4|avi|mkv|mov|flv)([^.].*)?$'));
-    if ($res !== FALSE) {
-        $rv4 = array('binaryID' => $res[0]['binaryID'], 'groupID' => $groupID);
-    }
-
-    return array($rv2, $rv1, $rv3, $rv4);
-}
  
 try {
     // Process commands:
@@ -253,9 +184,10 @@ try {
      */
 
     init_smarty();
-    $smarty->assign('items',	 $items);
-    $smarty->assign('srctype',   $srctype);     // group or rss or spot
-    $smarty->assign('subject',   $subject);
+    $smarty->assign(array(
+        'items'=>	 $items,
+        'srctype'=>   $srctype,     // group or rss or spot
+        'subject'=>   $subject));
 
     $contents = $smarty->fetch('ajax_quickmenu.tpl');
     return_result(array('contents' => $contents));

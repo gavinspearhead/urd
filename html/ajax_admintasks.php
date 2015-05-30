@@ -143,14 +143,15 @@ try {
     list($pages, $currentpage, $lastpage) = get_pages($cnt, $perpage, $offset);
 
     init_smarty();
-    $smarty->assign('alltasks',	        $tasks);
-    $smarty->assign('sort',	            $sort);
-    $smarty->assign('sort_dir',  	    $sort_dir);
-    $smarty->assign('urdd_online',    	(int) $urdd_online);
-    $smarty->assign('pages',		    $pages);
-    $smarty->assign('currentpage',		$currentpage);
-    $smarty->assign('offset',		    $offset);
-    $smarty->assign('lastpage',		    $lastpage);
+    $smarty->assign(array(
+        'alltasks'=>	    $tasks,
+        'sort'=>	        $sort,
+        'sort_dir'=>  	    $sort_dir,
+        'urdd_online'=>    	(int) $urdd_online,
+        'pages'=>		    $pages,
+        'currentpage'=>		$currentpage,
+        'offset'=>		    $offset,
+        'lastpage'=>	    $lastpage));
 
     $contents = $smarty->fetch('ajax_admintasks.tpl');
     return_result(array('contents' => $contents));

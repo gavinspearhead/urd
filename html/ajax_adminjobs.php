@@ -51,7 +51,7 @@ try {
 
     foreach ($res as $row) {
         $job['time'] = time_format($row['at_time']);
-        $job['period'] = readable_time($row['interval']);
+        $job['period'] = readable_time($row['interval'], 'largest');
         $description = command_description($db, $row['command']);
         $task_short = $description[0];
         $task_arg = $description[1];
@@ -65,10 +65,11 @@ try {
 
     $urdd_online = check_urdd_online($db);
     init_smarty();
-    $smarty->assign('alljobs',	    $jobs);
-    $smarty->assign('sort',	        $sort);
-    $smarty->assign('sort_dir',	    $sort_dir);
-    $smarty->assign('urdd_online',  (int) $urdd_online);
+    $smarty->assign(array(
+        'alljobs'=>	    $jobs,
+        'sort'=>	    $sort,
+        'sort_dir'=>    $sort_dir,
+        'urdd_online'=> (int) $urdd_online));
     $contents = $smarty->fetch('ajax_adminjobs.tpl');
     return_result(array('contents' => $contents));
 } catch (exception $e) {

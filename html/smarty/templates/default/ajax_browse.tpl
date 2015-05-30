@@ -99,22 +99,22 @@
 {foreach $allsets as $set}
 
 {capture assign="smallbuttons"}{strip}	
-<input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>
-<div id="divset_{$set.sid}" class="inline iconsize buttonlike"></div>
+<input type="hidden" name="setdata[]" id="set_{$set.setid}" value=""/>
+<div id="divset_{$set.setid}" class="inline iconsize buttonlike"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
     {if $set.added} 
-        $('#set_{$set.sid}').val('x'); 
-        $('#divset_{$set.sid}').addClass('setimgminus'); 
+        $('#set_{$set.setid}').val('x'); 
+        $('#divset_{$set.setid}').addClass('setimgminus'); 
     {else} 
-        $('#divset_{$set.sid}').addClass('setimgplus'); 
+        $('#divset_{$set.setid}').addClass('setimgplus'); 
     {/if}
-    $('#divset_{$set.sid}').click( function (e) { select_set('{$set.sid}', 'group', e); return false; } );
-    $('#td_set_{$set.sid}').mouseup( function (e) { start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_GROUP}, e); } );
-    $('#intimg_{$set.sid}').click( function () { mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_GROUP} ); } );
-    $('#wipe_img_{$set.sid}').click( function () { mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_GROUP} ); } );
-    $('#link_img_{$set.sid}').click( function () { jump('{$set.imdblink|escape:javascript}', true); } );
+    $('#divset_{$set.setid}').click( function (e) { select_set('{$set.setid}', 'group', e); return false; } );
+    $('#td_set_{$set.setid}').mouseup( function (e) { start_quickmenu('browse', '{$set.setid}', {$USERSETTYPE_GROUP}, e); } );
+    $('#intimg_{$set.setid}').click( function () { mark_read('{$set.setid}', 'interesting', {$USERSETTYPE_GROUP} ); } );
+    $('#wipe_img_{$set.setid}').click( function () { mark_read('{$set.setid}', 'wipe', {$USERSETTYPE_GROUP} ); } );
+    $('#link_img_{$set.setid}').click( function () { jump('{$set.imdblink|escape:javascript}', true); } );
 });
 </script>
 
@@ -124,7 +124,7 @@ $(document).ready(function() {
 {* Store flags to be used in class definition: *}
 {$read=''}
 {$nzb=''}
-{$interesting=''}
+{$interesting='even'}
 {$interestingimg="smileicon"}
 {if $set.read == 1}{$read='markedread'}{/if}
 {if $show_makenzb != 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
@@ -156,14 +156,14 @@ $(document).ready(function() {
 {/if}
 
 {* Ok now it's time to put it all together: *}	
-<tr class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}" name="content">
+<tr class="content {$interesting} {$read} {$nzb}" id="base_row_{$set.setid}" name="content">
 	<td class="fixwidth1">{$set.number}
     
     {* We need this stuff to remember any the search options *}
-    <input type="hidden" name="set_ids[]" value="{$set.sid}"/>
+    <input type="hidden" name="set_ids[]" value="{$set.setid}"/>
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
-    <td id="td_set_{$set.sid}">
+    <td id="td_set_{$set.setid}">
     <div class="donotoverflowdamnit inline">{$bintype} {$setdesc}</div>
     </td>
 {$rating=$set.rating * 10}
@@ -174,7 +174,7 @@ $(document).ready(function() {
 	<td class="fixwidth1"> <div class="{$complete} status_light down2" {urd_popup type="small" text="$completion"}></div></td>
     <td class="fixwidth1">
     {if $set.imdblink != ''}
-    <div id="link_img_{$set.sid}" class="inline iconsize {$imdbpic} buttonlike" {urd_popup type="small" text=$set.imdblink}></div>
+    <div id="link_img_{$set.setid}" class="inline iconsize {$imdbpic} buttonlike" {urd_popup type="small" text=$set.imdblink}></div>
 	{elseif $set.rating != 0}
     <div class="inline iconsize {$imdbpic} buttonlike"></div>
 	{/if}</td>
@@ -182,9 +182,9 @@ $(document).ready(function() {
 	<td class="nowrap">
     <div class="floatright">
     {if $isadmin}
-    <div id="wipe_img_{$set.sid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div id="wipe_img_{$set.setid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint}></div>
+    <div id="intimg_{$set.setid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint}></div>
     </div>
 	</td>
 </tr>

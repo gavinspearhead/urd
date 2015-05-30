@@ -100,21 +100,22 @@ try {
     $base_url = get_config($db, 'baseurl');
 
     init_smarty(ltrim($filename, DIRECTORY_SEPARATOR), 1);
-    $smarty->assign('nextidx', $next);
-    $smarty->assign('lastidx', $last);
-    $smarty->assign('previousidx', $previous);
-    $smarty->assign('firstidx', $first);
-    $smarty->assign('current', $idx);
-    $smarty->assign('preview', $preview);
-    $smarty->assign('next', stored_files::get_file($next));
-    $smarty->assign('last', stored_files::get_file($last));
-    $smarty->assign('previous', stored_files::get_file($previous));
-    $smarty->assign('first', stored_files::get_file($first));
-    $smarty->assign('directory', dirname($file));
-    $smarty->assign('width', round($width));
-    $smarty->assign('height', round($height));
-    $smarty->assign('size', $size . $suffix);
-    $smarty->assign('url', $base_url . 'html/getfile.php?raw=1&file=' . urlencode($file));
+    $smarty->assign(array(
+        'nextidx'=> $next,
+        'lastidx'=> $last,
+        'previousidx'=> $previous,
+        'firstidx'=> $first,
+        'current'=> $idx,
+        'preview'=> $preview,
+        'next'=> stored_files::get_file($next),
+        'last'=> stored_files::get_file($last),
+        'previous'=> stored_files::get_file($previous),
+        'first'=> stored_files::get_file($first),
+        'directory'=> dirname($file),
+        'width'=> round($width),
+        'height'=> round($height),
+        'size'=> $size . $suffix,
+        'url'=> $base_url . 'html/getfile.php?raw=1&file=' . urlencode($file)));
     $contents = $smarty->fetch('ajax_get_image.tpl');
     return_result(array('contents' => $contents));
 } catch (exception $e) {

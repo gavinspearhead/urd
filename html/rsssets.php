@@ -161,30 +161,31 @@ init_smarty($title, 1, $add_menu);
 
 list($size, $suffix) = format_size($totbin, 'h', '', 1000);
 
-$smarty->assign('rssurl',		$rssurl);
-$smarty->assign('total_articles', $size . $suffix);
-$smarty->assign('search',       $orisearch);
-$smarty->assign('feed_id',      $origfeed_id);
-$smarty->assign('offset',       $offset);
-$smarty->assign('order',        trim($order));
-$smarty->assign('flag',         $flag);
-$smarty->assign('USERSETTYPE',	USERSETTYPE_RSS);
-$smarty->assign('minage',       $minage);
-$smarty->assign('maxage',       $maxage);
-$smarty->assign('maxrating',    $maxrating);
-$smarty->assign('minrating',    $minrating);
-$smarty->assign('perpage',		$perpage);
-$smarty->assign('setid',		$setid);
-$smarty->assign('minsetsize',   $minsetsize);
-$smarty->assign('maxsetsize',   $maxsetsize);
-$smarty->assign('minagelimit',	$minagelimit);
-$smarty->assign('maxagelimit',	$maxagelimit);
-$smarty->assign('minsetsizelimit',	$minsetsizelimit);
-$smarty->assign('maxsetsizelimit',	$maxsetsizelimit);
-$smarty->assign('minratinglimit',   0);
-$smarty->assign('maxratinglimit',   10);
-$smarty->assign('subscribedfeeds',  $subscribedfeeds);
-$smarty->assign('saved_searches',	$saved_searches);
-$smarty->assign('_saved_search',	$saved_search);
+$smarty->assign(array(
+    'rssurl'=>		$rssurl,
+    'total_articles'=> $size . $suffix,
+    'search'=>       $orisearch,
+    'feed_id'=>      $origfeed_id,
+    'offset'=>       $offset,
+    'order'=>        trim($order),
+    'flag'=>         $flag,
+    'USERSETTYPE'=>	USERSETTYPE_RSS,
+    'minage'=>       $minage,
+    'maxage'=>       $maxage,
+    'maxrating'=>    $maxrating,
+    'minrating'=>    $minrating,
+    'perpage'=>		$perpage,
+    'setid'=>		$setid,
+    'minsetsize'=>   $minsetsize,
+    'maxsetsize'=>   $maxsetsize,
+    'minagelimit'=>	$minagelimit,
+    'maxagelimit'=>	$maxagelimit,
+    'minsetsizelimit'=>	$minsetsizelimit,
+    'maxsetsizelimit'=>	$maxsetsizelimit,
+    'minratinglimit'=>   0,
+    'maxratinglimit'=>   10,
+    'subscribedfeeds'=>  $subscribedfeeds,
+    'saved_searches'=>	$saved_searches,
+    '_saved_search'=>	$saved_search));
 
 $smarty->display('rsssets.tpl');

@@ -199,7 +199,7 @@ class group_viewer
             // Show bar around interesting when applicable:
             $thisset = array();
             $thisset['interesting'] = $arr['interesting'];
-            $thisset['sid'] = $arr['ID'];
+            $thisset['setid'] = $arr['ID'];
             $thisset['added'] = (is_array($_SESSION['setdata']) && in_setdata($arr['ID'], 'group', $_SESSION['setdata'])) ? 1 : 0;
             $thisset['nzb'] = $arr['nzbcreated'];
             $thisset['read'] = $arr['alreadyread'];

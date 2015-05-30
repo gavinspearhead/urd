@@ -143,13 +143,14 @@ try {
             }
             init_smarty();
             natcasesort($names);
-            $smarty->assign('saved_searches',	$names);
-            $smarty->assign('current',	        (utf8_decode($current)));
-            $smarty->assign('usersettype',		$type);
-            $smarty->assign('cat',		        $cat);
-            $smarty->assign('USERSETTYPE_RSS',  USERSETTYPE_RSS);
-            $smarty->assign('USERSETTYPE_SPOT', USERSETTYPE_SPOT);
-            $smarty->assign('USERSETTYPE_GROUP',USERSETTYPE_GROUP);
+            $smarty->assign(array(
+                'saved_searches'=>	$names,
+                'current'=>	        (utf8_decode($current)),
+                'usersettype'=>		$type,
+                'cat'=>		        $cat,
+                'USERSETTYPE_RSS'=>  USERSETTYPE_RSS,
+                'USERSETTYPE_SPOT'=> USERSETTYPE_SPOT,
+                'USERSETTYPE_GROUP'=>USERSETTYPE_GROUP));
 
             $contents = $smarty->fetch('ajax_spot_search.tpl');
             return_result(array('contents' => $contents, 'count'=>count($names))); 
@@ -179,11 +180,12 @@ try {
                 $category_id = '';
             }
 
-            $smarty->assign('usersettype',		$type);
-            $smarty->assign('name',     		$name);
-            $smarty->assign('save_category',	$category_id);
-            $smarty->assign('categories',		$categories);
-            $smarty->assign('categories_count',	count($categories));
+            $smarty->assign(array(
+                'usersettype'=>		$type,
+                'name'=>     		$name,
+                'save_category'=>	$category_id,
+                'categories'=>		$categories,
+                'categories_count'=>	count($categories)));
             $contents = $smarty->fetch('ajax_savename.tpl');
             return_result(array('contents' => $contents));
     }

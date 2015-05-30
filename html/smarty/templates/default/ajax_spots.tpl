@@ -24,6 +24,7 @@
 {* These icon images are a copy of the code in formatsetname.tpl *}
 {include 'include_bin_image.tpl' scope='parent'}
 
+
 {if $view_size >= 1024}
 {$small=0}
 {$skippersize= 30}
@@ -109,22 +110,22 @@
 {foreach $allsets as $set}
 
 {capture assign=smallbuttons}{strip}	
-<input type="hidden" name="setdata[]" id="set_{$set.sid}" value=""/>
-<div id="divset_{$set.sid}" class="inline iconsize buttonlike"></div>
+<input type="hidden" name="setdata[]" id="set_{$set.spotid}" value=""/>
+<div id="divset_{$set.spotid}" class="inline iconsize buttonlike"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
     {if $set.added} 
-        $('#set_{$set.sid}').val('x'); 
-        $('#divset_{$set.sid}').addClass('setimgminus'); 
+        $('#set_{$set.spotid}').val('x'); 
+        $('#divset_{$set.spotid}').addClass('setimgminus'); 
     {else} 
-        $('#divset_{$set.sid}').addClass('setimgplus'); 
+        $('#divset_{$set.spotid}').addClass('setimgplus'); 
     {/if}
-    $('#divset_{$set.sid}').click( function (e) { select_set('{$set.sid}', 'spot', e); return false; } );
-    $('#td_set_{$set.sid}').mouseup( function (e) { start_quickmenu('browse', '{$set.sid}', {$USERSETTYPE_SPOT}, e); } );
-    $('#intimg_{$set.sid}').click( function () { mark_read('{$set.sid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
-    $('#wipe_img_{$set.sid}').click( function () { mark_read('{$set.sid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
-    $('#link_img_{$set.sid}').click( function () { jump('{$set.url|escape:javascript}', true); } );
+    $('#divset_{$set.spotid}').click( function (e) { select_set('{$set.spotid}', 'spot', e); return false; } );
+    $('#td_set_{$set.spotid}').mouseup( function (e) { start_quickmenu('browse', '{$set.spotid}', {$USERSETTYPE_SPOT}, e); } );
+    $('#intimg_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
+    $('#wipe_img_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
+    $('#link_img_{$set.spotid}').click( function () { jump('{$set.url|escape:javascript}', true); } );
 });
 </script>
 {/strip}
@@ -134,7 +135,7 @@ $(document).ready(function() {
 {* Store flags to be used in class definition: *}
 {$read=''}
 {$nzb=''}
-{$interesting=''}
+{$interesting='even'}
 {$interestingimg="smileicon"}
 {if $set.read == 1}{$read='markedread'}{/if}
 {if $show_makenzb != 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
@@ -186,13 +187,13 @@ $(document).ready(function() {
 {/strip}{/capture}
 
 {* Ok now it's time to put it all together: *}	
-<tr name="content" class="content even {$interesting} {$read} {$nzb}" id="base_row_{$set.sid}">
+<tr name="content" class="content {$interesting} {$read} {$nzb}" id="base_row_{$set.spotid}">
 <td class="fixwidth1">{$set.number}
-<input type="hidden" name="set_ids[]" value="{$set.sid}"/>
+<input type="hidden" name="set_ids[]" value="{$set.spotid}"/>
     </td>
 	<td class="setbuttons">{$smallbuttons}</td>
 
-<td id="td_set_{$set.sid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
+<td id="td_set_{$set.spotid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
     <div class="donotoverflowdamnit inline">
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}
@@ -237,7 +238,7 @@ $(document).ready(function() {
 <td class="fixwidth1">
     
     {if $set.url != ''}
-    <div id="link_img_{$set.sid}" class="inline iconsize {$linkpic} buttonlike" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
+    <div id="link_img_{$set.spotid}" class="inline iconsize {$linkpic} buttonlike" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
 	{elseif $set.rating != 0}
     <div class="inline iconsize {$linkpic}"></div>
 {else}&nbsp;
@@ -247,10 +248,10 @@ $(document).ready(function() {
     <div class="floatright">
     {if $isadmin}
     {if not $small}
-    <div id="wipe_img_{$set.sid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+    <div id="wipe_img_{$set.spotid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
     {/if}
-    <div id="intimg_{$set.sid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+    <div id="intimg_{$set.spotid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
     </div>
 	</td>
 </tr>

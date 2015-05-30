@@ -26,23 +26,25 @@
 {block name=contents}
 <script type="text/javascript">
 $(document).ready(function() {
-        $('#td_sets').mouseup( function(e) { start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, e); } ); 
-        $('#image_inline').click( function(e) { jump('{$image|escape:javascript}', true); } ); 
-        $('#image_db').click( function(e) { jump('show_image.php?spotid={$spotid|escape:javascript}', true); } ); 
-        $('#image_file').click( function(e) { show_spot_image('getfile.php?file={$image_file|escape:javascript}&raw=1', true); } ); 
-        $('#poster').click( function(e) { load_sets({ 'poster':'{$poster|escape:javascript}' }); } );
+    $('#td_sets').mouseup( function(e) { start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, e); } ); 
+    $('#image_inline').click( function(e) { jump('{$image|escape:javascript}', true); } ); 
+    $('#image_db').click( function(e) { jump('show_image.php?spotid={$spotid|escape:javascript}', true); } ); 
+    $('#image_file').click( function(e) { show_spot_image('getfile.php?file={$image_file|escape:javascript}&raw=1', true); } ); 
+    $('#poster').click( function(e) { load_sets({ 'poster':'{$poster|escape:javascript}' }); } );
 });
 </script>
 
 <div class="sets_inner" id="td_sets">
-{if $show_image && $image != '' && $image_from_db == 0}
+{if $show_image}
+{if $image != '' && $image_from_db == 0}
 <div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max180x180" alt=""/> </div>
 {/if}
-{if  $show_image && $image_from_db == 1}
+{if image_from_db == 1}
 <div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" id="image_db" class="max180x180" alt=""/></div>
 {/if}
-{if $show_image && $image_file != ''}
+{if $image_file != ''}
 <div class="spot_thumbnail noborder buttonlike"><img src="getfile.php?raw=1&amp;file={$image_file}" id="image_file" class="max180x180" alt=""/></div>
+{/if}
 {/if}
 <input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
 

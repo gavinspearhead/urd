@@ -96,7 +96,7 @@ function one_or_more($val, $one, $more)
     return  "$val " . ( ($val == 1) ? $one : $more);
 }
 
-function readable_time($timediff, $value = 'specific')
+function readable_time($timediff, $value='largest')
 {
     assert(is_numeric($timediff));
     global $LN;

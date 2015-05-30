@@ -76,18 +76,19 @@ function showeditgroup(DatabaseConnection $db, $id)
 
     list($pkeys, $ptexts) = $periods->get_periods();
     init_smarty();
-    $smarty->assign('id',		        $id);
-    $smarty->assign('oldname',	        $oldname);
-    $smarty->assign('oldminsetsize',	$oldminsetsize);
-    $smarty->assign('oldmaxsetsize',	$oldmaxsetsize);
-    $smarty->assign('oldadult',	        $oldadult);
-    $smarty->assign('oldtime1',	        $oldtime1);
-    $smarty->assign('oldtime2',	        $oldtime2);
-    $smarty->assign('periods_texts',	$ptexts);
-    $smarty->assign('periods_keys',		$pkeys);
-    $smarty->assign('oldrefresh',       $oldrefresh_period);
-    $smarty->assign('oldsubscribed',	$oldsubscribed);
-    $smarty->assign('oldexpire',	    $oldexpire);
+    $smarty->assign(array(
+        'id'=>		        $id,
+        'oldname'=>	        $oldname,
+        'oldminsetsize'=>	$oldminsetsize,
+        'oldmaxsetsize'=>	$oldmaxsetsize,
+        'oldadult'=>	    $oldadult,
+        'oldtime1'=>	    $oldtime1,
+        'oldtime2'=>	    $oldtime2,
+        'periods_texts'=>	$ptexts,
+        'periods_keys'=>	$pkeys,
+        'oldrefresh'=>      $oldrefresh_period,
+        'oldsubscribed'=>	$oldsubscribed,
+        'oldexpire'=>	    $oldexpire));
     return $smarty->fetch('ajax_editgroup.tpl');
 }
 

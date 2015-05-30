@@ -336,23 +336,24 @@ function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
 
     init_smarty();
 
-    $smarty->assign('urdd_online',	    (int) $urdd_online);
-    $smarty->assign('periods_texts',	$ptexts);
-    $smarty->assign('periods_keys',		$pkeys);
-    $smarty->assign('categories',		$categories);
-    $smarty->assign('NG_SUBSCRIBED', 	newsgroup_status::NG_SUBSCRIBED);
-    $smarty->assign('sort',		        $order);
-    $smarty->assign('sort_dir',		    $order_dir);
-    $smarty->assign('isadmin',		    (int) $isadmin);
-    $smarty->assign('page_tab',         $page_tab);
-    $smarty->assign('unsubscribed',		$unsubscribed);
-    $smarty->assign('pages',		    $pages);
-    $smarty->assign('currentpage',		$currentpage);
-    $smarty->assign('lastpage',		    $lastpage);
-    $smarty->assign('offset',		    $offset);
-    $smarty->assign('allgroups', 		$allgroups);
-    $smarty->assign('maxstrlen',		$prefs['maxsetname']/2);
-    $smarty->assign('referrer', 		basename(__FILE__, '.php'));
+    $smarty->assign(array(
+        'urdd_online'=>	    (int) $urdd_online,
+        'periods_texts'=>	$ptexts,
+        'periods_keys'=>	$pkeys,
+        'categories'=>		$categories,
+        'NG_SUBSCRIBED'=> 	newsgroup_status::NG_SUBSCRIBED,
+        'sort'=>		    $order,
+        'sort_dir'=>	    $order_dir,
+        'isadmin'=>		    (int) $isadmin,
+        'page_tab'=>        $page_tab,
+        'unsubscribed'=>    $unsubscribed,
+        'pages'=>		    $pages,
+        'currentpage'=>		$currentpage,
+        'lastpage'=>		$lastpage,
+        'offset'=>		    $offset,
+        'allgroups'=> 		$allgroups,
+        'maxstrlen'=>		$prefs['maxsetname']/2,
+        'referrer'=> 		basename(__FILE__, '.php')));
 
     $contents = $smarty->fetch('ajax_groups.tpl');
     return_result(array('contents' => $contents, 'urdd_online' => (int) $urdd_online, 'message'=>$message));

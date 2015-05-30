@@ -107,6 +107,7 @@ if (isset($_GET['activate']) && isset($_GET['username'])) {
 $captcha = extension_loaded ('gd') ? 1 : 0;
 
 init_smarty($title, 0);
-$smarty->assign('captcha', $captcha);
-$smarty->assign('subpage', $subpage);
+$smarty->assign(array(
+    'captcha' => $captcha, 
+    'subpage' => $subpage));
 $smarty->display('register.tpl');

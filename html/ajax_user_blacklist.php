@@ -122,19 +122,20 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
             'currentpage' =>	$currentpage,
             'lastpage' =>	    $lastpage));
     }
-    $smarty->assign('offset',		    $offset);
-    $smarty->assign('list_external',	$list_external);
-    $smarty->assign('list_internal',	$list_internal);
-    $smarty->assign('sort',             $sort);
-    $smarty->assign('sort_dir',         $sort_dir);
-    $smarty->assign('search',           $o_search);
-    $smarty->assign('blacklist',        $blacklist);
-    $smarty->assign('active_tab',       $active_tab);
-    $smarty->assign('status_active',    $list_status_active);
-    $smarty->assign('status_nonactive', $list_status_nonactive);
-    $smarty->assign('status_disabled',  $list_status_disabled);
-    $smarty->assign('maxstrlen',        round($perpage / 3));
-    $smarty->assign('only_rows',        $only_rows);
+    $smarty->assign(array(
+        'offset'=>		    $offset,
+        'list_external'=>	$list_external,
+        'list_internal'=>	$list_internal,
+        'sort'=>             $sort,
+        'sort_dir'=>         $sort_dir,
+        'search'=>           $o_search,
+        'blacklist'=>        $blacklist,
+        'active_tab'=>       $active_tab,
+        'status_active'=>    $list_status_active,
+        'status_nonactive'=> $list_status_nonactive,
+        'status_disabled'=>  $list_status_disabled,
+        'maxstrlen'=>        round($perpage / 3),
+        'only_rows'=>        $only_rows));
     return $smarty->fetch('ajax_user_blacklist.tpl');
 }
 

@@ -160,20 +160,21 @@ try {
 
     $_SESSION['control_status'] = $control_status = get_session('control_status', 0);
     init_smarty();
-    $smarty->assign('isconnected',      $isconnected);
-    $smarty->assign('disable_urdland',  $disable_urdland);
-    $smarty->assign('queue_info',       $queue_info);
-    $smarty->assign('uptime_info',      $uptime_info);
-    $smarty->assign('threads_info',     $threads_info);
-    $smarty->assign('jobs_info',        $jobs_info);
-    $smarty->assign('load_info',        $load_info);
-    $smarty->assign('control_status',   $control_status);
-    $smarty->assign('servers_info',     $servers_info);
-    $smarty->assign('servers_totals',   $servers_totals);
-    $smarty->assign('referrer',         'admin_control');
-    $smarty->assign('diskfree',		    $diskspace[0] . ' ' . $diskspace[1]);
-    $smarty->assign('disk_perc',		$disk_perc);
-    $smarty->assign('nodisk_perc',		$nodisk_perc);
+    $smarty->assign(array(
+                'isconnected'=>      $isconnected,
+    'disable_urdland'=>  $disable_urdland,
+    'queue_info'=>       $queue_info,
+    'uptime_info'=>      $uptime_info,
+    'threads_info'=>     $threads_info,
+    'jobs_info'=>        $jobs_info,
+    'load_info'=>        $load_info,
+    'control_status'=>   $control_status,
+    'servers_info'=>     $servers_info,
+    'servers_totals'=>   $servers_totals,
+    'referrer'=>         'admin_control',
+    'diskfree'=>		    $diskspace[0] . ' ' . $diskspace[1],
+    'disk_perc'=>		$disk_perc,
+    'nodisk_perc'=>		$nodisk_perc));
 
     $contents = $smarty->fetch('ajax_admincontrol.tpl');
     return_result(array('contents' => $contents));

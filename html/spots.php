@@ -110,9 +110,9 @@ foreach ($not_subcats as $key => $value) {
     $smarty->assign($key, $value['value']);
 }
 if ($searched_subcats == array()) {
-$smarty->assign('searched_subcats', '');
+    $smarty->assign('searched_subcats', '');
 } else {
-$smarty->assign('searched_subcats', json_encode($searched_subcats));
+    $smarty->assign('searched_subcats', json_encode($searched_subcats));
 }
 $subscribed_categories = subscribed_spots_select($categoryID, $categories);
 $totbin = get_total_spots($db);

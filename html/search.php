@@ -59,16 +59,17 @@ if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_GROUPS)) {
     $subscribedgroups = subscribed_groups_select($db, '', '', $categories, $userid);
     $totbin = get_total_ng_sets($db);
     list($groups_size, $groups_suffix) = format_size($totbin, 'h', '', 1000);
-    $smarty->assign('groups_total_articles', $groups_size . $groups_suffix);
-    $smarty->assign('subscribedgroups',	     $subscribedgroups);
-    $smarty->assign('groupminagelimit',	$minagelimit);
-    $smarty->assign('groupmaxagelimit',	$maxagelimit);
-    $smarty->assign('groupminsetsizelimit',	$minsetsizelimit);
-    $smarty->assign('groupmaxsetsizelimit',	$maxsetsizelimit);
-    $smarty->assign('groupminratinglimit', 0);
-    $smarty->assign('groupmaxratinglimit', 10);
-    $smarty->assign('groupmincompletelimit', 0);
-    $smarty->assign('groupmaxcompletelimit', 100);
+    $smarty->assign(array(
+        'groups_total_articles'=> $groups_size . $groups_suffix,
+        'subscribedgroups'=>	     $subscribedgroups,
+        'groupminagelimit'=>	$minagelimit,
+        'groupmaxagelimit'=>	$maxagelimit,
+        'groupminsetsizelimit'=>	$minsetsizelimit,
+        'groupmaxsetsizelimit'=>	$maxsetsizelimit,
+        'groupminratinglimit'=> 0,
+        'groupmaxratinglimit'=> 10,
+        'groupmincompletelimit'=> 0,
+        'groupmaxcompletelimit'=> 100));
 }
 
 if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_RSS)) {
@@ -82,14 +83,15 @@ if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_RSS)) {
     $subscribedfeeds = subscribed_feeds_select($db, 0, '',  $categories, $userid);
     $totbin = get_total_rss_sets($db);
     list($rss_size, $rss_suffix) = format_size($totbin, 'h', '', 1000);
-    $smarty->assign('rss_total_articles',   $rss_size . $rss_suffix);
-    $smarty->assign('subscribedfeeds',      $subscribedfeeds);
-    $smarty->assign('rssminagelimit',	    $minagelimit);
-    $smarty->assign('rssmaxagelimit',	    $maxagelimit);
-    $smarty->assign('rssminsetsizelimit',	$minsetsizelimit);
-    $smarty->assign('rssmaxsetsizelimit',	$maxsetsizelimit);
-    $smarty->assign('rssminratinglimit', 0);
-    $smarty->assign('rssmaxratinglimit', 10);
+    $smarty->assign(array(
+        'rss_total_articles'=>   $rss_size . $rss_suffix,
+        'subscribedfeeds'=>      $subscribedfeeds,
+        'rssminagelimit'=>	    $minagelimit,
+        'rssmaxagelimit'=>	    $maxagelimit,
+        'rssminsetsizelimit'=>	$minsetsizelimit,
+        'rssmaxsetsizelimit'=>	$maxsetsizelimit,
+        'rssminratinglimit'=> 0,
+        'rssmaxratinglimit'=> 10));
 }
 
 if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_SPOTS)) {
@@ -122,17 +124,18 @@ if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_SPOTS)) {
     $spot_categories = subscribed_spots_select('', $spot_categories);
     $spots_totbin = get_total_spots($db);
     list($spots_size, $spots_suffix) = format_size($spots_totbin, 'h', '', 1000);
-    $smarty->assign('spots_total_articles', $spots_size . $spots_suffix);
-    $smarty->assign('spot_categories',	    $spot_categories);
-    $smarty->assign('spot_subcats',	        $spot_subcats);
-    $smarty->assign('spotmaxagelimit',	    $maxagelimit);
-    $smarty->assign('spotminagelimit',	    $minagelimit);
-    $smarty->assign('spotminsetsize',	    $minsetsize);
-    $smarty->assign('spotmaxsetsize',	    $maxsetsize);
-    $smarty->assign('spotmaxsetsizelimit',	$maxsetsizelimit);
-    $smarty->assign('spotminsetsizelimit',	$minsetsizelimit);
-    $smarty->assign('spotminratinglimit', 0);
-    $smarty->assign('spotmaxratinglimit', 10);
+    $smarty->assign(array(
+        'spots_total_articles'=> $spots_size . $spots_suffix,
+        'spot_categories'=>	    $spot_categories,
+        'spot_subcats'=>	        $spot_subcats,
+        'spotmaxagelimit'=>	    $maxagelimit,
+        'spotminagelimit'=>	    $minagelimit,
+        'spotminsetsize'=>	    $minsetsize,
+        'spotmaxsetsize'=>	    $maxsetsize,
+        'spotmaxsetsizelimit'=>	$maxsetsizelimit,
+        'spotminsetsizelimit'=>	$minsetsizelimit,
+        'spotminratinglimit'=> 0,
+        'spotmaxratinglimit'=> 10));
 }
 
 $smarty->display('search.tpl');

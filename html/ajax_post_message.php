@@ -166,16 +166,17 @@ try {
                 throw new exception($LN['urdddisabled']);
             }
 
-            $smarty->assign('groups',    	    $groups);
-            $smarty->assign('ratings',    	    range(0,10));
-            $smarty->assign('type',    	        $type);
-            $smarty->assign('smileys',    	    get_smileys($smarty->getTemplateVars('IMGDIR')));
-            $smarty->assign('reference',   	    $reference);
-            $smarty->assign('content',    	    $content);
-            $smarty->assign('subject',    	    $subject);
-            $smarty->assign('groupid',    	    $groupid);
-            $smarty->assign('poster_name',    	$poster_name);
-            $smarty->assign('poster_email',    	$poster_email);
+            $smarty->assign(array(
+                'groups'=>    	    $groups,
+                'ratings'=>    	    range(0,10),
+                'type'=>    	        $type,
+                'smileys'=>    	    get_smileys($smarty->getTemplateVars('IMGDIR')),
+                'reference'=>   	    $reference,
+                'content'=>    	    $content,
+                'subject'=>    	    $subject,
+                'groupid'=>    	    $groupid,
+                'poster_name'=>    	$poster_name,
+                'poster_email'=>    	$poster_email));
 
             $contents = $smarty->fetch('ajax_post_message.tpl');
             return_result(array('contents'=>$contents));
