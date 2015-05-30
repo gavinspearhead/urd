@@ -20,6 +20,7 @@
 - Improved parsing search strings in browse pages
 - Reduces memory footprint slightly
 - Updated to jquery 2.1.4 
+- Updated smarty to 3.1.24
 
 
 1.12
