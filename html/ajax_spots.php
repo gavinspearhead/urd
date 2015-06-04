@@ -25,6 +25,7 @@ if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 }
 
+
 $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
@@ -196,7 +197,6 @@ class spot_viewer
             $thisset = array();
             $thisset['interesting'] = $arr['interesting'];
             $thisset['spotid'] = $arr['spotid'];
-            $thisset['sid'] = 'aoeuaoeu';
             $thisset['comments'] = is_numeric($arr['comments']) ? $arr['comments'] : 0;
             $thisset['reports'] = is_numeric($arr['reports']) ? $arr['reports'] : 0;
             $thisset['categorynr'] = $arr['category'];
