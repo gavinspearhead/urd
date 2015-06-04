@@ -1296,6 +1296,7 @@ function mark_read(setid, cmd, type)
                 thetr.toggleClass('markedread');
             } else if (cmd == 'interesting') {
                 thetr.toggleClass('interesting');
+                thetr.toggleClass('even');
                 var thediv = $('#intimg_' + setid);
                 thediv.toggleClass('sadicon');
                 thediv.toggleClass('smileicon');
