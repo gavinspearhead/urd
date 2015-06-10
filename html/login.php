@@ -32,7 +32,6 @@ $pathlo = realpath(dirname(__FILE__));
 require_once "$pathlo/../config.php";
 require_once "$pathlo/../functions/functions.php";
 require_once "$pathlo/../functions/config_functions.php";
-require_once "$pathlo/../functions/file_functions.php";
 require_once "$pathlo/../functions/defines.php";
 require_once "$pathlo/../functions/error_codes.php";
 require_once "$pathlo/../functions/urdversion.php";
@@ -60,8 +59,6 @@ try {
     die_html("Connection to database failed. $msg\n");
 }
 
-require_once "$pathlo/../functions/smarty.php";
-
 $languages = get_languages();
 $language = get_request('language_name', detect_language() . '.php');
 if (!in_array($language, array_keys($languages))) {
@@ -69,6 +66,9 @@ if (!in_array($language, array_keys($languages))) {
 }
 
 $lang_change = get_post('lang_change', '');
+
+require_once "$pathlo/../functions/smarty.php";
+load_language($language);
 
 if (isset($_POST['username'], $_POST['pass'], $_POST['period']) && $_POST['pass'] != '' && $_POST['username'] != '') {
     require_once "$pathlo/../functions/checkauth.php";
@@ -84,9 +84,6 @@ if (isset($_POST['username'], $_POST['pass'], $_POST['period']) && $_POST['pass'
 }
 
 $prefs = load_config($db, TRUE);
-
-load_language($language);
-
 $register = (get_config($db, 'register') > 0) ? 1 : 0;
 $ip_address = $_SERVER['REMOTE_ADDR'];
 $token = generate_password(8);
@@ -94,7 +91,6 @@ $token = generate_password(8);
 if (!isset($message)) {
     $message = '';
 }
-
 init_smarty($LN['login_title']);
 $smarty->assign(array(
     'message'=>        $message,

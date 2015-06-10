@@ -62,7 +62,7 @@ a:hover
 div.light
 {
     color: white;
-    font-size: 9pt;
+    font-size: 10pt;
 }
 
 .interesting
@@ -195,14 +195,14 @@ table.preferences
 {
     border-collapse: collapse;
     width: 99%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana;
 }
 table.transfers, table.tasks
 {
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.newsgroups
@@ -210,7 +210,7 @@ table.newsgroups
     margin-top: 1px;
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.files
@@ -218,7 +218,7 @@ table.files
     margin-top: -1px;
     border-collapse: collapse;
     width: 99%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdan, Arial, Helvetica, Sans-Serifa;
 }
 
@@ -297,7 +297,7 @@ table.files
 }
 div.log {
     overflow-y: auto;
-    font-size: xx-small;
+    font-size: x-small;
     font-family: courier, Monospace;
 }
 div.setinfo
@@ -307,7 +307,7 @@ div.setinfo
     overflow-y: scroll;
     height: 240px;
     width: auto;
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 .transferstatus
@@ -347,7 +347,7 @@ input, select, textarea
     color: #101010;
     padding: 0px 0px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    font-size: xx-small;
+    font-size: x-small;
     border: 1px solid;
     font-weight: bold;
     border-color: #333d68 #213c68 #433d68 #213c68;
@@ -365,7 +365,7 @@ input, select, textarea
 
 #status
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     padding-left: 10px;
     overflow-x: hidden;
@@ -486,7 +486,7 @@ background: #253D63;
     top: 125px;
     left: 3px;
     z-index: 301;
-    font-size: x-small;
+    font-size: small;
 }
 
 .newset {
@@ -563,13 +563,13 @@ background: #253D63;
 }
 .basketright
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     text-align: right;
 }
 .basketleft
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.basketbuttons
@@ -624,7 +624,7 @@ table.browsetoptable
     color: white;
     text-align: left;
     vertical-align: top;
-    font-size: x-small;
+    font-size: small;
     overflow: hidden;
 }
 .quickmenubutton:hover
@@ -636,7 +636,7 @@ table.browsetoptable
     position: fixed;
     background: #000066;
     border: 1px solid #002c3d;
-    font-size: x-small;
+    font-size: small;
     height: 24px;
 }
 
@@ -752,7 +752,7 @@ input[type=text], textarea, select, input[type=password], input[type=checkbox], 
     border-color: #333d68 #213c68 #433d68 #213c68;
     padding-bottom:0px;
     padding-top:0px;
-    font-size: x-small;
+    font-size: small;
 }
 
 option
@@ -1558,7 +1558,7 @@ div.bottom {
 .content 
 {
     font-family: Geneva, Arial, Helvetica, sans-serif;
-    font-size: x-small;
+    font-size: small;
     vertical-align: top;
     top: 140px;
     height: 100%;

@@ -52,7 +52,6 @@ require_once "$pathcap/../functions/exception.php";
 require_once "$pathcap/../html/fatal_error.php";
 require_once "$pathcap/../functions/smarty.php";
 
-$img_dir = $smarty->getTemplateVars('IMGDIR');
 
 header('Expires: Mon, 25 Jun 1995 06:06:06 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -65,8 +64,7 @@ function generate_random($length=6)
     assert (is_numeric($length));
     $_rand_src = array(
         array(49, 57), //digits
-//        array(97,122), //lowercase chars
-      array(65,90) //uppercase chars
+        array(65,90) //uppercase chars
     );
     mt_srand ();
     $random_string = '';
@@ -78,13 +76,31 @@ function generate_random($length=6)
     return $random_string;
 }
 
-$im = @imagecreatefromjpeg($img_dir . '/captcha.jpg');
-$rand = generate_random(3);
+function get_image($x, $y)
+{
+    $im = imagecreatetruecolor($x, $y);
+
+    for ($i=0 ; $i< $x; $i++) {
+        for ($j=0 ; $j< $y; $j++) {
+            $c = mt_rand(140, 200);
+            if (mt_rand(0,1) == 0) {
+                $cl = imagecolorallocate($im, $c, $c, $c);
+            }else {
+                $cl = imagecolorallocate($im, 255, 255, 255);
+            }
+                imagesetpixel($im, $i, $j, $cl);
+        }
+    }
+    return $im;
+}
+
+$im = get_image(80,20);
+$rand = generate_random(4);
 $_SESSION['register_captcha'] = $rand;
-ImageString($im, 5, 2, 2, $rand[0]. ' ' . $rand[1] . ' ' . $rand[2] . ' ', ImageColorAllocate($im, 0, 0, 0));
-$rand = generate_random(3);
-ImageString($im, 5, 2, 2, ' ' . $rand[0] . ' ' . $rand[1] . ' ' . $rand[2] , ImageColorAllocate($im, 255, 0, 0));
-header('Content-type: image/jpeg'); 
-imagejpeg($im, NULL, 100);
+ImageString($im, 5, 2, 2, $rand[0]. ' ' . $rand[1] . ' ' . $rand[2] . ' '. $rand[3] . ' '  , ImageColorAllocate($im, 0, 0, 0));
+$rand = generate_random(4);
+ImageString($im, 5, 2, 2, ' ' . $rand[0] . ' ' . $rand[1] . ' ' . $rand[2] .' ' . $rand[3]  , ImageColorAllocate($im, 200, 0, 00));
+header('Content-type: image/png'); 
+imagepng($im, NULL, 0);
 ImageDestroy($im);
 die;

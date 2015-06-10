@@ -78,7 +78,6 @@ function get_smarty_dirs($template)
     return array($tpl_dir, $ctpl_dir, $cache_dir, $config_dir);
 }
 
-
 function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching=FALSE)
 {
     global $LN, $smarty, $db, $isadmin, $config, $userid, $tpldir;
@@ -87,6 +86,7 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
     if ($clickjack) {
         @header('X-Frame-Options: sameorigin'); // click jack prevention
     }
+    register_smarty_extensions($smarty);
     $modules = urd_modules::get_urd_module_config(get_config($db, 'modules'));
     $show_post = $modules[urd_modules::URD_CLASS_POST];
     $show_makenzb = $modules[urd_modules::URD_CLASS_MAKENZB];
@@ -101,7 +101,6 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
     $urdd_online = check_urdd_online($db);
     $challenge = challenge::set_challenge();
     $template = get_template($db, $userid);
-    register_smarty_extensions($smarty);
     list($tpl_dir, $ctpl_dir, $cache_dir, $config_dir) = get_smarty_dirs($template);
 
     $smarty->assign(array(
@@ -127,6 +126,12 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
     }
     $smarty->enableSecurity();
     $smarty->setCompileCheck(isset($config['smarty_compile_check']) ? $config['smarty_compile_check'] : TRUE);
+    //load smarty language elements
+    foreach ($LN as $key => $word) {
+        $LN2['LN_' . $key] = $word;
+    }
+    $smarty->assign($LN2);
+    unset($LN2);
     $smarty->assign(array(
         'title' => $LN['urdname'] . ' - ' . $title,
         'allow_robots' => get_config($db, 'allow_robots', 0),

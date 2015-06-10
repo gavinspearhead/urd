@@ -65,7 +65,6 @@ function get_cookie($var, $default='', $verify_fn=NULL)
 // get a value from the _POST or _GET variable. 
 // Not equivalent to _REQUEST as it also includes $_COOKIE
 
-
 function get_request($var, $default='', $verify_fn=NULL)
 {
     assert($var !== NULL);
@@ -993,10 +992,10 @@ function die_html($msg)
 
 function load_language($lang)
 {
-    global $smarty, $LN;
+    global $LN;
 
     if (isset($LN)) {
-        unset($LN);
+        $LN=array();
     }
 
     $pathsl = realpath(dirname(__FILE__));

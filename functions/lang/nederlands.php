@@ -133,7 +133,7 @@ $LN['deleted']      = 'Verwijderd';
 $LN['sets']         = 'sets';
 $LN['reload']       = 'herladen';
 $LN['CAPTCHA1']     = 'Captcha';
-$LN['CAPTCHA2']     = '3 zwarte tekens';
+$LN['CAPTCHA2']     = '4 zwarte tekens';
 $LN['active']       = 'Actief';
 $LN['whitelisttag'] = 'W';
 $LN['blacklisttag']     = 'Z';
@@ -1976,10 +1976,3 @@ $LN['dashboard_max_nntp']      = 'Maximale aantal NNTP verbindingen';
 $LN['dashboard_max_threads']   = 'Maximale aantal taken';
 $LN['dashboard_max_db_intensive']	= 'Maximum aantal database intensieve taken';
 
-if (isset($smarty)) { // don't do the smarty thing if we read it from urdd
-    foreach ($LN as $key => $word) {
-        $LN2['LN_' . $key] = $word;
-    }
-    $smarty->assign($LN2);
-    unset($LN2);
-}

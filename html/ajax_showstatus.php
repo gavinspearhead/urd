@@ -49,7 +49,7 @@ try {
         $counter = 0;
         if ($isconnected) {
             $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status"= :status';
-            $res = $db->select_query($sql, array(':status'=>QUEUE_RUNNING));
+            $res = $db->select_query($sql, array(':status' => QUEUE_RUNNING));
             $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
         }
         $smarty->assign('counter', $counter);

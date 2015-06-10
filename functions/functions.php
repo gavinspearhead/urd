@@ -1010,9 +1010,9 @@ function get_download_name(DatabaseConnection $db, $id)
 {
     assert(is_numeric($id));
 
-    $query = '"name" FROM downloadinfo WHERE "ID"=?';
-    $res = $db->select_query($query, 1, array($id));
-    if ($res === FALSE) {
+    $query = '"name" FROM downloadinfo WHERE "ID"=:id';
+    $res = $db->select_query($query, 1, array(':id'=>$id));
+    if (!isset($res[0]['name'])) {
         global $LN;
         throw new exception ($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
@@ -1031,8 +1031,8 @@ function get_download_progress(DatabaseConnection $db, $dlid)
 function get_download_info(DatabaseConnection $db, $id)
 {
     assert(is_numeric($id));
-    $res = $db->select_query('* FROM downloadinfo WHERE "ID"=?', 1, array($id));
-    if ($res === FALSE) {
+    $res = $db->select_query('* FROM downloadinfo WHERE "ID"=:id', 1, array(':id'=>$id));
+    if (!isset($res[0])) {
         global $LN;
         throw new exception ($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
@@ -1099,8 +1099,8 @@ function set_download_name(DatabaseConnection $db, $dlid, $dlname)
 function get_dl_dir(DatabaseConnection $db, $dlid)
 {
     assert(is_numeric($dlid));
-    $sql = '"dl_dir", "add_setname" FROM downloadinfo WHERE "ID"=?';
-    $res = $db->select_query($sql, 1, array($dlid));
+    $sql = '"dl_dir", "add_setname" FROM downloadinfo WHERE "ID"=:id';
+    $res = $db->select_query($sql, 1, array(':id'=>$dlid));
 
     return (!isset($res[0])) ? FALSE : array($res[0]['dl_dir'], $res[0]['add_setname']);
 }
@@ -1115,9 +1115,9 @@ function set_dl_dir(DatabaseConnection $db, $dlid, $dl_dir, $add_setname)
 function get_binary_size(DatabaseConnection $db, $pbin_id, $pgroup_id)
 {
     assert(is_numeric($pgroup_id));
-    $sql = "\"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\" = ?";
-    $res = $db->select_query($sql, array($pbin_id));
-    if (!isset($res[0])) {
+    $sql = "\"bytes\" FROM binaries_$pgroup_id WHERE \"binaryID\" = :id";
+    $res = $db->select_query($sql, array(':id'=>$pbin_id));
+    if (!isset($res[0]['bytes'])) {
         throw new exception($LN['error_binariesnotfound']);
     }
     $size = $res[0]['bytes'];
@@ -1141,7 +1141,7 @@ function set_download_size(DatabaseConnection $db, $dlid, $totalsize)
 function get_start_time(DatabaseConnection $db, $dlid)
 {
     assert(is_numeric($dlid));
-    $res = $db->select_query('"start_time" FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
+    $res = $db->select_query('"start_time" FROM downloadinfo WHERE "ID"=:id', 1, array(':id'=>$dlid));
 
     return (!isset($res[0])) ? FALSE : $res[0]['start_time'];
 }
@@ -1156,7 +1156,7 @@ function get_dlinfo_status(DatabaseConnection $db, $dlid)
 {
     global $LN;
     assert(is_numeric($dlid));
-    $res = $db->select_query('"status" FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
+    $res = $db->select_query('"status" FROM downloadinfo WHERE "ID"=:id', 1, array(':id'=>$dlid));
     if (!isset($res[0])) {
         throw new exception ($LN['error_downloadnotfound'] . ": $dlid", ERR_DOWNLOAD_NOT_FOUND);
     }

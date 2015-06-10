@@ -114,7 +114,7 @@ $LN['short_day_names'][6]	= 'Fri';
 $LN['short_day_names'][7]	= 'Sat';
 
 $LN['CAPTCHA1']   = 'Captcha';
-$LN['CAPTCHA2']   = '3 black symbols';
+$LN['CAPTCHA2']   = '4 black symbols';
 
 $LN['autoconfig_msg']       = 'Autoconfigure: It tries all servers in the list and sees if there is a server at the standard usenet ports (119 and 563), with or without ssl/tls. If it finds one it selects it; and updating server is selected if one is found that allows indexing';
 $LN['autoconfig_ext_msg']   = 'Extended autoconfigure: It tries all servers in the list and sees if there is a server at the standard usenet ports (119 and 563) and many other ports that may be used by usenet service providers (like 23, 80, 8080, 443), with or without ssl/tls. If it finds one it selects it; and updating server is selected if one is found that allows indexing';
@@ -1952,10 +1952,4 @@ $LN['password_strong']      = 'Password strength: strong';
 $LN['password_correct']     = 'Passwords match';
 $LN['password_incorrect']   = 'Passwords do not match';
 
-if (isset($smarty)) { // don't do the smarty thing if we read it from urdd
-    foreach ($LN as $key => $word) {
-        $LN2['LN_' . $key] = $word;
-    }
-    $smarty->assign($LN2);
-    unset($LN2);
-}
+

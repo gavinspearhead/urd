@@ -2379,9 +2379,9 @@ function do_getblacklist(DatabaseConnection $db, action $item)
             $add_ids[$id] = array($id, blacklist::BLACKLIST_EXTERNAL, blacklist::ACTIVE, 0);
         }
     }
+    $cnt = 0;
     if (count($add_ids) > 0) {
         $del = array();
-        $cnt = 0;
         foreach ($blacklist as $id => $val) {
             if ($val == 0) {
                 $cnt++;
@@ -2428,10 +2428,10 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
             $add_ids[$id] = array($id, whitelist::WHITELIST_EXTERNAL, whitelist::ACTIVE, 0);
         }
     }
+    $cnt = 0;
     if (count($add_ids) > 0) {
         $cols = array('spotter_id', 'source', 'status', 'userid');
         $db->insert_query('spot_whitelist', $cols, $add_ids);
-        $cnt = 0;
         foreach ($whitelist as $id => $val) {
             if ($val == 0) {
                 $cnt++;

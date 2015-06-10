@@ -65,7 +65,7 @@ a:hover
 div.light
 {
     color: #f1f1f1;
-    font-size: 9pt;
+    font-size: 10pt;
 }
 
 .even
@@ -220,7 +220,7 @@ table.preferences
 {
     border-collapse: collapse;
     width: 99%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana;
 }
 
@@ -229,7 +229,7 @@ table.newsgroups
     margin-top: 1px;
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.files
@@ -237,14 +237,14 @@ table.files
     margin-top: -1px;
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdan, Arial, Helvetica, Sans-Serifa;
 }
 table.transfers, table.tasks
 {
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 
@@ -317,7 +317,7 @@ table.transfers, table.tasks
 }
 div.log {
     overflow-y: auto;
-    font-size: xx-small;
+    font-size: x-small;
     font-family: courier, Monospace;
 }
 div.setinfo
@@ -327,7 +327,7 @@ div.setinfo
     overflow-y: scroll;
     height: 240px;
     width: auto;
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 .transferstatus
@@ -367,7 +367,7 @@ input,select, textarea
     color: #d1d1d1;
     padding: 0px 0px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    font-size: xx-small;
+    font-size: x-small;
     border: 2px solid;
     font-weight: bold;
     border-color: #434343 #373737 #535353 #373737;
@@ -384,7 +384,7 @@ input,select, textarea
 }
 #status
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     padding-left: 10px;
     overflow-x: hidden;
@@ -510,7 +510,7 @@ input,select, textarea
     top: 125px;
     left: 3px;
     z-index: 301;
-    font-size: x-small;
+    font-size: small;
 }
 
 .newset {
@@ -599,13 +599,13 @@ input,select, textarea
 }
 .basketright
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     text-align: right;
 }
 .basketleft
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.basketbuttons
@@ -656,7 +656,7 @@ table.browsetoptable
     color: #f1f1f1;
     text-align: left;
     vertical-align: top;
-    font-size: x-small;
+    font-size: small;
     overflow: hidden;
 }
 .quickmenubutton:hover
@@ -668,7 +668,7 @@ table.browsetoptable
     position: absolute;
     background: #aaaaaa;
     border: 1px solid #111111;
-    font-size: x-small;
+    font-size: small;
     height: 24px;
 }
 
@@ -777,7 +777,7 @@ input[type=text], textarea, select, input[type=password], input[type=checkbox], 
     border-color: #333333 #414141 #535353 #414141;
     padding-bottom: 0px;
     padding-top: 0px;
-    font-size: x-small;
+    font-size: small;
 }
 
 option

@@ -588,6 +588,7 @@ function _hide_overlayed_content(content, back)
 
 function _show_overlayed_content(html, style, content, back, close_button)
 {
+    console.log(html);
     $(content).html('');
     if (html.substr(0, 7) == ':error:') {
         set_message('message_bar', html.substr(7), 5000);
@@ -1173,10 +1174,12 @@ function load_disk_status()
 var activity_status = 0;
 function load_activity_status(force)
 {
-    if ((activity_status + 4000) >= (new Date().getTime()) && force != 1) {
+    var new_date = new Date().getTime();
+
+    if ((activity_status + 4000) >= (new_date) && force != 1) {
         return;
     }
-    activity_status = new Date().getTime();
+    activity_status = new_date;
 
     var url = 'ajax_showstatus.php';
     $.post(url, { type: 'activity' }).done(function(html) {
@@ -1217,7 +1220,7 @@ function update_activity_status()
 
 function update_disk_status()
 {
-    // call ajax, restart in 10 seconds
+    // call ajax, restart in 15 seconds
     load_disk_status();
     setInterval(load_disk_status, 15000);
 }
@@ -1493,6 +1496,8 @@ function show_preview(dlid, binary_id, group_id)
         binary_id: binary_id,
         group_id: group_id
     };
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'popup700x400');
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -2441,6 +2446,8 @@ function show_quick_display(srctype, subject, e, type)
 {
     // Fill menu
     var url = 'ajax_showquickdisplay.php';
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'quickwindowon');
     $.post(url, {
             type: type,
             srctype: srctype,
@@ -2859,6 +2866,8 @@ function edit_file(fileid)
         challenge: challenge
     };
 
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'quickwindowon');
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -2919,6 +2928,8 @@ function edit_categories()
         challenge: challenge
     };
     close_browse_divs();
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'quickwindowon');
 
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
@@ -3474,6 +3485,8 @@ function show_savename()
         name: save_name,
         cmd: 'show'
     };
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'savenamediv');
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'savenamediv');
@@ -4433,6 +4446,8 @@ function show_contents(file, idx)
 {
     var url = 'ajax_get_textfile.php';
     var challenge = get_value_from_id('challenge', '');
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'popup700x400');
     $.post(url, {
         file: file,
         idx: idx,
@@ -4467,6 +4482,8 @@ function show_image(file, idx)
     var preview = get_value_from_id('preview', '');
     var width = Math.floor($(window).width() * 0.9);
     var height = Math.floor($(window).height() * 0.9);
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'popup700x400');
 
     $.post(url, {
             file: file,
@@ -5758,6 +5775,8 @@ function update_ng_time(type, group_id)
 function show_post_spot()
 {
     var url = 'ajax_post_spot.php';
+    var loading_msg = $('#loading_msg').val();
+    show_overlayed_content_1(loading_msg, 'popup700x400');
 
     $.post(url, { cmd: 'show' }).done(function(html) {
         var x = $.parseJSON(html);

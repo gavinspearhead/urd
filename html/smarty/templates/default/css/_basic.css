@@ -62,7 +62,7 @@ td.preview_right
     padding-left: 5px;
     padding-right: 5px;
     font-family: verdana;
-    font-size: x-small;
+    font-size: small;
 }
 
 td.preview
@@ -71,7 +71,7 @@ td.preview
     padding-left: 5px;
     padding-right: 5px;
     font-family: verdana;
-    font-size: x-small;
+    font-size: small;
     vertical-align: middle;
     overflow: hidden;
 }
@@ -824,5 +824,5 @@ div.suggestion
     white-space: nowrap;
     width: 100%;
     font-family: Geneva, Arial, Helvetica, sans-serif;
-    font-size: x-small;
+    font-size: small;
 }

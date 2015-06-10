@@ -51,7 +51,7 @@
     </td>
     <td>
     <img src="captcha.php" alt="captcha image"/>
-    <input type="text" name="register_captcha" size="3" maxlength="3" id="captcha" required/></td></tr>
+    <input type="text" name="register_captcha" size="4" maxlength="4" id="captcha" required/></td></tr>
 {/if}
 <tr><td></td><td><input type='button' value="{$LN_register}" id="register_button" class="submitsmall floatright"/></td></tr>
 </tbody>

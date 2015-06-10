@@ -114,7 +114,7 @@ $LN['expire']        = 'D&eacute;lai d&#39;expiration';
 $LN['update']        = 'Mettre &agrave; jour';
 $LN['purge']         = 'Purger';
 $LN['CAPTCHA1']      = 'Captcha';
-$LN['CAPTCHA2']      = '3 symboles noirs';
+$LN['CAPTCHA2']      = '4 symboles noirs';
 
 $LN['autoconfig_msg']       = 'Autoconfiguration: essaye tous les serveurs de la liste et regarde s&#039;il y a un serveur aux ports standard usenet (119 et 563), avec ou sans ssl/tls. Si un est trouv&eacute;&#39;, il est s&eacute;lectionn&eacute;; et \"mettre &agrave; jour serveur\" est s&eacute;lectionn&eacute; si le serveur trouv&eacute; autorise l&#039;indexation';
 $LN['autoconfig_ext_msg']       = 'Autoconfiguration &eacute;tendue: essaye tous les serveurs de la liste et regarde s&#39;il y a un serveur aux ports standard usenet (119 et 563) et &agrave; d&#39;autres qui peuvent &ecirc;tre utilis&eacute;s par les fournisseurs de service usenet (comme 23, 80, 8080, 443), avec ou sans ssl/tls. Si un est trouv&eacute;, il est s&eacute;lectionn&eacute;; et \"mettre &agrave; jour serveur\" est s&eacute;lectionn&eacute; si le serveur trouv&eacute; autorise l&#39;indexation';
@@ -1987,10 +1987,4 @@ $LN['dashboard_max_nntp']      = 'Nombre maximum de connexion NNTP';
 $LN['dashboard_max_threads']   = 'Nombre maximum de threads';
 $LN['dashboard_max_db_intensive']	    = 'Nombre maximum de threads &agrave; usage intensif de la base de donn&eacute;es';
 
-if (isset($smarty)) { // don't do the smarty thing if we read it from urdd
-    foreach ($LN as $key => $word) {
-        $LN2['LN_' . $key] = $word;
-    }
-    $smarty->assign($LN2);
-    unset($LN2);
-}
+

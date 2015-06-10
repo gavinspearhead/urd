@@ -43,7 +43,6 @@ require_once "$pathreg/../functions/urd_log.php";
 require_once "$pathreg/../functions/autoincludes.php";
 require_once "$pathreg/../functions/defaults.php";
 require_once "$pathreg/../functions/functions.php";
-require_once "$pathreg/../functions/file_functions.php";
 
 try {
     $db = connect_db(FALSE);  // initialise the database
@@ -60,7 +59,6 @@ require_once "$pathreg/../functions/web_functions.php";
 $lang = detect_language() . '.php';
 
 require_once "$pathreg/../functions/mail_functions.php";
-require_once "$pathreg/../html/fatal_error.php";
 require_once "$pathreg/../functions/defines.php";
 
 require_once "$pathreg/../functions/smarty.php";

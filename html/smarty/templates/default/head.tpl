@@ -133,6 +133,7 @@
 <input type="hidden" id="challenge" value="{$challenge}"/>
 <input type="hidden" id="cssdir" value="{$CSSDIR}"/>
 <input type="hidden" name="urdd_status" id="urdd_status" value="{$urdd_online}"/>
+<input type="hidden" id="loading_msg" value="{$LN_loading}"/>
 
 <div id="overlay_back">
     <div id="overlay_content"></div>

@@ -63,7 +63,7 @@ a:hover
 div.light
 {
     color: white;
-    font-size: 9pt;
+    font-size: 10pt;
 }
 
 .even
@@ -199,14 +199,14 @@ table.preferences
 {
     border-collapse: collapse;
     width: 99%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.transfers
 {
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 
@@ -215,7 +215,7 @@ table.newsgroups
     margin-top: 1px;
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.files
@@ -223,7 +223,7 @@ table.files
     margin-top: -1px;
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.tasks
@@ -231,7 +231,7 @@ table.tasks
     margin-top: -1px;
     border-collapse: collapse;
     width: 100%;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 
@@ -311,7 +311,7 @@ table.tasks
 }
 div.log {
     overflow-y: auto;
-    font-size: xx-small;
+    font-size: x-small;
     font-family: courier, Monospace;
 }
 div.setinfo
@@ -321,7 +321,7 @@ div.setinfo
     overflow-y: scroll;
     height: 240px;
     width: auto;
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 .transferstatus
@@ -359,7 +359,7 @@ input, select, textarea
     color: #303030;
     padding: 0 0;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    font-size: xx-small;
+    font-size: x-small;
     border: 2px solid;
     font-weight: bold;
     border-color:#484848 #484848 #707070 #707070;
@@ -375,7 +375,7 @@ input, select, textarea
 }
 #status
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     padding-left: 10px;
     overflow-x: hidden;
@@ -501,7 +501,7 @@ input, select, textarea
     top: 125px;
     left: 3px;
     z-index: 301;
-    font-size: x-small;
+    font-size: small;
 }
 .newset {
     color: yellow;
@@ -592,14 +592,14 @@ input, select, textarea
 
 .basketright
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     text-align: right;
 }
 
 .basketleft
 {
-    font-size: xx-small;
+    font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 
@@ -658,7 +658,7 @@ td.minimalistic
     color: black;
     text-align: left;
     vertical-align: top;
-    font-size: x-small;
+    font-size: small;
     overflow: hidden;
 }
 #quickmenuinner
@@ -673,7 +673,7 @@ td.minimalistic
     position: absolute;
     background: #000066;
     border: 1px solid #565427;
-    font-size: x-small;
+    font-size: small;
     height: 24px;
 }
 .qmclose:hover
@@ -787,7 +787,7 @@ td.minimalistic
 input[type=text], textarea, select, input[type=password], input[type=checkbox], input[type=radio], input[type=file], input[type=email]
 {
     background: #dbdaa9;
-    font-size: x-small;
+    font-size: small;
     border: solid 2px ;
     color: #101010;
     border-color:#484848 #484848 #707070 #707070;
@@ -1595,7 +1595,7 @@ div.bottom {
 .content 
 {
     font-family: Geneva, Arial, Helvetica, sans-serif;
-    font-size: x-small;
+    font-size: small;
     vertical-align: top;
     top: 140px;
     height: 100%;

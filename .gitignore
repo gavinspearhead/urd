@@ -9,3 +9,4 @@ tools/*.tgz
 login.txt
 tags
 html/smarty/cache/*.tpl.php
+tmp/
