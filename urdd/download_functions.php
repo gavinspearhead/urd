@@ -709,8 +709,7 @@ function verify_par(DatabaseConnection $db, $dir, $dlid, pr_list $files, action 
     if ($count == $succ) {
         write_log("Successful download $dlid");
         $comment = 'PAR2 complete ';
-        $endtime = time();
-        $t_time = $endtime - $starttime;
+        $t_time = time() - $starttime;
         $error = FALSE;
         unlink($log_file);
         update_queue_status($db, $item->get_dbid(), NULL, $t_time, 50, $comment);

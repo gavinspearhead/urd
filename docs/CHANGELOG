@@ -18,6 +18,7 @@
 - Added search engines Mijn Serie and NZBFriends
 - Added submenu indicator to quickmenu
 - Improved parsing search strings in browse pages
+- Small improvements to layout
 - Reduces memory footprint slightly
 - Updated to jquery 2.1.4 
 - Updated smarty to 3.1.24

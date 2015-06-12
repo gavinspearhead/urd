@@ -84,7 +84,7 @@
 <tr>
 <th class="head round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
-<th class="head buttonlike" id="browsesubjecttd">{$LN_browse_subject} {$title_sort}</th>
+<th class="head buttonlike" width="100%" id="browsesubjecttd">{$LN_browse_subject} {$title_sort}</th>
 {if $small == 0}
 <th class="head fixwidth1 buttonlike" id="head_reports">{$LN_spamreporttag}</th>
 <th class="head">{$LN_whitelisttag}</th>

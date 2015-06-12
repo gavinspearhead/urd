@@ -4216,6 +4216,7 @@ function update_widths(the_id)
 {
     //$('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(1); });
     var oritextwidth = $('#' + the_id).outerWidth();
+    console.log(oritextwidth);
     // First set all elements to the CURRENT width, this increases the TD size because of padding:
     $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth);} );
 
@@ -4223,6 +4224,7 @@ function update_widths(the_id)
     var newtextwidth = $('#' + the_id).outerWidth();
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
+    console.log(correctedtextwidth, padding, newtextwidth);
 
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
