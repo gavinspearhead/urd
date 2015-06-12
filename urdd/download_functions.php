@@ -692,7 +692,7 @@ function verify_par(DatabaseConnection $db, $dir, $dlid, pr_list $files, action 
     foreach ($files->file_list as $f) {
         if ($f->ext == file_extensions::PAR_EXT) {
             $filename = my_escapeshellarg($f->files[0]);
-            exec ("nice -$niceval $par_cmd $par2_params ./$filename * >>$log_file 2>&1", $output, $rv);
+            exec("nice -$niceval $par_cmd $par2_params ./$filename * >>$log_file 2>&1", $output, $rv);
             $count++;
             if ($rv == 0) {
                 $succ++;

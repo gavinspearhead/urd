@@ -61,7 +61,7 @@ function my_escapeshellarg($str, $hide_space=TRUE)
     $sub_chars = array('\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"');
     if ($hide_space) {
         $chars[] = ' ';
-        $sub_chars = '\\ ';
+        $sub_chars[] = '\\ ';
     }
     return str_replace($chars, $sub_chars, $str);
 }
