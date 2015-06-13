@@ -39,21 +39,21 @@ if ($isadmin) {
     $add_menu = array (
         'actions'=>
         array(
-            new menu_item2 ('updatespots', 'adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotscomments', 'adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotsimages', 'adminupdate_spotsimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('expirespots', 'expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('purgespots', 'purge', urd_modules::URD_CLASS_SPOTS, $LN['adminpurge_spots'], 'command')
+            new menu_item2('updatespots', 'adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('updatespotscomments', 'adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('updatespotsimages', 'adminupdate_spotsimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('expirespots', 'expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('purgespots', 'purge', urd_modules::URD_CLASS_SPOTS, $LN['adminpurge_spots'], 'command')
         )
     );
 } elseif (urd_user_rights::is_updater($db, $userid)) {
     $add_menu = array (
         'actions'=>
         array(
-            new menu_item2 ('updatespots', 'adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotscomments', 'adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('updatespotsimages', 'adminupdate_spotimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
-            new menu_item2 ('expirespots', 'expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('updatespots', 'adminupdate_spots', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('updatespotscomments', 'adminupdate_spotscomments', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('updatespotsimages', 'adminupdate_spotimages', urd_modules::URD_CLASS_SPOTS, '', 'command'),
+            new menu_item2('expirespots', 'expire', urd_modules::URD_CLASS_SPOTS, '', 'command'),
         )
     );
 }
@@ -62,8 +62,8 @@ if (urd_user_rights::is_poster($db, $userid)) {
     $add_menu['actions'][] = new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_SPOTS, '', 'command');
 }
 
-$add_menu['actions'][] = new menu_item2 ('add_search', 'add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
-$add_menu['actions'][] = new menu_item2 ('delete_search', 'delete_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
+$add_menu['actions'][] = new menu_item2('add_search', 'add_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
+$add_menu['actions'][] = new menu_item2('delete_search', 'delete_search', urd_modules::URD_CLASS_SPOTS, '', 'command');
 
 $search = utf8_decode(html_entity_decode(trim(get_request('search', ''))));
 $type = USERSETTYPE_SPOT;

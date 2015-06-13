@@ -4216,7 +4216,6 @@ function update_widths(the_id)
 {
     //$('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(1); });
     var oritextwidth = $('#' + the_id).outerWidth();
-    console.log(oritextwidth);
     // First set all elements to the CURRENT width, this increases the TD size because of padding:
     $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth);} );
 
@@ -4224,7 +4223,6 @@ function update_widths(the_id)
     var newtextwidth = $('#' + the_id).outerWidth();
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
-    console.log(correctedtextwidth, padding, newtextwidth);
 
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
@@ -4257,9 +4255,7 @@ function show_alert(msg)
 
 function insert_at_every(str, ins, pos)
 {
-    var l = str.length,
-        i = 0,
-        res = '';
+    var l = str.length, i = 0, res = '';
 
     while ((i + pos) < l) {
         res = res + str.substr(i, pos) + ins;
@@ -6048,6 +6044,9 @@ function load_side_bar(fn)
                     uncheck_all(null);
                     init_spot_sliders();
                 });
+                $('#save_search_button').click(function() {
+                    do_command('add_search', '');
+                });
                 show_sidebar(false);
                 fn();
             }
@@ -6065,6 +6064,9 @@ function load_side_bar(fn)
                     clear_form('searchform');
                     init_browse_sliders();
                 });
+                $('#save_search_button').click(function() {
+                    do_command('add_search', '');
+                });
                 show_sidebar(false);
                 fn();
             }
@@ -6081,6 +6083,9 @@ function load_side_bar(fn)
                     clear_form('sidebar_contents');
                     clear_form('searchform');
                     init_rss_sliders();
+                });
+                $('#save_search_button').click(function() {
+                    do_command('add_search', '');
                 });
                 show_sidebar(false);
                 fn();

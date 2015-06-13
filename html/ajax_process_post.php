@@ -43,6 +43,7 @@ function get_post_vals(DatabaseConnection $db, $userid, &$timestamp)
     $dlpath = my_realpath(get_dlpath($db) . POST_PATH);
     $groupID = get_post('groupid', '');
     if ($groupID == '' || !is_numeric($groupID) || !group_exists($db, $groupID)) {
+
         throw new exception ($LN['error_groupnotfound'] . " $groupID");
     }
     $groupID_nzb = get_post('groupid_nzb', '');

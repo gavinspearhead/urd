@@ -229,7 +229,8 @@ try {
             $cat = get_request('category');
             $adult = urd_user_rights::is_adult($db, $userid);
             $subcats = SpotCategories::get_subcats($cat, $adult);
-            $smarty->assign('subcats',    	    $subcats);
+            init_smarty();
+            $smarty->assign('subcats', $subcats);
             $content = $smarty->fetch('ajax_subcats_info.tpl');
             return_result(array('content' => $content));
             break;
@@ -273,7 +274,7 @@ try {
                 'smileys'=>    	    get_smileys($smarty->getTemplateVars('IMGDIR')),
                 'subject'=>    	    $subject,
                 'poster_name'=>    	$poster_name,
-                'poster_email'=>    	$poster_email,
+                'poster_email'=>   	$poster_email,
                 'categories'=>	    $categories));
 
             $contents = $smarty->fetch('ajax_post_spot.tpl');

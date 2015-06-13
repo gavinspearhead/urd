@@ -2236,8 +2236,7 @@ function group_exists(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
     $res = $db->select_query('"ID" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
-
-    return isset($res['ID']);
+    return isset($res[0]['ID']);
 }
 
 function get_search_options_for_user(DatabaseConnection $db, $userid)

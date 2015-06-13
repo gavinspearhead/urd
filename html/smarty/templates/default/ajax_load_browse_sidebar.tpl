@@ -78,6 +78,7 @@
 
 <div class="even">
 <br>
+<input type="button" value="{$LN_add_search}" id="save_search_button" class="submitsmall"/>
 <input type="button" value="{$LN_reset}" id="reset_button" class="submitsmall"/>
 </div>
 

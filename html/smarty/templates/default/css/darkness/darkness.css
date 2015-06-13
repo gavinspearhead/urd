@@ -354,25 +354,120 @@ input,select, textarea
     background-color: #2f2f2f;
     padding: 1px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    border: 2px solid;
+    border: 1px solid;
     font-weight: bold;
     border-color: #434343 #373737 #535353 #373737;
     cursor: pointer;
     border-radius:4px;
+    background: #606060; /* Old browsers */
+    background: -moz-linear-gradient(top, #606060 0%, #0d0d0d 24%, #0a0a0a 66%, #4e4e4e 100%, #606060 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#606060), color-stop(24%,#0d0d0d), color-stop(66%,#0a0a0a), color-stop(100%,#4e4e4e), color-stop(100%,#606060)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#606060', endColorstr='#606060',GradientType=0 ); /* IE6-9 */
+} 
+
+/* Divs */
+#header
+{
+    height: 100px;
+    position: absolute;
+    z-index: 100;
+}
+#status
+{
+    font-size: x-small;
+    font-family: verdana, Arial, Helvetica, Sans-Serif;
+    padding-left: 10px;
+    overflow-x: hidden;
+}
+
+.popup525x300
+{
+    border: 2px solid #004586;
+    border-radius: 9px;
+    color: #f1f1f1;
+    background: #282828;
+    font-family: verdana, Arial, Helvetica, Sans-Serif;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 525px;
+    height: 300px;
+    margin-left: -262px;
+    margin-top: -150px;
+    box-shadow: -3px 3px 3px 4px #000000;
+}
+
+.calendardiv
+{
+    border-radius: 9px;
+    border: 2px solid #004586;
+    font-family: verdana, Arial, Helvetica, Sans-Serif;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 510px;
+    height: 300px;
+    margin-left: -255px;
+    margin-top: -150px;
+    background: #282828;
+    color: #f1f1f1;
+    box-shadow: -3px 3px 3px 4px #000000;
+}
+
+
+.popup700x400
+{
+    border-radius: 9px;
+    border: 2px solid #004586;
+    font-family: verdana, Arial, Helvetica, Sans-Serif;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 700px;
+    height: 400px;
+    margin-left: -350px;
+    margin-top: -200px;
+    z-index: 1500;
+    background: #282828;
+    color: #f1f1f1;
+    box-shadow: -3px 3px 3px 4px #000000;
+}
+#transfersdiv
+{
+    width: 100%;
+    float: left;
+    z-index: 10;
+}
+#nojs
+{
+    position:absolute;
+    background-color: yellow;
+    color: black;
 }
 
 .submitsmall
 {
-    background-color: #2f2f2f;
     color: #d1d1d1;
     padding: 0px 0px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: x-small;
-    border: 2px solid;
+    border: 1px solid;
     font-weight: bold;
     border-color: #434343 #373737 #535353 #373737;
     cursor: pointer;
     border-radius:4px;
+    background: #606060; /* Old browsers */
+    background: -moz-linear-gradient(top, #606060 0%, #0d0d0d 24%, #0a0a0a 66%, #4e4e4e 100%, #606060 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#606060), color-stop(24%,#0d0d0d), color-stop(66%,#0a0a0a), color-stop(100%,#4e4e4e), color-stop(100%,#606060)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#606060', endColorstr='#606060',GradientType=0 ); /* IE6-9 */
 } 
 
 /* Divs */
@@ -777,6 +872,8 @@ input[type=text], textarea, select, input[type=password], input[type=checkbox], 
     border-color: #333333 #414141 #535353 #414141;
     padding-bottom: 0px;
     padding-top: 0px;
+    padding-left:1px;
+    padding-right:1px;
     font-size: small;
 }
 
