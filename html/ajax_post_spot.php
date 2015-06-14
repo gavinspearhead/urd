@@ -243,7 +243,7 @@ try {
         case 'post' :
             // image file and nzbfile
             $post_id = insert_spot_post($db, $userid);
-            return_result(array('post_id' => $post_id, 'message'=>$LN['spots_post_started']));
+            return_result(array('post_id' => $post_id, 'message' => $LN['spots_post_started']));
             break;
         case 'show':
             init_smarty();

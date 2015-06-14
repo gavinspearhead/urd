@@ -52,6 +52,9 @@ function format_size($value, $format, $suffix='B', $base=1024, $dec=1)
         $t = $units[$factor];
     }
     $divisor = pow($base, $factor);
+    if (($value % $divisor) == 0) { 
+        $dec = 0; 
+    }
     $value = number_format($value / $divisor, $dec, (isset($LN['decimalseparator']) ? $LN['decimalseparator'] : '.'), '');
 
     return array($value, $t . $suffix, $divisor);

@@ -162,30 +162,31 @@ init_smarty($title, 1, $add_menu);
 list($size, $suffix) = format_size($totbin, 'h', '', 1000);
 
 $smarty->assign(array(
-    'rssurl'=>		$rssurl,
-    'total_articles'=> $size . $suffix,
+    'rssurl'=>		 $rssurl,
     'search'=>       $orisearch,
     'feed_id'=>      $origfeed_id,
     'offset'=>       $offset,
     'order'=>        trim($order),
     'flag'=>         $flag,
-    'USERSETTYPE'=>	USERSETTYPE_RSS,
+    'USERSETTYPE'=>	 USERSETTYPE_RSS,
     'minage'=>       $minage,
     'maxage'=>       $maxage,
     'maxrating'=>    $maxrating,
     'minrating'=>    $minrating,
-    'perpage'=>		$perpage,
-    'setid'=>		$setid,
+    'perpage'=>		 $perpage,
+    'setid'=>		 $setid,
     'minsetsize'=>   $minsetsize,
     'maxsetsize'=>   $maxsetsize,
-    'minagelimit'=>	$minagelimit,
-    'maxagelimit'=>	$maxagelimit,
-    'minsetsizelimit'=>	$minsetsizelimit,
-    'maxsetsizelimit'=>	$maxsetsizelimit,
+    'minagelimit'=>	 $minagelimit,
+    'maxagelimit'=>	 $maxagelimit,
+    'total_articles'=>   $size . $suffix,
+    'minsetsizelimit'=>	 $minsetsizelimit,
+    'maxsetsizelimit'=>	 $maxsetsizelimit,
     'minratinglimit'=>   0,
     'maxratinglimit'=>   10,
     'subscribedfeeds'=>  $subscribedfeeds,
-    'saved_searches'=>	$saved_searches,
-    '_saved_search'=>	$saved_search));
+    'saved_searches'=>	 $saved_searches,
+    '_saved_search'=>	 $saved_search)
+);
 
 $smarty->display('rsssets.tpl');

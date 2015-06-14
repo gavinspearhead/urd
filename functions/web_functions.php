@@ -1229,20 +1229,20 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
 {
     assert(is_numeric($userid));
     $adult = urd_user_rights::is_adult($db, $userid);
-    $input_arr = array($userid, rssfeed_status::RSS_SUBSCRIBED);
+    $input_arr = array(':userid'=>$userid, ':status'=>rssfeed_status::RSS_SUBSCRIBED);
     $Qadult = '';
     if (!$adult) {
-        $Qadult = ' AND rss_urls.adult != ? ';
-        $input_arr[] = ADULT_ON;
+        $Qadult = ' AND rss_urls.adult != :adult ';
+        $input_arr[':adult'] = ADULT_ON;
     }
     $qfeed_id = '';
     if (is_numeric($feed_id)) {
-        $qfeed_id = 'OR "feedid" = ?';
-        $input_arr[] = $feed_id;
+        $qfeed_id = 'OR "feedid" = :feedid';
+        $input_arr[':feedid'] = $feed_id;
     }
     // Get the feeds:
-    $sql = 'rss_urls."id", "name", "feedcount" FROM rss_urls LEFT JOIN userfeedinfo ON rss_urls."id" = "feedid" AND "userid" = ? ' .
-        " WHERE \"subscribed\" = ? $Qadult AND (\"visible\" > 0 OR \"visible\" IS NULL $qfeed_id) ORDER BY \"name\"";
+    $sql = 'rss_urls."id", "name", "feedcount" FROM rss_urls LEFT JOIN userfeedinfo ON rss_urls."id" = "feedid" AND "userid" = :userid ' .
+        " WHERE \"subscribed\" = :status $Qadult AND (\"visible\" > 0 OR \"visible\" IS NULL $qfeed_id) ORDER BY \"name\"";
     $res = $db->select_query($sql, $input_arr);
 
     if (!is_array($res)) {
