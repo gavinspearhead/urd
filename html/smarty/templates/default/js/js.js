@@ -1698,6 +1698,8 @@ function user_action(action, uid)
             if (action == 'edit') {
                 show_overlayed_content_1(x.contents, 'popup700x400');
                 $('#apply_button').click(function () { update_user(); });
+            }else if (action == 'resetpw') {
+                update_message_bar(x.message);
             } else {
                 show_users();
                 update_search_bar_height();
