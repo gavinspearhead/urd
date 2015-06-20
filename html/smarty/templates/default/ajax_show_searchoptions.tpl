@@ -34,7 +34,7 @@
 </tr>
 
 {foreach $search_options as $search_option}
-<tr class="even content" name="content">
+<tr class="even content set_content">
 <td>{$search_option->get_name()|escape|truncate:$maxstrlen}</td>
 <td ><span class="buttonlike" {urd_popup type="small" text=$LN_buttons_clicktest} onclick="javascript:jump('{$search_option->get_url()|replace:"\$q":"test"|escape:javascript}', true);">{$search_option->get_url()|escape|truncate:$maxstrlen}</span></td>
 <td>

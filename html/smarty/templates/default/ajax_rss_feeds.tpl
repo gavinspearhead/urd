@@ -114,7 +114,7 @@
 </tr>
 
 {foreach $allfeeds as $feed}
-<tr class="even content" name="content">
+<tr class="even content set_content">
 <td class="general">{$feed.number}</td>
 <td class="general">
 {urd_checkbox value="{$feed.active_val}" name="rssfeed[{$feed.id}]" id="rssfeed_{$feed.id}" readonly="{$isadmin == 0 || $urdd_online == 0}" post_js="subscribe_rss('{$feed.id}');"} 

@@ -33,27 +33,27 @@
 </div>
 
 <div class="even menu_head down3">
-<div class="inline_block"><input type="text" id="minsetsize" name="minsetsize" size="4" value=""/>&nbsp;</div>
+<div class="inline_block"><input type="text" id="minsetsize" name="minsetsize" class="sidebar" value=""/>&nbsp;</div>
 <div id="setsize" class="slider inline_block">&nbsp;</div>
-<div class="inline_block"><input type="text" id="maxsetsize" name="maxsetsize" size="4" value=""/></div>
+<div class="inline_block"><input type="text" id="maxsetsize" name="maxsetsize" class="sidebar" value=""/></div>
 </div>
 
 <div class="highlight2 menu_head">
 {$LN_age}:
 </div>
 <div class="even menu_head down3">
-<div class="inline_block"><input type="text" id="minage" name="minage" size="4" value=""/>&nbsp;</div>
+<div class="inline_block"><input type="text" id="minage" name="minage" class="sidebar" value=""/>&nbsp;</div>
 <div id="setage" class="slider inline_block">&nbsp;</div>
-<div class="inline_block"><input type="text" id="maxage" name="maxage" size="4" value=""/></div>
+<div class="inline_block"><input type="text" id="maxage" name="maxage" class="sidebar" value=""/></div>
 </div>
 
 <div class="highlight2 menu_head">
 {$LN_rating}:
 </div>
 <div class="even menu_head down3">
-<div class="inline_block"><input type="text" id="minrating" name="minrating" size="4" value=""/>&nbsp;</div>
+<div class="inline_block"><input type="text" id="minrating" name="minrating" class="sidebar" value=""/>&nbsp;</div>
 <div id="setrating" class="inline_block slider">&nbsp;</div>
-<div class="inline_block"><input type="text" id="maxrating" name="maxrating" size="4" value=""/></div>
+<div class="inline_block"><input type="text" id="maxrating" name="maxrating" class="sidebar" value=""/></div>
 </div>
 
 <div class="highlight2 menu_head">

@@ -73,7 +73,7 @@
 {/strip}
 {/capture}
 
-	<tr class="even" name="content">
+	<tr class="even set_content">
 		<td class="bold nowrap">
         <div class="donotoverflowdamnit inline">{$a->name|escape:htmlall}</div>
         </td>

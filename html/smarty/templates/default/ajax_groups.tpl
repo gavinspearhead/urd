@@ -117,7 +117,7 @@
 </tr>
 
 {foreach $allgroups as $group}
-<tr name="content" class="even content">
+<tr class="even content set_content">
 <td class="general">{$group.number} </td>
 <td class="general">
 {urd_checkbox value="{$group.active_val}" name="newsgroup[{$group.id}]" id="newsgroup_{$group.id}" readonly="{$isadmin == 0 || $urdd_online == 0}" post_js="subscribe_ng('{$group.id}');"} 

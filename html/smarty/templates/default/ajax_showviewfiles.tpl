@@ -86,7 +86,7 @@
 	{$size_ext=""}
 {/if}
 
-<tr class="even content" name="content" onmouseup="javascript:start_quickmenu('viewfiles','', null, event);">
+<tr class="even content set_content" onmouseup="javascript:start_quickmenu('viewfiles','', null, event);">
 <td><img class="noborder" src="{$IMGDIR}/file_icons/{$icon}.png" width="16" height="16" alt="{$icon|capitalize}" {urd_popup type="small" text=$icon_ln|capitalize} /></td>
 <td class="buttonlike" onmouseup="javascript:view_files_follow_link(event, '{$file->get_type()}', 'file{$counter}', '{$file->get_index()}');return false;" onmousedown="set_mouse_click();">
 <div class="donotoverflowdamnit">

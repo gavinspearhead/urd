@@ -86,7 +86,7 @@
 </td>
 {/strip}
 {/capture}
-<tr class="even content" name="content">
+<tr class="even content set_content">
 		<td class="bold">
         <div class="donotoverflowdamnit inline"><span>{$a->name|escape:htmlall}</span></div>
         </td>

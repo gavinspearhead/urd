@@ -694,13 +694,13 @@ input,select, textarea
 }
 .basketright
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     text-align: right;
 }
 .basketleft
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.basketbuttons

@@ -82,7 +82,7 @@
 {/if}
 
 {foreach $blacklist as $item}
-<tr class="even content" name="content" id="item{$item.id}">
+<tr class="even content set_content" id="item{$item.id}">
 	<td>{$item.number|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>
 {if $active_tab == 'whitelist'}

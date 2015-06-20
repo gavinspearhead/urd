@@ -55,15 +55,15 @@
 {capture assign=unmark_int_all}{strip}
 <div class="floatright">
 {if $killflag}
-<div class="inline iconsizeplus killicon buttonlike" id="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
+<div class="inline iconsizeplus killicon buttonlike" name="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
 {else}
-<div class="inline iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset }></div>
+<div class="inline iconsizeplus deleteicon buttonlike" name="remove_button" {urd_popup type="small" text=$LN_browse_removeset }></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+<div class="inline iconsizeplus purgeicon buttonlike" name="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
 {/if}
 {if $isadmin}
-<div class="inline iconsizeplus sadicon buttonlike" id="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+<div class="inline iconsizeplus sadicon buttonlike" name="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint }></div>
 {/if}
 </div>
 {/strip}
@@ -156,7 +156,7 @@ $(document).ready(function() {
 {/if}
 
 {* Ok now it's time to put it all together: *}	
-<tr class="content {$interesting} {$read} {$nzb}" id="base_row_{$set.setid}" name="content">
+<tr class="content {$interesting} {$read} {$nzb} set_content" id="base_row_{$set.setid}">
 	<td class="fixwidth1">{$set.number}
     
     {* We need this stuff to remember any the search options *}
@@ -211,10 +211,10 @@ $(document).ready(function() {
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
-    $('#remove_button').click( function (e) { which_button('mark_kill_all', e); } );
-    $('#wipe_button').click( function (e) { which_button('wipe_all', e) } );
-    $('#unmark_int_button').click( function (e) { which_button('unmark_int_all', e); } );
+    $('div[name="resurrect_button"]').click( function (e) { which_button('unmark_kill_all', e); } );
+    $('div[name="remove_button"]').click( function (e) { which_button('mark_kill_all', e); } );
+    $('div[name="#wipe_button"]').click( function (e) { which_button('wipe_all', e) } );
+    $('div[name="unmark_int_button"]').click( function (e) { which_button('unmark_int_all', e); } );
     $('#browsesubjecttd').click( function () { change_sort_order('better_subject', 'asc') } );
     $('#head_stamp').click( function () { change_sort_order('date', 'desc') } );
     $('#head_size').click( function () { change_sort_order('size', 'desc') } );

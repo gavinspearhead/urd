@@ -771,7 +771,8 @@ div.sets_inner
     position: relative;
     top: 0; 
     right: 0; 
-    display: inline
+    display: inline;
+             white-space: nowrap;
 }
 
 #contentleft
@@ -825,4 +826,11 @@ div.suggestion
     width: 100%;
     font-family: Geneva, Arial, Helvetica, sans-serif;
     font-size: small;
+}
+input.sidebar
+{
+    width: 50px;
+}
+
+tr.set_content { /* use for highlighting sets */
 }

@@ -65,7 +65,7 @@
     {$length=1}
     {$hidden=""}
 {/if}
-<tr name="content" class="{$hidden} even content {if $block->tr_class != ''} {$block->tr_class} {/if}" 
+<tr class="{$hidden} set_content even content {if $block->tr_class != ''} {$block->tr_class} {/if}" 
         {if $block->tr_id != ''}id="{$block->tr_id}" {/if}
 >
 {$popup_text=$block->popup|escape}

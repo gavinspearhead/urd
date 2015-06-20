@@ -106,9 +106,10 @@ if ($categoryID > 0 && !in_array($categoryID, array_keys($categories))) {
 list($minsetsizelimit, $maxsetsizelimit) = get_size_limits_rsssets($db);
 list($minagelimit, $maxagelimit) = get_age_limits_rsssets($db);
 
-$minsetsizelimit = nearest($minsetsizelimit / (1024 * 1024), FALSE);
+$minsetsizelimit = 0;
+//$minsetsizelimit = nearest($minsetsizelimit / (1024 * 1024), FALSE);
 $maxsetsizelimit = nearest($maxsetsizelimit / (1024 * 1024), TRUE);
-$minagelimit = nearest($minagelimit / (3600 * 24), FALSE);
+$minagelimit = 0;
 $maxagelimit = nearest($maxagelimit / (3600 * 24), TRUE);
 $orisearch  = utf8_decode($search);
 $offset  = get_request('offset', 0);

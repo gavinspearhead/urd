@@ -57,14 +57,14 @@
 <div class="floatright">
 <input type="hidden" name="feed_id" value="{$feed_id|escape}"/>
 {if $killflag}
-<div class="floatleft iconsizeplus killicon buttonlike" id="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
+<div class="floatleft iconsizeplus killicon buttonlike" name="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset} ></div>
 {else}
-<div class="floatleft iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset } ></div>
+<div class="floatleft iconsizeplus deleteicon buttonlike" name="remove_button" {urd_popup type="small" text=$LN_browse_removeset } ></div>
 {/if}
 {if $isadmin}
-<div class="floatleft iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+<div class="floatleft iconsizeplus purgeicon buttonlike" name="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
 {/if}
-<div class="floatleft iconsizeplus sadicon buttonlike" id="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
+<div class="floatleft iconsizeplus sadicon buttonlike" name="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
 {/strip}{/capture}
 
 {$up="<img src='$IMGDIR/small_up.png' width='9' height='6' alt=''>"}{$down="<img src='$IMGDIR/small_down.png' width='9' height='6' alt=''>"}
@@ -137,7 +137,7 @@ $(document).ready(function() {
 {capture assign=setdesc}{$set.setname|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
 
 {* Ok now it's time to put it all together: *}	
-<tr class="content {$interesting} {$read} {$nzb}" id="base_row_{$set.setid}" name="content">
+<tr class="content {$interesting} {$read} {$nzb} set_content" id="base_row_{$set.setid}">
     <td class="fixwidth1">{$set.number} <input type="hidden" name="set_ids[]" value="{$set.setid|escape}"/></td>
 	<td class="setbuttons">{$smallbuttons}</td>
 	<td id="td_set_{$set.setid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
@@ -184,13 +184,12 @@ $(document).ready(function() {
 {* Store button urls for javascript: *}
 <input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/>
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
-<input type="hidden" id="last_line" value="{$set.number|escape}"/>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
-    $('#remove_button').click( function (e) { which_button('mark_kill_all', e); } );
-    $('#wipe_button').click( function (e) { which_button('wipe_all', e) } );
-    $('#unmark_int_button').click( function (e) { which_button('unmark_int_all', e); } );
+    $('div[name="resurrect_button"]').click( function (e) { which_button('unmark_kill_all', e); } );
+    $('div[name="remove_button"]').click( function (e) { which_button('mark_kill_all', e); } );
+    $('div[name="wipe_button"]').click( function (e) { which_button('wipe_all', e) } );
+    $('div[name="unmark_int_button"]').click( function (e) { which_button('unmark_int_all', e); } );
     $('#browsesubjecttd').click( function () { change_sort_order('better_subject', 'asc') } );
     $('#head_stamp').click( function () { change_sort_order('timestamp', 'desc') } );
     $('#head_size').click( function () { change_sort_order('size', 'desc') } );

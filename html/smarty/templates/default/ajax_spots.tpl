@@ -58,7 +58,7 @@
 
 {capture assign=unmark_int_all}{strip}
 {if $killflag}
-    <div class="inline iconsizeplus killicon buttonlike" id="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
+    <div class="inline iconsizeplus killicon buttonlike" name="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
 {else}
     <div class="inline iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset}></div>
 {/if}
@@ -66,7 +66,7 @@
     {if not $small}
         <div class="inline iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-    <div class="inline iconsizeplus sadicon buttonlike" id="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
+    <div class="inline iconsizeplus sadicon buttonlike" name="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
 {/if}
 {/strip}
 {/capture}
@@ -84,7 +84,7 @@
 <tr>
 <th class="head round_left">&nbsp;</th>
 <th class="head">&nbsp;</th>
-<th class="head buttonlike" width="100%" id="browsesubjecttd">{$LN_browse_subject} {$title_sort}</th>
+<th class="head buttonlike" id="browsesubjecttd">{$LN_browse_subject} {$title_sort}</th>
 {if $small == 0}
 <th class="head fixwidth1 buttonlike" id="head_reports">{$LN_spamreporttag}</th>
 <th class="head">{$LN_whitelisttag}</th>
@@ -187,7 +187,7 @@ $(document).ready(function() {
 {/strip}{/capture}
 
 {* Ok now it's time to put it all together: *}	
-<tr name="content" class="content {$interesting} {$read} {$nzb}" id="base_row_{$set.spotid}">
+<tr class="content {$interesting} {$read} {$nzb} set_content" id="base_row_{$set.spotid}">
 <td class="fixwidth1">{$set.number}
 <input type="hidden" name="set_ids[]" value="{$set.spotid}"/>
     </td>
@@ -287,10 +287,10 @@ $(document).ready(function() {
     $('#head_stamp').click( function () { change_sort_order('stamp', 'desc') } );
     $('#head_size').click( function () { change_sort_order('size', 'desc') } );
     $('#head_url').click( function () { change_sort_order('url') } );
-    $('#resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
-    $('#remove_button').click( function (e) { which_button('mark_kill_all', e); } );
-    $('#wipe_button').click( function (e) { which_button('wipe_all', e) } );
-    $('#unmark_int_button').click( function (e) { which_button('unmark_int_all', e); } );
+    $('div[name="resurrect_button"]').click( function (e) { console.log('aoeu'); which_button('unmark_kill_all', e); } );
+    $('div[name="remove_button"]').click( function (e) { which_button('mark_kill_all', e); } );
+    $('div[name="wipe_button"]').click( function (e) { which_button('wipe_all', e) } );
+    $("div[name='unmark_int_button']").click( function (e) { which_button('unmark_int_all', e); } );
 });
 </script>
 {/if}

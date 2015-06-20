@@ -1019,7 +1019,7 @@ function show_post()
 
 function highlight_handler()
 {
-    $("tr[name='content']").each(function() {
+    $("tr.set_content").each(function() {
         $(this).removeClass('highlight2');
         $(this).mouseover(function() {
             $(this).addClass('highlight2');
@@ -1698,7 +1698,7 @@ function user_action(action, uid)
             if (action == 'edit') {
                 show_overlayed_content_1(x.contents, 'popup700x400');
                 $('#apply_button').click(function () { update_user(); });
-            }else if (action == 'resetpw') {
+            } else if (action == 'resetpw') {
                 update_message_bar(x.message);
             } else {
                 show_users();

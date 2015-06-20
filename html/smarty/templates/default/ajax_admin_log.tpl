@@ -30,14 +30,14 @@
 
 <div class="log">
 <table class="tasks">
-<tr name="content">
+<tr>
 <th onclick="submit_sort_log('date')" class="head buttonlike round_left fixwidth6c">{$LN_log_date} {$date_sort}</th>
 <th onclick="submit_sort_log('time')" class="head buttonlike fixwidth5c">{$LN_time} {$time_sort}</th>
 <th onclick="submit_sort_log('level')" class="head buttonlike fixwidth6c">{$LN_log_level} {$level_sort}</th>
 <th onclick="submit_sort_log('msg')" class="head buttonlike round_right">{$LN_log_msg} {$msg_sort}</th>
 </tr>
 {foreach $logs as $log}
-<tr class="even content">
+<tr class="even content set_content">
 <td>{$log.date|escape:htmlall}</td>
 <td>{$log.time|escape:htmlall}</td>
 <td>{$log.level|escape:htmlall}</td>

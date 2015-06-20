@@ -112,9 +112,11 @@ $title = $LN['browse_download'] . ' ' . $LN['from'] . ' ' . $totbin. ' ' . $LN['
 list($minsetsizelimit, $maxsetsizelimit) = get_size_limits_groups($db);
 list($minagelimit, $maxagelimit) = get_age_limits_groups($db);
 
-$minsetsizelimit = nearest($minsetsizelimit / (1024 * 1024), FALSE);
+$minsetsizelimit = 0;
+//$minsetsizelimit = nearest($minsetsizelimit / (1024 * 1024), FALSE);
 $maxsetsizelimit = nearest($maxsetsizelimit / (1024 * 1024), TRUE);
-$minagelimit = nearest($minagelimit / (3600 * 24), FALSE);
+//$minagelimit = nearest($minagelimit / (3600 * 24), FALSE);
+$minagelimit = 0;
 $maxagelimit = nearest($maxagelimit / (3600 * 24), TRUE);
 
 $minsetsize = get_pref($db, 'minsetsize', $userid, NULL);
