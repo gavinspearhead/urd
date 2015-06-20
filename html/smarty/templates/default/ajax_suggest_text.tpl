@@ -21,5 +21,5 @@
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
 {foreach $suggestions as $sug}
-<div name="suggestion" class="suggestion">{$sug.title|escape:htmlall:"UTF-8"}<input type="hidden" id="{$sug.setid|escape}" value="{$sug.setid|escape}"/></div>
+<div class="suggestion">{$sug.title|escape:htmlall:"UTF-8"}<input type="hidden" id="{$sug.setid|escape}" value="{$sug.setid|escape}"/></div>
 {/foreach}

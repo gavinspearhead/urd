@@ -58,7 +58,7 @@
 <input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_previous type="small"}/> 
 <span id="save_search_span">
 <select id="saved_search">
-<option value=""></option>
+<option label="all" value=""></option>
 {foreach $saved_searches as $saved_search}
     <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}</option>
 {/foreach}
@@ -89,7 +89,6 @@
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
 <input type="hidden" name="type" id="type" value="groups"/>
 <input type="hidden" name="usersettype" id="usersettype" value="{$USERSETTYPE|escape:htmlall}"/>
-<input type="hidden" id="view_size" value=""/>
 </div>
 {/capture}
 

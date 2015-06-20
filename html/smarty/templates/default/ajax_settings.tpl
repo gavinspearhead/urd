@@ -27,7 +27,7 @@
 <div class="tabs">
 {foreach $pref_list as $atab}
 {if $atab->length > 0}
-<span id="{$atab->tabname|replace:' ':''}_bar" name="a_tab">
+<span id="{$atab->tabname|replace:' ':''}_bar" class="a_tab">
 <span id="{$atab->tabname|replace:' ':''}_bar_elem" onclick="javascript:select_tab_setting('{$atab->tabname|escape:javascript|replace:' ':''}')" class="tab{if ($current_tab == '' and $atab@first) or $current_tab==$atab->tabname} tab_selected{/if}" >{$atab->name}
 <input type="hidden" name="tabs" value="{$atab->tabname|replace:' ':''}"/>
 </span>
@@ -139,7 +139,7 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 <select name="{$block->name}" id="{$block->id}" 
 onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}' {if $js!=''}, { 'fn':'{$js}' } {/if});">
 {foreach $opts as $k => $q}
-<option value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
+<option label="x{$k|escape:all}" value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
 {/foreach}
 </select>
 {/if}

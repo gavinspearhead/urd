@@ -255,7 +255,7 @@
 <tr>
 <td>{$LN_age}:</td>
 <td><input type="text" id="rssminage" name="minage" size="6" value="{$rssminagelimit|escape}"/></td> 
-<td><div id="rsssetage" class="slider"</div></td>
+<td><div id="rsssetage" class="slider"></div></td>
 <td><input type="text" id="rssmaxage" name="maxage" size="6" value="{$rssmaxagelimit|escape}"/></td>
 </tr>
 <tr>

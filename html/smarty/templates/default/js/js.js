@@ -5283,7 +5283,7 @@ function update_tab_position()
     var cnt = 0;
     var last_width = 0;
     var first_left = -1;
-    $('[name="a_tab"]').each(function() {
+    $('span.a_tab').each(function() {
         if (first_left == -1) {
             first_left = $(this).offset().left;
         }
@@ -5299,7 +5299,7 @@ function update_tab_position()
         var diff = (_width - last_width) / cnt;
         cnt = 0;
         var new_left;
-        $('[name="a_tab"]').each(function() {
+        $('span.a_tab').each(function() {
                 new_left = first_left + Math.floor(cnt * diff);
                 $(this).offset({ left: new_left });
                 cnt++;
@@ -6316,15 +6316,15 @@ function suggest(type, suggest_div, text_bar, e)
             $('#' + suggest_div).css( {left: $('#search').offset().left }); // reposition it below the searchbar
             $('#' + suggest_div).html(r.content);
             $('#' + suggest_div).removeClass('hidden');
-            $('div[name="suggestion"]').mousedown( function () { 
+            $('div.suggestion').mousedown( function () { 
                 close_suggest(suggest_div);
                 load_sets( { 'offset':'0', 'setid':$("input", this).val()} ); 
             } );
             text_bar.blur( function () { close_suggest(suggest_div); return false; } );
             $(document).keydown(function(e) { // close on ESC
                 if (e.which == 27) { close_suggest(suggest_div); return false; } } );
-            $('div[name="suggestion"]').mouseover( function () { $(this).addClass('highlight2'); } );
-            $('div[name="suggestion"]').mouseout( function () { $(this).removeClass('highlight2'); } );
+            $('div.suggestion').mouseover( function () { $(this).addClass('highlight2'); } );
+            $('div.suggestion').mouseout( function () { $(this).removeClass('highlight2'); } );
         } else {
             $('#' + suggest_div).addClass('hidden');
         }

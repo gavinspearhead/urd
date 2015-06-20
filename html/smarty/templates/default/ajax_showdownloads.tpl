@@ -110,7 +110,7 @@
 <table class="transfers {if $active_tab != 'downloads'}hidden{/if}" id="downloads_tab">
 <thead>
 <tr>
-<th class="head round_left nowrap" width="100%" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
+<th class="head round_left nowrap" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
 {if $isadmin}
 <th class="head nowrap">{$LN_transfers_head_username}</th>
 {/if}

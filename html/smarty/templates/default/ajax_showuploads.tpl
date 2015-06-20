@@ -37,9 +37,8 @@
 </tbody>
 
 
-{foreach $infoarray['items'] as $a}
-{$stat=$a->status|replace:' ':'_'}
 <tbody id="data_post_{$stat}" class="{if $post_hide_status.$stat == 1}hidden{/if}">
+{foreach $infoarray['items'] as $a}
 
 {capture name=opts assign="options"}
 {strip}
@@ -97,7 +96,7 @@
 <table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
 <thead>
 <tr>
-<th class="left nowrap head round_left" width="100%" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
+<th class="left nowrap head round_left" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
 {if $isadmin}
 <th class="left nowrap head">{$LN_transfers_head_username}</th>
 {/if}

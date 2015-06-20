@@ -56,7 +56,7 @@
 <input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_next type="small"}/>
 <span id="save_search_span">
 <select id="saved_search">
-<option value=""></option>
+<option label="all" value=""></option>
 {foreach $saved_searches as $saved_search}
 <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}

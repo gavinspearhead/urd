@@ -42,7 +42,6 @@
 {/capture}
 
 <div id="searchformdiv" class="hidden">
-
 <input type="text" name="_search" placeholder="{$LN_search}" id="transfer_search"/>
 <input type="button" id="search" value="{$LN_search}" class="submitsmall"/>
 </div>
@@ -55,6 +54,7 @@
 $(document).ready(function() {
     update_transfers();
     $('#searchbar').html( $('#searchformdiv').html());
+    $('#searchformdiv').html('')
     $('#uploads_bar').click(function() { select_tab_transfers('uploads', 'transfers', 'uploads'); });
     $('#downloads_bar').click(function() { select_tab_transfers('downloads', 'transfers', 'downloads'); });
     $('#search').click(function() { load_transfers(); } );

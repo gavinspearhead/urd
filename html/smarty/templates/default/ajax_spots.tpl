@@ -58,15 +58,15 @@
 
 {capture assign=unmark_int_all}{strip}
 {if $killflag}
-    <div class="inline iconsizeplus killicon buttonlike" name="resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
+    <div class="inline iconsizeplus killicon buttonlike resurrect_button" {urd_popup type="small" text=$LN_browse_resurrectset}></div>
 {else}
-    <div class="inline iconsizeplus deleteicon buttonlike" id="remove_button" {urd_popup type="small" text=$LN_browse_removeset}></div>
+    <div class="inline iconsizeplus deleteicon buttonlike remove_button" {urd_popup type="small" text=$LN_browse_removeset}></div>
 {/if}
 {if $isadmin}
     {if not $small}
-        <div class="inline iconsizeplus purgeicon buttonlike" id="wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
+        <div class="inline iconsizeplus purgeicon buttonlike wipe_button" {urd_popup type="small" text=$LN_browse_deleteset}></div>
     {/if}
-    <div class="inline iconsizeplus sadicon buttonlike" name="unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
+    <div class="inline iconsizeplus sadicon buttonlike unmark_int_button" {urd_popup type="small" text=$LN_browse_toggleint}></div>
 {/if}
 {/strip}
 {/capture}
@@ -287,10 +287,10 @@ $(document).ready(function() {
     $('#head_stamp').click( function () { change_sort_order('stamp', 'desc') } );
     $('#head_size').click( function () { change_sort_order('size', 'desc') } );
     $('#head_url').click( function () { change_sort_order('url') } );
-    $('div[name="resurrect_button"]').click( function (e) { console.log('aoeu'); which_button('unmark_kill_all', e); } );
-    $('div[name="remove_button"]').click( function (e) { which_button('mark_kill_all', e); } );
-    $('div[name="wipe_button"]').click( function (e) { which_button('wipe_all', e) } );
-    $("div[name='unmark_int_button']").click( function (e) { which_button('unmark_int_all', e); } );
+    $('div.resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
+    $('div.remove_button').click( function (e) { which_button('mark_kill_all', e); } );
+    $('div.wipe_button').click( function (e) { which_button('wipe_all', e) } );
+    $("div.unmark_int_button").click( function (e) { which_button('unmark_int_all', e); } );
 });
 </script>
 {/if}

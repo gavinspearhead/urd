@@ -832,5 +832,9 @@ input.sidebar
     width: 50px;
 }
 
-tr.set_content { /* use for highlighting sets */
-}
+tr.set_content {} /* use for highlighting sets */
+div.resurrect_button {} /* used for buttons on sets */
+div.remove_button {}/* used for buttons on sets */
+div.wipe_button {}/* used for buttons on sets */
+div.unmark_int_button {}/* used for buttons on sets */
+span.a_tab {} /* used for tabs */
