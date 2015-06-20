@@ -92,7 +92,7 @@
         </td>
         {if $isadmin}
             <td>{$a->username|escape:htmlall}</td>
-        {/if}<{strip}
+        {/if}{strip}
 		<td class="nowrap">
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}
         </td>
