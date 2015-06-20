@@ -588,7 +588,6 @@ function _hide_overlayed_content(content, back)
 
 function _show_overlayed_content(html, style, content, back, close_button)
 {
-    console.log(html);
     $(content).html('');
     if (html.substr(0, 7) == ':error:') {
         set_message('message_bar', html.substr(7), 5000);

@@ -43,13 +43,14 @@ function smarty_function_urd_progress($params, &$smarty)
 
     $random_id = mt_rand();
 
-    $style = "<div style=\"display:inline\"><div style=\"display:table-cell\"><div class=\"progressbar $background $classes\" style=\"width:{$width}px\">";
+    $style = '<div style="display:inline">' . '<div style="display:table-cell">';
+    $style .= "<div class=\"progressbar $background $classes\" style=\"width:{$width}px\">";
     $style .= "<span class=\"{$colour}\" style=\"width:$complete%;\">";
-    $style .= "</span></div></div><span class=\"progress_text\">";
+    $style .= '</span> ' . ' </div> ' . ' </div>' . '<div style="display:table-cell">'. '<span class="progress_text">';
     if ($text != '') {
         $style .= "&nbsp;$text";
     }
-    $style .= "</span></div>";
+    $style .= '</span>' . '</div>'. '</div>';
 
     return $style ;
 

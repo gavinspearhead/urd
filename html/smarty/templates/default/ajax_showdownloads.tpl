@@ -92,10 +92,11 @@
         </td>
         {if $isadmin}
             <td>{$a->username|escape:htmlall}</td>
-        {/if}
+        {/if}<{strip}
 		<td class="nowrap">
             {urd_progressbar width="100" complete="{$a->progress}" colour="green" text="{$a->progress}%" background="grey" classes="down2"}
         </td>
+        {/strip}
 		<td class="right nowrap">{$a->speed}</td>
 		<td class="center nowrap">{$a->ETA}</td>
 		<td class="right nowrap">{$a->startdate}</td>
@@ -110,11 +111,11 @@
 <table class="transfers {if $active_tab != 'downloads'}hidden{/if}" id="downloads_tab">
 <thead>
 <tr>
-<th class="head round_left nowrap" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
+<th class="head round_left nowrap width100p" id="browsesubjecttd">{$LN_transfers_head_dlname}</th>
 {if $isadmin}
 <th class="head nowrap">{$LN_transfers_head_username}</th>
 {/if}
-<th class="head nowrap">{$LN_transfers_head_progress}</th>
+<th class="head nowrap ">{$LN_transfers_head_progress}</th>
 <th class="head nowrap">{$LN_transfers_head_speed}</th>
 <th class="head nowrap">{$LN_eta}</th>
 <th class="head nowrap">{$LN_transfers_head_started}</th>

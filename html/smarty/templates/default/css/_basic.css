@@ -772,7 +772,7 @@ div.sets_inner
     top: 0; 
     right: 0; 
     display: inline;
-             white-space: nowrap;
+    white-space: nowrap;
 }
 
 #contentleft
@@ -831,6 +831,11 @@ input.sidebar
 {
     width: 50px;
 }
+
+.width100p {
+    width:100%;
+}
+
 
 tr.set_content {} /* use for highlighting sets */
 div.resurrect_button {} /* used for buttons on sets */
