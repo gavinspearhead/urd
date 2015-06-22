@@ -1487,7 +1487,7 @@ function select_preview(binid, gid)
     });
 }
 
-function show_preview(dlid, binary_id, group_id)
+function show_preview(dlid, binary_id, group_id, _first)
 {
     var url = 'ajax_showpreview.php';
     var data = {
@@ -1496,7 +1496,9 @@ function show_preview(dlid, binary_id, group_id)
         group_id: group_id
     };
     var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'popup700x400');
+    if (_first === undefined) { 
+        show_overlayed_content_1(loading_msg, 'popup700x400');
+    }
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -1509,9 +1511,9 @@ function show_preview(dlid, binary_id, group_id)
                 setTimeout(function() {
                     var do_reload = $('#do_reload');
                     if (overlayed_content_visible() && do_reload.val() === undefined) {
-                        show_preview(dlid, binary_id, group_id);
+                        show_preview(dlid, binary_id, group_id, 'first');
                     }
-                }, 1000);
+                }, 1501);
             }
         } else {
             update_message_bar(x.error);

@@ -114,8 +114,8 @@ class urd_user_rights
     public static function is_admin(DatabaseConnection $db, $userid)
     {
         assert(is_numeric($userid));
-        $qry = '"isadmin" FROM users WHERE "ID" = ?';
-        $rv = $db->select_query($qry, array($userid));
+        $qry = '"isadmin" FROM users WHERE "ID" = :userid';
+        $rv = $db->select_query($qry, array(':userid'=>$userid));
         if (!is_array($rv)) {
             return FALSE;
         }
@@ -144,7 +144,7 @@ function valid_username($username, $may_exist=0)
 { // may_exist: 0 -- don't care, 1 must exist, 2 must not exist
     if ($may_exist != 0) {
         global $db, $LN;
-        $res = $db->select_query('"ID" FROM users WHERE "name"=?', array($username));
+        $res = $db->select_query('"ID" FROM users WHERE "name"=:name', array(':name'=>$username));
         if ($res !== FALSE && $may_exist == 2) {
             throw new exception($LN['error_userexists'], ERR_INVALID_USERNAME);
         } elseif ($res === FALSE && $may_exist == 1) {
@@ -171,9 +171,12 @@ function create_root(DatabaseConnection $db)
 
 function verify_email($email)
 { // nasty function but hey it works ;-)
-    $expr = '[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+)*@((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|gov|mil|biz|int|mobi|name|aero|biz|info|jobs|museum|asia|arpa|cat|coop|edu|pro|tel|travel|academy|agency|bargains|bid|bike|blue|email|eus|guru|xyz|zone|works|wiki|wed|webcam|watch|voyage|villas|viajes|ventures|vacation|uno|travel|training|trade|today|tips|tienda|tel|technology|tattoo|systems|support)|localhost)\b';
+  /*  $expr = '[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~\-]+)*@((?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|gov|mil|biz|int|mobi|name|aero|biz|info|jobs|museum|asia|arpa|cat|coop|edu|pro|tel|travel|academy|agency|bargains|bid|bike|blue|email|eus|guru|xyz|zone|works|wiki|wed|webcam|watch|voyage|villas|viajes|ventures|vacation|uno|travel|training|trade|today|tips|tienda|tel|technology|tattoo|systems|support)|localhost)\b';
 
-    return preg_match("/^$expr$/i", $email) == 1;
+    return preg_match("/^$expr$/i", $email) == 1;*/
+
+    return (filter_var($email, FILTER_VALIDATE_EMAIL) !== FALSE);
+
 }
 
 function clean_fullname($fullname)
@@ -205,7 +208,7 @@ function update_user(DatabaseConnection $db, $userid, $username, $fullname, $ema
     }
 
 
-    $res = $db->select_query('"ID" FROM users WHERE "ID"=?', 1, array($userid));
+    $res = $db->select_query('"ID" FROM users WHERE "ID"=:userid', 1, array(':userid'=>$userid));
     if ($res === FALSE) {
         throw new exception ($LN['error_nosuchuser'] . ": $userid");
     }
@@ -221,8 +224,8 @@ function update_user(DatabaseConnection $db, $userid, $username, $fullname, $ema
 
 function check_user(DatabaseConnection $db, $username)
 {
-    $query = '"ID" FROM users WHERE "name"=?';
-    $res = $db->select_query($query, 1, array($username));
+    $query = '"ID" FROM users WHERE "name"=:username';
+    $res = $db->select_query($query, 1, array(':username'=>$username));
 
     return (isset($res[0]['ID'])) ? TRUE : FALSE;
 }
@@ -230,7 +233,12 @@ function check_user(DatabaseConnection $db, $username)
 function add_user(DatabaseConnection $db, $username, $fullname, $email, $password, $isadmin, $active, $rights, $plain_password=TRUE, $salt='')
 {
     global $LN;
+
     if ($plain_password === TRUE) {
+        $pw_ver = verify_password($password, $username);
+        if ($pw_ver !== TRUE) {
+            throw new exception($pw_ver);
+        }
         $salt = generate_password(8);
         $password = hash('sha256', $salt . $password . $salt);
     }
@@ -508,14 +516,16 @@ function pubkey_to_xml(array $pubkey)
     return '<RSAKeyValue><Modulus>' . $pubkey['modulo'] . '</Modulus><Exponent>' . $pubkey['exponent'] . '</Exponent></RSAKeyValue>';
 }
 
-function verify_password($password)
+function verify_password($password, $username = '')
 {
     global $LN;
     $len = strlen($password);
     if ($len < MIN_PASSWORD_LENGTH) {
         return $LN['error_pwlength'];
     }
-
+    if ($username != '' && levenshtein($password, $username) < (MIN_PASSWORD_LENGTH/2)) {
+        return $LN['error_pwusername'];
+    }
     return TRUE;
 }
 
