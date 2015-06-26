@@ -565,7 +565,7 @@ function update_transfers()
     if (update_transfer_interval !== null) {
         clearInterval(update_transfer_interval);
     }
-    update_transfer_interval = setInterval(load_transfers, 4000);
+    update_transfer_interval = setInterval(load_transfers, 4001);
 }
 
 function hide_overlayed_content()
@@ -1114,7 +1114,7 @@ function load_tasks_no_offset(order, direction)
 function update_jobs()
 {
     load_jobs();
-    setTimeout(update_jobs, 5000);
+    setTimeout(update_jobs, 5007);
 }
 
 function tasks_offset(offset)
@@ -1128,7 +1128,7 @@ function tasks_offset(offset)
 function update_tasks()
 {
     load_tasks(null, null);
-    setTimeout(update_tasks, 4500);
+    setTimeout(update_tasks, 4504);
 }
 
 function do_hide_message(id)
@@ -1151,7 +1151,7 @@ function hide_message(id, timeout)
 function update_control()
 {
     load_control();
-    setTimeout(update_control, 4000);
+    setTimeout(update_control, 4002);
 }
 
 function load_disk_status()
@@ -1214,21 +1214,21 @@ function update_activity_status()
 {
     // call ajax, restart in 5 seconds
     load_activity_status();
-    setInterval(load_activity_status, 5000);
+    setInterval(load_activity_status, 5002);
 }
 
 function update_disk_status()
 {
     // call ajax, restart in 15 seconds
     load_disk_status();
-    setInterval(load_disk_status, 15000);
+    setInterval(load_disk_status, 14003);
 }
 
 function update_quick_status()
 {
     // call ajax, restart in 5 seconds
     load_quick_status();
-    setInterval(load_quick_status, 5000);
+    setInterval(load_quick_status, 6007);
 }
 
 function urd_search()
@@ -1465,7 +1465,7 @@ function blink_status()
     $('#status_item').addClass('menu_highlight');
     setTimeout(function() {
         $('#status_item').removeClass('menu_highlight');
-    }, 2000);
+    }, 2003);
 }
 
 function select_preview(binid, gid)
@@ -2637,7 +2637,7 @@ function confirm_delete_account(id, msg)
             var x = $.parseJSON(html);
             if (x.error == 0) {
                 show_alert(x.message);
-                setTimeout(function() { jump('logout.php'); } ,5000);
+                setTimeout(function() { jump('logout.php'); } , 5005);
             } else {
                 update_message_bar(x.error);
             }
@@ -2823,7 +2823,7 @@ function submit_upload()
             }
         }
         if (i < 20) {
-            setTimeout(poll_iframe, 200);
+            setTimeout(poll_iframe, 201);
         }
     };
     poll_iframe();
@@ -4606,7 +4606,7 @@ function start_quickmenu(str, sid, type, e)
             function() {
                 mouse_timeout = null;
                 show_quickmenu(str, sid, type, e);
-            }, 250);
+            }, 251);
     }
 }
 
@@ -5923,10 +5923,10 @@ function post_spot()
         // close popup which we won't do because we have to fill in the stuff over and over again.
                 } else {
                     counter++;
-                    setTimeout(test_f, 500);
+                    setTimeout(test_f, 501);
                 }
             };
-            setTimeout(test_f, 500);
+            setTimeout(test_f, 503);
         } else {
             update_message_bar(x.error);
         }

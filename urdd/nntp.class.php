@@ -480,7 +480,7 @@ class URD_NNTP
             $groupArr['parse_spots_reports'] = ($spots_reports_group == $groupid) ? TRUE : FALSE;
             $groupArr['parse_extsetdata'] = ($extset_group == $groupid) ? TRUE : FALSE;
             $groupArr['parse_spots'] = ($spots_group == $groupid) ? TRUE : FALSE;
-            write_log("Selecting group: $group_name", LOG_NOTICE);
+            write_log("Selecting group: $group_name", LOG_INFO);
             try {
                 $data = $this->select_group_name($group_name, $code);
             } catch (exception $e) {
