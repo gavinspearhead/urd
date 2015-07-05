@@ -139,7 +139,7 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 <select name="{$block->name}" id="{$block->id}" 
 onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}' {if $js!=''}, { 'fn':'{$js}' } {/if});">
 {foreach $opts as $k => $q}
-<option label="x{$k|escape:all}" value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
+<option label="{$k|escape:all}" value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
 {/foreach}
 </select>
 {/if}

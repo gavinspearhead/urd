@@ -75,6 +75,7 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('Mijn Serie',                'http://www.mijnserie.nl/zoeken/?search=$q'),
         new search_option('Movie Meter',               'http://www.moviemeter.nl/film/search/$q#results'),
         new search_option('MovieDB',                   'http://www.themoviedb.org/search?query=$q'),
+        new search_option('Moviepilot',                'http://www.moviepilot.de/suche?q=$q'),
         new search_option('MusicBrainz',               'https://musicbrainz.org/search/textsearch.html?query=$q&type=artist&an=1&as=1'),
         new search_option('NzbIndex',                  'https://www.nzbindex.com/search/?q=$q'),
         new search_option('NzbFriends',                'https://www.nzbindex.com/search/?q=$q'),

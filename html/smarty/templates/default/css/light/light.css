@@ -361,7 +361,7 @@ input,select, textarea
 .submitsmall
 {
     color: #444444;
-    padding: 0px 0px;
+    padding: 0px 3px 0px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
     border: 1px solid;

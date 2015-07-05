@@ -357,7 +357,7 @@ input, select, textarea
 {
     background: #dbdaa9;
     color: #303030;
-    padding: 0 0;
+    padding: 0px 3px 0px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: x-small;
     border: 2px solid;

@@ -115,7 +115,7 @@ $(document).ready(function() {
 <tr class="comment"><td colspan="2">{$description}</td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
 
-<tr class="comment"><td colspan="2" class='righted'><input type='button' id="report_spam" value="{$LN_quickmenu_report_spam}"/><input type='button' id="post_comment" value="{$LN_post_comment}"/></td></tr>
+<tr class="comment"><td colspan="2" class='righted'><input type='button' class="submitsmall" id="report_spam" value="{$LN_quickmenu_report_spam}"/><input type='button' class="submitsmall" id="post_comment" value="{$LN_post_comment}"/></td></tr>
 {foreach $comments as $comment}
 <tr class="comment_poster"><td colspan="2">
 <div class="floatleft">
