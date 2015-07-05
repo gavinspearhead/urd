@@ -33,14 +33,13 @@ $(document).ready(function() {
     $('#poster').click( function(e) { load_sets({ 'poster':'{$poster|escape:javascript}' }); } );
     $('#post_comment').click( function(e) { post_spot_comment('{$spotid}'); } );
     $('#report_spam').click( function(e) { report_spam('{$spotid}')} );
-
 });
 </script>
 
 <div class="sets_inner" id="td_sets">
 {if $show_image}
 {if $image != '' && $image_from_db == 0}
-<div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max180x180" alt=""/> </div>
+<div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max180x180" alt=""/></div>
 {/if}
 {if image_from_db == 1}
 <div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" id="image_db" class="max180x180" alt=""/></div>
@@ -56,7 +55,6 @@ $(document).ready(function() {
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span id="poster" class="buttonlike">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
-
 
 {foreach $subcata as $k=>$cat}<tr class="comment"><td class="nowrap bold">{$k}:</td>
 <td>
@@ -119,7 +117,7 @@ $(document).ready(function() {
 <div class="inline iconsizeplus deleteicon buttonlike" id="report_spam" {urd_popup type="small" text=$LN_quickmenu_report_spam }></div>
 <div class="inline iconsizeplus mailicon buttonlike" id="post_comment" {urd_popup type="small" text=$LN_post_comment }></div>
 
-<!--input type='button' class="submitsmall" id="report_spam" value="{$LN_quickmenu_report_spam}"/>&nbsp;<input type='button' class="submitsmall" id="post_comment" value="{$LN_post_comment}"/--></td></tr>
+</td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
 {foreach $comments as $comment}
 <tr class="comment_poster"><td colspan="2">

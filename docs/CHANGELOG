@@ -17,6 +17,7 @@
 - Added display totals to transfer pages
 - Added search engines Mijn Serie and NZBFriends
 - Added submenu indicator to quickmenu
+- Added post comment and report spam buttons to show spot
 - Improved parsing search strings in browse pages
 - Small improvements to layout
 - Reduces memory footprint slightly

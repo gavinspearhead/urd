@@ -443,7 +443,6 @@ function get_set_size($name)
     return 0;
 }
 
-
 function create_binary_id($subject, $poster)
 {
     return md5($subject . ' ' . $poster);
@@ -2397,7 +2396,6 @@ function get_sets_count_group(DatabaseConnection $db, $groupid)
 
 function count_sets_group(DatabaseConnection $db, $groupid)
 {
-    assert(is_numeric($groupid));
     $sql = 'COUNT("ID") AS "cnt" FROM setdata WHERE "groupID"=:groupid';
     $res = $db->select_query($sql, array(':groupid'=>$groupid));
 
