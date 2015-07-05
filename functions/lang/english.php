@@ -1951,5 +1951,3 @@ $LN['password_medium']      = 'Password strength: medium';
 $LN['password_strong']      = 'Password strength: strong';
 $LN['password_correct']     = 'Passwords match';
 $LN['password_incorrect']   = 'Passwords do not match';
-
-

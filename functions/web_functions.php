@@ -34,12 +34,18 @@ require_once "$pathwf/autoincludes.php";
 function redirect($url, $delay = 0)
 {
     assert(is_numeric($delay) && $url != '');
+    $delay *= 1000;
     $output = <<<OUT
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="refresh" content="$delay;url=$url">
 </head>
+<body>
+<script type="text/javascript">
+    setTimeout( function() {
+            window.location= "$url"; }, $delay); 
+</script>
+</body>
 </html>
 OUT;
     echo $output;
@@ -995,7 +1001,7 @@ function load_language($lang)
     global $LN;
 
     if (isset($LN)) {
-        $LN=array();
+        $LN = array();
     }
 
     $pathsl = realpath(dirname(__FILE__));

@@ -73,6 +73,12 @@ $tpldir = 'smarty/templates/';
 $langdir = '../functions/lang/';
 $smarty = new Smarty();
 load_language($lang);
+foreach ($LN as $key => $word) {
+    $LN2['LN_' . $key] = $word;
+}
+$smarty->assign($LN2);
+unset($LN2);
+
 $smarty->assign('TPLDIR', $tpldir . $template);
 $smarty->assign('IMGDIR', $tpldir . $template . '/img');
 $smarty->assign('CSSDIR', $tpldir . $template . '/css');
