@@ -115,7 +115,12 @@ $(document).ready(function() {
 <tr class="comment"><td colspan="2">{$description}</td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
 
-<tr class="comment"><td colspan="2" class='righted'><input type='button' class="submitsmall" id="report_spam" value="{$LN_quickmenu_report_spam}"/><input type='button' class="submitsmall" id="post_comment" value="{$LN_post_comment}"/></td></tr>
+<tr class="comment"><td colspan="2" class='righted'>
+<div class="inline iconsizeplus deleteicon buttonlike" id="report_spam" {urd_popup type="small" text=$LN_quickmenu_report_spam }></div>
+<div class="inline iconsizeplus mailicon buttonlike" id="post_comment" {urd_popup type="small" text=$LN_post_comment }></div>
+
+<!--input type='button' class="submitsmall" id="report_spam" value="{$LN_quickmenu_report_spam}"/>&nbsp;<input type='button' class="submitsmall" id="post_comment" value="{$LN_post_comment}"/--></td></tr>
+<tr class="comment"><td colspan="2"><br/></td></tr>
 {foreach $comments as $comment}
 <tr class="comment_poster"><td colspan="2">
 <div class="floatleft">
