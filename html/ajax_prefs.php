@@ -604,7 +604,7 @@ function show_preferences(DatabaseConnection $db, $userid)
         new pref_checkbox (user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
         new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),
         new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hidden_files_list'], 'hidden_files_list', $LN['pref_hidden_files_list_msg'], $hidden_files_list_msg, $hidden_files_list, 10, 40, NULL, 'hidfil', $prefArray['hiddenfiles']? NULL : 'hidden'),
-        new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $search_options_array, 5),
+        new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $search_options_array, 7),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_group'], 'default_group', $LN['pref_default_group_msg'], $default_group_msg, $groups_array, $prefArray['default_group']),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_feed'], 'default_feed', $LN['pref_default_feed_msg'], $default_feed_msg, $feeds_array, $prefArray['default_feed']),
     );

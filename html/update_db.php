@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  This file is part of Urd.
  *  vim:ts=4:expandtab:cindent
@@ -46,7 +45,9 @@ require_once "$pathud/../functions/defines.php";
 require_once "$pathud/../functions/functions.php";
 require_once "$pathud/../functions/db.class.php";
 require_once "$pathud/../functions/urd_log.php";
+require_once "$pathud/../functions/config_functions.php";
 require_once "$pathud/../functions/libs/smarty/libs/Smarty.class.php";
+
 try {
     $db = connect_db(FALSE);  // initialise the database
 } catch (exception $e) {
@@ -54,6 +55,7 @@ try {
     echo "Connection to database failed. $msg\n";
     die;
 }
+load_config($db, TRUE); // reload the configuration
 require_once "$pathud/../functions/checkauth.php";
 
 if (isset($userid)) {

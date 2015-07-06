@@ -61,3 +61,4 @@ if (!isset($quiet) ) {
 $engine = isset($config['db_engine']) ? $config['db_engine'] : '';
 $sdb = urd_db_structure::create_db_updater($config['databasetype'], $db, $quiet, $html);
 $urd_db = urd_db_structure::create_db_structure($sdb, $engine);
+load_config($db, TRUE); // reload the configuration

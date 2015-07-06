@@ -147,10 +147,10 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 	<input type="button" class="submitsmall" name="{$block->name}" value="{$block->value|escape}" {$block->javascript} />
 {/if}
 {if $b_type == "multiselect"}
-    {$name=$block->id}
+    {$name=$block->id} 
     <input type="hidden" id="{$name}_orig_size" value="{$block->size}"/>
-    <select name="{$block->name}" id="{$name}" size="2" multiple="multiple" {$block->javascript} 
-    onchange="javascript:update_setting('{$name|escape:javascript}', '{$b_type|escape:javascript}');"
+    <select name="{$block->name}" id="{$name}" size="2" multiple="multiple" onfocus="javascript:collapse_select('{$name}','size');" {$block->javascript}
+     onchange="javascript:update_setting('{$name|escape:javascript}', '{$b_type|escape:javascript}');"
     >
     {$opts=$block->options_triple}
     {foreach $opts as $q}

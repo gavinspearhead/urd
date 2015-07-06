@@ -187,7 +187,7 @@ function get_config(DatabaseConnection& $db, $name, $default = NULL, $force=FALS
     assert ($name != '');
 
     if ($force === TRUE) {
-        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option" = :name', array(':userid'=>user_status::SUPER_USERID, ':name'=>$name));
+        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option"=:name', array(':userid'=>user_status::SUPER_USERID, ':name'=>$name));
         if (isset($res['value'])){ 
             return $res['value'];
         } else {
@@ -215,7 +215,7 @@ function get_pref(DatabaseConnection& $db, $name, $userid, $default=NULL, $force
     global $LN;
     assert ($name != '' && is_numeric($userid));
     if ($force === TRUE) {
-        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option" = :name', array(':userid'=>$userid, ':name'=>$name));
+        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option"=:name', array(':userid'=>$userid, ':name'=>$name));
         if (isset($res['value'])){ 
             return $res['value'];
         } else {
