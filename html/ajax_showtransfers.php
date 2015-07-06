@@ -80,9 +80,10 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
     $input_arr = array();
     $search = get_request('search', '');
     $qsearch = '';
+    $like = $db->get_pattern_search_command('LIKE');
 
     if ($search != '') { 
-        $qsearch = ' AND "subject" LIKE :search ';
+        $qsearch = " AND \"subject\" $like :search ";
         $input_arr[':search'] = "%$search%";
     }
     if ($isadmin) {
@@ -230,8 +231,9 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
     $search = get_request('search', '');
     $qsearch = '';
     $input_arr = array();
+    $like = $db->get_pattern_search_command('LIKE');
     if ($search != '') { 
-        $qsearch = ' "name" LIKE :search AND ';
+        $qsearch = " \"name\" $like :search AND ";
         $input_arr[':search'] = "%$search%";
     }
     if ($isadmin) {

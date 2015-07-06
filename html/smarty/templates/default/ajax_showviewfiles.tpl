@@ -21,17 +21,25 @@
  * $Id: ajax_showviewfiles.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
+{if $view_size >= 1024}
+{$small=0}
+{$skippersize= 30}
+{else}
+{$small=1}
+{$skippersize= 18}
+{/if}
+
 {* Capture the skipper: *}
 {capture assign=topskipper}
     {if $lastpage != 1}
-        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=submit_viewfiles_page extra_class="margin10"}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=top js=submit_viewfiles_page extra_class="margin10" size=$skippersize}
     {else}<br/>
     {/if}
 {/capture}
 
 {capture assign=bottomskipper}
     {if $lastpage != 1}
-        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=submit_viewfiles_page extra_class="margin10"}
+        {urd_skipper current=$currentpage last=$lastpage pages=$pages position=bottom js=submit_viewfiles_page extra_class="margin10" size=$skippersize}
     {else}<br/>
     {/if}
 {/capture}
@@ -52,12 +60,14 @@
 <th class="fixwidth1 head round_left">&nbsp;</th>
 <th id="filenametd" class="head buttonlike" onclick="submit_sort_viewfiles('name')">{$LN_filename} {$name_sort}</th>
 <th class="head fixwidth5 buttonlike" onclick="submit_sort_viewfiles('type')">{$LN_type} {$type_sort}</th>
-<th class="head fixwidth6 buttonlike right" onclick="submit_sort_viewfiles('size')">{$LN_size} {$size_sort}</th>
-<th class="head fixwidth8c buttonlike right" onclick="submit_sort_viewfiles('mtime')">{$LN_modified} {$mtime_sort}</th>
-<th class="head fixwidth5 buttonlike center" onclick="submit_sort_viewfiles('perms')">{$LN_perms} {$perms_sort}</th>
+<th class="head fixwidth5 buttonlike" onclick="submit_sort_viewfiles('size')">{$LN_size} {$size_sort}</th>
+{if $small == 0}
+<th class="head fixwidth8c buttonlike" onclick="submit_sort_viewfiles('mtime')">{$LN_modified} {$mtime_sort}</th>
+<th class="head fixwidth5c buttonlike" onclick="submit_sort_viewfiles('perms')">{$LN_perms} {$perms_sort}</th>
 <th class="head fixwidth5c buttonlike" onclick="submit_sort_viewfiles('owner')">{$LN_owner} {$owner_sort}</th>
 <th class="head fixwidth5c buttonlike" onclick="submit_sort_viewfiles('group')">{$LN_group} {$group_sort}</th>
-<th class="head round_right right fixwidth8">{$LN_actions}</th>
+{/if}
+<th class="head round_right center fixwidth8c">{$LN_actions}</th>
 </tr>
 {/capture}
 
@@ -95,10 +105,12 @@
 </td>
 <td>{$icon_ln}</td>
 <td class="right">{$size|escape} {$size_ext|escape}</td>
+{if $small == 0}
 <td class="right">{$file->get_mtime()|escape}</td>
 <td class="center">{$perms|escape}</td>
 <td>{$file->get_owner()|escape}</td>
 <td>{$file->get_group()|escape}</td>
+{/if}
 <td>
 {if $name != '..'}
 <div class="floatright">

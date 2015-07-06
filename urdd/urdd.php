@@ -598,9 +598,10 @@ function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_l
     assert(is_bool($restart));
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     try {
-        $query = '"description", "ID", "userid", "restart", "priority", "status" FROM queueinfo WHERE "status" LIKE :qr';
+        $like = $db->get_pattern_search_command('LIKE');
+        $query = "\"description\", \"ID\", \"userid\", \"restart\", \"priority\", \"status\" FROM queueinfo WHERE \"status\" $like :qr";
         $res_running = $db->select_query($query, array(':qr'=>QUEUE_RUNNING));
-        $query = '"description", "ID", "userid", "status", "restart", "priority" FROM queueinfo WHERE ("status" LIKE :qq OR "status" LIKE :qp)';
+        $query = "\"description\", \"ID\", \"userid\", \"status\", \"restart\", \"priority\" FROM queueinfo WHERE (\"status\" $like :qq OR \"status\" $like :qp)";
         $res_queued = $db->select_query($query, array(':qp'=>QUEUE_PAUSED, ':qq'=>QUEUE_QUEUED));
         if (is_array($res_running)) {
             $response = '';

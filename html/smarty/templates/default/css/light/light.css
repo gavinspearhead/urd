@@ -135,7 +135,7 @@ table.articles, table.newsservers
     margin-top: -1px;
     border-collapse: collapse;
     border-spacing:0;
-    width: 99%;
+    width: 100%;
 }
 table.statistics
 {

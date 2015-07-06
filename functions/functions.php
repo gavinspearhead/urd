@@ -277,7 +277,8 @@ function category_by_name(DatabaseConnection $db, $category, $userid)
     if ($category == '') {
         return 0;
     }
-    $sql = '"id" FROM categories WHERE "name" LIKE :cat AND "userid"= :userid';
+    $like = $db->get_pattern_search_command('LIKE');
+    $sql = "\"id\" FROM categories WHERE \"name\" $like :cat AND \"userid\" = :userid";
     $res = $db->select_query($sql, 1, array(':cat'=>$category, ':userid'=>$userid));
 
     return (!isset($res[0]['id'])) ? 0 : $res[0]['id'];
@@ -2270,8 +2271,8 @@ function add_line_to_text_area(DatabaseConnection $db, $option, $line, $userid)
 function get_extsetdata(DatabaseConnection $db, $setid, $name)
 {
     $like = $db->get_pattern_search_command('LIKE');
-    $sql = "\"value\" FROM extsetdata WHERE \"setID\"=? AND \"name\" $like ?";
-    $res = $db->select_query($sql, 1, array($setid, $name));
+    $sql = "\"value\" FROM extsetdata WHERE \"setID\"=:setid AND \"name\" $like :name";
+    $res = $db->select_query($sql, 1, array(':setid'=>$setid, ':name'=>$name));
 
     return (isset($res[0]['value'])) ? $res[0]['value'] : '';
 }

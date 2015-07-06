@@ -42,9 +42,11 @@
 {/if}
 
 <input type="hidden" id="perpage" value="{$perpage|escape}"/>
+<input type="hidden" id="view_size" value=""/>
 
 <script type="text/javascript">
 $(document).ready(function() {
+   $('#view_size').val($(window).width());
     show_files( { 'curdir':'{$directory|escape:javascript}' } );
     set_scroll_handler('#contentout', show_files);
     $('#searchbar').html( $('#searchformdiv').html());

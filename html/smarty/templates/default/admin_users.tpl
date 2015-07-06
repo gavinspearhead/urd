@@ -26,11 +26,13 @@
 <div>
 <input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
 <input type="button" value="{$LN_search}" id="search_button" class="submitsmall"/></div>
+<input type="hidden" id="view_size" value=""/>
 </div>
 
 <div id="usersdiv">
 <script type="text/javascript">
 $(document).ready(function() {
+   $('#view_size').val($(window).width());
     show_users();
     $('#searchbar').html( $('#searchformdiv').html());
     $('#searchformdiv').html('')

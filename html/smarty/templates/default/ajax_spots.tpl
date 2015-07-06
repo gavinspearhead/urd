@@ -86,17 +86,16 @@
 <th class="head">&nbsp;</th>
 <th class="head buttonlike" id="browsesubjecttd">{$LN_browse_subject} {$title_sort}</th>
 {if $small == 0}
-<th class="head fixwidth1 buttonlike" id="head_reports">{$LN_spamreporttag}</th>
-<th class="head">{$LN_whitelisttag}</th>
+<th class="fixwidth1 head buttonlike" id="head_reports">{$LN_spamreporttag}</th>
+<th class="fixwidth1 head">{$LN_whitelisttag}</th>
 {/if}
 {if $show_comments > 0 && $small == 0}
-<th class="head fixwidth1 buttonlike" id="head_comments">#</th>
+<th class="fixwidth1 head buttonlike" id="head_comments">#</th>
 {/if}
 <th class="fixwidth2a nowrap buttonlike head right" id="head_stamp">{$LN_browse_age} {$stamp_sort}</th>
 <th class="fixwidth3 nowrap buttonlike head right" id="head_size">{$LN_size} {$size_sort}</th>
-<th class="fixwidth1 buttonlike head right" id="head_url"><div class="inline iconsizeplus followicon buttonlike"></div>
-</th>
-<th class="nowrap head fixwidth4 round_right">{$unmark_int_all}</th>
+<th class="fixwidth1 buttonlike head right" id="head_url"><div class="inline iconsizeplus followicon buttonlike"></div></th>
+<th class="fixwidth4 nowrap head round_right">{$unmark_int_all}</th>
 </tr>
 {/capture}
 
@@ -276,7 +275,6 @@ $(document).ready(function() {
 
 <input type="hidden" id="rss_url" value="{$rssurl|escape:quotes}"/>
 <input type="hidden" id="killflag" value="{$killflag|escape}"/>
-<!--input type="hidden" id="deletedsets" value="{$LN_browse_deletedsets}"/-->
 <input type="hidden" id="deletedset" value="{$LN_browse_deletedset}"/>
 
 <script type="text/javascript">

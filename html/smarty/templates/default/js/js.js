@@ -676,7 +676,12 @@ function show_users(order, direction)
     var orderval = get_value_from_id('order', '');
     var orderdirval = get_value_from_id('order_dir', '');
     var search = get_value_from_id('search', '');
-    var data = { search: search, cmd: 'reload_users' };
+    var view_size = get_value_from_id('view_size', '');
+    var data = { 
+        search: search,
+        cmd: 'reload_users', 
+        view_size: view_size,
+    };
     if (order === undefined) {
         order = orderval;
     }
@@ -794,6 +799,7 @@ function show_files(options)
     var offset = get_value_from_id('offset', 0);
     var sort = get_value_from_id('order', '');
     var sortdir = get_value_from_id('order_dir', '');
+    var view_size = get_value_from_id('view_size', '');
     var add_rows = 0;
     var data = {
         cmd: 'show_files',
@@ -801,7 +807,8 @@ function show_files(options)
         offset: offset,
         dir: dir,
         sort: sort,
-        sort_dir: sortdir
+        sort_dir: sortdir,
+        view_size: view_size
     };
 
     if (options != null) {
@@ -893,9 +900,11 @@ function show_buttons(order, direction)
 function show_usenet_servers(order, direction)
 {
     var url = 'ajax_edit_usenet_servers.php';
+    var view_size = get_value_from_id('view_size', '');
     var search = get_value_from_id('search', '');
     var data = {
         cmd: 'reload_servers',
+        view_size: view_size,
         search: search
     };
     var orderval = get_value_from_id('order', 'name');
@@ -3861,7 +3870,7 @@ function load_spots(options)
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
-            $('#minage').val(x.minage);
+            $('#minage').val(x.minage)
             $('#maxage').val(x.maxage);
             $('#minrating').val(x.minrating);
             $('#maxrating').val(x.maxrating);
@@ -3881,9 +3890,9 @@ function load_spots(options)
             } else {
                 $('#spots_table>tbody tr').eq(-2).after(x.content);
             }
-            update_widths('browsesubjecttd');
             highlight_handler();
             set_scroll_handler('#contentout', load_sets);
+            update_widths('browsesubjecttd');
         } else {
             update_message_bar(x.error);
         }
@@ -4217,19 +4226,25 @@ function update_rss_url()
 
 function update_widths(the_id)
 {
-    //$('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(1); });
-    var oritextwidth = $('#' + the_id).outerWidth();
+    // sometimes the width of the $the_id column is not calculated right. So we have to correct
+    var sum= $(".articles").outerWidth(); 
+    $('th').each(function() { sum = sum - $(this).width(); console.log($(this).width(), sum); });
+    sum = sum + $('#browsesubjecttd' ).width();
+    if (sum > 0) {  $('#browsesubjecttd' ).outerWidth(sum); }
+    $('.donotoverflowdamnit').each(function() { $(this).width(10 + 'px'); });
+    var oritextwidth = $('#' + the_id).outerWidth(true);
+
     // First set all elements to the CURRENT width, this increases the TD size because of padding:
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(oritextwidth);} );
+    $('.donotoverflowdamnit').each(function() { $(this).width(oritextwidth);} );
 
     // Can determine the padding by comparing new size with original size:
     var newtextwidth = $('#' + the_id).outerWidth();
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
-
+console.log(correctedtextwidth, padding, newtextwidth, oritextwidth);
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
-    $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(correctedtextwidth); });
+    $(".donotoverflowdamnit").each(function() { $(this).width(correctedtextwidth); });
 }
 
 function wordwrap(msg)
@@ -5980,7 +5995,6 @@ function show_sidebar(display)
             sidebar = 0;
             $('#sidebar_button').text('>>');
             // don't know why we need it ... but...
-            $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });
             update_widths('browsesubjecttd');
         }); 
     } else {
@@ -5994,7 +6008,6 @@ function show_sidebar(display)
         $('#contentleft').outerWidth(side_bar_width);
         $('#topcontent').width($('#topcontent').width() - side_bar_width);
         // don't know why we need it ... but...
-        $('div[class~="donotoverflowdamnit"]').each(function() { $(this).width(10 + 'px'); });
         update_widths('browsesubjecttd');
     }
     $('#sbdiv').css('padding-top', (Math.round($(window).height() - 50 - 22) / 2));

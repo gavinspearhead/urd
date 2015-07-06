@@ -342,6 +342,7 @@ try {
             $sort = get_request('sort', 'name');
             $sort_dir = get_request('sort_dir', 'asc');
             $only_rows  = get_request('only_rows', 0);
+            $view_size  = get_request('view_size', 1024);
 
             if (!in_array($sort, array('name', 'fullname', 'email', 'rights', 'last_active', 'isadmin', 'active'))) {
                 $sort = 'name';
@@ -382,6 +383,7 @@ try {
                 'sort'=>         $sort,
                 'sort_dir'=>     $sort_dir,
                 'search'=>       $o_search,
+                'view_size' =>     $view_size,
                 'users'=>        $users,
                 'only_rows'=>    $only_rows,
                 'emailallowed'=> $email_allowed?1:0,

@@ -633,10 +633,10 @@ function show_preferences(DatabaseConnection $db, $userid)
 
     if ($allow_global_scripts != 0) {
         if (count($global_scripts_array) > 0) {
-            $downloading[] = new pref_multiselect (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_global_scripts'], 'global_scripts[]', $LN['pref_global_scripts_msg'], $global_scripts_msg, $global_scripts_array, 5);
+            $downloading[] = new pref_multiselect (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_global_scripts'], 'global_scripts[]', $LN['pref_global_scripts_msg'], $global_scripts_msg, $global_scripts_array, 7);
         }
         if ($allow_user_scripts != 0 && count($user_scripts_array) > 0) {
-            $downloading[] = new pref_multiselect (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_user_scripts'], 'user_scripts[]', $LN['pref_user_scripts_msg'], $user_scripts_msg, $user_scripts_array, 5);
+            $downloading[] = new pref_multiselect (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_user_scripts'], 'user_scripts[]', $LN['pref_user_scripts_msg'], $user_scripts_msg, $user_scripts_array, 7);
         }
     }
 

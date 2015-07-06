@@ -374,13 +374,14 @@ function regenerate_setnames(DatabaseConnection $db, array $setidarray)
 function update_group_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
-    $db->update_query_2('groups', array('extset_update' => $timestamp), '"name" LIKE ?', array($name));
+    $like = $db->get_pattern_search_command('LIKE');
+    $db->update_query_2('groups', array('extset_update' => $timestamp), "\"name\" $like ?", array($name));
 }
 
 function update_feed_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
-    $db->update_query_2('rss_urls', array('extset_update' => $timestamp), '"url" LIKE ?', array($name));
+    $db->update_query_2('rss_urls', array('extset_update' => $timestamp), "\"url\" $like ?", array($name));
 }
 
 function do_check_version(DatabaseConnection $db, action $item)

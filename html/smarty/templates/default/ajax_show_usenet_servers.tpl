@@ -22,6 +22,12 @@
  *}
 {* Ajax page, doesn't need a head/foot tpl *}
 
+{if $view_size >= 1024}
+{$small=0}
+{else}
+{$small=1}
+{/if}
+
 <input type="hidden" name="order" id="order" value="{$sort}"/>
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir}"/>
 
@@ -46,9 +52,12 @@
 {/if}
 <th onclick="javascript:submit_search_usenet_servers('name', 'asc');" class="buttonlike uwider head">{$LN_name} {$name_sort}</th>
 <th onclick="javascript:submit_search_usenet_servers('threads', 'asc');" class="buttonlike uwider fixwidth3c head">{$LN_usenet_threads} {$threads_sort}</th>
+
+{if $small == 0}
 <th onclick="javascript:submit_search_usenet_servers('connection', 'asc');" class="buttonlike uwider fixwidth3c head">{$LN_usenet_connection} {$connection_sort}</th>
 <th onclick="javascript:submit_search_usenet_servers('authentication', 'asc');" class="buttonlike uwider fixwidth3c head">{$LN_usenet_authentication} {$authentication_sort}</th>
 <th onclick="javascript:submit_search_usenet_servers('username', 'asc');" class="buttonlike uwider head">{$LN_username} {$username_sort}</th>
+{/if}
 <th class="head round_right right">{$LN_actions}</th>
 </tr>
 
@@ -75,6 +84,7 @@
 {/if}
 <td>{$usenet_server->name|escape|truncate:$maxstrlen}</td>
 <td class="fixwidth3c">{$usenet_server->threads|escape|truncate:$maxstrlen}</td>
+{if $small == 0}
 <td class="fixwidth3c">{$usenet_server->connection|truncate:$maxstrlen}</td>
 <td class="fixwidth3c" {urd_popup type="small" text=$LN_usenet_needsauthentication }> 
 {urd_checkbox value="{if $usenet_server->authentication == 1}1{else}0{/if}" name="need_auth" id="need_auth_{$usenet_server->id}" post_js="toggle_usenet_auth({$usenet_server->id}, 'need_auth_{$usenet_server->id}')"}
@@ -83,6 +93,7 @@
 {$usenet_server->username|escape|truncate:$maxstrlen}
 {/if}
 </td>
+{/if}
 
 <td>
 <div class="floatright">

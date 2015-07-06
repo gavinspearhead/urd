@@ -576,6 +576,7 @@ try {
             die;
             break;
         case 'show_files':
+            $view_size  = get_request('view_size', 1024);
             $files = new file_list;
             $files->read_dir($currentdir, $db, $is_admin || $is_fileeditor, $search);
             $dir = (strtolower($sort_dir) == 'desc')? -1: 1;
@@ -591,16 +592,17 @@ try {
                 'allow_edit'=>	$allow_edit,
                 'search'=>		$search,
                 'pages'=>		$pages,
+                'view_size' =>  $view_size,
                 'use_tar'=>		$use_tar,
                 'currentpage'=>	$currentpage,
-                'lastpage'=>		$lastpage,
-                'sort'=>			$sort,
+                'lastpage'=>	$lastpage,
+                'sort'=>		$sort,
                 'sort_dir'=> 	$sort_dir,
                 'offset'=> 		$offset,
                 'directory'=>	$currentdir,
-                'only_rows'=>    $only_rows,
+                'only_rows'=>   $only_rows,
                 'files'=>		$ff = $files->get_files($sort, $offset, $perpage, $dir, ($only_rows == 0)),
-                'last_line'=>    $offset + count($ff)));
+                'last_line'=>   $offset + count($ff)));
             $contents = $smarty->fetch('ajax_showviewfiles.tpl');
             return_result(array('contents'=>$contents));
             break;

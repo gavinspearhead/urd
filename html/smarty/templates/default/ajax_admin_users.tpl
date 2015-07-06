@@ -21,6 +21,12 @@
  * $Id: ajax_admin_users.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
+{if $view_size >= 1024}
+{$small=0}
+{else}
+{$small=1}
+{/if}
+
 <div>
 <input type="hidden" name="order" id="order" value="{$sort|escape:htmlall}"/>
 <input type="hidden" name="order_dir" id="order_dir" value="{$sort_dir|escape:htmlall}"/>
@@ -42,8 +48,10 @@
 <tr>
 <th onclick="javascript:submit_search_users('id', 'asc');" class="buttonlike head round_left"># {$id_sort}</th>
 <th onclick="javascript:submit_search_users('name', 'asc');" class="buttonlike head">{$LN_username} {$name_sort}</th>
+{if $small==0}
 <th onclick="javascript:submit_search_users('fullname', 'asc');" class="buttonlike head">{$LN_fullname} {$fullname_sort}</th>
 <th onclick="javascript:submit_search_users('email', 'asc');" class="buttonlike head">{$LN_email} {$email_sort}</th>
+{/if}
 <th onclick="javascript:submit_search_users('last_active', 'asc');" class="buttonlike head">{$LN_users_last_active} {$last_active_sort}</th>
 <th onclick="javascript:submit_search_users('isadmin', 'asc');" class="buttonlike center head">{$LN_users_isadmin} {$isadmin_sort}</th>
 <th onclick="javascript:submit_search_users('rights', 'asc');" class="buttonlike center head">{$LN_users_rights} {$rights_sort}</th>
@@ -55,8 +63,10 @@
 <tr class="even content set_content">
 	<td>{$user->id|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->username|escape:htmlall|truncate:$maxstrlen}</td>
+{if $small==0}
 	<td>{$user->fullname|escape:htmlall|truncate:$maxstrlen}</td>
 	<td>{$user->email|escape:htmlall|truncate:$maxstrlen}</td>
+    {/if}
 	<td>{$user->last_active|capitalize|escape}</td>
 	<td class="center" {urd_popup type="small" text=$LN_users_isadmin}>
     {urd_checkbox value="{if $user->admin == $USER_ADMIN}1{else}0{/if}" name="user_is_admin" id="user_{$user->id}_is_admin" post_js="user_update_setting({$user->id}, 'admin', {if $user->admin == $USER_ADMIN}0{ELSE}1{/if});"}

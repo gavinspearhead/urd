@@ -75,10 +75,11 @@ try {
             if ($res === FALSE) {
                 $res = array();
             }
+            $like = $db->get_pattern_search_command('LIKE');
 
             foreach ($res as $row) {
                 $task = command_description($db, $row['description']);
-                $sql = 'min("ETA") AS "ETA" FROM queueinfo WHERE "description" LIKE :desc AND "ETA" > :eta ';
+                $sql = "min(\"ETA\") AS \"ETA\" FROM queueinfo WHERE \"description\" $like :desc AND \"ETA\" > :eta ";
                 $res2 = $db->select_query($sql, array(':desc'=>$row['description'], ':eta'=>0));
                 $ETA = isset($res2[0]['ETA']) ? $res2[0]['ETA'] : '';
                 $row['task'] = $task[0];

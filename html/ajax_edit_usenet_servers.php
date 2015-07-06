@@ -362,6 +362,7 @@ try {
             $primary = get_config($db, 'preferred_server', '');
             $sort = get_request('sort', 'name');
             $sort_dir = get_request('sort_dir', 'asc');
+            $view_size  = get_request('view_size', 1024);
 
             $search = $o_search = (trim(get_request('search', '')));
             $Qsearch = '';
@@ -403,12 +404,13 @@ try {
             }
             init_smarty();
             $smarty->assign(array(
-                'maxstrlen'=>    $prefs['maxsetname']/2,
+                'maxstrlen'=>      $prefs['maxsetname']/2,
                 'usenet_servers'=> $usenet_servers,
-                'sort'=>	        $sort,
-                'sort_dir'=>	    $sort_dir,
-                'search'=>       $o_search,
-                'primary'=>      $primary));
+                'sort'=>	       $sort,
+                'sort_dir'=>	   $sort_dir,
+                'search'=>         $o_search,
+                'view_size' =>     $view_size,
+                'primary'=>        $primary));
             $contents = $smarty->fetch('ajax_show_usenet_servers.tpl');
             return_result(array('contents' => $contents));
             break;
