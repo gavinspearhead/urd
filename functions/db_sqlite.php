@@ -190,4 +190,10 @@ class DatabaseConnection_sqlite extends DatabaseConnection
     {
         return $this->DB->Insert_ID();
     }*/
+    public function execute_query($sql, $values=FALSE)
+    {
+        $this->start_transaction();
+        parent:: execute_query($sql, $values);
+        $this->commit_transaction();
+    }
 }
