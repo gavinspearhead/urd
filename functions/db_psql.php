@@ -164,15 +164,6 @@ class DatabaseConnection_psql extends DatabaseConnection
     {
         return array (0 => array(0 => '__ALL__')); // postfix doesn't have a show tables equivalent. We use a trick here: we return all and for optimising we run the vacuum full without a table name. Nasty? yes. Works? yes.
     }
-    public function start_transaction()
-    {
-        $this->execute_query('BEGIN WORK');
-    }
-    public function commit_transaction()
-    {
-        return $this->execute_query('COMMIT WORK');
-    }
-
     public function lock(array $tableactions)
     {
         $this->execute_query('BEGIN WORK');

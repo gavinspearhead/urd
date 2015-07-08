@@ -186,8 +186,6 @@ abstract class DatabaseConnection
     abstract public function get_extract($what, $from);
     abstract public function get_greatest_function();
     abstract public function get_pattern_search_command($search_type);
-    abstract public function start_transaction();
-    abstract public function commit_transaction();
     abstract public function lock(array $tableactions);
     abstract public function unlock();
     abstract public function drop_database($dbase);
@@ -219,7 +217,7 @@ abstract class DatabaseConnection
         return $rv;
     }
 
-    private function _execute($query, $values=FALSE)
+    protected function _execute($query, $values=FALSE)
     {
         if (is_array($values)) {
             if (is_array(reset($values))) {  // get the first element; if it is an array, we assume we are doing bulk inserts
@@ -500,4 +498,14 @@ abstract class DatabaseConnection
 
         return $this->execute_query($sql, $input_arr);
     }
+    public function start_transaction()
+    {
+        $this->DB->beginTransaction();
+    }
+    public function commit_transaction()
+    {
+        return $this->DB->commit();
+    }
+
+
 }

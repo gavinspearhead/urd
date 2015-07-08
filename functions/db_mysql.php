@@ -163,15 +163,6 @@ class DatabaseConnection_mysql extends DatabaseConnection
         return $this->execute_query('SHOW TABLES');
     }
 
-        public function start_transaction()
-    {
-        $this->execute_query('START TRANSACTION');
-    }
-    public function commit_transaction()
-    {
-        return $this->execute_query('COMMIT');
-    }
-
     public function lock(array $tableactions)
     {
         $qry = '';

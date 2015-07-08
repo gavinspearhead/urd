@@ -4228,7 +4228,7 @@ function update_widths(the_id)
 {
     // sometimes the width of the $the_id column is not calculated right. So we have to correct
     var sum= $(".articles").outerWidth(); 
-    $('th').each(function() { sum = sum - $(this).width(); console.log($(this).width(), sum); });
+    $('th').each(function() { sum = sum - $(this).width();  });
     sum = sum + $('#browsesubjecttd' ).width();
     if (sum > 0) {  $('#browsesubjecttd' ).outerWidth(sum); }
     $('.donotoverflowdamnit').each(function() { $(this).width(10 + 'px'); });
@@ -4241,7 +4241,6 @@ function update_widths(the_id)
     var newtextwidth = $('#' + the_id).outerWidth();
     var padding = newtextwidth - oritextwidth;
     var correctedtextwidth = oritextwidth - padding;
-console.log(correctedtextwidth, padding, newtextwidth, oritextwidth);
     if (padding > 50) { return; } // dirty quick fix....
     // Set it to the correct size, minus the padding that will be auto-added:
     $(".donotoverflowdamnit").each(function() { $(this).width(correctedtextwidth); });

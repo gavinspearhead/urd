@@ -167,19 +167,9 @@ class DatabaseConnection_sqlite extends DatabaseConnection
         // todo
     }
 
-    public function start_transaction()
-    {
-        $this->DB->beginTransaction();
-    }
-    public function commit_transaction()
-    {
-        return $this->DB->commit();
-    }
-
     public function lock(array $tableactions)
     {
         $this->execute_query('BEGIN EXCLUSIVE TRANSACTION');
-        // todo
     }
 
     public function unlock()
@@ -190,10 +180,12 @@ class DatabaseConnection_sqlite extends DatabaseConnection
     {
         return $this->DB->Insert_ID();
     }*/
-    public function execute_query($sql, $values=FALSE)
+    protected function _execute($query, $values=FALSE)
     {
         $this->start_transaction();
-        parent:: execute_query($sql, $values);
+        $rv = parent::_execute($query, $values);
         $this->commit_transaction();
+        return $rv;
     }
+
 }
