@@ -169,11 +169,11 @@ class DatabaseConnection_sqlite extends DatabaseConnection
 
     public function start_transaction()
     {
-        $this->execute_query('BEGIN EXCLUSIVE TRANSACTION');
+        parent::execute_query('BEGIN EXCLUSIVE TRANSACTION');
     }
     public function commit_transaction()
     {
-        return $this->execute_query('COMMIT TRANSACTION');
+        return parent::execute_query('COMMIT TRANSACTION');
     }
 
     public function lock(array $tableactions)
