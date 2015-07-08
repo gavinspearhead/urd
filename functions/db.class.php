@@ -244,8 +244,8 @@ abstract class DatabaseConnection
         if (!$this->is_connected()) {
             $this->connect();
         }
-        $query = $this->DB->prepare($sql);
         try {
+            $query = $this->DB->prepare($sql);
             $this->_execute($query, $values);
         } catch (exception $e) {
             $errCode = $e->getCode();
