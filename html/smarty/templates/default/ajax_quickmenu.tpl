@@ -33,7 +33,7 @@
 {/if}
 
 {if $item->type == 'quickdisplay'}
-<button class="quickmenubutton" onclick="javascript:show_quick_display('{$item->id}','{$subject}',event, '{$srctype}');close_quickmenu(); return false;">
+<button class="quickmenubutton" onclick="javascript:show_quick_display( { srctype:'{$item->id}', subject:'{$subject}', type:'{$srctype}'});close_quickmenu(); return false;">
 {/if}
 
 {if $item->type == 'newpage'}

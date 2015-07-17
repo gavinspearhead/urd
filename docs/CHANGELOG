@@ -1,3 +1,7 @@
+1.14 
+- Load set comments on demand in showing spot details
+
+
 1.13
 - Fixed small bug not saving downloading subtitles settings correctly (thanx to Andre)
 - Fixed include bug in update_db script

@@ -2454,39 +2454,76 @@ function show_quickmenu(type, subject, srctype, e)
     return true;
 }
 
-function show_quick_display(srctype, subject, e, type)
+function show_quick_display(options)
 {
     // Fill menu
     var url = 'ajax_showquickdisplay.php';
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'quickwindowon');
+    var add_rows = 0;
+    var offset = 0;
+    var per_page = 0;
+    var type = get_value_from_id('spot_type', '');
+    var subject = get_value_from_id('spot_subject','');
+    var srctype = get_value_from_id('spot_srctype','');
+    var per_page = get_value_from_id('perpage','');
+    if (options != null) {
+        if (options.add_rows != null && options.add_rows == 1) {
+            var per_page = $('#perpage').val();
+            add_rows = 1;
+            perpage = per_page;
+            offset = parseInt($('#comment_offset').val())+ parseInt(per_page);
+            if (!$.isNumeric(offset)) { offset = 0; }
+            $('#comment_offset').val(offset );
+        }
+        if (options.type != null) {
+            type = options.type;
+        }
+        if (options.subject != null) {
+            subject = options.subject;
+        }
+        if (options.srctype != null) {
+            srctype = options.srctype;
+        }
+    }
+    if (add_rows == 0) {
+        var loading_msg = $('#loading_msg').val();
+        show_overlayed_content_1(loading_msg, 'quickwindowon');
+    }
     $.post(url, {
             type: type,
             srctype: srctype,
-            subject: subject
+            subject: subject,
+            add_rows: add_rows,
+            perpage: per_page,
+            offset: offset
         }
     ).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
-            show_overlayed_content_1(x.contents, 'quickwindowon');
-            // we increase the size beyond the default if div is not large enough for the contents
-            var height = Math.floor($(window).height() * 0.9);
-            var used_height = $('#td_sets').get(0).scrollHeight;
-            var max_height = $('#td_sets').css('max-height').replace('px', '');
-            if ((used_height > max_height && height > max_height) || height < used_height) {
-                var width = Math.floor($(window).width() * 0.75);
-                $('#overlay_content').css('width', width);
-                $('#overlay_content').css('height', height);
-                $('#overlay_content').css('marginTop', (- Math.floor(height / 2)));
-                $('#overlay_content').css('marginLeft', (- Math.floor(width / 2)));
-                $('#overlay_content').css('top', '50%');
-                $('#overlay_content').css('left', '50%');
-                var title_height = $('#text_title').outerHeight() + 28;
-                var inner_height = $('#overlay_content').innerHeight();
-                $('#td_sets').css('height', inner_height - title_height);
-                $('#td_sets').css('max-height', inner_height - title_height);
+            if (add_rows == 0) {
+                show_overlayed_content_1(x.contents, 'quickwindowon');
+                // we increase the size beyond the default if div is not large enough for the contents
+                var height = Math.floor($(window).height() * 0.9);
+                var used_height = $('#td_sets').get(0).scrollHeight;
+                var max_height = $('#td_sets').css('max-height').replace('px', '');
+                if ((used_height > max_height && height > max_height) || height < used_height) {
+                    var width = Math.floor($(window).width() * 0.75);
+                    $('#overlay_content').css('width', width);
+                    $('#overlay_content').css('height', height);
+                    $('#overlay_content').css('marginTop', (- Math.floor(height / 2)));
+                    $('#overlay_content').css('marginLeft', (- Math.floor(width / 2)));
+                    $('#overlay_content').css('top', '50%');
+                    $('#overlay_content').css('left', '50%');
+                    var title_height = $('#text_title').outerHeight() + 28;
+                    var inner_height = $('#overlay_content').innerHeight();
+                    $('#td_sets').css('height', inner_height - title_height);
+                    $('#td_sets').css('max-height', inner_height - title_height);
+                    set_scroll_handler('#td_sets', show_quick_display);
+                }
+                $('#td_sets').scrollTop(0);
+            } else {
+                $('#spotdetails_table tr:last').after(x.contents);
             }
-            $('#td_sets').scrollTop(0);
+
         } else {
             update_message_bar(x.error);
         }
@@ -2509,7 +2546,7 @@ function guess_extset_info_safe(setID, type)
         ).done(function() {
             var x = $.parseJSON(html);
             if (x.error == 0) {
-                show_quick_display('seteditesi', setID, '', type);
+                show_quick_display({ srctype: 'seteditesi', subject: setID, type:type});
             } else {
                 update_message_bar(x.error);
             }
@@ -2584,7 +2621,7 @@ function save_extset_binary_type(setID, sel, srctype, type)
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
-            show_quick_display('seteditesi', setID, '', type);
+            show_quick_display({srctype:'seteditesi', subject:setID, type:type});
         } else {
             update_message_bar(x.error);
         }

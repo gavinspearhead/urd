@@ -133,7 +133,7 @@ function echo_debug_file($file, $val, $val2=FALSE, $source=NULL)
 
 function echo_debug_var_file($file, $var)
 {
-    file_put_contents($file, var_export($var, TRUE), FILE_APPEND);
+    file_put_contents($file, var_export($var, TRUE) . "\n", FILE_APPEND);
 }
 
 function echo_debug_var($var, $dbg_lvl)

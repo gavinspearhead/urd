@@ -30,40 +30,48 @@ require_once "$pathqd/../functions/ajax_includes.php";
 
 function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binarytype, $binarytypes)
 {
+    $type = get_request('type');
+    $srctype = get_request('srctype');
     assert(is_numeric($userid));
     global $smarty, $LN;
     $sql = '"stamp", "category", "url", "reports", "title", "subcat", "subcata", "subcatb", "subcatc", "subcatd", "size", "spotid", "poster", "tag", "description", ' .
         'spots."spotter_id" AS "spotterid", spot_whitelist."spotter_id" AS "whitelisted" ' .
         'FROM spots LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id") ' .
         'WHERE "spotid"=:setid';
+    $offset = get_request('offset', 1);
+    $only_rows  = get_request('add_rows', 0);
+    $count = get_request('perpage', 10);
+
     $res = $db->select_query($sql, 1, array(':setid'=>$setID));
     if (!isset($res[0])) {
         throw new exception($LN['error_spotnotfound'] . ': '.$setID);
     }
-    $row = $res[0];
-    $show_image = get_pref($db, 'show_image', $userid, FALSE);
-    $description = db_decompress($row['description']);
-    $description = strip_tags($description);
-    $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
-    $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
-    $description = link_to_url($description);
-
-    $ubb = new UbbParse($description);
-	TagHandler::setDeniedTags( array() );
-	TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
-    $description = insert_wbr($ubb->parse());
-    list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
-    $filesize = $_size . ' ' . $suffix;
-    $category = $LN[SpotCategories::HeadCat2Desc($row['category'])];
-    $subcata = get_subcats($row['category'], $row['subcata']);
-    $subcatb = get_subcats($row['category'], $row['subcatb']);
-    $subcatc = get_subcats($row['category'], $row['subcatc']);
-    $subcatd = get_subcats($row['category'], $row['subcatd']);
-    $whitelisted = $row['whitelisted'] == NULL ? 0 : 1;
-    $sql = 'image_file, image FROM spot_images WHERE "spotid"=:setid AND "fetched"=:fetched';
-    $img_res = $db->select_query($sql, array(':setid'=>$setID, ':fetched'=>1));
-    $sql = '* FROM spot_comments WHERE "spotid"=? ORDER BY "stamp" ASC';
-    $spotres = $db->select_query($sql, array($setID));
+    $spotid = $res[0]['spotid'];
+    if (!$only_rows) {
+        $row = $res[0];
+        $show_image = get_pref($db, 'show_image', $userid, FALSE);
+        $description = db_decompress($row['description']);
+        $description = strip_tags($description);
+        $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
+        $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
+        $description = link_to_url($description);
+        $ubb = new UbbParse($description);
+        TagHandler::setDeniedTags( array() );
+        TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
+        $description = insert_wbr($ubb->parse());
+        list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
+        $filesize = $_size . ' ' . $suffix;
+        $category = $LN[SpotCategories::HeadCat2Desc($row['category'])];
+        $subcata = get_subcats($row['category'], $row['subcata']);
+        $subcatb = get_subcats($row['category'], $row['subcatb']);
+        $subcatc = get_subcats($row['category'], $row['subcatc']);
+        $subcatd = get_subcats($row['category'], $row['subcatd']);
+        $whitelisted = $row['whitelisted'] == NULL ? 0 : 1;
+        $sql = 'image_file, image FROM spot_images WHERE "spotid"=:setid AND "fetched"=:fetched';
+        $img_res = $db->select_query($sql, array(':setid'=>$setID, ':fetched'=>1));
+    }
+    $sql = '* FROM spot_comments WHERE "spotid" = :spotid ORDER BY "stamp" ASC';
+    $spotres = $db->select_query($sql, $count, $offset, array(':spotid'=>$setID));
     $comments = array();
     if (is_array($spotres)) {
         $comments = $spotres;
@@ -82,64 +90,79 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $c = htmlentities(strip_tags($c), ENT_IGNORE, 'UTF-8', FALSE);
         $c = link_to_url($c);
         $ubb = new UbbParse($c);
+        TagHandler::setDeniedTags( array() );
+        TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
         $c = $ubb->parse();
         $c = str_replace("\n", '<br/>', $c);
         $comment['comment'] = insert_wbr($c);
         $comment['stamp'] = date($LN['dateformat2'] . ' ' . $LN['timeformat2'], $comment['stamp']);
         if ($comment['user_avatar'] != '') {
-            $comment['user_avatar'] = 'data:image/png;base64,' .$comment['user_avatar'];
+            $comment['user_avatar'] = 'data:image/png;base64,' . $comment['user_avatar'];
         }
     }
-    $url = trim(strip_tags($row['url']));
-    /// too quick and dirty --- clean up XXX
-    $image_file = $image = '';
-    $image_from_db = 0;
-    if (isset($img_res[0]) &&  $show_image) {
-        if (substr($img_res[0]['image'], 0, 10) == 'data:image') {
-            $image_from_db = 1;
-        } elseif (substr($img_res[0]['image'], 0, 9) == 'articles:') {
-            $image_file = get_dlpath($db). IMAGE_CACHE_PATH . $setID . '.jpg';
-            if (!file_exists($image_file)) {
-                $image_file = '';
+    if (!$only_rows) {
+        $url = trim(strip_tags($row['url']));
+        /// too quick and dirty --- clean up XXX
+        $image_file = $image = '';
+        $image_from_db = 0;
+        if (isset($img_res[0]) &&  $show_image) {
+            if (substr($img_res[0]['image'], 0, 10) == 'data:image') {
+                $image_from_db = 1;
+            } elseif (substr($img_res[0]['image'], 0, 9) == 'articles:') {
+                $image_file = get_dlpath($db). IMAGE_CACHE_PATH . $setID . '.jpg';
+                if (!file_exists($image_file)) {
+                    $image_file = '';
+                }
+            } else {
+                $image = trim(strip_tags($img_res[0]['image']));
             }
-        } else {
-            $image = trim(strip_tags($img_res[0]['image']));
         }
+
+        $now = time();
+        $spam_reports = is_numeric($row['reports']) ? $row['reports'] : 0;
+        $age = ($now > $row['stamp']) ? $now - $row['stamp'] : 0;
+        $age = readable_time($age, 'largest_two_long');
+    }
+    $smarty->assign(array(
+        'comments' =>     $comments,
+        'offset' =>       $offset,
+        'only_rows' =>    $only_rows,
+        'spotid' =>       $spotid,
+        'type' =>         $type,
+        'srctype' =>      $srctype,
+    ));
+    if (!$only_rows) {
+        $smarty->assign(array(
+            'show_image' =>   $show_image,
+            'image_file' =>   $image_file,
+            'category' =>     $category,
+            'category_id' =>  $row['category'],
+            'subcat' =>       $row['subcat'],
+            'url' =>          $url,
+            'poster' =>       $row['poster'],
+            'image' =>        $image,
+            'image_from_db' => $image_from_db,
+            'timestamp' =>    date($LN['dateformat'] . ' ' . $LN['timeformat'], $row['stamp']),
+            'subcata' =>      $subcata,
+            'subcatb' =>      $subcatb,
+            'subcatc' =>      $subcatc,
+            'subcatd' =>      $subcatd,
+            'whitelisted' =>  $whitelisted,
+            'spotter_id' =>   $row['spotterid'],
+            'spam_reports' => $spam_reports,
+            'title' =>        insert_wbr(html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8')),
+            'tag' =>          $row['tag'],
+            'age' =>          $age,
+            'filesize' =>     $filesize,
+            'description' =>  (html_entity_decode(utf8_encode($description), ENT_QUOTES, 'UTF-8')),
+            'binarytype' =>   $binarytype, // Binarytype
+            'binarytypes' =>  $binarytypes,  // All
+            'display' =>      $display));      // All values
+        return $smarty->fetch('ajax_showspot.tpl');
+    } else {
+        return $smarty->fetch('ajax_showspotcomments.tpl');
     }
 
-    $now = time();
-    $spam_reports = is_numeric($row['reports']) ? $row['reports'] : 0;
-    $age = ($now > $row['stamp']) ? $now - $row['stamp'] : 0;
-    $age = readable_time($age, 'largest_two_long');
-    $smarty->assign(array(
-        'spotid' =>       $row['spotid'],
-        'show_image' =>   $show_image,
-        'image_file' =>   $image_file,
-        'category' =>     $category,
-        'category_id' =>  $row['category'],
-        'subcat' =>       $row['subcat'],
-        'url' =>          $url,
-        'poster' =>       $row['poster'],
-        'image' =>        $image,
-        'image_from_db' => $image_from_db,
-        'timestamp' =>    date($LN['dateformat'] . ' ' . $LN['timeformat'], $row['stamp']),
-        'subcata' =>      $subcata,
-        'subcatb' =>      $subcatb,
-        'subcatc' =>      $subcatc,
-        'subcatd' =>      $subcatd,
-        'whitelisted' =>  $whitelisted,
-        'spotter_id' =>   $row['spotterid'],
-        'spam_reports' => $spam_reports,
-        'title' =>        insert_wbr(html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8')),
-        'tag' =>          $row['tag'],
-        'age' =>          $age,
-        'filesize' =>     $filesize,
-        'comments' =>     $comments,
-        'description' =>  (html_entity_decode(utf8_encode($description), ENT_QUOTES, 'UTF-8')),
-        'binarytype' =>   $binarytype, // Binarytype
-        'binarytypes' =>  $binarytypes,  // All
-        'display' =>      $display));      // All values
-    return $smarty->fetch('ajax_showspot.tpl');
 }
 
 // Functions follow:

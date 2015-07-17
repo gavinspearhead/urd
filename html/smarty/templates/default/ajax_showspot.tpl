@@ -21,9 +21,29 @@
  * $Author: gavinspearhead $
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
- {extends file="popup.tpl"}
+{extends file="popup.tpl"}
 {block name=title}{$title|escape}{/block}
+
 {block name=contents}
+
+{function name=do_show_comments comments=''}
+    {foreach $comments as $comment}
+    <tr class="comment_poster"><td colspan="2">
+    <div class="floatleft">
+    {if $comment.user_avatar != ''}<img class="floatleft" src="{$comment.user_avatar}"/>&nbsp; {/if}
+    {$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape})&nbsp; </div>
+    <div class="floatright"> @ {$comment.stamp|escape}</div>
+    <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:add_blacklist('{$comment.userid|escape:javascript}', 'spotterid');" {urd_popup type="small" text=$LN_quickmenu_addblacklist }></div>
+    </td></tr>
+    <tr class="comment"><td colspan="2">
+
+    {$comment.comment}
+    </td></tr>
+    <tr class="comment"><td colspan="2"><br/></td></tr>
+    {/foreach}
+{/function}
+
+
 <script type="text/javascript">
 $(document).ready(function() {
     $('#td_sets').mouseup( function(e) { start_quickmenu('setdetails', '', {$USERSETTYPE_SPOT}, e); } ); 
@@ -35,6 +55,9 @@ $(document).ready(function() {
     $('#report_spam').click( function(e) { report_spam('{$spotid}')} );
 });
 </script>
+<input type="hidden" id="spot_subject" value="{$spotid}">
+<input type="hidden" id="spot_type" value="{$type}">
+<input type="hidden" id="spot_srctype" value="{$srctype}">
 
 <div class="sets_inner" id="td_sets">
 {if $show_image}
@@ -50,8 +73,8 @@ $(document).ready(function() {
 {/if}
 <input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
 
-<table class="set_details">
-<tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape}</td></tr>
+<table class="set_details" id="spotdetails_table">
+<tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape} {$srctype} {$type}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span id="poster" class="buttonlike">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
@@ -119,21 +142,9 @@ $(document).ready(function() {
 
 </td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
-{foreach $comments as $comment}
-<tr class="comment_poster"><td colspan="2">
-<div class="floatleft">
-{if $comment.user_avatar != ''}<img class="floatleft" src="{$comment.user_avatar}"/>&nbsp; {/if}
-{$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape})&nbsp; </div>
-<div class="floatright"> @ {$comment.stamp|escape}</div>
-<div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:add_blacklist('{$comment.userid|escape:javascript}', 'spotterid');" {urd_popup type="small" text=$LN_quickmenu_addblacklist }></div>
-</td></tr>
-<tr class="comment"><td colspan="2">
 
-{$comment.comment}
-</td></tr>
-<tr class="comment"><td colspan="2"><br/></td></tr>
-{/foreach}
-
+{do_show_comments comments=$comments}
 </table>
 </div>
+<input type="hidden" id="comment_offset" value="{$offset}"/>
 {/block}
