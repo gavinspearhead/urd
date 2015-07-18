@@ -23,7 +23,7 @@
  *}
 
 {include 'include_bin_image.tpl' scope='parent'}
-{if $view_size >= 1024}
+{if $view_size >= $max_mobile_viewsize}
 {$small=0}
 {$skippersize= 30}
 {else}

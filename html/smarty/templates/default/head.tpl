@@ -52,7 +52,7 @@
 {if $first->get_link_type()=='command'}{$extra="commando"}{else}{$extra=""}{/if}
 <li class="normal {$extra}">
     {if $menuitem->get_count() > 1}
-    <div {if $first->get_link_type() == 'jump'} onclick="javascript:jump('{$first->get_url()}');" class="nooverflow down3 buttonlike"{else} class="nooverflow down3" {/if}>{$menuitem->get_name()}</div>
+    <div {if $first->get_link_type() == 'jump'} onclick="javascript:if (!Modernizr.touch ) { jump('{$first->get_url()}'); }" class="nooverflow down3 buttonlike"{else} class="nooverflow down3" {/if}>{$menuitem->get_name()}</div>
         <ul>
 		    {foreach $menuitem->get_items() as $link=>$menuitems}
                 {$mainmenuname=$menuitems->get_name()}

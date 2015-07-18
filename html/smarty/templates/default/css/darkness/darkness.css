@@ -97,7 +97,7 @@ div.light
 .head 
 {
     font-family: Verdana;
-    font-size: 9pt;
+    font-size: 10pt;
     font-weight: bolder;
     text-align: center;
     color: #eeeeee;
@@ -452,7 +452,7 @@ input,select, textarea
 .submitsmall
 {
     color: #d1d1d1;
-    padding: 0px 3px 0px 3px;
+    padding: 1px 3px 1px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: x-small;
     border: 1px solid;

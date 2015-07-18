@@ -139,6 +139,7 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
         'stylesheet' => $stylesheet,
         'challenge' => $challenge,
         'show_sync' =>  $show_sync,
+        'max_mobile_viewsize' => 1024, // TODO make constant
         'show_groups' => $show_groups,
         'show_rss' => $show_rss,
         'show_post' => $show_post,

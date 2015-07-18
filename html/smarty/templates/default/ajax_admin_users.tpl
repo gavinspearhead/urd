@@ -21,7 +21,7 @@
  * $Id: ajax_admin_users.tpl 3089 2014-06-12 21:24:27Z gavinspearhead@gmail.com $
  *}
 
-{if $view_size >= 1024}
+{if $view_size >= $max_mobile_viewsize}
 {$small=0}
 {else}
 {$small=1}
