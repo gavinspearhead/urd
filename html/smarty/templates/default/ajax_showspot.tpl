@@ -74,7 +74,7 @@ $(document).ready(function() {
 <input type="hidden" id="blacklist_confirm_msg" value="{$LN_blacklist_spotter}"/>
 
 <table class="set_details" id="spotdetails_table">
-<tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape} {$srctype} {$type}</td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span id="poster" class="buttonlike">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
