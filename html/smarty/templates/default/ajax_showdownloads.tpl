@@ -115,7 +115,7 @@
 {if $isadmin}
 <th class="head nowrap">{$LN_transfers_head_username}</th>
 {/if}
-<th class="head nowrap ">{$LN_transfers_head_progress}</th>
+<th class="head nowrap">{$LN_transfers_head_progress}</th>
 <th class="head nowrap">{$LN_transfers_head_speed}</th>
 <th class="head nowrap">{$LN_eta}</th>
 <th class="head nowrap">{$LN_transfers_head_started}</th>

@@ -77,7 +77,7 @@
 <td>
 <div>
 <br/>
-<input name="time" id="time1" type="text" value="{$hour|escape:htmlall}:{$minute|escape:htmlall}" size="5"/>
+<input name="time" id="time1" type="text" value="{$hour|escape:htmlall}:{$minute|escape:htmlall}" class="textbox4m centered"/>
 </div></td>
 </tr>
 </table>
@@ -88,8 +88,8 @@
 <br/>
 <br/>
 <div class="right" id="calendarbottom">
-<input class="submit" type="button" name="submit_no_delay" id="submit_no_delay" value="{$LN_atonce}"/>
-<input class="submit" type="button" name="submit" id="submit_cal" value="{$LN_ok}"/>
+<input class="submitsmall" type="button" name="submit_no_delay" id="submit_no_delay" value="{$LN_atonce}"/>
+<input class="submitsmall" type="button" name="submit" id="submit_cal" value="{$LN_ok}"/>
 </div>
 <input type="hidden" id="month" value="{$month|escape:htmlall}"/>
 <input type="hidden" id="year" value="{$year|escape:htmlall}"/>

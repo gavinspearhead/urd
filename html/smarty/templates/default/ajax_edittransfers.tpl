@@ -29,9 +29,9 @@
 <br/>
 <input type="hidden" name="dlid" id="dlid" value="{$id|escape:htmlall}"/>
 <table class="renametransfer hmid">
-<tr><td>{$LN_transfers_name}:</td><td><input type="text" class="width300" name="dlname" id="dlname" value="{$oldname|escape}" autofocus="autofocus"/></td></tr>
-<tr><td>{$LN_transfers_archpass}:</td><td><input type="text" class="width300" name="dlpass" id="dlpass" value="{$oldpw|escape}"/></td></tr>
-<tr><td>{$LN_browse_download_dir}:</td><td>
+<tr><td class="nowrap bold">{$LN_transfers_name}:</td><td><input type="text" class="width300" name="dlname" id="dlname" value="{$oldname|escape}" autofocus="autofocus"/></td></tr>
+<tr><td class="nowrap bold">{$LN_transfers_archpass}:</td><td><input type="text" class="width300" name="dlpass" id="dlpass" value="{$oldpw|escape}"/></td></tr>
+<tr><td class="nowrap bold">{$LN_browse_download_dir}:</td><td>
 
 <span id="dl_dir_span">
     <div class="floatleft"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300" {if $dldir_noedit == 1}readonly="readonly"{/if}/>&nbsp;</div>
@@ -47,7 +47,7 @@
 </span>
 
 </td></tr>
-<tr><td>{$LN_browse_schedule_at}:</td><td>
+<tr><td class="nowrap bold">{$LN_browse_schedule_at}:</td><td>
 
 <input type="text" class="width300" name="starttime" id="timestamp" value="{$starttime|escape}" {if $starttime_noedit == 1}readonly="readonly"{/if} 
 />
@@ -62,7 +62,7 @@
 {urd_checkbox value="$add_setname" name="add_setname" id="add_setname" data=$LN_transfers_add_setname }
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered">
-	<input type="button" id="apply_button" {urd_popup type="small" text=$LN_apply} name="submit_button" value="{$LN_apply}" class="submit"/> 
+	<input type="button" id="apply_button" {urd_popup type="small" text=$LN_apply} name="submit_button" value="{$LN_apply}" class="submitsmall"/> 
 </td></tr>
 </table>
 

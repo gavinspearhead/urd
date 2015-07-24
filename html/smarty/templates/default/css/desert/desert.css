@@ -107,13 +107,6 @@ div.light
     color: #111111;
     background-color: #dddddd;
 }
-table.articles
-{
-    margin-top: -1px;
-    border-collapse: collapse;
-    width: 99%;
-    font-size: 10pt;
-}
 table.newsservers
 {
     margin-top: -1px;
@@ -130,7 +123,7 @@ table.statistics
 
 .xxsmall
 {
-    font-size: xx-small;
+    font-size: x-small;
     color: #ffffff;
     padding-left: 10px;
 }
@@ -241,23 +234,17 @@ table.tasks
 }
 .highlight_spam
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #aa0000;
     color: #ffffff;
 }
 .highlight_comments
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #eebb00;
     color: #000000;
 }
 
 .highlight_whitelist
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #008800;
     color: #ffffff;
 }
@@ -279,8 +266,6 @@ table.tasks
   background-image: -moz-linear-gradient(top, #906D18, #82631A 70%, #7B5E1B);
   background-image: -o-linear-gradient(top, #906D18, #82631A 70%, #7B5E1B);
   background-image: linear-gradient(to bottom, #906D18, #82631A 70%, #7B5E1B);
-
-
 }
 .setinfo
 {
@@ -291,17 +276,7 @@ table.tasks
     padding: 0;
     border-collapse: collapse;
 }
-.time
-{
-    width: 20px;
-    font-size: 8pt;
-    text-align: right;
-}
-.update
-{
-    font-size: 8pt;
-}
-.newpref
+..newpref
 {
     font-size: 9pt;
     font-family: "arial black", Arial, Helvetica, Sans-Serif;
@@ -309,9 +284,10 @@ table.tasks
     text-align: right;
     padding-right: 5px;
 }
-div.log {
+div.log 
+{
     overflow-y: auto;
-    font-size: x-small;
+    font-size: small;
     font-family: courier, Monospace;
 }
 div.setinfo
@@ -321,7 +297,7 @@ div.setinfo
     overflow-y: scroll;
     height: 240px;
     width: auto;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 .transferstatus
@@ -332,8 +308,8 @@ div.setinfo
     text-align: center;
     font-size: 9pt;
     font-weight: bold;
-    margin: 0 0 0 0;
-    padding: 0 0 0 0;
+    margin: 0;
+    padding: 0;
 }
 input, select, textarea
 {
@@ -359,14 +335,13 @@ input, select, textarea
     color: #303030;
     padding: 0px 3px 0px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    font-size: x-small;
+    font-size: small;
     border: 2px solid;
     font-weight: bold;
     border-color:#484848 #484848 #707070 #707070;
     cursor: pointer;
     border-radius:4px;
 } 
-
 #header
 {
     height: 100px;
@@ -375,7 +350,7 @@ input, select, textarea
 }
 #status
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     padding-left: 10px;
     overflow-x: hidden;
@@ -813,33 +788,24 @@ input[readonly]
     padding-top:0;
     border-color:#484848 #484848 #707070 #707070;
 }
-
-#rss 
+td.rssleft 
 {
-    position: fixed;
-    right: 20px;
-    top: 24px;
-
-}
-td.rssleft {
     border: none;
     color: white;
     background-color: #dd4400;
     font-size: 8px;
     border-radius: 4px 0 0 4px ;
 }
-
-td.rssright {
+td.rssright 
+{
     border: none;
     color: #ffffff;
     background-color: #999999;
     font-size: 8px;
     border-radius: 0 4px 4px 0;
 }
-table.rss {
-    border-collapse: collapse;
-}
-a.rss {
+a.rss 
+{
     color: #ffffff;
     text-decoration: none;
 
@@ -856,7 +822,6 @@ span.ng_submit
     margin-bottom: -2px;
 }
 
-
 div.ng_selector
 {
     width: 99%;
@@ -870,11 +835,7 @@ div.ng_selector
     vertical-align: bottom;
 }
 
-div.prefix_transfers
-{
-    margin-top: -2px;
-}
-
+div.prefix_transfers,
 div.prefix_prefs
 {
     margin-top: -2px;
@@ -898,15 +859,8 @@ ul.tabs ,div.tabs
 }
 li.tab, span.tab
 {
-    border-top-right-radius:6px;
-    border-top-left-radius:6px;
-    display: inline;
-    border: solid;
-    border-width: 2px 2px 1px 2px;
-    margin: 0 1px 0 0;
     background: #dddddd;
     color: #111111;
-    padding: 0 3px 0 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-weight: bold;
     border-color: #606060 #606060 #484848 #484848;
@@ -915,8 +869,6 @@ li.tab, span.tab
 li.tab_selected, span.tab_selected,.tab_selected 
 {
     color: #7D3B01;
-    padding: 0 3px 1px 3px;
-    border-width: 2px 2px 0 2px;
     background: #dddddd;
     border-color: #606060 #606060 #484848 #484848;
 }

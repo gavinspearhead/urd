@@ -29,33 +29,33 @@
 <form id="post_spot_form">
 <table class="">
 <tr id="category_row">
-<td>{$LN_category}</td>
+<td class="nowrap bold">{$LN_category}:</td>
 <td>
-<select id="category" name="category">
+<select id="category" name="category" class="textbox28m">
 {foreach $categories as $cat}
-    <option value="{$cat.id}">{$cat.name}</option>
+    <option label="{$cat.name|escape:all}" value="{$cat.id}">{$cat.name|escape:all}</option>
 {/foreach}
 </select>
 
 </td>
 </tr>
-<tr><td>{$LN_browse_subject}</td><td><input type="text" name="subject" id="subject" class="width300" required placeholder="{$LN_browse_subject}"/></td></tr>
-<tr><td>{$LN_spots_tag}</td><td><input type="text" name="tag" id="tag" class="width300" placeholder="{$LN_spots_tag}"/></td></tr>
-<tr><td>{$LN_feeds_url}</td><td><input type="text" name="weburl" id="weburl" class="width300" placeholder="http://"/></td></tr>
-<tr><td>{$LN_tasks_description}</td><td><textarea type="text" name="description" id="description" rows="8" class="width300" required>{$content}</textarea></td>
+<tr><td class="nowrap bold">{$LN_browse_subject}:</td><td><input type="text" name="subject" id="subject" class="textbox28m" required placeholder="{$LN_browse_subject}"/></td></tr>
+<tr><td class="nowrap bold">{$LN_spots_tag}:</td><td><input type="text" name="tag" id="tag" class="textbox28m" placeholder="{$LN_spots_tag}"/></td></tr>
+<tr><td class="nowrap bold">{$LN_feeds_url}:</td><td><input type="text" name="weburl" id="weburl" class="textbox28m" placeholder="http://"/></td></tr>
+<tr><td class="nowrap bold">{$LN_tasks_description}:</td><td><textarea type="text" name="description" id="description" rows="8" class="textbox28m" required>{$content}</textarea></td>
 <td>
 {foreach $smileys as $smiley}
 <img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" title="{$smiley}" class="button" onclick="javascript:add_text('[img={$smiley|escape:javascript}]', $('#description'));">
 {/foreach}
 </td>
 </tr>
-<tr><td>{$LN_NZB_file}</td><td colspan="2">
-<input type="text" name="_nzbfile" id="_nzbfile" style="width:150px;"/>
+<tr><td class="nowrap bold">{$LN_NZB_file}:</td><td colspan="2">
+<input type="text" name="_nzbfile" id="_nzbfile" class="textbox18m"/>
 <input type="file" name="nzbfile" id="nzbfile" style="display:none"/>
 <input type="button" id="nzb_upload" class="submitsmall" value="{$LN_browse}"/> <progress id="progress_nzb"></progress>
 </td></tr>
-<tr><td>{$LN_image_file}</td><td colspan="2">
-<input type="text" name="_imagefile" id="_imagefile" style="width:150px;"/>
+<tr><td class="nowrap bold">{$LN_image_file}:</td><td colspan="2">
+<input type="text" name="_imagefile" id="_imagefile" class="textbox18m"/>
 <input type="file" name="imagefile" id="imagefile" style="display:none"/>
 <input type="button" class="submitsmall" id="image_upload" value="{$LN_browse}"/> <progress id="progress_image"></progress>
 </td></tr>
@@ -65,5 +65,5 @@
 </table>
 </form>
 <div class="centered">
-<input type="submit" value="{$LN_post_post}" id="post_spot" class="submit"/>
+<input type="submit" value="{$LN_post_post}" id="post_spot" class="submitsmall"/>
 {/block}

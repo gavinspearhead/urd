@@ -29,14 +29,14 @@
 <br/>
 <input type="hidden" name="id" id="id" value="{$id|escape:htmlall}"/>
 <table class="renametransfer hmid">
-<tr><td>{$LN_name}:</td><td colspan="3"><input type="text" size="40" name="group_name" id="group_name" value="{$oldname|escape:htmlall}" readonly="readonly"/></td></tr>
-<tr><td>{$LN_expire}:</td><td colspan="3"><input type="text" size="5" name="group_expire" id="group_expire" value="{$oldexpire}" required/> {$LN_days|escape:htmlall}</td></tr>
-<tr><td>{$LN_pref_minsetsize}:</td><td colspan="3"><input type="text" size="5" name="group_minsetsize" id="group_minsetsize" value="{$oldminsetsize|escape:htmlall}"/></td></tr>
-<tr><td>{$LN_pref_maxsetsize}:</td><td colspan="3"><input type="text" size="5" name="group_maxsetsize" id="group_maxsetsize" value="{$oldmaxsetsize|escape:htmlall}"/></td></tr>
-<tr><td>{$LN_active}</td>
+<tr><td class="nowrap bold">{$LN_name}:</td><td colspan="3"><input type="text" class="textbox28m" name="group_name" id="group_name" value="{$oldname|escape:htmlall}" readonly="readonly"/></td></tr>
+<tr><td class="nowrap bold">{$LN_expire}:</td><td colspan="3"><input type="text"class="textbox4m" name="group_expire" id="group_expire" value="{$oldexpire}" required/> {$LN_days|escape:htmlall}</td></tr>
+<tr><td class="nowrap bold">{$LN_pref_minsetsize}:</td><td colspan="3"><input type="text" class="textbox4m" name="group_minsetsize" id="group_minsetsize" value="{$oldminsetsize|escape:htmlall}"/></td></tr>
+<tr><td class="nowrap bold">{$LN_pref_maxsetsize}:</td><td colspan="3"><input type="text" class="textbox4m" name="group_maxsetsize" id="group_maxsetsize" value="{$oldmaxsetsize|escape:htmlall}"/></td></tr>
+<tr><td class="nowrap bold">{$LN_active}</td>
 <td> {urd_checkbox value="$oldsubscribed" name="group_subscribed" id="group_subscribed" } </td></tr>
-<tr><td>{$LN_ng_adult}:</td><td>{urd_checkbox value="$oldadult" name="group_adult" id="group_adult" }</td></tr>
-<td>{$LN_ng_autoupdate}:</td><td>
+<tr><td class="nowrap bold">{$LN_ng_adult}:</td><td>{urd_checkbox value="$oldadult" name="group_adult" id="group_adult" }</td></tr>
+<td class="nowrap bold">{$LN_ng_autoupdate}:</td><td>
 <select name="group_refresh_period" id="group_refresh_period" size="1" class="update">
 {html_options values=$periods_keys output=$periods_texts selected=$oldrefresh}
 </select>
@@ -44,8 +44,8 @@
 <td id="timebox1">{$LN_time}:</td>
 <td id="timebox2"><input type="text" id="group_time1" name="time1" value="{if isset($oldtime1) }{$oldtime1}{/if}" class="time"/>:<input type="text" id="group_time2" class="time" name="time2" value="{if isset($oldtime2) }{$oldtime2|string_format:"%02d"}{/if}"/></td></tr>
 
-<tr><td colspan="4" class="right">&nbsp;</td></tr>
-<tr><td colspan="4" class="right">
+<tr><td colspan="4">&nbsp;</td></tr>
+<tr><td colspan="4" class="centered">
 	<input type="button" {urd_popup type="small" text=$LN_apply } name="submit_button" id="submit_button" value="{$LN_apply}" class="submitsmall"/> 
 </td></tr>
 </table>

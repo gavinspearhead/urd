@@ -72,7 +72,7 @@
 <td class="settings vtop"{if $popup_text!=''}{urd_popup text=$popup_text}{/if}>
 {if $b_type == "custom_text"}
 {$block->text}: 
-<input type="text" name="custom_{$block->id}_name" id="custom_{$block->id}_name" value="{if $block->name != '__new'}{$block->name|escape:htmlall}{/if}" size="{$block->size}" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'name', 'fn':'load_prefs();' } );"/>
+<input type="text" name="custom_{$block->id}_name" id="custom_{$block->id}_name" value="{if $block->name != '__new'}{$block->name|escape:htmlall}{/if}" class="textbox28m" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'name', 'fn':'load_prefs();' } );"/>
 {else}
     {if {$block->text} != ''}
         {$block->text}:
@@ -84,13 +84,13 @@
 	<b>{$block->value|escape}</b>
 {/if}
 {if $b_type == "custom_text"}
-    <input type="text" name="custom_{$block->id}_value" id="custom_{$block->id}_value" value="{$block->value|escape:htmlall}" size="{$block->size}" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'value', 'fn':'load_prefs();' } );"/>
+    <input type="text" name="custom_{$block->id}_value" id="custom_{$block->id}_value" value="{$block->value|escape:htmlall}" class="textbox28m" onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}', { 'original_name': '{$block->id}', 'source':'value', 'fn':'load_prefs();' } );"/>
     {if $block->id != '__new'}
         <div id="{$name}_collapse" class="floatright iconsize deleteicon noborder buttonlike" onclick="javascript:delete_setting('{$block->id|escape:javascript}');" {urd_popup type="small" text="$LN_delete"} >
     {/if}
 {/if}
 {if $b_type == "password"}
-	<input type="password" name="{$block->name}" id="{$block->id}" value="{$block->value|escape:htmlall}" size="{$block->size}" {$block->javascript} /> 
+	<input type="password" name="{$block->name}" id="{$block->id}" value="{$block->value|escape:htmlall}" class="textbox28m" {$block->javascript} /> 
     <div class="floatright iconsizeplus sadicon buttonlike" onclick="javascript:toggle_show_password('{$block->name|escape:javascript}');"></div>
     <span id="pw_message_{$block->name}" class="italic"></span>
 {/if}
@@ -108,14 +108,22 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 {if $b_type == "text"}
 	<input type="text" name="{$block->name}" id="{$block->id}" 
     value="{$block->value|escape:htmlall}" 
-    size="{$block->size}" 
+    class="textbox28m"
     {$block->javascript} 
     onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"/>
 {/if}
+{if $b_type == "text_number"}
+	<input type="text" name="{$block->name}" id="{$block->id}" 
+    value="{$block->value|escape:htmlall}" 
+    class="textbox4m"
+    {$block->javascript} 
+    onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"/>
+{/if}
+
 {if $b_type == "email"}
 	<input type="email" name="{$block->name}" id="{$block->id}" 
     value="{$block->value|escape:htmlall}" 
-    size="{$block->size}" 
+    class="textbox28m"
     {$block->javascript} 
     onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"/>
 {/if}
@@ -126,7 +134,7 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 {if $b_type == "textarea"}{strip}
     {$name=$block->id}
     <input type="hidden" id="{$name}_orig_size" value="{$block->rows}"/>
-    <textarea name="{$block->name}" id="{$name}" rows="2" cols="{$block->cols}" {$block->javascript}
+    <textarea name="{$block->name}" id="{$name}" rows="2" class="textbox28m" {$block->javascript}
     onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}');"
     >{$block->value|escape:htmlall} 
     </textarea>{/strip}
@@ -136,10 +144,10 @@ handle_passwords_change('{$block->opw_id|escape:javascript}', '{$block->npw_id1|
 {if $b_type == "select"}
 {$opts=$block->options}
 {$js=$block->javascript|escape:javascript}
-<select name="{$block->name}" id="{$block->id}" 
+<select name="{$block->name}" id="{$block->id}" class="textbox18m"
 onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|escape:javascript}' {if $js!=''}, { 'fn':'{$js}' } {/if});">
 {foreach $opts as $k => $q}
-<option label="{$k|escape:all}" value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
+<option label="{$q|escape:all}" value="{$k|escape:all}"{if $k == $block->selected } selected="selected"{/if}>{$q}</option>
 {/foreach}
 </select>
 {/if}
@@ -149,7 +157,7 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 {if $b_type == "multiselect"}
     {$name=$block->id} 
     <input type="hidden" id="{$name}_orig_size" value="{$block->size}"/>
-    <select name="{$block->name}" id="{$name}" size="2" multiple="multiple" onfocus="javascript:collapse_select('{$name}','size');" {$block->javascript}
+    <select name="{$block->name}" id="{$name}" size="2" class="textbox18m" multiple="multiple" onfocus="javascript:collapse_select('{$name}','size');" {$block->javascript}
      onchange="javascript:update_setting('{$name|escape:javascript}', '{$b_type|escape:javascript}');"
     >
     {$opts=$block->options_triple}
@@ -167,10 +175,10 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
     >
     {html_options values=$block->period_keys output=$block->period_texts selected=$block->period_selected } 
     </select> @
-    <input type="text" id="{$block->time1_name}" name="{$block->time1_name}" id="{$block->time1_name}"  {if $block->time1_value ge 0}value="{$block->time1_value}"{/if} class="time" 
+    <input type="text" id="{$block->time1_name}" name="{$block->time1_name}" id="{$block->time1_name}" class="time" {if $block->time1_value ge 0}value="{$block->time1_value}"{/if}  
     onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name != ""} , 'extra':'{$block->extra_name}' {/if} }  );"
     />:
-    <input type="text" id="{$block->time2_name}" name="{$block->time2_name}" id="{$block->time2_name}" {if $block->time2_value !== ''}value="{$block->time2_value|string_format:"%02d"}"{/if} class="time" 
+    <input type="text" id="{$block->time2_name}" name="{$block->time2_name}" id="{$block->time2_name}" class="time" {if $block->time2_value !== ''}value="{$block->time2_value|string_format:"%02d"}"{/if}
     onchange="javascript:update_setting('{$block->period_name|escape:javascript}', '{$b_type|escape:javascript}', { 'time1':'{$block->time1_name}', 'time2':'{$block->time2_name}' {if $block->extra_name != ""} , 'extra':'{$block->extra_name}' {/if} }  );"
     />
     {if $block->extra_name != ""}
@@ -181,7 +189,7 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
     {/if}
 {/if}
 {if $block->error_msg.msg != " " && $block->error_msg.msg != ""}
-<img src="{$IMGDIR}/stop_mark.png" id="stop_mark_{$block->id}" {urd_popup text=$block->error_msg.msg|escape:javascript|escape:htmlall caption=$LN_error_error } alt="{$LN_error_error}" class="noborder"/>
+<img src="{$IMGDIR}/stop_mark.png" id="stop_mark_{$block->id}" class="noborder" {urd_popup text=$block->error_msg.msg|escape:javascript|escape:htmlall caption=$LN_error_error } alt="{$LN_error_error}"/>
 {/if}
 </td>
 </tr>

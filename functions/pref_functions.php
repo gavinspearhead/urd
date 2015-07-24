@@ -114,13 +114,10 @@ class pref_plain extends pref_basic
 // public $select; // selected value
 class pref_text extends pref_basic
 {
-    public $size; //size of the text field
     public $value; // value of input
-    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    public function __construct($lvl, $tx, $nm, $p, $err, $v,  $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        assert(is_numeric($sz));
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
-        $this->size = $sz;
         $this->value = $v;
     }
     public function get_type() {return 'text';}
@@ -128,13 +125,10 @@ class pref_text extends pref_basic
 
 class pref_email extends pref_basic
 {
-    public $size; //size of the text field
     public $value; // value of input
-    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    public function __construct($lvl, $tx, $nm, $p, $err, $v, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        assert(is_numeric($sz));
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
-        $this->size = $sz;
         $this->value = $v;
     }
     public function get_type() {return 'email';}
@@ -143,13 +137,10 @@ class pref_email extends pref_basic
 
 class pref_custom_text extends pref_basic
 {
-    public $size; //size of the text field
     public $value; // value of input
-    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    public function __construct($lvl, $tx, $nm, $p, $err, $v, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        assert(is_numeric($sz));
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
-        $this->size = $sz;
         $this->value = $v;
     }
     public function get_type() {return 'custom_text';}
@@ -158,31 +149,25 @@ class pref_custom_text extends pref_basic
 
 class pref_numeric_noformat extends pref_basic
 {
-    public $size; //size of the text field
     public $value; // value of input
-    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    public function __construct($lvl, $tx, $nm, $p, $err, $v, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        assert(is_numeric($sz));
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
-        $this->size = $sz;
         $this->value = $v;
     }
-    public function get_type() {return 'text';}
+    public function get_type() {return 'text_number';}
 };
 
 class pref_numeric extends pref_basic
 {
-    public $size; //size of the text field
     public $value; // value of input
-    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    public function __construct($lvl, $tx, $nm, $p, $err, $v, $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        assert(is_numeric($sz));
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
-        $this->size = $sz;
         list ($v, $s) = format_size($v, 'h', '', 1024, 0);
         $this->value = "$v$s";
     }
-    public function get_type() {return 'text';}
+    public function get_type() {return 'text_number';}
 };
 
 class pref_button extends pref_basic
@@ -216,11 +201,9 @@ class pref_password extends pref_basic
 {
     public $size; //size of the text field
     public $value; // value of input
-    public function __construct($lvl, $tx, $nm, $p, $err, $v, $sz, $js=NULL, $tr_i=NULL, $tr_c=NULL)
+    public function __construct($lvl, $tx, $nm, $p, $err, $v,  $js=NULL, $tr_i=NULL, $tr_c=NULL)
     {
-        assert(is_numeric($sz));
         parent::__construct($lvl, $tx, $nm, $p, $err, $js, $tr_i, $tr_c);
-        $this->size = $sz;
         $this->value = $v;
     }
     public function get_type() {return 'password';}

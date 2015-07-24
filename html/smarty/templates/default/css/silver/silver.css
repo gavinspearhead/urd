@@ -49,7 +49,6 @@ h3.title
 {   
     color: #000000;
 }
-
 a
 {
     color: #333333;
@@ -65,7 +64,6 @@ div.light
     color: white;
     font-size: 10pt;
 }
-
 .even
 {
   background: #bbbbbb;
@@ -96,7 +94,6 @@ div.light
     color: #201010;
     font-style: oblique;
 }
-
 #ng_headerbox
 {
     width: 100%;
@@ -113,13 +110,6 @@ div.light
     color: #111111;
     background-color: #a0a0a0;
 }
-table.articles, table.newsservers
-{
-    margin-top: -1px;
-    border-collapse: collapse;
-    width: 99%;
-    font-size: 10pt;
-}
 table.statistics
 {
     margin-top: 1px;
@@ -128,7 +118,7 @@ table.statistics
 }
 .xxsmall
 {
-    font-size: xx-small;
+    font-size: x-small;
     color: #ffffff;
     padding-left: 10px;
 }
@@ -233,26 +223,19 @@ table.files
 
 .highlight_spam
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #aa0000;
     color: #ffffff;
 }
 .highlight_comments
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #ddaa00;
     color: #ffffff;
 }
 .highlight_whitelist
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #338833;
     color: #ffffff;
 }
-
 .highlight3
 {
     border:solid 2px #006600;
@@ -271,7 +254,6 @@ table.files
   background-image: -o-linear-gradient(top, #8f8f8f, #6f6f6f 70%, #5f5f5f);
   background-image: linear-gradient(to bottom, #8f8f8f, #6f6f6f 70%, #5f5f5f);
 }
-
 .setinfo
 {
     color: white;
@@ -281,16 +263,6 @@ table.files
     padding: 0px;
     border-collapse: collapse;
 }
-.time
-{
-    width: 20px;
-    font-size: 8pt;
-    text-align: right;
-}
-.update
-{
-    font-size: 8pt;
-}
 .newpref
 {
     font-size: 9pt;
@@ -299,7 +271,8 @@ table.files
     text-align: right;
     padding-right: 5px;
 }
-div.log {
+div.log 
+{
     overflow-y: auto;
     font-size: small;
     font-family: courier, Monospace;
@@ -348,7 +321,6 @@ input, select, textarea
 {
     background-color: #808080;
     color: black;
-    padding: 0px 3px 0px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
     border: 1px solid;
@@ -377,7 +349,7 @@ input, select, textarea
 
 #status
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     padding-left: 10px;
     overflow-x: hidden;
@@ -634,7 +606,7 @@ table.browsetoptable
     margin: 0px;
     padding: 0px 4px 1px 4px;
     width: 250px;
-    height: 24px;
+    height: 2em;
     color: black;
     text-align: left;
     vertical-align: top;
@@ -658,7 +630,7 @@ table.browsetoptable
     background: #aaaaaa;
     border: 1px solid #111111;
     font-size: small;
-    height: 24px;
+    height: 2em;
 }
 .quickwindowoff
 {
@@ -817,14 +789,6 @@ input[readonly]
     font-size: small;
     border-color: #333333 #212121 #434343 #212121;
 }
-
-#rss 
-{
-    position: fixed;
-    right: 20px;
-    top: 24px;
-
-}
 td.rssleft 
 {
     border: none;
@@ -833,7 +797,6 @@ td.rssleft
     font-size: 8px;
     border-radius: 4px 0 0 4px;
 }
-
 td.rssright 
 {
     border: none;
@@ -842,27 +805,20 @@ td.rssright
     font-size: 8px;
     border-radius: 0 4px 4px 0;
 }
-table.rss 
-{
-    border-collapse: collapse;
-}
 a.rss 
 {
     color: #ffffff;
     text-decoration: none;
-
 }
 td.rss2
 {
     text-align:right;
 }
-
 span.ng_submit
 {
     left: 0px;
     position: relative;
 }
-
 div.ng_selector
 {
     width: 99%;
@@ -875,18 +831,11 @@ div.ng_selector
     padding-bottom: 1px;
     vertical-align: bottom;
 }
-
-
-div.prefix_transfers
-{
-    margin-top: -2px;
-}
-
+div.prefix_transfers,
 div.prefix_prefs
 {
     margin-top: -2px;
 }
-
 .advanced_search 
 {
     padding-left:16px;
@@ -905,15 +854,8 @@ ul.tabs, div.tabs
 }
 li.tab, span.tab
 {
-    border-top-right-radius: 6px;
-    border-top-left-radius: 6px;
-    display: inline;
-    border: solid;
-    border-width: 2px 2px 1px 2px;
-    margin: 0 1px 0 0;
     background: #d0d0d0;
     color: #555555;
-    padding: 0px 3px 0px 3px;
     font-family: Verdana, Arial, Helvetica, Sans-Serif;
     font-weight: bold;
     border-color:#404040 #404040 #282828 #282828;
@@ -922,8 +864,6 @@ li.tab, span.tab
 li.tab_selected,span.tab_selected, .tab_selected 
 {
     color: #111111;
-    padding: 0px 3px 1px 3px;
-    border-width: 2px 2px 0px 2px;
     background: #d0d0d0;
     border-color:#404040 #404040 #282828 #282828;
 }
@@ -1421,7 +1361,7 @@ div.bottom {
      z-index: 1000;
      position: fixed;
      padding-left: 10px;
-     height: 22px;
+     height: 2em;
      top:0;
 }
 .pulldown ul  { 
@@ -1440,7 +1380,7 @@ div.bottom {
 {
     color: #ffffff;
     width: 40px;
-    height: 22px;
+    height: 2em;
     float: left;
     background: #6a6a6a;
     border-color: #6a6a6a #424242 #333333;
@@ -1479,7 +1419,7 @@ div.bottom {
     color: #ffffff;
     text-align: center;
     font-size: small;
-    height: 22px;
+    height: 2em;
     width: 110px; 
     float: left;
     position: relative; 
@@ -1534,13 +1474,13 @@ div.bottom {
 
 .pulldown ul li:hover ul li.plain
 {
-      background: #7F7F7F;
-      border-color: #7F7F7F #686868 #333333;
-      background-image: -webkit-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
-      background-image: -moz-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
-      background-image: -o-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
-      background-image: linear-gradient(to bottom, #7F7F7F, #686868 50%, #333333);
-    height: 24px;
+    background: #7F7F7F;
+    border-color: #7F7F7F #686868 #333333;
+    background-image: -webkit-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+    background-image: -moz-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+    background-image: -o-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+    background-image: linear-gradient(to bottom, #7F7F7F, #686868 50%, #333333);
+    height: 2em;
     width: 250px;
     z-index: 2000;
     border: none;
@@ -1552,28 +1492,25 @@ div.bottom {
 .pulldown ul li:hover ul li.activity:hover
 {
     background: #5B5B5B;
-  border-color: #5B5B5B #3F3F3F #151515;
-  background-image: -webkit-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
-  background-image: -moz-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
-  background-image: -o-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
-  background-image: linear-gradient(to bottom, #5B5B5B, #3F3F3F 50%, #151515);
-
-    height: 24px;
+    border-color: #5B5B5B #3F3F3F #151515;
+    background-image: -webkit-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
+    background-image: -moz-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
+    background-image: -o-linear-gradient(top, #5B5B5B, #3F3F3F 50%, #151515);
+    background-image: linear-gradient(to bottom, #5B5B5B, #3F3F3F 50%, #151515);
+    height: 2em;
     overflow: hidden;
     list-style-type:none; 
 }
 
 .pulldown ul li:hover ul li.activity
 {
-      background: #7F7F7F;
-  border-color: #7F7F7F #686868 #333333;
-  background-image: -webkit-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
-  background-image: -moz-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
-  background-image: -o-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
-  background-image: linear-gradient(to bottom, #7F7F7F, #686868 50%, #333333);
-
-
-    height: 24px;
+    background: #7F7F7F;
+    border-color: #7F7F7F #686868 #333333;
+    background-image: -webkit-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+    background-image: -moz-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+    background-image: -o-linear-gradient(top, #7F7F7F, #686868 50%, #333333);
+    background-image: linear-gradient(to bottom, #7F7F7F, #686868 50%, #333333);
+    height: 2em;
     width: 450px;
     z-index: 2000;
     overflow: hidden;
@@ -1584,8 +1521,7 @@ div.bottom {
 {
     border-radius: 0 0 9px 9px;
 }
-
-.urdlogo2
+.rdlogo2
 {
     width: 175px;
     height: 113px;
@@ -1659,7 +1595,7 @@ div.bottom {
 
 #status_msg
 {
-    height:22px;
+    height:2em;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
@@ -1675,38 +1611,15 @@ div.bottom {
     margin-top: 1px;
 }
 
-#scrollmenuleft
-{
-     background: #6a6a6a;
-  border-color: #6a6a6a #424242 #333333;
-  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
-  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
-  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
-  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
-    z-index: 100000;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 10px;
-    height:22px;
-    font-weight: bold;
-    overflow: hidden;
-}
+#scrollmenuleft,
 #scrollmenuright
 {
-     background: #6a6a6a;
-  border-color: #6a6a6a #424242 #333333;
-  background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
-  background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
-  background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
-  background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
-    z-index: 100000;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    width: 10px;
-    height:22px;
-    overflow: hidden;
+    background: #6a6a6a;
+    border-color: #6a6a6a #424242 #333333;
+    background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+    background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+    background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
+    background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     font-weight: bold;
 }
 
@@ -1736,7 +1649,6 @@ div.bottom {
     overflow: hidden;
     box-shadow: -3px 3px 3px 4px #444444;
 }
-
 table.subcat
 {
     border-collapse: collapse;
@@ -1775,9 +1687,8 @@ tr.comment
 }
 tr.comment_poster
 {
-    background:#3B3B3B ;
+    background:#3B3B3B;
 }
-
 .set_title
 {
     background-color:#d0d0d0;
@@ -1842,14 +1753,14 @@ input.passwordcorrect
   z-index: 1000;
 }
 .grey {
-background: #cccccc;
+  background: #cccccc;
   background-image: -webkit-linear-gradient(top, #e0e0e0, #cbcbcb 70%, #bcbcbc);
   background-image: -moz-linear-gradient(top, #e0e0e0, #cbcbcb 70%, #bcbcbc);
   background-image: -o-linear-gradient(top, #e0e0e0, #cbcbcb 70%, #bcbcbc);
   background-image: linear-gradient(to bottom, #e0e0e0, #cbcbcb 70%, #bcbcbc);
 }
 .green {
-     background: #5a8529; /* Old browsers */
+    background: #5a8529; /* Old browsers */
     background: -moz-linear-gradient(top, #5a8529 0%, #496e22 70%, #3f5f1d 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5a8529), color-stop(70%,#496e22), color-stop(100%,#3f5f1d)); /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, #5a8529 0%,#496e22 70%,#3f5f1d 100%); /* Chrome10+,Safari5.1+ */
@@ -1860,7 +1771,8 @@ background: #cccccc;
 
   }
 
-.red {
+.red 
+{
     background: #a42a1a;
     background: #b31f0b;
     background: -moz-linear-gradient(top, #b31f0b 0%, #96180a 70%, #801408 100%);
@@ -1871,8 +1783,8 @@ background: #cccccc;
     background: linear-gradient(to bottom, #b31f0b 0%,#96180a 70%,#801408 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b31f0b', endColorstr='#801408',GradientType=0 );
 }
-
-.orange {
+.orange 
+{
   background: #f2b63c;
   border-color: #f0ad24 #eba310 #c5880d;
   background-image: -webkit-linear-gradient(top, #f8da9c, #f5c462 70%, #f2b63c);
@@ -1880,8 +1792,8 @@ background: #cccccc;
   background-image: -o-linear-gradient(top, #f8da9c, #f5c462 70%, #f2b63c);
   background-image: linear-gradient(to bottom, #f8da9c, #f5c462 70%, #f2b63c);
 }
-
-.blue {
+.blue 
+{
   background: #5aaadb;
   border-color: #459fd6 #3094d2 #277db2;
   background-image: -webkit-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
@@ -1889,7 +1801,6 @@ background: #cccccc;
   background-image: -o-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
   background-image: linear-gradient(to bottom, #aed5ed, #7bbbe2 70%, #5aaadb);
 }
-
 #sidebar_button
 {
     position: fixed;
@@ -1900,13 +1811,10 @@ background: #cccccc;
     border: #a0a0a0 1px solid;
     display:none;
 }
-
 #contentleft
 {
     border-right: solid 1px #a0a0a0;
 }
-
-
 div.suggest
 {
     max-width: 450px;

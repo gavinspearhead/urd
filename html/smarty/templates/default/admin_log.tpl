@@ -29,10 +29,10 @@
 <input type="hidden" value="{$sort_dir|escape:htmlall}" id="order_dir"/>
 <input type="hidden" value="{$sort|escape:htmlall}" id="order"/>
 <div>
-{$LN_log_lines}: <input type="text" id="lines" name="lines" value="{$lines|escape:htmlall}" size="6"/>
-{$LN_search}: <input type="text" name="search" id="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" size="30"/>
+<input type="text" name="search" id="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}" class="textbox18m"/>
+{$LN_log_lines}: <input type="text" id="lines" name="lines" value="{$lines|escape:htmlall}" class="textbox4m"/>
 {$LN_log_level}: 
-<select name="log_level" id="log_level">
+<select name="log_level" id="log_level"class="textbox10m">
 {html_options options=$log_str selected=$log_level}
 </select>
 <input type="submit" name="submit_button" value="{$LN_search}" id="search_button" class="vbot submitsmall"/>

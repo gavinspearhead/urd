@@ -31,10 +31,11 @@
 <br/>
 <table class="hmid">
 <tr>
-<td>{$LN_settings_filename}:</td>
+<td class="nowrap bold">{$LN_settings_filename}:</td>
+</tr><tr>
 <td>
-<input type="file" name="filename" id="files" size="1" class="hidden"/>
-<input type="text" name="_filename" id="_files" placeholder="{$LN_settings_filename}" required size="30"/>
+<input type="file" name="filename" id="files" class="hidden"/>
+<input type="text" name="_filename" id="_files" placeholder="{$LN_settings_filename}" required class="textbox18m"/>
 <input type="button" class="submitsmall" id="browse_button" value="{$LN_browse}"/>
 <progress id="progress_import"></progress>
 </td>

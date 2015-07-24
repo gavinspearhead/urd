@@ -49,8 +49,8 @@
 	{foreach $display as $vals}
 		<tr class="comment"><td class="bold">{$vals.name}:</td>
 		<td class="extsetinput">
-			{if $vals.edit == 'longtext'}<input size="60" type="text" name="values[{$vals.field|escape}]" value="{$vals.value|escape}"/>{/if}
-			{if $vals.edit == 'text'}<input size="25" type="text" name="values[{$vals.field|escape}]" value="{$vals.value|escape}"/>{/if}
+			{if $vals.edit == 'longtext'}<input  class="textbox34m" type="text" name="values[{$vals.field|escape}]" value="{$vals.value|escape}"/>{/if}
+			{if $vals.edit == 'text'}<input class="textbox18m" type="text" name="values[{$vals.field|escape}]" value="{$vals.value|escape}"/>{/if}
 			{if $vals.edit == 'checkbox'}
 				{* Checkboxes only return a value if they're checked, so let's have a default 0 value: *}
                 {urd_checkbox value="{$vals.value}" name="values[{$vals.field|escape}]" id="values_{$vals.field|escape}"} 
@@ -66,7 +66,7 @@
 	{/foreach}
     <tr class="comment"><td colspan="2">&nbsp;</td>
 	<tr class="comment"><td colspan="2" class="center">
-	<input type="button" value="{$LN_apply}" class="submit" name="submit_button" onclick="javascript:save_extset_info('{$setID}', {$type});"/>
+	<input type="button" value="{$LN_apply}" class="submitsmall" name="submit_button" onclick="javascript:save_extset_info('{$setID}', {$type});"/>
 	</td></tr>
 	</table>
 	</form>

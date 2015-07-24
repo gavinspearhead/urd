@@ -6017,10 +6017,30 @@ function add_text(text, elem)
     elem.val(elem.val() + text);
 }
 
+/**
+* emRemToPx.js | @whatsnewsisyphus 
+* To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+* see CC0 Public Domain Dedication <http://creativecommons.org/publicdomain/zero/1.0/>.
+*/
+  var emRemToPx = function( value, scope, suffix ) {
+    if (!scope || value.toLowerCase().indexOf("rem") >= 0) {
+      scope = 'body';
+    }
+    if (suffix === true) {
+      suffix = 'px';
+    } else {
+      suffix = null;
+    }
+    var multiplier = parseFloat(value);
+    var scopeTest = $('<div style="display: none; font-size: 1em; margin: 0; padding:0; height: auto; line-height: 1; border:0;">&nbsp;</div>').appendTo(scope);
+    var scopeVal = scopeTest.height();
+    scopeTest.remove();
+    return Math.round(multiplier * scopeVal) + suffix;
+  };
 var sidebar = 0;
 function show_sidebar(display)
 {
-    var side_bar_width = 250;
+    var side_bar_width = emRemToPx('22em', 'body', 'px');
 
     if (sidebar || display === false) {
         $('#topcontent').animate({ left: 0 }, 500, function() {} ); 

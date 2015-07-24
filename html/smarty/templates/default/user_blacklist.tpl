@@ -24,8 +24,8 @@
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$title}</h3>
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
-<select id="status" name="status">
+<input type="text" name="search" placeholder="{$LN_search}" id="search" class="textbox18m"/>
+<select id="status" name="status" class="textbox10m">
 <option value="all" {if $status == ''}selected="selected"{/if}>{$LN_all}</option>
 <option value="active" {if $status == 'active'}selected="selected"{/if}>{$LN_active}</option>
 <option value="nonactive" {if $status == 'nonactive'}selected="selected"{/if}>{$LN_nonactive}</option>

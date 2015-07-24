@@ -25,6 +25,7 @@
 {if $nrofsets == 0}
 0
 {else} 
+<div class="inline"> 
 <div class="inline iconsizeplus buttonlike cleartop3 downicon noborder" {urd_popup type="small" text=$LN_browse_download } id="download_button"></div>&nbsp;
 <span id="change_basket" class="buttonlike">
 {$nrofsets} {$LN_sets} - {$totalsize}&nbsp;</span>
@@ -37,6 +38,7 @@
 <input name="dl_dir" id="dl_dir" type="hidden" value="{$dl_dir|escape:htmlall}"/>
 <input name="add_setname" id="add_setname" type="hidden" value="{$add_setname|escape:htmlall}"/>
 <input name="dlsetname" id="dlsetname" type="hidden" value="{$dlsetname|escape:htmlall}"/>
+</div>
 {/if}
 {/strip}
 

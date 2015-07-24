@@ -36,13 +36,13 @@
     {$message}
 {else}
     <br/>
-    <table>
+    <table class="hmid">
     <tr>
     {if $new_file}
-        <td>{$LN_filename}: </td>
-        <td >
-        <input type="text" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile" required placeholder="{$LN_filename}" size="40"/>
-        {urd_checkbox name="newdir" id="newdir" post_js="toggle_textarea('filecontents_editfile', 'newdir');"} {$LN_post_directory}
+        <td class="nowrap bold">{$LN_filename}: </td>
+        <td>
+        <input type="text" value="{$filename|escape:htmlall}" name="filename" id="filename_editfile" required placeholder="{$LN_filename}" class="textbox28m"/>&nbsp;
+        <div class="inline down5p">{urd_checkbox name="newdir" id="newdir" post_js="toggle_textarea('filecontents_editfile', 'newdir');"}</div>&nbsp;{$LN_post_directory}
         <input type="hidden" value="new" name="newfile" id="newfile"/>
         <input type="hidden" value="{$LN_error_needfilenames}" name="filename_err" id="filename_err"/>
         </td></tr>
@@ -55,7 +55,7 @@
     <input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
     <textarea class="filecontents" name="filecontents" id="filecontents_editfile" required>{$file_contents}</textarea>
     </td></tr>
-    <tr><td colspan="2"><input type="button" class="submitsmall floatright" id="submit_button" value="{$LN_viewfiles_savefile}"/>
+    <tr><td colspan="2" class="centered"><input type="button" class="submitsmall" id="submit_button" value="{$LN_viewfiles_savefile}"/>
     </td>
     </tr>
     </table>

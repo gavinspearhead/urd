@@ -37,11 +37,11 @@
 {if $message != ''}
 <tr><td colspan="2"><span class="warning_highlight">{$message}</span></td></tr>
 {/if}
-<tr><td>{$LN_username}</td><td><input type="text" name="username" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
-<tr><td >{$LN_password}</td><td><input type="password" id="pass" name="pass" placeholder="{$LN_password}" required/>&nbsp;&nbsp; 
+<tr><td class="nowrap bold">{$LN_username}:</td><td><input type="text" name="username" class="textbox18m" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
+<tr><td class="nowrap bold">{$LN_password}:</td><td><input type="password" id="pass" class="textbox18m" name="pass" placeholder="{$LN_password}" required/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="pw_button"></div></td></tr>
 <tr><td colspan="2"></td></tr>
-<tr><td>{$LN_login_remember}</td><td>
+<tr><td class="nowrap bold">{$LN_login_remember}:</td><td>
 <select name="period">
 <option value="0" {if $period == 0} selected="selected"{/if}>{$LN_login_closebrowser}</option>
 <option value="1" {if $period == 1} selected="selected"{/if}>{$LN_login_oneweek}</option>
@@ -50,12 +50,12 @@
 <option value="4" {if $period == 4} selected="selected"{/if}>{$LN_login_forever}</option>
 </select>
 </td></tr>
-<tr><td>{$LN_login_bindip}</td><td>
+<tr><td class="nowrap bold">{$LN_login_bindip}:</td><td>
 {urd_checkbox value="$bind_ip_address" name="ipaddr" id="ipaddr" data="{$ip_address}"} 
 
 </td></tr>
 <tr><td colspan="2"></td></tr>
-<tr><td colspan="1"><input type="submit" value="{$LN_login_login}" class="submit"/></td>
+<tr><td colspan="1"><input type="button" value="{$LN_login_login}" id="login_submit" class="submitsmall"/></td>
 <td>
 <select name="language_name" id="language_select">
 {html_options options=$languages selected=$curr_language}
@@ -73,6 +73,7 @@ $(document).ready(function() {
     $('#pw_button').click( function() { toggle_show_password('pass');});
     $('#urd_logo').click( function() { jump('http://www.urdland.com'); });
     $('#language_select').change( function() { submit_language_login(); });
+    $('#login_submit').click ( function() { $('#urd_login_form').submit(); });
 });
 </script>
 </form>

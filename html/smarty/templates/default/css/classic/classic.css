@@ -105,13 +105,6 @@ div.light
     background-color: #ffffff;
     color: #000000;
 }
-table.articles, table.newsservers
-{
-    margin-top: -1px;
-    border-collapse: collapse;
-    font-size: 10pt;
-    width: 99%;
-}
 table.statistics
 {
     margin-top: -2px;
@@ -121,7 +114,7 @@ table.statistics
 
 .xxsmall
 {
-    font-size: xx-small;
+    font-size: small;
     color: #ffffff;
     padding-left: 10px;
 }
@@ -223,24 +216,18 @@ table.files, table.tasks
 }
 .highlight_spam
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #990000;
     color: #ffffff;
 }
 
 .highlight_whitelist
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #006600;
     color: #ffffff;
 }
 
 .highlight_comments
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #996600;
     color: #ffffff;
 }
@@ -273,17 +260,6 @@ table.files, table.tasks
     padding: 0;
     border-collapse: collapse;
 }
-
-.time
-{
-    width: 20px;
-    font-size: 8pt;
-    text-align: right;
-}
-.update
-{
-    font-size: 8pt;
-}
 .newpref
 {
     background-color: #000;
@@ -296,7 +272,7 @@ table.files, table.tasks
 div.log {
     overflow-y: auto;
     height: 600px;
-    font-size: x-small;
+    font-size: small;
     font-family: courier, Monospace;
 }
 div.setinfo
@@ -306,7 +282,7 @@ div.setinfo
     overflow-y: scroll;
     height: 240px;
     width: auto;
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 .transferstatus
@@ -344,9 +320,8 @@ input, select, textarea
 {
     background: #161616;
     color: #e0e0e0;
-    padding: 0px 3px 0px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    font-size: x-small;
+    font-size: small;
     border: 2px solid;
     font-weight: bold;
     border-color:#404040 #282828 #282828 #404040;
@@ -362,7 +337,7 @@ input, select, textarea
 
 #status
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     padding-left: 10px;
     overflow-x: hidden;
@@ -567,13 +542,13 @@ input, select, textarea
 }
 .basketright
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     text-align: right;
 }
 .basketleft
 {
-    font-size: x-small;
+    font-size: small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 table.basketbuttons
@@ -614,7 +589,7 @@ table.browsetoptable
     background: #660000;
     border: 1px solid #000;
     font-size: small;
-    height: 24px;
+    height: 2em;
 }
 .quickmenubutton:hover
 {
@@ -628,7 +603,7 @@ table.browsetoptable
     margin: 0;
     padding: 0 4px 1px 4px;
     width: 250px;
-    height: 24px;
+    height: 2em;
     color: #ffffff;
     text-align: left;
     vertical-align: top;
@@ -757,13 +732,6 @@ input[readonly]
     border-color:#454545 #454545 #282828 #282828;
 }
 
-#rss 
-{
-    position: fixed;
-    right: 20px;
-    top: 24px;
-
-}
 td.rssleft {
     border: none;
     color: #ffffff;
@@ -779,17 +747,11 @@ td.rssright {
     font-size: 8px;
     border-radius: 0 4px 4px 0;
 }
-
-table.rss {
-    border-collapse: collapse;
-}
-
 a.rss {
     color: #ffffff;
     text-decoration: none;
 
 }
-
 span.ng_submit
 {
     left: 0;
@@ -809,11 +771,7 @@ div.ng_selector
     vertical-align: bottom;
 }
 
-div.prefix_transfers
-{
-    margin-top: -2px;
-}
-
+div.prefix_transfers,
 div.prefix_prefs
 {
     margin-top: -2px;
@@ -847,15 +805,8 @@ div.tabs, ul.tabs
 
 li.tab, span.tab
 {
-    border-top-right-radius:6px;
-    border-top-left-radius:6px;
-    display: inline;
-    border: solid;
-    border-width: 2px 2px 1px 2px;
-    margin: 0 1px 0 0;
     background: #000000;
     color: #c3c3c3;
-    padding: 0 3px 0 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-weight: bold;
     border-color:#606060 #606060 #484848 #484848 ;
@@ -865,36 +816,9 @@ li.tab, span.tab
 li.tab_selected, span.tab_selected, .tab_selected
 {
     color: #8C1826;
-    padding: 0 3px 1px 3px;
-    border-width: 2px 2px 0 2px;
     border-color:#606060 #606060 #484848 #484848 ;
     background: #000000;
 }
-
-.leftward 
-{
-    margin-left: 65px;
-    margin-top: 25px;
-}
-
-#leftcalendar 
-{
-    width: 220px;
-    float: left;
-}
-
-#rightcalendar 
-{
-    float: left;
-}
-
-#calendarbottom
-{
-    margin-top: 150px;
-    margin-right: 50px;
-    clear:both;
-}
-
 .black 
 {
     background: #000;
@@ -1302,14 +1226,16 @@ td.uwider
     height: 20px;
 }
 
-td.ps_hover {
+td.ps_hover 
+{
     font-weight: bold;
     font-size: 10pt;
     color: #aa0000; 
     cursor: pointer;
 }
 
-div.bottom {
+div.bottom 
+{
     position: absolute;
     bottom: 10px;
     right: 9px;
@@ -1380,7 +1306,7 @@ div.bottom {
 #pulldown_menu 
 {
     width: 100%;
-    height: 22px;
+    height: 2em;
     background: #690000;
     border-color: #690000 #4d0000 #230000;
     background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
@@ -1411,7 +1337,7 @@ div.bottom {
     color: #ffffff;
     text-align: center;
     font-size: small;
-    height: 22px;
+    height: 2em;
     width:110px; 
     float:left;
     position:relative; 
@@ -1431,7 +1357,7 @@ div.bottom {
 {
     width: 40px;
     float: left;
-    height: 22px;
+    height: 2em;
     position:relative; 
     list-style-type:none;
     background: #690000;
@@ -1488,7 +1414,7 @@ div.bottom {
     background-image: -o-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
     background-image: linear-gradient(to bottom, #3f0000, #2D0000 50%, #040000);
     width: 250px;
-    height: 24px;
+    height: 2em;
     z-index: 2000;
     overflow: hidden;
 }
@@ -1502,7 +1428,7 @@ div.bottom {
     background-image: -o-linear-gradient(top, #3f0000, #2D0000 50%, #040000);
     background-image: linear-gradient(to bottom, #3f0000, #2D0000 50%, #040000);
     width: 450px;
-    height: 24px;
+    height: 2em;
     z-index: 2000;
     overflow: hidden;
 }
@@ -1517,7 +1443,7 @@ div.bottom {
     background-image: -o-linear-gradient(top, #970000, #610000 50%, #320000);
     background-image: linear-gradient(to bottom, #970000, #610000 50%, #320000);
     overflow: hidden;
-    height: 24px;
+    height: 2em;
 }
 
 .pulldown_last_item
@@ -1601,7 +1527,7 @@ div.bottom {
 
 #status_msg
 {
-    height:22px;
+    height:2em;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -1617,23 +1543,7 @@ div.bottom {
     margin-top: 1px;
 }
 
-#scrollmenuleft
-{
-    background: #690000;
-    border-color: #690000 #4d0000 #230000;
-    background-image: -webkit-linear-gradient(top, #690000, #4d0000 50%, #230000);
-    background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
-    background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
-    background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
-    z-index: 10000;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 10px;
-    font-weight: bold;
-    overflow: hidden;
-}
-
+#scrollmenuleft,
 #scrollmenuright
 {
     background: #690000;
@@ -1642,14 +1552,7 @@ div.bottom {
     background-image: -moz-linear-gradient(top, #690000, #4d0000 50%, #230000);
     background-image: -o-linear-gradient(top, #690000, #4d0000 50%, #230000);
     background-image: linear-gradient(to bottom, #690000, #4d0000 50%, #230000);
-    z-index: 10000;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 10px;
-    overflow: hidden;
     font-weight: bold;
-    height:22px;
 }
 
 .white

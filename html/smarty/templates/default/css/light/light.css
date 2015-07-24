@@ -130,13 +130,6 @@ div.light
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#498af4', endColorstr='#85aaea',GradientType=0 ); /* IE6-9 */
 }
 
-table.articles, table.newsservers
-{
-    margin-top: -1px;
-    border-collapse: collapse;
-    border-spacing:0;
-    width: 100%;
-}
 table.statistics
 {
     margin-top: 1px;
@@ -245,22 +238,16 @@ table.tasks
 }
 .highlight_spam
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #bb0000;
     color: #ffffff;
 }
 .highlight_comments
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #ddaa00;
     color: #ffffff;
 }
 .highlight_whitelist
 {
-    padding: 2px 4px 2px 4px;
-    border-radius:3px;
     background-color: #22aa22;
     color: #ffffff;
 }
@@ -285,16 +272,6 @@ table.tasks
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;
-}
-.time
-{
-    width: 20px;
-    font-size: 8pt;
-    text-align: right;
-}
-.update
-{
-    font-size: 8pt;
 }
 .newpref
 {
@@ -361,7 +338,6 @@ input,select, textarea
 .submitsmall
 {
     color: #444444;
-    padding: 1px 3px 1px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
     border: 1px solid;
@@ -572,11 +548,12 @@ input,select, textarea
 {
     margin-left: 8px;
     display: inline;
-    margin-top: 5px;
-    padding: 1px 5px;
+    margin-top: 1px;
+    padding: 0px 5px 1px 5px;
     border: solid #a5a5a5 1px;
-    border-radius: 3px 3px 3px 3px;
+    border-radius: 4px 4px 4px 4px;
     background-color: #F1F1F1;
+    height: 1.55em;
 }
 
 #basketdiv
@@ -812,13 +789,6 @@ input[readonly]
     border-color: #a3a3a3 #919191 #b3b3b3 #919191;
 }
 
-#rss 
-{
-    position: fixed;
-    right: 20px;
-    top: 24px;
-
-}
 td.rssleft 
 {
     border: none;
@@ -835,10 +805,6 @@ td.rssright
     background-color: #999999;
     font-size: 7px;
     border-radius: 0 4px 4px 0;
-}
-table.rss 
-{
-    border-collapse: collapse;
 }
 a.rss 
 {
@@ -865,11 +831,7 @@ div.ng_selector
 }
 
 
-div.prefix_transfers
-{
-    margin-top: -2px;
-}
-
+div.prefix_transfers,
 div.prefix_prefs
 {
     margin-top: -2px;
@@ -886,6 +848,7 @@ textarea.filecontents
 }
 ul.tabs, div.tabs
 {
+    padding: 0.25em 0.4em 0 0.4em;
     list-style: none;
     padding: 0;
     margin: 0 0 0px 1px;
@@ -893,15 +856,8 @@ ul.tabs, div.tabs
 }
 li.tab, span.tab
 {
-    border-top-right-radius: 6px;
-    border-top-left-radius: 6px;
-    display: inline;
-    border: solid;
-    border-width: 2px 2px 1px 2px;
-    margin: 0 1px 0 0;
     background: #EAEAEA;
     color: #888888;
-    padding: 0px 3px 0px 3px;
     font-family: Verdana, Arial, Helvetica, Sans-Serif;
     font-weight: bold;
     border-color:#b0b0b0 #b0b0b0 #989898 #989898;
@@ -910,31 +866,8 @@ li.tab, span.tab
 li.tab_selected,span.tab_selected, .tab_selected 
 {
     color: #444444;
-    padding: 0px 3px 1px 3px;
-    margin: 0 1px 0 0;
-    border-width: 2px 2px 0px 2px;
     background: #EAEAEA;
     border-color:#b0b0b0 #b0b0b0 #989898 #989898;
-}
-.leftward 
-{
-    margin-left: 65px;
-    margin-top: 25px;
-}
-#leftcalendar 
-{
-    width: 220px;
-    float: left;
-}
-#rightcalendar 
-{
-    float: left;
-}
-#calendarbottom
-{
-    margin-top: 150px;
-    margin-right: 50px;
-    clear:both;
 }
 .black 
 {
@@ -1353,7 +1286,8 @@ td.uwider
     margin-right: 20px;
 }
 
-td.ps_hover {
+td.ps_hover 
+{
     color: #ffffff; 
     font-weight: bold;
     font-size: 10pt;
@@ -1409,7 +1343,7 @@ div.bottom {
     z-index: 1000;
     position: fixed;
     padding-left: 10px;
-    height: 22px;
+    height: 2em;
     top:0;
     background: #2d2d2d; /* Old browsers */
     background: -moz-linear-gradient(top, #2d2d2d 0%, #4d4d4d 53%, #2d2d2d 100%); /* FF3.6+ */
@@ -1436,7 +1370,7 @@ div.bottom {
 .pulldown ul li.smalllogo 
 {
     width: 40px;
-    height: 22px;
+    height: 2em;
     float: left;
     position: relative; 
     list-style-type:none; 
@@ -1476,7 +1410,7 @@ div.bottom {
     color:#CCCCCC;
     text-align: center;
     font-size: small;
-    height: 22px;
+    height: 2em;
     width: 110px; 
     float: left;
     position: relative; 
@@ -1535,7 +1469,7 @@ div.bottom {
 .pulldown ul li:hover ul li.plain
 {
     background: #3a3a3a;
-    height: 24px;
+    height: 2em;
     width: 250px;
     z-index: 2000;
     border: none;
@@ -1547,7 +1481,7 @@ div.bottom {
 .pulldown ul li:hover ul li.activity:hover
 {
     background:#585858;
-    height: 24px;
+    height: 2em;
     overflow: hidden;
     list-style-type:none; 
 }
@@ -1636,7 +1570,7 @@ div.bottom {
 
 #status_msg
 {
-    height:22px;
+    height:2em;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
@@ -1652,31 +1586,14 @@ div.bottom {
     margin-top: 1px;
 }
 
+#scrollmenuright,
 #scrollmenuleft
 {
     background: #2D2D2D;
-    z-index: 100000;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 10px;
-    height:22px;
     font-weight: bold;
     overflow: hidden;
 }
 
-#scrollmenuright
-{
-    background: #2D2D2D;
-    z-index: 100000;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    width: 10px;
-    height:22px;
-    overflow: hidden;
-    font-weight: bold;
-}
 
 .internal_subcat_selector
 {
@@ -1751,8 +1668,8 @@ tr.info
 }
 tr.title
 {
+    color:  #f5f5f5;
     background:#498BF4;
-    color:  #f5f5f5
 }
 tr.comment
 {

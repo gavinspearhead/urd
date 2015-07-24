@@ -31,52 +31,52 @@
 <table class="hmid">
 
 <tr class="{$auth_class}">
-<td {urd_popup type="small" text=$LN_usenet_name_msg|escape }>{$LN_name}:</td>
-<td colspan="3"><input type="text" name="name" id="name" value="{$name|escape}" placeholder="{$LN_name}" required size="{$text_box_size}"/></td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_name_msg|escape }>{$LN_name}:</td>
+<td colspan="3"><input type="text" name="name" id="name" value="{$name|escape}" placeholder="{$LN_name}" required class="textbox28m"/></td>
 </tr>
 <tr class="{$auth_class}">
-<td {urd_popup type="small" text=$LN_usenet_hostname_msg|escape }>{$LN_usenet_hostname}:</td>
-<td colspan="3"><input type="text" name="hostname" id="hostname" value="{$hostname|escape}" placeholder="{$LN_usenet_hostname}" required size="{$text_box_size}"/></td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_hostname_msg|escape }>{$LN_usenet_hostname}:</td>
+<td colspan="3"><input type="text" name="hostname" id="hostname" value="{$hostname|escape}" placeholder="{$LN_usenet_hostname}" required class="textbox28m"/></td>
 </tr>
 <tr class="{$auth_class}">
-<td {urd_popup type="small" text=$LN_usenet_port_msg|escape }>{$LN_usenet_port}:</td>
-<td><input type="text" name="port" value="{$port|escape}" id="port" required size="{$number_box_size}"/></td>
-<td {urd_popup type="small" text=$LN_usenet_secport_msg|escape }>{$LN_usenet_secport}:</td>
-<td><input type="text" id="sec_port" name="secure_port" value="{$sec_port|escape}" required size="{$number_box_size}"/> </td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_port_msg|escape }>{$LN_usenet_port}:</td>
+<td><input type="text" name="port" value="{$port|escape}" id="port" required class="textbox4m"/></td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_secport_msg|escape }>{$LN_usenet_secport}:</td>
+<td><input type="text" id="sec_port" name="secure_port" value="{$sec_port|escape}" required class="textbox4m"/> </td>
 </tr>
 <tr class="{$auth_class}">
-<td {urd_popup type="small" text=$LN_usenet_connectiontype_msg|escape }>{$LN_usenet_connectiontype}:</td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_connectiontype_msg|escape }>{$LN_usenet_connectiontype}:</td>
 <td>{html_options name="connection" id="connection" options=$connection_types selected=$connection}</td>
 </tr>
-<tr><td {urd_popup type="small" text=$LN_usenet_needsauthentication_msg|escape }>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_needsauthentication_msg|escape }>
 {$LN_usenet_needsauthentication}:</td>
 <td colspan="3">
 {urd_checkbox value="$authentication" name="authentication" id="needauthentication" post_js="show_auth();"}
 </tr>
 <tr id="authuser" class="{if $authentication != 1}hidden{/if}">
-<td {urd_popup type="small" text=$LN_usenet_username_msg|escape }>{$LN_username}:</td>
-<td colspan="3"><input type="text" name="username" value="{$username|escape}" id="username" placeholder="{$LN_username}" size="{$text_box_size}"/></td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_username_msg|escape }>{$LN_username}:</td>
+<td colspan="3"><input type="text" name="username" value="{$username|escape}" id="username" placeholder="{$LN_username}" class="textbox28m"/></td>
 </tr>
 <tr id="authpass" class="{if $authentication != 1}hidden{/if}">
-<td {urd_popup type="small" text=$LN_usenet_password_msg|escape }>{$LN_password}:</td>
-<td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" placeholder="{$LN_password}" size="{$text_box_size}"/>&nbsp;&nbsp; 
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_password_msg|escape }>{$LN_password}:</td>
+<td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" placeholder="{$LN_password}" class="textbox28m"/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="toggle_password">
 </td>
 </tr>
 
 <tr class="{$auth_class}">
-<td {urd_popup type="small" text=$LN_usenet_nrofthreads_msg|escape }>{$LN_usenet_nrofthreads}:</td>
-<td><input type="text" name="threads" value="{$threads|escape}" id="threads" size="{$number_box_size}"/></td>
-<td {urd_popup type="small" text=$LN_usenet_priority_msg|escape }>{$LN_usenet_priority}:</td>
-<td><input type="text" name="priority" value="{$priority|escape}" id="priority" size="{$number_box_size}"/></td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_nrofthreads_msg|escape }>{$LN_usenet_nrofthreads}:</td>
+<td><input type="text" name="threads" value="{$threads|escape}" id="threads" class="textbox4m"/></td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_priority_msg|escape }>{$LN_usenet_priority}:</td>
+<td><input type="text" name="priority" value="{$priority|escape}" id="priority" class="textbox4m"/></td>
 </tr>
 <tr class="{$auth_class}">
-<td {urd_popup type="small" text=$LN_usenet_compressed_headers_msg|escape }>{$LN_usenet_compressed_headers}:</td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_compressed_headers_msg|escape }>{$LN_usenet_compressed_headers}:</td>
 <td>
 {urd_checkbox value="$compressed_headers" name="compressed_headers" id="compressed_headers"}
 </td>
 {if $show_post}
-<td {urd_popup type="small" text=$LN_usenet_posting|escape }>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_posting|escape }>
 {$LN_usenet_posting}:</td>
 <td>
 {urd_checkbox value="$posting" name="posting" id="posting" }

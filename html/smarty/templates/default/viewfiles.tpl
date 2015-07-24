@@ -24,7 +24,7 @@
 <div id="searchformdiv" class="hidden">
 <h3 class="title">{$LN_viewfilesheading}: <span id="directory_top">{$directory|escape:htmlall|truncate:$maxstrlen:'...':false:true}</span></h3>
 <div>
-<input type="text" name="search" size="30" placeholder="{$LN_search}" id="search"/>
+<input type="text" name="search" class="textbox18m" placeholder="{$LN_search}" id="search"/>
 <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 </div>
 </div>

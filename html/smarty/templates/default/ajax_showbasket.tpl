@@ -27,8 +27,30 @@
 <div id="basketbuttondiv" class="hidden">
 <table class="basketbuttons">
 <tr>
+
+<td class="vcenter nowrap bold"><div class="inline">
+{$LN_browse_schedule_at}:&nbsp;<input name="timestamp" id="timestamp" type="text" value="{$download_delay|escape}" class="textbox10m"/></div>
+<div class="down5p inline">
+{urd_checkbox value="$add_setname" name="add_setname" id="add_setname" before="1" data="$LN_browse_add_setname:&nbsp;" post_js="update_basket_display(1);"} 
+</div>
+<div class="inline">{$LN_browse_download_dir}:&nbsp;</div>
+<span id="dl_dir_span">
+    <div class="inline"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width20em"/>&nbsp;</div>
+    <div id="dir_select_button" class="foldericon iconsizeplus inline down4p"></div>
+</span>
+<span id="dir_select_span" class="hidden">
+<select id="dir_select" class="width20em">
+<option value=""></option>
+{foreach $directories as $directory}
+<option value="{$directory|escape:htmlall}">{$directory|escape:htmlall}</option>
+{/foreach}
+</select>
+</span>
+</td>
+</tr>
+<tr>
 {if $show_download != 0}
-<td class="nowrap vcenter">
+<td class="nowrap">
 <div class="floatleft buttonlike basketbuttonsize noborder downloadbutton" {urd_popup type="small" text=$LN_browse_download } id="download_button"/></div>
 {/if}
 {if $show_makenzb != 0}
@@ -40,29 +62,8 @@
 
 <div class="floatleft buttonlike basketbuttonsize noborder clearbutton" {urd_popup type="small" text=$LN_browse_emptylist } id="clear_button"/></div>
 {if $show_download != 0}
-<td class="vcenter"><div class="floatleft">
-{$LN_browse_schedule_at}:&nbsp;<input name="timestamp" id="timestamp" type="text" value="{$download_delay|escape}" size="20"/></div></td>
-<td class="vcenter"><div class="down4">
-{urd_checkbox value="$add_setname" name="add_setname" id="add_setname" before="1" data="$LN_browse_add_setname:&nbsp;" post_js="update_basket_display(1);"} 
-</div>
-</td>
-<td class="vcenter"><div class="floatleft">{$LN_browse_download_dir}:&nbsp;</div></td>
-<td class="vcenter">
-<span id="dl_dir_span">
-    <div class="floatleft down2"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width300"/>&nbsp;</div>
-    <div id="dir_select_button" class="foldericon iconsizeplus floatleft"></div>
-</span>
-<span id="dir_select_span" class="hidden">
-<select id="dir_select" class="width300">
-<option value=""></option>
-{foreach $directories as $directory}
-<option value="{$directory|escape:htmlall}">{$directory|escape:htmlall}</option>
-{/foreach}
-</select>
-</span>
-</td>
-
 {/if}
+</td>
 </tr>
 </table>
 </div>
@@ -74,7 +75,7 @@
 <tr><td>
 	<div id="innerbasketdiv"> 
 	<table class="innerbaskettable">
-	<tr><td>{$LN_basket_setname}: <input name="dlsetname" id="dlsetname" type="text" value="{$dlsetname|escape:htmlall}" size="55"/></td>
+	<tr><td class="nowrap bold">{$LN_basket_setname}: <input name="dlsetname" id="dlsetname" type="text" value="{$dlsetname|escape:htmlall}" class="textbox28m"/></td>
     <td class="basketright nowrap bold">{$LN_basket_totalsize}:</td>
     <td class="basketright nowrap bold">{$totalsize|escape}</td>
     <td width="25px">

@@ -25,24 +25,25 @@
 {extends file="popup.tpl"}
 {block name=title}{$LN_edit_file} - {$filename|escape:htmlall|truncate:$maxstrlen:'...':false:true}{/block}
 {block name=contents}
-<table>
+<table class="hmid">
+<tr><td colspan="2">&nbsp;</td></tr>
 <tr>
-<td>{$LN_filename}:
+<td class="nowrap bold">{$LN_filename}:
 </td>
 <td>
 <input type="hidden" value="{$directory|escape:htmlall}" name="directory" id="directory_editfile"/>
 <input type="hidden" value="{$filename|escape:htmlall}" name="oldfilename" id="oldfilename_editfile"/>
-<input type="text" value="{$filename|escape:htmlall}" name="newfilename" id="newfilename_editfile" required placeholder="{$LN_filename}" size="{$textboxsize}"/>
+<input type="text" value="{$filename|escape:htmlall}" name="newfilename" id="newfilename_editfile" required placeholder="{$LN_filename}" class="textbox28m"/>
 </td>
 </tr>
 <tr>
-<td>{$LN_rights}:
+<td class="nowrap bold">{$LN_rights}:
 </td>
 <td><input type="text" value="{$rights|escape:htmlall}" id="rights_editfile" required name="rights"/>
 </td>
 </tr>
 <tr>
-<td>{$LN_group}:
+<td class="nowrap bold">{$LN_group}:
 </td>
 <td>{html_options name="group" id="group_editfile" options=$groups selected=$group}
 </td>
@@ -50,7 +51,7 @@
 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr>
 <td class="centered" colspan="2">
-<input type="button" value="{$LN_apply}" name="apply" id="apply_button" class="submit"/>
+<input type="button" value="{$LN_apply}" name="apply" id="apply_button" class="submitsmall"/>
 </td>
 </tr>
 

@@ -28,7 +28,7 @@
 <form id="searchform">
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
-    <input type="text" id="search" name="search" size="30" placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}"/>&nbsp;
+    <input type="text" id="search" name="search" class="textbox18m"  placeholder="{$LN_search}" class="search" value="{$search|escape:htmlall}"/>&nbsp;
     <div class="hidden suggest" id="suggest_div"></div>
 <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
 &nbsp;
@@ -36,10 +36,10 @@
 <span id="save_search_outer" class="{if count($saved_searches) == 0}hidden{/if}">
 <input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_previous type="small"}/>
 <span id="save_search_span">
-<select id="saved_search">
-<option value="" label="all"></option>
+<select id="saved_search" class="textbox10m">
+<option value="" label="{$LN_all}">{$LN_all}</option>
 {foreach $saved_searches as $k1=>$saved_search}
-    <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
+    <option label="{$saved_search|escape}"value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}
 </select>
 </span>

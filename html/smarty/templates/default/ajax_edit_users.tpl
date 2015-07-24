@@ -27,52 +27,52 @@
 <br/>
 <div><input type="hidden" name="id" id="id" value="{$id|escape}"/></td></div>
 <table class="hmid">
-<tr><td colspan="2">{$LN_username}</td><td colspan="2"><input type="text" name="username" id="username" placeholder="{$LN_username}" required value="{$name|escape}" size="{$text_box_size}"/></td></tr>
-<tr><td colspan="2">{$LN_fullname}</td><td colspan="2"><input type="text" name="fullname" id="fullname" placeholder="{$LN_fullname}" required value="{$fullname|escape}" size="{$text_box_size}"/></td></tr>
-<tr><td colspan="2">{$LN_email}</td><td colspan="2"><input type="email" name="email" id="email" placeholder="{$LN_email}" required value="{$email|escape}" size="{$text_box_size}"/></td></tr>
+<tr><td class="nowrap bold" colspan="2">{$LN_username}</td><td colspan="2"><input type="text" name="username" id="username" placeholder="{$LN_username}" required value="{$name|escape}" class="textbox28m"/></td></tr>
+<tr><td class="nowrap bold" colspan="2">{$LN_fullname}</td><td colspan="2"><input type="text" name="fullname" id="fullname" placeholder="{$LN_fullname}" required value="{$fullname|escape}" class="textbox28m"/></td></tr>
+<tr><td class="nowrap bold" colspan="2">{$LN_email}</td><td colspan="2"><input type="email" name="email" id="email" placeholder="{$LN_email}" required value="{$email|escape}" class="textbox28m"/></td></tr>
 {if $id == 'new' || $emailallowed == 0}
-<tr><td colspan="2">{$LN_password}</td>
+<tr><td class="nowrap bold" colspan="2">{$LN_password}</td>
 <td colspan="2"> 
-    <input type="text" name="password" id="password" size="{$text_box_size}" placeholder="{$LN_password}" required/>
+    <input type="text" name="password" id="password" class="textbox28m" placeholder="{$LN_password}" required/>
 </td> </tr>
 
 {/if}
-<tr><td>{$LN_users_isadmin}</td><td>
+<tr><td class="nowrap bold">{$LN_users_isadmin}</td><td>
 {if $isadmin == $USER_ADMIN}{$_isadmin=1}{else}{$_isadmin=0}{/if}
 {urd_checkbox value="$_isadmin" name="isadmin" id="isadmin" }
 </td>
 
-<td>{$LN_users_rights}</td><td>
+<td class="nowrap bold">{$LN_users_rights}</td><td>
 {urd_checkbox value="$rights" name="seteditor" id="seteditor"}
 </td>
 </tr>
 
-<tr><td>{$LN_users_post}</td><td>
+<tr><td class="nowrap bold">{$LN_users_post}</td><td>
 {urd_checkbox value="$post" name="post" id="post"}
 </td>
 
-<td>{$LN_active}</td><td>
+<td class="nowrap bold">{$LN_active}</td><td>
 {if $isactive == $USER_ACTIVE}{$isactive=1}{else}{$isactive=0}{/if}
 {urd_checkbox value="$isactive" name="isactive" id="isactive"}
 </td>
 
 </tr>
 <tr>
-<td>{$LN_users_autodownload}</td><td>
+<td class="nowrap bold">{$LN_users_autodownload}</td><td>
 {urd_checkbox value="$autodownload" name="autodownload" id="autodownload"}
 </td>
 
-<td>{$LN_users_fileedit}</td><td>
+<td class="nowrap bold">{$LN_users_fileedit}</td><td>
 {urd_checkbox value="$file_edit" name="fileedit" id="fileedit"}
 </td>
 </tr>
 
 <tr>
-<td>{$LN_users_allow_erotica}</td><td>
+<td class="nowrap bold">{$LN_users_allow_erotica}</td><td>
 {urd_checkbox value="$allow_erotica" name="allow_erotica" id="allow_erotica"}
 </td>
 
-<td>{$LN_users_allow_update}</td><td>
+<td class="nowrap bold">{$LN_users_allow_update}</td><td>
 {urd_checkbox value="$allow_update" name="allow_update" id="allow_update"}
 </td>
 </tr>

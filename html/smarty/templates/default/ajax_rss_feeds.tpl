@@ -151,18 +151,18 @@
 
 <td class="general right">{$feed.lastupdated|escape}</td>
 <td class="{$admin_hidden} admin center">
-<input type="text" size="2" value="{$feed.expire}" name="expire[{$feed.id}]" id="expire_{$feed.id}"  {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('rss', 'expire', {$feed.id});"/>
+<input type="text" class="textbox4m" value="{$feed.expire}" name="expire[{$feed.id}]" id="expire_{$feed.id}"  {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('rss', 'expire', {$feed.id});"/>
 </td>
 <td class="{$user_hidden} user center">
 {urd_checkbox value="{$feed.visible}" name="visible[{$feed.id}]" id="visible_{$feed.id}" post_js="toggle_visibility('rss','{$feed.id}');"} 
 <td class="{$user_hidden} user center">
-<input type="text" size="3" value="{$feed.minsetsize|escape}" name="minsetsize[{$feed.id}]" id="user_minsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_minsetsize', {$feed.id});"/>
-<input type="text" size="3" value="{$feed.maxsetsize|escape}" name="maxsetsize[{$feed.id}]" id="user_maxsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_maxsetsize', {$feed.id});"/>
+<input type="text" class="textbox4m" value="{$feed.minsetsize|escape}" name="minsetsize[{$feed.id}]" id="user_minsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_minsetsize', {$feed.id});"/>
+<input type="text" class="textbox4m" value="{$feed.maxsetsize|escape}" name="maxsetsize[{$feed.id}]" id="user_maxsetsize_{$feed.id}"  onchange="javascript:update_user_ng_value('rss', 'user_maxsetsize', {$feed.id});"/>
 </td>
 
 {if $isadmin != 0 and $urdd_online != 0}
 <td class="{$admin_hidden} admin center"> 
-<select name="period[{$feed.id}]" id="period_{$feed.id}"  size="1" class="update" onchange="javascript:update_ng_time('rss', {$feed.id});">
+<select name="period[{$feed.id}]" id="period_{$feed.id}" class="update" onchange="javascript:update_ng_time('rss', {$feed.id});">
 {html_options values=$periods_keys output=$periods_texts selected={$feed.select}}
 </select>
 </td>

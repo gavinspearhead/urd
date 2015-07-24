@@ -276,7 +276,7 @@ function set_multi_select(DatabaseConnection $db, $userid, $name, $value)
             set_pref($db, $name, $value, $userid);
             return;
         default:
-            throw new exception ($LN['error_invalidvalue'] . ' '. $name . ' ' . $value );
+            throw new exception ($LN['error_invalidvalue'] . " $name $value");
     }
 }
 
@@ -299,6 +299,7 @@ function set_preferences(DatabaseConnection $db, $userid, $name, $value, $type)
             break;
         case 'email':
         case 'text':
+        case 'text_number':
         case 'textarea':
         case 'select':
             $rv = verify_text_field($db, $userid, $name, $value);
@@ -331,7 +332,7 @@ function change_password(DatabaseConnection $db, $userid)
             }
 
             $oldpass = hash('sha256',  $salt . $oldpass . $salt);
-            $res = $db->select_query('"name" FROM users WHERE "ID"=? AND "pass" = ?', array($userid, $oldpass));
+            $res = $db->select_query('"name" FROM users WHERE "ID"=:id AND "pass" = :pass', array(':id'=>$userid, ':pass'=>$oldpass));
             if ($res === FALSE) {
                 throw new exception($LN['error_pwincorrect']);
             } else {
@@ -567,9 +568,9 @@ function show_preferences(DatabaseConnection $db, $userid)
 
     $login = array(
         new pref_plain(user_levels::CONFIG_LEVEL_BASIC, $LN['username'], $LN['username_msg'], $username, NULL, NULL),
-        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['oldpw'], 'oldpass', $LN['oldpw_msg'] , $password_msg,'' , TEXT_BOX_SIZE),
-        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (1)', 'newpass1', $LN['newpw1_msg'] , '', '', TEXT_BOX_SIZE),
-        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (2)', 'newpass2', $LN['newpw2_msg'] , '', '', TEXT_BOX_SIZE),
+        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['oldpw'], 'oldpass', $LN['oldpw_msg'] , $password_msg,'' ),
+        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (1)', 'newpass1', $LN['newpw1_msg'] , '', ''),
+        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (2)', 'newpass2', $LN['newpw2_msg'] , '', ''),
         new pref_password_submit('oldpass', 'newpass1', 'newpass2', 'user_pass_change', $LN['change_password'], 'pass_change', $username),
         new pref_select(user_levels::CONFIG_LEVEL_BASIC,  $LN['pref_index_page'], 'index_page', $LN['pref_index_page_msg'], $index_page_msg,  $index_page_array, $prefArray['index_page']),
         new pref_button(user_levels::CONFIG_LEVEL_BASIC, $LN['delete_account'], 'delete_account', $LN['delete_account_msg'] , $delete_account_msg, $LN['delete'],
@@ -577,10 +578,10 @@ function show_preferences(DatabaseConnection $db, $userid)
     );
 
     $spots = array(
-        new pref_numeric_noformat(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_spot_spam_limit'], 'spot_spam_limit', $LN['pref_spot_spam_limit_msg'], $spot_spam_limit_msg, $prefArray['spot_spam_limit'], NUMBER_BOX_SIZE),
-        new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_image'], 'show_image', $LN['pref_show_image_msg'], $show_image_msg, $prefArray['show_image']),
-        new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_subcats'], 'show_subcats', $LN['pref_show_subcats_msg'], $show_subcats_msg, $prefArray['show_subcats']),
-        new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_spot'], 'default_spot', $LN['pref_default_spot_msg'], $default_spot_msg, $spot_array, $prefArray['default_spot']),
+        new pref_numeric_noformat(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_spot_spam_limit'], 'spot_spam_limit', $LN['pref_spot_spam_limit_msg'], $spot_spam_limit_msg, $prefArray['spot_spam_limit']),
+        new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_image'], 'show_image', $LN['pref_show_image_msg'], $show_image_msg, $prefArray['show_image']),
+        new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_subcats'], 'show_subcats', $LN['pref_show_subcats_msg'], $show_subcats_msg, $prefArray['show_subcats']),
+        new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_spot'], 'default_spot', $LN['pref_default_spot_msg'], $default_spot_msg, $spot_array, $prefArray['default_spot']),
     );
 
     if (count($category_array) > 0) {
@@ -595,12 +596,12 @@ function show_preferences(DatabaseConnection $db, $userid)
         new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_stylesheet'], 'stylesheet', $LN['pref_stylesheet_msg'], $stylesheet_msg, $stylesheets, $prefArray['stylesheet'], 'change_stylesheet(\'stylesheet\');'),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_template'], 'template', $LN['pref_template_msg'], $template_msg, $templates, $prefArray['template']),
         new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_defaultsort'], 'defaultsort', $LN['pref_defaultsort_msg'], $defaultsort_msg, $sort_array, $prefArray['defaultsort']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetname'], 'maxsetname',$LN['pref_maxsetname_msg'], $maxsetname_msg, $prefArray['maxsetname'], NUMBER_BOX_SIZE ),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setsperpage'], 'setsperpage',$LN['pref_setsperpage_msg'], $setsperpage_msg, $prefArray['setsperpage'], NUMBER_BOX_SIZE ),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minsetsize'], 'minsetsize',$LN['pref_minsetsize_msg'], $minsetsize_msg, $prefArray['minsetsize'], NUMBER_BOX_SIZE ),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetsize'], 'maxsetsize',$LN['pref_maxsetsize_msg'], $maxsetsize_msg, $prefArray['maxsetsize'], NUMBER_BOX_SIZE ),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize'], NUMBER_BOX_SIZE),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setcompleteness'], 'setcompleteness', $LN['pref_setcompleteness_msg'], $setcompleteness_msg,  $prefArray['setcompleteness'], NUMBER_BOX_SIZE),
+        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetname'], 'maxsetname',$LN['pref_maxsetname_msg'], $maxsetname_msg, $prefArray['maxsetname']),
+        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setsperpage'], 'setsperpage',$LN['pref_setsperpage_msg'], $setsperpage_msg, $prefArray['setsperpage']),
+        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minsetsize'], 'minsetsize',$LN['pref_minsetsize_msg'], $minsetsize_msg, $prefArray['minsetsize']),
+        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetsize'], 'maxsetsize',$LN['pref_maxsetsize_msg'], $maxsetsize_msg, $prefArray['maxsetsize']),
+        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize']),
+        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setcompleteness'], 'setcompleteness', $LN['pref_setcompleteness_msg'], $setcompleteness_msg,  $prefArray['setcompleteness']),
         new pref_checkbox (user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
         new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),
         new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hidden_files_list'], 'hidden_files_list', $LN['pref_hidden_files_list_msg'], $hidden_files_list_msg, $hidden_files_list, 10, 40, NULL, 'hidfil', $prefArray['hiddenfiles']? NULL : 'hidden'),
@@ -621,15 +622,14 @@ function show_preferences(DatabaseConnection $db, $userid)
         new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_download_text_file'], 'download_text_file', $LN['pref_download_text_file_msg'], $download_text_file_msg, $prefArray['download_text_file']),
         new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_use_auto_download'], 'use_auto_download', $LN['pref_use_auto_download_msg'], $use_auto_download_msg, $prefArray['use_auto_download'],  '$(\'#autodlnzb\').toggleClass(\'hidden\');', NULL, $auto_download?'':'hidden'),
         new pref_checkbox (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_use_auto_download_nzb'], 'use_auto_download_nzb', $LN['pref_use_auto_download_nzb_msg'], $use_auto_download_nzb_msg, $prefArray['use_auto_download_nzb'], NULL, 'autodlnzb', ($auto_download &&$prefArray['use_auto_download']) ?'':'hidden'),
-        new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_format_dl_dir'], 'format_dl_dir',$LN['pref_format_dl_dir_msg'], $format_dl_dir_msg, $prefArray['format_dl_dir'], TEXT_BOX_SIZE),
-        new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_download_delay'], 'download_delay', $LN['pref_download_delay_msg'], $download_delay_msg, $prefArray['download_delay'], NUMBER_BOX_SIZE),
+        new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_download_delay'], 'download_delay', $LN['pref_download_delay_msg'], $download_delay_msg, $prefArray['download_delay']),
+        new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_format_dl_dir'], 'format_dl_dir',$LN['pref_format_dl_dir_msg'], $format_dl_dir_msg, $prefArray['format_dl_dir']),
+        new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_subs_lang'], 'subs_lang',$LN['pref_subs_lang_msg'], $subs_lang_msg, $prefArray['subs_lang']),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_cancel_crypted_rars'], 'cancel_crypted_rars', $LN['pref_cancel_crypted_rars_msg'], $cancel_crypted_rars_msg, $encrar_array, $prefArray['cancel_crypted_rars']),
-        new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_subs_lang'], 'subs_lang',$LN['pref_subs_lang_msg'], $subs_lang_msg, $prefArray['subs_lang'], TEXT_BOX_SIZE),
+        new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_type'], 'search_type', $LN['pref_search_type_msg'], $search_type_msg, $search_type_array, $prefArray['search_type']),
+        new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_terms'], 'search_terms', $LN['pref_search_terms_msg'], '', $search_terms, 10, 40),
+        new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms', $LN['pref_blocked_terms_msg'], '', $blocked_terms, 10 , 40)
     );
-
-    $downloading[] = new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_type'], 'search_type', $LN['pref_search_type_msg'], $search_type_msg, $search_type_array, $prefArray['search_type']);
-    $downloading[] = new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_terms'], 'search_terms', $LN['pref_search_terms_msg'], '', $search_terms, 10, 40);
-    $downloading[] = new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms', $LN['pref_blocked_terms_msg'], '', $blocked_terms, 10 , 40);
 
     if ($allow_global_scripts != 0) {
         if (count($global_scripts_array) > 0) {
@@ -641,19 +641,19 @@ function show_preferences(DatabaseConnection $db, $userid)
     }
 
     $posting = array (
-        new pref_email (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email', $LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email'], TEXT_BOX_SIZE),
-        new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name', $LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name'], TEXT_BOX_SIZE),
+        new pref_email (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email', $LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email']),
+        new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name', $LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name']),
         new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_default_text'], 'poster_default_text', $LN['pref_poster_default_text_msg'], $poster_default_text_msg, $prefArray['poster_default_text'], 10 , 40),
-        new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_recovery_size'], 'recovery_size',$LN['pref_recovery_size_msg'], $recovery_size_msg, $prefArray['recovery_size'], NUMBER_BOX_SIZE),
-        new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_rarfile_size'], 'rarfile_size',$LN['pref_rarfile_size_msg'], $rarfile_size_msg, $prefArray['rarfile_size'], NUMBER_BOX_SIZE),
+        new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_recovery_size'], 'recovery_size',$LN['pref_recovery_size_msg'], $recovery_size_msg, $prefArray['recovery_size']),
+        new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_rarfile_size'], 'rarfile_size',$LN['pref_rarfile_size_msg'], $rarfile_size_msg, $prefArray['rarfile_size']),
     );
 
     $custom = array();
     $custom_prefs = get_custom_prefs($db, $userid);
     foreach( $custom_prefs as $key => $value) {
-        $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], $key, $LN['pref_custom_msg'], '', $value, TEXT_BOX_SIZE);
+        $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], $key, $LN['pref_custom_msg'], '', $value);
     }
-    $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], '__new', $LN['pref_custom_msg'], '', '', TEXT_BOX_SIZE);
+    $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], '__new', $LN['pref_custom_msg'], '', '');
     $pref_list[] = new pref_list('pref_display', $display);
     if ($module_config[urd_modules::URD_CLASS_SPOTS]) {
         $pref_list[] = new pref_list('pref_spots', $spots);

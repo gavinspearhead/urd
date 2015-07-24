@@ -50,11 +50,11 @@ h3,.h3
 }
 td
 {
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    border-width : 0px;
+    padding-left: 0.15em;
+    padding-right: 0.15em;
+    padding-top: 0.28em;
+    padding-bottom: 0.28em;
+    border-width : 0;
 }
 td.preview_right
 {
@@ -164,6 +164,27 @@ td.width100p, th.width100p
 {
     width:60%;
 }
+#rss 
+{
+    position: fixed;
+    right: 1.5em;
+    top: 2.3em;
+}
+table.rss 
+{
+    border-collapse: collapse;
+}
+
+#innerbasketdiv
+{
+    max-height: 100px;
+    width: 100%;
+    overflow-y: auto;
+}
+.innerbaskettable
+{
+    width: 100%;
+}
 
 #stats_div
 {
@@ -183,6 +204,7 @@ tr.preference
 th
 {
    text-align: left;
+   height: 1.75em;
 }
 .hidden
 {
@@ -347,6 +369,10 @@ td.user, th.user
     min-width: 80%
 }
 
+.width20em 
+{
+    width: 20em;
+}
 .width300 
 {
     width: 300px;
@@ -391,11 +417,34 @@ td.user, th.user
 
 .down2
 {
-    margin-top:2px;
+    margin-top:0.16em;
 }
+.down4p
+{
+    margin-top:4px;
+    position: relative;
+    top:4px
+}
+.time
+{
+    width: 1.70em;
+    font-size: 9pt;
+    text-align: right;
+}
+.update
+{
+    font-size: 8pt;
+}
+
 .down5
 {
     margin-top:5px;
+}
+.down5p
+{
+    margin-top:5px;
+    position: relative;
+    top:5px
 }
 
 .down6
@@ -414,7 +463,7 @@ td.user, th.user
 
 .down3
 {
-    margin-top:3px;
+    margin-top:0.5em;
 }
 
 .up3
@@ -497,12 +546,12 @@ div.inline
 }
 .height22
 {
-    height: 22px;
+    height: 2em;
 }
 .centered2
 {
     width: 100%;
-    height: 22px;
+    height: 2em;
     overflow: hidden;
     margin-left: auto;
     margin-right: auto;
@@ -732,22 +781,22 @@ div.sets_inner
 
 #searchbar
 {
-    margin-top:24px;
     position:fixed;
     z-index: 100;
-    margin-left:20px;
-    margin-right:20px;
+    margin-top:2.1em;
+    margin-left:2em;
+    margin-right:2em;
     padding-top:1px;
     padding-left:3px;
     padding-right:3px;
-    width: 80%;
+    width: 90%;
 }
 #topcontent
 {
     height: 100%;
     position: absolute;
     display:block;
-    top: 22px;
+    top: 2em;
     left: 0px;
     width: 100%;
     overflow-y: auto;
@@ -755,8 +804,8 @@ div.sets_inner
 
 #contentout
 {
-    height:100%; 
-    float:left;
+    height: 100%; 
+    float: left;
 }
 
 .status_light
@@ -778,7 +827,7 @@ div.sets_inner
 #contentleft
 {
     float:left; 
-    margin-top:22px;
+    margin-top:2em;
     padding-left: 3px;
     overflow-y:auto;
     margin-left: -10000px;
@@ -792,12 +841,12 @@ div.sets_inner
 
 .slider
 {
-    width: 100px;
+    width: 7.5em;
 }
 
 .menu_head
 {
-    min-height: 22px;
+    min-height: 2em;;
     padding-top: 2px;
 }
 
@@ -812,7 +861,6 @@ div.pref_selector
     padding-bottom: 1px;
     margin: 0;
     vertical-align: bottom;
-    padding-bottom: 1px;
 }
 
 select 
@@ -829,13 +877,108 @@ div.suggestion
 }
 input.sidebar
 {
-    width: 50px;
+    width: 4em;
 }
 
 .width100p {
     width:100%;
 }
 
+table.articles, table.newsservers
+{
+    margin-top: -1px;
+    border-collapse: collapse;
+    border-spacing:0;
+    width: 100%;
+}
+
+.submitsmall, .submit
+{
+    height: 1.65em;
+}
+
+li.tab, span.tab 
+{
+    padding: 0.25em 0.4em 0 0.4em;
+    margin: 0 1px 0 0;
+    border: solid;
+    border-width: 2px 2px 0px 2px;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    display: inline;
+}
+
+.highlight_comments,
+.highlight_spam,
+.highlight_whitelist
+{
+    padding: 0.25em 0.3em 0.25em 0.3em;
+    border-radius:3px;
+}
+
+#scrollmenuleft
+{
+    padding-top:0.2em;
+    z-index: 100000;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 10px;
+    height:1.8em;
+    overflow: hidden
+}
+
+#scrollmenuright
+{
+    z-index: 100000;
+    padding-top:0.2em;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 10px;
+    height:1.8em;
+    overflow: hidden;
+}
+.textbox4m
+{
+    width:4em;
+}
+.textbox10m
+{
+    width:10em;
+}
+.textbox18m
+{
+    width:18em;
+}
+.textbox28m
+{
+    width:28em;
+}
+.textbox34m
+{
+    width:34em;
+}
+.leftward 
+{
+    margin-left: 65px;
+    margin-top: 25px;
+}
+#leftcalendar 
+{
+    width: 220px;
+    float: left;
+}
+#rightcalendar 
+{
+    float: left;
+}
+#calendarbottom
+{
+    margin-top: 150px;
+    margin-right: 50px;
+    clear:both;
+}
 
 tr.set_content {} /* use for highlighting sets */
 div.resurrect_button {} /* used for buttons on sets */

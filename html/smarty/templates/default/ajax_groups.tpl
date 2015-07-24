@@ -147,14 +147,14 @@
 {urd_checkbox value="{$group.adult}" name="adult[{$group.id}]" id="adult_{$group.id}" readonly="{$isadmin == 0}" post_js="update_adult('group', '{$group.id}')"} 
 </td>
 <td class="general right">{$group.lastupdated}</td>
-<td class="{$admin_hidden} admin right"><input type="text" size="2" value="{$group.expire|escape:htmlall}" id="expire_{$group.id}" name="expire[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'expire', {$group.id});"/></td>
-<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_minsetsize|escape:htmlall}" id="minsetsize_{$group.id}" name="admin_minsetsize[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'minsetsize', {$group.id});"/></td>
-<td class="{$admin_hidden} admin right"><input type="text" size="4" value="{$group.admin_maxsetsize|escape:htmlall}" id="maxsetsize_{$group.id}" name="admin_maxsetsize[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'maxsetsize', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" class="textbox4m" value="{$group.expire|escape:htmlall}" id="expire_{$group.id}" name="expire[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'expire', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" class="textbox4m" value="{$group.admin_minsetsize|escape:htmlall}" id="minsetsize_{$group.id}" name="admin_minsetsize[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'minsetsize', {$group.id});"/></td>
+<td class="{$admin_hidden} admin right"><input type="text" class="textbox4m"  value="{$group.admin_maxsetsize|escape:htmlall}" id="maxsetsize_{$group.id}" name="admin_maxsetsize[{$group.id}]" {if $isadmin != 1 or $urdd_online != 1} readonly="readonly"{/if} onchange="javascript:update_ng_value('groups', 'maxsetsize', {$group.id});"/></td>
 <td class="{$user_hidden} user center">
 {urd_checkbox value="{$group.visible}" name="visible[{$group.id}]" id="visible_{$group.id}" post_js="toggle_visibility('group','{$group.id}');"} 
 </td>
-<td class="{$user_hidden} user center"><input type="text" size="2" value="{$group.minsetsize|escape:htmlall}" name="minsetsize[{$group.id}]" id="user_minsetsize_{$group.id}" onchange="javascript:update_user_ng_value('groups', 'user_minsetsize', {$group.id});"/>
-<input type="text" size="2" value="{$group.maxsetsize}" id="user_maxsetsize_{$group.id}" name="maxsetsize[{$group.id}]" onchange="javascript:update_user_ng_value('groups', 'user_maxsetsize', {$group.id});"/>
+<td class="{$user_hidden} user center"><input type="text" class="textbox4m" value="{$group.minsetsize|escape:htmlall}" name="minsetsize[{$group.id}]" id="user_minsetsize_{$group.id}" onchange="javascript:update_user_ng_value('groups', 'user_minsetsize', {$group.id});"/>
+<input type="text" class="textbox4m" value="{$group.maxsetsize}" id="user_maxsetsize_{$group.id}" name="maxsetsize[{$group.id}]" onchange="javascript:update_user_ng_value('groups', 'user_maxsetsize', {$group.id});"/>
 </td>
 
 {if $isadmin != 0 and $urdd_online != 0}

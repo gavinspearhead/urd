@@ -25,7 +25,7 @@
 <h3 class="title">{$LN_buttons_title}</h3>
 
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
+<input type="text" name="search" placeholder="{$LN_search}" id="search" class="textbox18m"/>
 <input type="button" value="{$LN_search}" class="submitsmall" id="searchbutton"/></div>
 </div>
 

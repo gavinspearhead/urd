@@ -31,10 +31,10 @@
 </tbody>
 <tbody id="form">
 <tr><td colspan="2"><h3 class="title">{$title}</h3></td></tr>
-<tr><td>{$LN_username}</td><td><input type="text" name="username" id="username" size="40" placeholder="Username" required/></td></tr>
-<tr><td>{$LN_email}</td><td><input type="email" name="email" id="email" size="40" placeholder="Email address" required/></td></tr>
+<tr><td class="nowrap bold">{$LN_username}:</td><td><input type="text" name="username" id="username" class="textbox18m" placeholder="Username" required/></td></tr>
+<tr><td class="nowrap bold">{$LN_email}:</td><td><input type="email" name="email" id="email" class="textbox18m" placeholder="Email address" required/></td></tr>
 <tr><td>&nbsp;</td></tr>
-<tr><td colspan="2"><input type="button" value="{$LN_forgot_mail}" class="submitsmall floatright" id="forgot_button"/></td></tr>
+<tr><td colspan="2" class="centered"><input type="button" value="{$LN_forgot_mail}" class="submitsmall" id="forgot_button"/></td></tr>
 </tbody>
 </table>
 </div>

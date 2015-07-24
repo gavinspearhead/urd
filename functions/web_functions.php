@@ -2189,6 +2189,7 @@ function get_smileys($dir, $full= FALSE)
         }
 
     }
+    ksort($smileys);
     return $smileys;
 }
 

@@ -31,7 +31,6 @@
 {foreach $subscribedfeeds as $item}
 <input type="hidden" id="ng_id_{$item.type}_{$item.id}" value="{$item.name|escape:htmlall}"/>
 {/foreach}
-
     <input type="hidden" name="order" value="{$order|escape:htmlall}" id="searchorder"/>
 	<input type="hidden" name="save_category" value="" id="save_category"/>
     <input type="button" id="prev_group" value="&nbsp;&lt;&nbsp;" class="submitsmall" {urd_popup type="small" text=$LN_previous }/>&thinsp;
@@ -45,7 +44,7 @@
     {/foreach}
 	</select>&thinsp;
     <input type="button" id="next_group" value="&nbsp;&gt;&nbsp;" class="submitsmall" {urd_popup type="small" text=$LN_next }/>&nbsp;
-   	<input type="text" name="search" id="search" size="30" class="search" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/> &nbsp;
+   	<input type="text" name="search" id="search" class="search textbox18m" placeholder="{$LN_search}" value="{$search|escape:htmlall}"/> &nbsp;
     <div class="hidden suggest" id="suggest_div"></div>
 	<input type="hidden" value="" name="maxage"/>
     <input type="button" id="search_button" value="{$LN_search}" class="submitsmall"/>
@@ -56,7 +55,7 @@
 <input type="button" id="prev_search" class="submitsmall" value="&nbsp;&lt;&nbsp;" {urd_popup text=$LN_next type="small"}/>
 <span id="save_search_span">
 <select id="saved_search">
-<option label="all" value=""></option>
+<option label="{$LN_all}" value="">{$LN_all}</option>
 {foreach $saved_searches as $saved_search}
 <option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
 {/foreach}

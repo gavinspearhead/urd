@@ -24,7 +24,7 @@
 
 {foreach $subcats as $idx => $subcat}
 {if $idx != 'z' || $subcat.subcats|@count > 1}
-<td> {$subcat.name}:<br>
+<td class="nowrap bold">{$subcat.name}:<br>
 <select multiple="multiple" id="{$idx}" name="subcats_select">
 {foreach $subcat.subcats as $id => $name}
     {if $name != '??'}

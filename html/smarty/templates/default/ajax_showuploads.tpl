@@ -96,11 +96,11 @@
 <table class="transfers {if $active_tab != 'uploads'}hidden{/if}" id="uploads_tab">
 <thead>
 <tr>
-<th class="left nowrap head round_left" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
+<th class="left nowrap head round_left width100p" id="browsesubjecttd">{$LN_transfers_head_subject}</th>
 {if $isadmin}
 <th class="left nowrap head">{$LN_transfers_head_username}</th>
 {/if}
-<th class="left nowrap head fixwidth8a">{$LN_transfers_head_progress}</th>
+<th class="left nowrap head">{$LN_transfers_head_progress}</th>
 <th class="center nowrap head">{$LN_transfers_head_speed}</th>
 <th class="left nowrap head">{$LN_eta}</th>
 <th class="left nowrap head ">{$LN_transfers_head_started}</th>

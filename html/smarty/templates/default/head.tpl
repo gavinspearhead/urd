@@ -31,7 +31,7 @@
         <div id="pulldown" class="pulldown"> 
             <ul>
             <li class="smalllogo"><div id="smalllogo" class="buttonlike">&nbsp;</div>
-            <div class="downm8"> 
+            <div> 
             <ul><li class="plain pulldown_last_item"><div class="down3 centered2">{$LN_version} {$VERSION}</div></li></ul>
             </div>
             </li>

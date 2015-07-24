@@ -73,11 +73,11 @@
 <h3 class="title">{$LN_menuspotssearch}</h3>
 <form id="searchform3" action="spots.php" method="post">
 <table class="search">
-<tr><td>
+<tr><td class="nowrap bold">
 	{$LN_browse_searchsets}:&nbsp;
     </td>
-    <td>
-	<select name="categoryID" class="search" id="select_catid" onchange='javascript:do_select_subcat();'>
+    <td colspan="2">
+	<select name="categoryID" class="search textbox18m" id="select_catid" onchange='javascript:do_select_subcat();'>
     <option value="">{$LN_spots_allcategories} ({$spots_total_articles})</option>
     {foreach $spot_categories as $item}
 		<option value="{$item.id}">
@@ -87,7 +87,6 @@
 	</select>&nbsp;
 </td>
 <td>
-
     {$subcatdivs}
     <input type="button" id="subcatbutton" class="submitsmall invisible" value="{$LN_spots_subcategories}" onclick="javascript:show_subcat_selector();" />&nbsp;
 </td>
@@ -103,35 +102,35 @@
 </select>&nbsp;
 </td>
 <td>
-<input type="text" id="search_spots" name="search" size="30" class="search" placeholder="{$LN_search}" 
+<input type="text" id="search_spots" name="search" class="search textbox18m" placeholder="{$LN_search}" 
  onkeypress="javascript:submit_enter(event, load_sets, { 'offset':'0', 'setid':'' } );"/>&nbsp;
 <div class="hidden suggest" id="suggest_div_spots"></div>
 </td>
 </tr>
 <tr>
-<td>{$LN_setsize}:</td>
-<td><input type="text" id="spotminsetsize" name="minsetsize" size="6" value="{$spotminsetsize|escape}"/></td> 
+<td class="nowrap bold">{$LN_setsize}:</td>
+<td><input type="text" id="spotminsetsize" name="minsetsize" class="textbox4m" value="{$spotminsetsize|escape}"/></td> 
 <td><div id="spotsetsize" class="slider"></div></td>
-<td><input type="text" id="spotmaxsetsize" name="maxsetsize" size="6" value="{$spotmaxsetsize|escape}"/></td>
+<td><input type="text" id="spotmaxsetsize" name="maxsetsize" class="textbox4m" value="{$spotmaxsetsize|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_age}:</td>
-<td><input type="text" id="spotminage" name="minage" size="6" value="{$spotminagelimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_age}:</td>
+<td><input type="text" id="spotminage" name="minage" class="textbox4m" value="{$spotminagelimit|escape}"/></td> 
 <td><div id="spotsetage" class="slider"></div></td>
-<td><input type="text" id="spotmaxage" name="maxage" size="6" value="{$spotmaxagelimit|escape}"/></td>
+<td><input type="text" id="spotmaxage" name="maxage" class="textbox4m" value="{$spotmaxagelimit|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_rating}:</td>
-<td><input type="text" id="spotminrating" name="minrating" size="6" value="{$spotminratinglimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_rating}:</td>
+<td><input type="text" id="spotminrating" name="minrating" class="textbox4m" value="{$spotminratinglimit|escape}"/></td> 
 <td><div id="spotrating" class="slider"></div></td>
-<td><input type="text" id="spotmaxrating" name="maxrating" size="6" value="{$spotmaxratinglimit|escape}"/></td>
+<td><input type="text" id="spotmaxrating" name="maxrating" class="textbox4m" value="{$spotmaxratinglimit|escape}"/></td>
 </tr>
-
 <tr>
 <td>
-<input type="submit" value="{$LN_search}" class="submitsmall" onclick='javascript:do_submit("searchform3");'/>
+<input type="button" value="{$LN_search}" class="submitsmall" onclick='javascript:do_submit("searchform3");'/>
 &nbsp;&nbsp;
 <input type="button" value="{$LN_reset}" class="submitsmall" onclick='javascript:clear_form("searchform3");do_select_subcat();'/>
+&nbsp;&nbsp;
 </td>
 </tr>
 </table>
@@ -146,11 +145,11 @@
 <h3 class="title">{$LN_menugroupsearch}</h3>
 <form id="searchform1" action="browse.php" method="get">
 <table class="search">
-<tr><td>
+<tr><td class="nowrap bold">
 	{$LN_browse_searchsets}:
     </td>
     <td colspan="2">
-	<select name="groupID" class="search" id="select_groupid" >
+	<select name="groupID" class="search textbox18m" id="select_groupid">
     <option value="">{$LN_browse_allgroups} ({$groups_total_articles})</option>
     {foreach $subscribedgroups as $item}
         {capture name=current assign=current}{$item.type}_{$item.id}{/capture}
@@ -170,39 +169,39 @@
 	</select>
     </td>
     <td>
-	<input type="text" id="search_groups" name="search" size="30" class="search" placeholder="{$LN_search}"/>
+	<input type="text" id="search_groups" name="search" class="search textbox18m" placeholder="{$LN_search}"/>
     <div class="hidden suggest" id="suggest_div_groups"></div>
     </td>
 
 </tr>
 <tr>
-<td>{$LN_setsize}:</td>
-<td><input type="text" id="groupminsetsize" name="minsetsize" size="6" value="{$groupminsetsizelimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_setsize}:</td>
+<td><input type="text" id="groupminsetsize" name="minsetsize"class="textbox4m"  value="{$groupminsetsizelimit|escape}"/></td> 
 <td><div id="groupsetsize" class="slider"></div></td>
-<td><input type="text" id="groupmaxsetsize" name="maxsetsize" size="6" value="{$groupmaxsetsizelimit|escape}"/></td>
+<td><input type="text" id="groupmaxsetsize" name="maxsetsize" class="textbox4m" value="{$groupmaxsetsizelimit|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_age}:</td>
-<td><input type="text" id="groupminage" name="minage" size="6" value="{$groupminagelimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_age}:</td>
+<td><input type="text" id="groupminage" name="minage" class="textbox4m" value="{$groupminagelimit|escape}"/></td> 
 <td><div id="groupsetage" class="slider"></div></td>
-<td><input type="text" id="groupmaxage" name="maxage" size="6" value="{$groupmaxagelimit|escape}"/></td>
+<td><input type="text" id="groupmaxage" name="maxage" class="textbox4m" value="{$groupmaxagelimit|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_rating}:</td>
-<td><input type="text" id="groupminrating" name="minrating" size="6" value="{$groupminratinglimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_rating}:</td>
+<td><input type="text" id="groupminrating" name="minrating" class="textbox4m" value="{$groupminratinglimit|escape}"/></td> 
 <td><div id="groupsetrating" class="slider"></div></td>
-<td><input type="text" id="groupmaxrating" name="maxrating" size="6" value="{$groupmaxratinglimit|escape}"/></td>
+<td><input type="text" id="groupmaxrating" name="maxrating" class="textbox4m" value="{$groupmaxratinglimit|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_complete}:</td>
-<td><input type="text" id="groupmincomplete" name="mincomplete" size="6" value="{$groupmincompletelimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_complete}:</td>
+<td><input type="text" id="groupmincomplete" name="mincomplete" class="textbox4m" value="{$groupmincompletelimit|escape}"/></td> 
 <td><div id="groupsetcomplete" class="slider"></div></td>
-<td><input type="text" id="groupmaxcomplete" name="maxcomplete" size="6" value="{$groupmaxcompletelimit|escape}"/></td>
+<td><input type="text" id="groupmaxcomplete" name="maxcomplete" class="textbox4m" value="{$groupmaxcompletelimit|escape}"/></td>
 </tr>
 
 <tr>
 <td>
-<input type="submit" value="{$LN_search}" class="submitsmall" onclick='javascript:do_submit("searchform1");'/>
+<input type="button" value="{$LN_search}" class="submitsmall" onclick='javascript:do_submit("searchform1");'/>
 &nbsp;&nbsp;
 <input type="button" value="{$LN_reset}" class="submitsmall" onclick='javascript:clear_form("searchform1");'/>
 &nbsp;&nbsp;
@@ -218,11 +217,11 @@
 <h3 class="title">{$LN_menursssearch}</h3>
 <form id="searchform2" action="rsssets.php" method="post">
 <table class="search">
-<tr><td>
+<tr><td class="nowrap bold">
 	{$LN_browse_searchsets}:
     </td>
-    <td>
-    <select name="feed_id" class="search" id="select_feedid">
+    <td colspan="2">
+    <select name="feed_id" class="search textbox18m" id="select_feedid">
     <option value="">{$LN_feeds_allgroups} ({$rss_total_articles})</option>
     {foreach $subscribedfeeds as $item}
         {capture name=current assign=current}{$item.type}_{$item.id}{/capture}
@@ -241,35 +240,35 @@
     </td>
     <td>
 
-	<input type="text" id="search_rss" name="search" size="30" class="search" placeholder="{$LN_search}"/>
+	<input type="text" id="search_rss" name="search" class="textbox18m search" placeholder="{$LN_search}"/>
     <div class="hidden suggest" id="suggest_div_rss"></div>
 	<input type="hidden" value="" name="maxage"/>
     </td>
     </tr>
 <tr>
-<td>{$LN_setsize}:</td>
-<td><input type="text" id="rssminsetsize" size="6" name="minsetsize" value="{$rssminsetsizelimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_setsize}:</td>
+<td><input type="text" id="rssminsetsize" class="textbox4m" name="minsetsize" value="{$rssminsetsizelimit|escape}"/></td> 
 <td><div id="rsssetsize" class="slider"></div></td>
-<td><input type="text" id="rssmaxsetsize" size="6" name="maxsetsize" value="{$rssmaxsetsizelimit|escape}"/></td>
+<td><input type="text" id="rssmaxsetsize" class="textbox4m" name="maxsetsize" value="{$rssmaxsetsizelimit|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_age}:</td>
-<td><input type="text" id="rssminage" name="minage" size="6" value="{$rssminagelimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_age}:</td>
+<td><input type="text" id="rssminage" name="minage" class="textbox4m" value="{$rssminagelimit|escape}"/></td> 
 <td><div id="rsssetage" class="slider"></div></td>
-<td><input type="text" id="rssmaxage" name="maxage" size="6" value="{$rssmaxagelimit|escape}"/></td>
+<td><input type="text" id="rssmaxage" name="maxage" class="textbox4m" value="{$rssmaxagelimit|escape}"/></td>
 </tr>
 <tr>
-<td>{$LN_rating}:</td>
-<td><input type="text" id="rssminrating" name="minrating" size="6" value="{$rssminratinglimit|escape}"/></td> 
+<td class="nowrap bold">{$LN_rating}:</td>
+<td><input type="text" id="rssminrating" name="minrating" class="textbox4m" value="{$rssminratinglimit|escape}"/></td> 
 <td><div id="rsssetrating" class="slider"></div></td>
-<td><input type="text" id="rssmaxrating" name="maxrating" size="6" value="{$rssmaxratinglimit|escape}"/></td>
-<td>
+<td><input type="text" id="rssmaxrating" name="maxrating" class="textbox4m" value="{$rssmaxratinglimit|escape}"/></td>
 
 <tr>
 <td>
 <input type="submit" value="{$LN_search}" class="submitsmall" onclick='javascript:do_submit("searchform2");'/>
 &nbsp;&nbsp;
 <input type="button" value="{$LN_reset}" class="submitsmall" onclick='javascript:clear_form("searchform2");'/>
+&nbsp;&nbsp;
 </td>
 </tr>
 </table>

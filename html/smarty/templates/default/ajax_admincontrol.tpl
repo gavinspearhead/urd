@@ -73,6 +73,8 @@
 </tr>
 {/foreach}
 </table>
+{else}
+{$LN_error_notasksfound} 
 {/if}
 
 <h4>{$LN_control_queue}</h4>
@@ -99,6 +101,8 @@
 </tr>
 {/foreach}
 </table>
+{else}
+{$LN_error_notasksfound}
 {/if}
 
 <h4>{$LN_control_jobs}</h4>
@@ -123,6 +127,8 @@
 </tr>
 {/foreach}
 </table>
+{else}
+{$LN_error_nojobsfound} 
 {/if}
 
 <h4>{$LN_control_servers}</h4>
@@ -138,7 +144,6 @@
 <th class="centered head">{$LN_usenet_posting}</th>
 <th class="centered head round_right">{$LN_usenet_indexing}</th>
 </tr>
-{$servers_info|count}
 {foreach $servers_info as $s}
 <tr>
 <td>{$s.id}</td>
@@ -152,6 +157,8 @@
 </tr>
 {/foreach}
 </table>
+{else}
+{$LN_error_noserversfound}
 {/if}
 
 <p>&nbsp;</p>

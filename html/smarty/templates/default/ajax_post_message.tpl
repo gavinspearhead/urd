@@ -30,29 +30,29 @@
 <input type="hidden" id="type" value="{$type|escape:htmlall}"/>
 <input type="hidden" id="reference" value="{$reference|escape:htmlall}"/>
 <table class="hmid">
-<tr {if $type!='group'} class="hidden"{/if} ><td {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_post_newsgroup}:</td>
+<tr {if $type!='group'} class="hidden"{/if} ><td class="nowrap bold" {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_post_newsgroup}:</td>
 <td>
 <select name="newsgroup" id="groupid" class="width300">
 {html_options options=$groups selected=$groupid}
 </select>
 </td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_subjectext2}>{$LN_post_subject}:</td><td><input type="text" name="subject" id="subject" class="width300" value="{$subject|escape:htmlall}" required placeholder="{$LN_post_subject}"/></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_posternameext}>{$LN_post_postername}:</td><td><input type="text" name="postername" id="postername"value="{$poster_name|escape:htmlall}" class="width300" required placeholder="{$LN_post_postername}"/></td></tr>
-<tr><td {urd_popup type="small" text=$LN_post_posteremailext}>{$LN_post_posteremail}:</td><td><input type="email" name="posteremail" id="posteremail" value="{$poster_email|escape:htmlall}" class="width300" required placeholder="{$LN_post_posteremail}"/></td></tr>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_subjectext2}>{$LN_post_subject}:</td><td><input type="text" name="subject" id="subject" class="width300" value="{$subject|escape:htmlall}" required placeholder="{$LN_post_subject}"/></td></tr>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_posternameext}>{$LN_post_postername}:</td><td><input type="text" name="postername" id="postername"value="{$poster_name|escape:htmlall}" class="width300" required placeholder="{$LN_post_postername}"/></td></tr>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_posteremailext}>{$LN_post_posteremail}:</td><td><input type="email" name="posteremail" id="posteremail" value="{$poster_email|escape:htmlall}" class="width300" required placeholder="{$LN_post_posteremail}"/></td></tr>
 {if $type == 'comment'} 
-<tr><td {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_rating}:</td><td>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_rating}:</td><td>
 <select name="rating" id="rating" class="width300">
 {html_options options=$ratings selected=$groupid}
 </select>
 {/if}
-<tr><td {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea></td>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea></td>
 <td>{foreach $smileys as $smiley}
 <img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" title="{$smiley}" class="button" onclick="javascript:add_text('[img={$smiley|escape:javascript}]', $('#messagetext'));">
 {/foreach}
 
 <td>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2" class="centered"><input type="submit" value="{if  $type == 'comment'}{$LN_post_comment}{else}{$LN_post_post}{/if}" id="post_submit" class="submit"/></td></tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr><td colspan="3" class="centered"><input type="submit" value="{if  $type == 'comment'}{$LN_post_comment}{else}{$LN_post_post}{/if}" id="post_submit" class="submitsmall"/></td></tr>
 
 </table>
 </div>

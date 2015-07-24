@@ -30,7 +30,7 @@
 <input type="hidden" name="action" id="action" value=""/></div>
 
 <div>
-<input type="text" name="search" placeholder="{$LN_search}" id="search" size="30"/>
+<input type="text" name="search" placeholder="{$LN_search}" id="search"  class="textbox18m"/>
 <input type="button" value="{$LN_search}" id="search_button" class="submitsmall"/></div>
 <input type="hidden" id="view_size" value=""/>
 </div>

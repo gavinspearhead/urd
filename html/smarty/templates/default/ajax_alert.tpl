@@ -26,9 +26,9 @@
         <div id="alert_message">{$msg}</div>
         <br/>
         <div id="alert_answer" class="centered">
-            <input type="button" id="okbutton" value="&nbsp;{$LN_ok}&nbsp;" class="submit"/>&nbsp;
+            <input type="button" id="okbutton" value="&nbsp;{$LN_ok}&nbsp;" class="submitsmall"/>&nbsp;
 {if $allow_cancel}
-            <input type="button" id="cancelbutton" value="&nbsp;{$LN_cancel}&nbsp;" class="submit"/>
+            <input type="button" id="cancelbutton" value="&nbsp;{$LN_cancel}&nbsp;" class="submitsmall"/>
 {/if}
         </div>
     </div>

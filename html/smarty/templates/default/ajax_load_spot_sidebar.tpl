@@ -60,9 +60,9 @@
 {$LN_poster_name}:
 </div>
 <div class="even menu_head down3">
-<input type="text" id="poster" name="poster" size="10" value="" placeholder="{$LN_poster_name}"/> &nbsp;
+<input type="text" id="poster" name="poster" class="textbox10m" value="" placeholder="{$LN_poster_name}"/>&nbsp;
 
-<select name="flag" class="search" id="flag">
+<select name="flag" class="search textbox10m" id="flag">
     <option value="">{$LN_browse_allsets}</option>
     <option value="interesting">{$LN_browse_interesting}</option>
     <option value="read">{$LN_browse_downloaded}</option>
@@ -78,8 +78,8 @@
 
 {foreach $subcat_list as $k1 => $item}
     <div class="{cycle values="even, highlight2"} height22">
-    <span onclick="$('#cat_items_{$k1}').toggleClass('hidden');" class="buttonlike"> &nbsp;{$item.name}</span>
-        <div class="floatleft">
+    <span onclick="$('#cat_items_{$k1}').toggleClass('hidden');" class="buttonlike down5p"> &nbsp;{$item.name}</span>
+        <div class="floatleft down5">
             {urd_checkbox name="cat_{$k1}" id="checkbox_cat_{$k1}" value="" post_js="uncheck_all('{$k1}');load_sets( { 'offset':'0', 'setid':'', 'category':'' } );"}
         </div>
     </div>

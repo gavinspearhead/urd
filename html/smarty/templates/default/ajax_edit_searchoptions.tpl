@@ -30,19 +30,19 @@
 
 <table class="hmid">
 <tr>
-<td>{$LN_name}:</td>
-<td><input type="text" name="name" id="name" placeholder="{$LN_name}" required value="{$search_option->get_name()|escape}" size="{$text_box_size}"/></td>
+<td class="nowrap bold">{$LN_name}:</td>
+<td><input type="text" name="name" id="name" placeholder="{$LN_name}" required value="{$search_option->get_name()|escape}" class="textbox28m"/></td>
 </tr>
 <tr>
-<td>{$LN_buttons_url}:</td>
-<td><input type="text" name="search_url" id="search_url" placeholder="{$LN_buttons_url}" required  value="{$search_option->get_url()|escape}" size="{$text_box_size}"/></td>
+<td class="nowrap bold">{$LN_buttons_url}:</td>
+<td><input type="text" name="search_url" id="search_url" placeholder="{$LN_buttons_url}" required  value="{$search_option->get_url()|escape}" class="textbox28m"/></td>
 </tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" class="centered">
 {if $id == 'new'}
-	<input type="button" name="add" value="{$LN_add}" id="submit_button" class="submit"/>
+	<input type="button" name="add" value="{$LN_add}" id="submit_button" class="submitsmall"/>
 {else}
-	<input type="button" value="{$LN_apply}" name="apply" class="submit" id="submit_button"/>
+	<input type="button" value="{$LN_apply}" name="apply" class="submitsmall" id="submit_button"/>
 	<input type="hidden" name="id" value="{$search_option->get_id()|escape:htmlall}"/>
 {/if}
 </td>
