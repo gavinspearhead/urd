@@ -19,6 +19,7 @@ if (!function_exists('write_log')) { function write_log($a, $b) { echo $a . "\n"
 $pathudb = realpath(dirname(__FILE__));
 require_once "$pathudb/../functions/autoincludes.php";
 require_once "$pathudb/../functions/defines.php";
+require_once "$pathudb/../functions/defaults.php";
 require_once "$pathudb/../functions/config_functions.php";
 require_once "$pathudb/../functions/file_functions.php";
 require_once "$pathudb/../functions/db.class.php";

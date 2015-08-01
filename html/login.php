@@ -31,6 +31,7 @@ $pathlo = realpath(dirname(__FILE__));
 
 require_once "$pathlo/../config.php";
 require_once "$pathlo/../functions/functions.php";
+require_once "$pathlo/../functions/defaults.php";
 require_once "$pathlo/../functions/config_functions.php";
 require_once "$pathlo/../functions/defines.php";
 require_once "$pathlo/../functions/error_codes.php";

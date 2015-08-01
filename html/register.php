@@ -42,6 +42,7 @@ if (isset($config['urdweb_logfile'])) {
 require_once "$pathreg/../functions/urd_log.php";
 require_once "$pathreg/../functions/autoincludes.php";
 require_once "$pathreg/../functions/defaults.php";
+require_once "$pathreg/../functions/defines.php";
 require_once "$pathreg/../functions/functions.php";
 
 try {

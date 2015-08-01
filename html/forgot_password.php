@@ -41,6 +41,7 @@ if (isset($config['urdweb_logfile'])) {
 }
 
 require_once "$pathfp/../functions/web_functions.php";
+require_once "$pathfp/../functions/defaults.php";
 require_once "$pathfp/../functions/config_functions.php";
 require_once "$pathfp/../functions/urd_log.php";
 $lang = detect_language() . '.php';

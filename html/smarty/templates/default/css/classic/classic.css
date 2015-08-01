@@ -302,20 +302,6 @@ input, select, textarea
     font-size: 8pt;
     border-radius: 5px;
 }
-
-.submit
-{
-    background: #161616;
-    color: #e0e0e0;
-    padding: 1px;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    border: 2px solid;
-    font-weight: bold;
-    border-color:#404040 #282828 #282828 #404040;
-    cursor: pointer;
-    border-radius:4px;
-}
-
 .submitsmall
 {
     background: #161616;
