@@ -45,6 +45,7 @@ require_once "$pathud/../functions/defines.php";
 require_once "$pathud/../functions/functions.php";
 require_once "$pathud/../functions/db.class.php";
 require_once "$pathud/../functions/urd_log.php";
+require_once "$pathud/../functions/defaults.php";
 require_once "$pathud/../functions/config_functions.php";
 require_once "$pathud/../functions/libs/smarty/libs/Smarty.class.php";
 
