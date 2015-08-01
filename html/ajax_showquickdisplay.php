@@ -35,7 +35,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     assert(is_numeric($userid));
     global $smarty, $LN;
     $sql = '"stamp", "category", "url", "reports", "title", "subcat", "subcata", "subcatb", "subcatc", "subcatd", "size", "spotid", "poster", "tag", "description", ' .
-        'spots."spotter_id" AS "spotterid", spot_whitelist."spotter_id" AS "whitelisted" ' .
+        'spots."spotter_id" AS "spotterid", spot_whitelist."spotter_id" AS "whitelisted", "reference" ' . 
         'FROM spots LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id") ' .
         'WHERE "spotid"=:setid';
     $offset = get_request('offset', 1);
@@ -54,7 +54,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $description = strip_tags($description);
         $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
         $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
-        $description = link_to_url($description);
+        $description = link_to_url($db, $description, $userid);
         $ubb = new UbbParse($description);
         TagHandler::setDeniedTags( array() );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
@@ -88,7 +88,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         }
         $c = db_decompress($comment['comment']);
         $c = htmlentities(strip_tags($c), ENT_IGNORE, 'UTF-8', FALSE);
-        $c = link_to_url($c);
+        $c = link_to_url($db, $c, $userid);
         $ubb = new UbbParse($c);
         TagHandler::setDeniedTags( array() );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
@@ -102,6 +102,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     }
     if (!$only_rows) {
         $url = trim(strip_tags($row['url']));
+        $url = pack_url_data($db, $url, $userid);
         /// too quick and dirty --- clean up XXX
         $image_file = $image = '';
         $image_from_db = 0;
@@ -131,16 +132,29 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         'type' =>         $type,
         'srctype' =>      $srctype,
     ));
+    
+    $tmp = explode(' ', $row['title']);
+    $arr = array();
+    foreach($tmp as &$word) {
+        $word = preg_trim($word, '[^A-Za-z0-9]');
+        if ($word != '') $arr[]= $word;
+        if (count($arr) >=2) break;
+    }
+
+    $first_two_words = implode(' ', $arr);
+
     if (!$only_rows) {
         $smarty->assign(array(
             'show_image' =>   $show_image,
             'image_file' =>   $image_file,
             'category' =>     $category,
             'category_id' =>  $row['category'],
+            'reference' =>    $row['reference'],
             'subcat' =>       $row['subcat'],
             'url' =>          $url,
             'poster' =>       $row['poster'],
             'image' =>        $image,
+            'first_two_words' => $first_two_words,
             'image_from_db' => $image_from_db,
             'timestamp' =>    date($LN['dateformat'] . ' ' . $LN['timeformat'], $row['stamp']),
             'subcata' =>      $subcata,
@@ -226,8 +240,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         $setname = $extsetinfo['name'];
     }
 
-    $display = urd_extsetinfo::generate_set_info($extsetinfo);
-
+    $display = urd_extsetinfo::generate_set_info($db, $extsetinfo, $userid);
     if ($type == USERSETTYPE_SPOT) {
         return show_spotinfo($db, $setID, $userid, $display, $extsetinfo['binarytype'], $binarytypes);
     }
@@ -345,7 +358,7 @@ function edit_extsetinfo(DatabaseConnection $db, $setid, $type)
         }
     }
 
-    $display = urd_extsetinfo::generate_set_info($extsetinfo);
+    $display = urd_extsetinfo::generate_set_info($db, $extsetinfo, 0); // user id = 0 because it doesn't need to have the urlhide function anyway
     $binarytypes = urd_extsetinfo::get_binary_types();
 
     $smarty->assign(array(

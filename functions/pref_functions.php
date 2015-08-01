@@ -355,10 +355,10 @@ function match_all($haystack, $needles)
     return $rv != 0;
 }
 
-function verify_url($text)
+function verify_url($text, $strict=TRUE)
 {
     global $LN;
-    if (validate_url($text)) {
+    if (validate_url($text, $strict)) {
         return '';
     } else {
         if ($text == '') {
@@ -648,13 +648,13 @@ function set_and_test_pref_sort($name, $userid, $valids)
     }
 }
 
-function set_and_test_pref_url($name, $userid)
+function set_and_test_pref_url($name, $userid, $strict=TRUE)
 {
     assert(is_numeric($userid));
     global $db;
     if (isset($_POST[$name])) {
         $val = $_POST[$name];
-        $rv = verify_url($val);
+        $rv = verify_url($val, $strict);
         if ($rv == '') {
             set_pref($db, $name, $val, $userid);
 

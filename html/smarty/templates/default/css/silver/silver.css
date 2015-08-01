@@ -94,13 +94,6 @@ div.light
     color: #201010;
     font-style: oblique;
 }
-#ng_headerbox
-{
-    width: 100%;
-    margin: 0px;
-    margin-bottom: -2px;
-}
-
 .head, .feet
 {
     font-family: Verdana;
@@ -171,14 +164,14 @@ td.psb_3,td.ps_3
 }
 td.psb_4,td.ps_4
 {
-    font-size: 6pt;
+    font-size: 7pt;
     background-color: #999999;
     width: 25px;
     text-align: center;
 }
 td.psb_5,td.ps_5
 {
-    font-size: 6pt;
+    font-size: 7pt;
     background-color: #aaaaaa;
     width: 25px;
     text-align: center;
@@ -213,7 +206,7 @@ table.files
     border-collapse: collapse;
     width: 99%;
     font-size: small;
-    font-family: verdan, Arial, Helvetica, Sans-Serifa;
+    font-family: verdan, Arial, Helvetica, Sans-Serif;
 }
 
 .highlight
@@ -303,20 +296,6 @@ input, select, textarea
     font-size: 8pt;
     border-radius: 5px;
 }
-
-.submit
-{
-    color: black;
-    background-color: #808080;
-    padding: 1px;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    border: 1px solid;
-    font-weight: bold;
-    border-color: #333333 #212121 #434343 #212121;
-    cursor: pointer;
-    border-radius:4px;
-}
-
 .submitsmall
 {
     background-color: #808080;
@@ -331,22 +310,6 @@ input, select, textarea
 } 
 
 /* Divs */
-#header
-{
-    height: 100px;
-    position: absolute;
-    z-index: 100;
-}
-#installation
-{
-    height: 600px;
-    overflow: auto;
-    width: auto;
-    padding-left: 200px;
-    padding-right: 10px;
-    padding-top: 10px;
-}
-
 #status
 {
     font-size: small;
@@ -401,14 +364,6 @@ input, select, textarea
     border-radius: 9px;
     border: 2px solid #d0d0d0;
     box-shadow: -3px 3px 3px 4px #444444;
-    
-
-}
-#transfersdiv
-{
-    width: 100%;
-    float: left;
-    z-index: 10;
 }
 #nojs
 {
@@ -458,12 +413,6 @@ input, select, textarea
     text-align: center;
     vertical-align: bottom;
 }
-#hideoverlay
-{
-    position: absolute;
-    right: 30px;
-    top: 10px;
-}
 /* Table stuff */
 #table
 {
@@ -473,7 +422,6 @@ input, select, textarea
     z-index: 301;
     font-size: small;
 }
-
 .newset {
     color: #a76000;
     font-weight: bold;
@@ -502,21 +450,11 @@ input, select, textarea
     background-color: #bbbbbb;
     overflow-x:hidden;
 }
-.extsetnamewidth
-{
-    width: 140px;
-}
 .extsetinput
 {
     color: white;
     text-align: left;
 }
-.logintable
-{
-    padding-top: 100px;
-    margin: auto;
-}
-
 .logintable a:hover
 {
     color: #bbbbbb;
@@ -534,20 +472,6 @@ input, select, textarea
     border: solid #a5a5a5 1px;
     border-radius: 3px 3px 3px 3px;
     background-color:#b0b0b0;
-}
-
-#basketdiv
-{
-}
-#innerbasketdiv
-{
-    max-height: 100px;
-    width: 100%;
-    overflow-y: auto;
-}
-.innerbaskettable
-{
-    width: 100%;
 }
 .baskettable
 {
@@ -576,42 +500,11 @@ table.basketbuttons
     margin-top: -1px;
     border-radius: 0 0 9px 9px;
 }
-table.browsetoptable
-{
-    border-collapse: collapse;
-    padding: 0px;
-    margin: 0px;
-}
-.quickmenuoff
-{
-    visibility: hidden;
-    position: fixed;
-    z-index: 990;
-}
-.quickmenuon
-{
-    visibility: visible;
-    position: fixed;
-    z-index: 1000005;
-    top: 0px;
-    left: 0px;
-    width: 250px;
-    height: 250px;
-}
-
 .quickmenubutton
 {
     background-color: #aaaaaa;
-    border: none;
-    margin: 0px;
-    padding: 0px 4px 1px 4px;
-    width: 250px;
-    height: 2em;
     color: black;
-    text-align: left;
-    vertical-align: top;
-    font-size: small;
-    overflow: hidden;
+   font-size: small;
 }
 .quickmenubutton:hover
 {
@@ -623,7 +516,6 @@ table.browsetoptable
     box-shadow: -3px 3px 3px 4px #444444;
     width: 250px;
 }
-
 .quickmenuitem
 {
     position: absolute;
@@ -632,13 +524,6 @@ table.browsetoptable
     font-size: small;
     height: 2em;
 }
-.quickwindowoff
-{
-    visibility: hidden;
-    position: absolute;
-    z-index: 900;
-}
-
 .quickwindowon
 {
     position: fixed;
@@ -656,24 +541,6 @@ table.browsetoptable
     z-index: 900;
     text-align: center;
     box-shadow: -3px 3px 3px 4px #444444;
-}
-.quickmenuitem
-{
-    position: absolute;
-}
-
-.statusminimized
-{
-    height: 25px;
-    width: 25px;
-    margin-left: -165px;
-}
-#statussize
-{
-    position: relative;
-    float: right;
-    margin-right: 2px;
-    margin-top: 2px;
 }
 #logindiv
 {
@@ -810,15 +677,6 @@ a.rss
     color: #ffffff;
     text-decoration: none;
 }
-td.rss2
-{
-    text-align:right;
-}
-span.ng_submit
-{
-    left: 0px;
-    position: relative;
-}
 div.ng_selector
 {
     width: 99%;
@@ -831,20 +689,7 @@ div.ng_selector
     padding-bottom: 1px;
     vertical-align: bottom;
 }
-div.prefix_transfers,
-div.prefix_prefs
-{
-    margin-top: -2px;
-}
-.advanced_search 
-{
-    padding-left:16px;
-}
-textarea.filecontents
-{
-    width: 660px;
-    height: 260px;
-}
+
 ul.tabs, div.tabs
 {
     list-style: none;
@@ -866,26 +711,6 @@ li.tab_selected,span.tab_selected, .tab_selected
     color: #111111;
     background: #d0d0d0;
     border-color:#404040 #404040 #282828 #282828;
-}
-.leftward 
-{
-    margin-left: 65px;
-    margin-top: 25px;
-}
-#leftcalendar 
-{
-    width: 220px;
-    float: left;
-}
-#rightcalendar 
-{
-    float: left;
-}
-#calendarbottom
-{
-    margin-top: 150px;
-    margin-right: 50px;
-    clear:both;
 }
 .black 
 {
@@ -942,15 +767,6 @@ li.tab_selected,span.tab_selected, .tab_selected
     width: 0;
     z-index: 3000;
 }
-
-#helpwrapper 
-{
-    position: fixed;
-    height: 0;
-    top: 0px;
-    left: 0px;
-    z-index: 2000;
-}
 #smallhelp
 {
     position: fixed;
@@ -977,10 +793,7 @@ li.tab_selected,span.tab_selected, .tab_selected
     margin-left: -250px;
     
 }
-td.settings 
-{
-    width: 50%;
-}
+
 tr.server_enabled
 {
     color: #111111;
@@ -988,20 +801,6 @@ tr.server_enabled
 tr.server_disabled
 {
     color: #505050;
-}
-th.uwider, td.uwider
-{
-    padding-left: 5px;
-    padding-right: 5px;
-}
-td.uwider
-{
-    padding-left: 15px;
-}
-
-.preview_img 
-{
-    padding-top: 13%;
 }
 
 .checkbox_tri
@@ -1289,24 +1088,6 @@ td.uwider
     border: 2px solid #d0d0d0;
     box-shadow: -3px 3px 3px 4px #444444;
 }
-
-#savename_content
-{ 
-    width: 300px;
-    height: 150px;
-    margin-top: 30px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
-#alert_inner
-{
-    display: table;
-    text-align: center;
-    height: 150px;
-    width: 500px;
-}
-
 .alertdiv
 {
     font-family: verdana, Arial, Helvetica, Sans-Serif;
@@ -1326,19 +1107,13 @@ td.uwider
     box-shadow: -3px 3px 3px 4px #444444;
 }
 
-td.ps_hover {
+td.ps_hover 
+{
     color: #ffffff; 
     font-weight: bold;
     font-size: 10pt;
     cursor: pointer;
 }
-
-div.bottom {
-    position: absolute;
-    bottom: 10px;
-    right: 9px;
-}
-
 #alert_content {
     display: table-cell;
     margin: auto;
@@ -1394,9 +1169,10 @@ div.bottom {
 
 .pulldown ul li.smallstatus
 {
-    width: 20px;
+    width: 1.75em;
     float: left;
     background: #6a6a6a;
+    border-right: 1px solid #1b1b1b;
     border-color: #6a6a6a #424242 #333333;
     background-image: -webkit-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
     background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
@@ -1404,7 +1180,6 @@ div.bottom {
     background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
     position: relative; 
     list-style-type: none; 
-    border-right: 1px solid #1b1b1b;
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
@@ -1415,12 +1190,13 @@ div.bottom {
     color: #ffffff;
 }
 
-.pulldown ul li.normal {
+.pulldown ul li.normal 
+{
     color: #ffffff;
     text-align: center;
     font-size: small;
     height: 2em;
-    width: 110px; 
+    width: 9em; 
     float: left;
     position: relative; 
     list-style-type: none; 
@@ -1434,7 +1210,6 @@ div.bottom {
     background-image: -moz-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
     background-image: -o-linear-gradient(top, #6a6a6a, #424242 50%, #333333);
     background-image: linear-gradient(to bottom, #6a6a6a, #424242 50%, #333333);
-
 }
 
 .pulldown ul li.commando {
@@ -1444,8 +1219,6 @@ div.bottom {
   background-image: -moz-linear-gradient(top, #7f7f7f, #686868 50%, #151515);
   background-image: -o-linear-gradient(top, #7f7f7f, #686868 50%, #151515);
   background-image: linear-gradient(to bottom, #7f7f7f, #686868 50%, #151515);
-
-
 }
 
 .pulldown ul ul {
@@ -1517,10 +1290,6 @@ div.bottom {
     list-style-type:none; 
 }
 
-.pulldown_last_item
-{
-    border-radius: 0 0 9px 9px;
-}
 .rdlogo2
 {
     width: 175px;
@@ -1593,22 +1362,13 @@ div.bottom {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7ad45', endColorstr='#efd75f',GradientType=0 ); /* IE6-9 */
 }
 
-#status_msg
-{
-    height:2em;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    display: inline-block;
-}
-
 #smalllogo
 {
     width: 38px;
     height: 20px;
     background: url('../../img/silver/urdlogo_small.png') no-repeat;
     margin-left: 1px;
-    margin-top: 1px;
+    margin-top: 3px;
 }
 
 #scrollmenuleft,
@@ -1649,13 +1409,6 @@ div.bottom {
     overflow: hidden;
     box-shadow: -3px 3px 3px 4px #444444;
 }
-table.subcat
-{
-    border-collapse: collapse;
-    border-width: 0px;
-	border-spacing: 0px;
-}
-
 td.subcat_head
 {
     color: white;
@@ -1731,26 +1484,9 @@ input.passwordcorrect
     background-color:#C0FFC0;
 }
 
-.progressbar > span
-{
-  position: relative;
-  float: left;
-  margin: 0 0;
-  height: 12px;
-  line-height: 12px;
-  text-align: right;
-  border: 0px solid;
-  border-color: #4f4f4f #434343 #2e2e2e;
-  border-radius: 6px;
-}
 .progressbar
 {
-  height: 12px;
   background-color: #6b6b6b;
-  border-left: 0px solid transparent;
-  border-right: 0px solid transparent;
-  border-radius: 6px;
-  z-index: 1000;
 }
 .grey {
   background: #cccccc;
@@ -1768,8 +1504,7 @@ input.passwordcorrect
     background: -ms-linear-gradient(top, #5a8529 0%,#496e22 70%,#3f5f1d 100%); /* IE10+ */
     background: linear-gradient(to bottom, #5a8529 0%,#496e22 70%,#3f5f1d 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5a8529', endColorstr='#3f5f1d',GradientType=0 ); /* IE6-9 */
-
-  }
+}
 
 .red 
 {

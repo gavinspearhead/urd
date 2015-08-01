@@ -85,14 +85,6 @@ div.light
 {
     font-style: oblique;
 }
-
-#ng_headerbox
-{
-    width: 100%;
-    margin: 0px;
-    margin-bottom: -2px;
-}
-
 .head 
 {
     font-family: Verdana;
@@ -191,14 +183,14 @@ td.psb_3,td.ps_3
 }
 td.psb_4,td.ps_4
 {
-    font-size: 6pt;
+    font-size: 7pt;
     background-color: #D8E3F4;
     width: 25px;
     text-align: center;
 }
 td.psb_5,td.ps_5
 {
-    font-size: 6pt;
+    font-size: 7pt;
     background-color: #E1E9F4;
     width: 25px;
     text-align: center;
@@ -356,13 +348,6 @@ input,select, textarea
 } 
 
 /* Divs */
-#header
-{
-    height: 100px;
-    position: absolute;
-    z-index: 100;
-}
-
 #status
 {
     font-size: x-small;
@@ -421,12 +406,6 @@ input,select, textarea
     color: #555555;
     box-shadow: -3px 3px 3px 4px #bbbbbb;
 }
-#transfersdiv
-{
-    width: 100%;
-    float: left;
-    z-index: 10;
-}
 #nojs
 {
     position: absolute;
@@ -476,12 +455,6 @@ input,select, textarea
     text-align: center;
     vertical-align: bottom;
 }
-#hideoverlay
-{
-    position: absolute;
-    right: 30px;
-    top: 10px;
-}
 /* Table stuff */
 #table
 {
@@ -520,21 +493,11 @@ input,select, textarea
     background-color: #F5F5F5;
     overflow-x:hidden;
 }
-.extsetnamewidth
-{
-    width: 140px;
-}
 .extsetinput
 {
     color: white;
     text-align: left;
 }
-.logintable
-{
-    padding-top: 100px;
-    margin: auto;
-}
-
 .logintable a:hover
 {
     color: #555555;
@@ -543,7 +506,6 @@ input,select, textarea
 {
     color: #777777;
 }
-
 #minibasketdiv
 {
     margin-left: 8px;
@@ -554,20 +516,6 @@ input,select, textarea
     border-radius: 4px 4px 4px 4px;
     background-color: #F1F1F1;
     height: 1.55em;
-}
-
-#basketdiv
-{
-}
-#innerbasketdiv
-{
-    max-height: 100px;
-    width: 100%;
-    overflow-y: auto;
-}
-.innerbaskettable
-{
-    width: 100%;
 }
 .baskettable
 {
@@ -596,42 +544,11 @@ table.basketbuttons
     margin-top: -1px;
     border-radius: 0 0 9px 9px;
 }
-table.browsetoptable
-{
-    border-collapse: collapse;
-    padding: 0px;
-    margin: 0px;
-}
-.quickmenuoff
-{
-    visibility: hidden;
-    position: fixed;
-    z-index: 990;
-}
-.quickmenuon
-{
-    visibility: visible;
-    position: fixed;
-    z-index: 1000005;
-    top: 0px;
-    left: 0px;
-    width: 250px;
-    height: 250px;
-}
-
 .quickmenubutton
 {
     background-color: #f5f5f5;
-    border: none;
-    margin: 0px;
-    padding: 0px 4px 1px 4px;
-    width: 250px;
-    height: 24px;
     color: #555555;
-    text-align: left;
-    vertical-align: top;
     font-size: small;
-    overflow: hidden;
 }
 .quickmenubutton:hover
 {
@@ -644,12 +561,6 @@ table.browsetoptable
     border: 1px solid #111111;
     font-size: small;
     height: 24px;
-}
-.quickwindowoff
-{
-    visibility: hidden;
-    position: absolute;
-    z-index: 900;
 }
 #quickmenuinner
 {
@@ -676,12 +587,6 @@ table.browsetoptable
     text-align: center;
     box-shadow: -3px 3px 3px 4px #bbbbbb;
 }
-.quickmenuitem
-{
-    position: absolute;
-}
-
-
 #logindiv
 {
     border-radius: 9px;
@@ -812,11 +717,6 @@ a.rss
     text-decoration: none;
 
 }
-span.ng_submit
-{
-    left: 0px;
-    position: relative;
-}
 div.ng_selector
 {
     width: 99%;
@@ -828,23 +728,6 @@ div.ng_selector
     padding-bottom: 1px;
     margin: 0;
     vertical-align: bottom;
-}
-
-
-div.prefix_transfers,
-div.prefix_prefs
-{
-    margin-top: -2px;
-}
-
-.advanced_search 
-{
-    padding-left:16px;
-}
-textarea.filecontents
-{
-    width: 660px;
-    height: 260px;
 }
 ul.tabs, div.tabs
 {
@@ -904,15 +787,6 @@ li.tab_selected,span.tab_selected, .tab_selected
     padding-left: 5px;
     padding-right: 5px;
 }
-
-#helpwrapper 
-{
-    position: fixed;
-    height: 0;
-    top: 0px;
-    left: 0px;
-    z-index: 2000;
-}
 .bubble_top:after 
 {
     content: "";
@@ -966,10 +840,6 @@ li.tab_selected,span.tab_selected, .tab_selected
     margin-left: -250px;
 
 }
-td.settings 
-{
-    width: 50%;
-}
 tr.server_enabled
 {
     color: #000000;
@@ -978,17 +848,6 @@ tr.server_disabled
 {
     color: #909090;
 }
-
-th.uwider, td.uwider
-{
-    padding-left: 5px;
-    padding-right: 5px;
-}
-td.uwider
-{
-    padding-left: 15px;
-}
-
 .gensetsicon
 {
     background-image:url('../../img/icon_genset.png');
@@ -1277,44 +1136,12 @@ td.uwider
     z-index: 2000;
 }
 
-#savename_content
-{ 
-    width: 300px;
-    height: 150px;
-    margin-top: 30px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
 td.ps_hover 
 {
     color: #ffffff; 
     font-weight: bold;
     font-size: 10pt;
     cursor: pointer;
-}
-
-div.bottom {
-    position: absolute;
-    bottom: 10px;
-    right: 9px;
-}
-#alert_inner
-{
-    display: table;
-    text-align: center;
-    height: 150px;
-    width: 500px;
-}
-
-#alert_content 
-{
-    display: table-cell;
-    margin: auto;
-    padding-left:20px;
-    padding-top:10px;
-    padding-right:10px;
-    vertical-align: middle;
 }
 
 .alertdiv
@@ -1378,14 +1205,7 @@ div.bottom {
 
 .pulldown ul li.smallstatus
 {
-    width: 20px;
-    float: left;
-    position: relative; 
-    list-style-type: none; 
     border-right: 1px solid #1b1b1b;
-    border-left: 0;
-    border-top: 0;
-    border-bottom: 0;
 }
 
 .white
@@ -1411,7 +1231,7 @@ div.bottom {
     text-align: center;
     font-size: small;
     height: 2em;
-    width: 110px; 
+    width: 9em; 
     float: left;
     position: relative; 
     list-style-type: none; 
@@ -1459,11 +1279,6 @@ div.bottom {
     border: none;
     overflow: hidden;
     list-style-type:none; 
-}
-
-.pulldown_last_item
-{
-    border-radius: 0 0 9px 9px;
 }
 
 .pulldown ul li:hover ul li.plain
@@ -1567,34 +1382,28 @@ div.bottom {
     background: linear-gradient(to bottom, #f7ad45 0%,#efe24c 100%,#efd75f 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7ad45', endColorstr='#efd75f',GradientType=0 ); /* IE6-9 */
 }
-
-#status_msg
-{
-    height:2em;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    display: inline-block;
-}
-
 #smalllogo
 {
     width: 38px;
     height: 20px;
     background: url('../../img/light/urdlogo_small.png') no-repeat;
     margin-left: 1px;
-    margin-top: 1px;
+    margin-top: 3px;
 }
 
 #scrollmenuright,
 #scrollmenuleft
 {
-    background: #2D2D2D;
     font-weight: bold;
     overflow: hidden;
+    background: #2d2d2d; /* Old browsers */
+    background: -moz-linear-gradient(top, #2d2d2d 0%, #4d4d4d 53%, #2d2d2d 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2d2d2d), color-stop(53%,#4d4d4d), color-stop(100%,#2d2d2d)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #2d2d2d 0%,#4d4d4d 53%,#2d2d2d 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #2d2d2d 0%,#4d4d4d 53%,#2d2d2d 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #2d2d2d 0%,#4d4d4d 53%,#2d2d2d 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #2d2d2d 0%,#4d4d4d 53%,#2d2d2d 100%); /* W3C */
 }
-
-
 .internal_subcat_selector
 {
     position: relative;
@@ -1603,7 +1412,6 @@ div.bottom {
     height: 370px;
     overflow-y: auto;
 }
-
 .subcat_selector
 {
     position: fixed;
@@ -1637,12 +1445,6 @@ div.bottom {
     z-index: 2000;
     color: white;
     overflow: hidden;
-}
-table.subcat
-{
-    border-collapse: collapse;
-    border-width: 0px;
-    border-spacing: 0px;
 }
 
 td.subcat_head
@@ -1701,13 +1503,6 @@ tr.comment_poster
     background:#bBbBbB;
 
 }
-table.urd
-{
-    border: thin solid;
-    margin-top: -1px;
-    border-collapse: collapse;
-    width: 90%;
-}
 .head2 
 {
     font-weight: bolder;
@@ -1735,30 +1530,10 @@ input.passwordcorrect
 {
     background-color:#C0FFC0;
 }
-
-.progressbar > span
-{
-  position: relative;
-  float: left;
-  margin: 0 0;
-  height: 12px;
-  line-height: 14px;
-  text-align: right;
-  border: 0px solid;
-  border-color: #4f4f4f #434343 #2e2e2e;
-  border-radius: 6px;
-}
-
-
 .progressbar
 {
-  height: 12px;
   background-color: #ebebeb;
-  border-left: 0px solid transparent;
-  border-right: 0px solid transparent;
-  border-radius: 6px;
-  z-index: 1000;
-}
+ }
 .grey {
     background: #cccccc;
     background-image: -webkit-linear-gradient(top, #f0f0f0, #dbdbdb 70%, #cccccc);

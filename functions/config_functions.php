@@ -253,7 +253,7 @@ function load_config(DatabaseConnection& $db, $force = FALSE)
     if (!is_array($res)) {
         $res = array();
     }
-    $prefs = array();
+    $prefs = get_default_config();
 
     foreach ($res as $row) {
         $prefs[$row['option']] = $row['value'];
@@ -279,7 +279,7 @@ function load_prefs(DatabaseConnection& $db, $userid, $force = FALSE)
         $res = array();
     }
 
-    $prefs = array();
+    $prefs = get_default_prefs();
     $uid = NULL;
     foreach ($res as $row) {
         $prefs[$row['option']] = $row['value'];

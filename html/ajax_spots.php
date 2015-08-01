@@ -62,6 +62,7 @@ class spot_viewer
     private $Qspamlimit = '';
     private $Qadult = '';
     private $Qrating = '';
+    private $Qreference = '';
 
     private $minage = '';
     private $maxage = '';
@@ -104,7 +105,7 @@ class spot_viewer
             ' LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3."setID" = spots."spotid" AND extsetdata3."name" = \'xrated\' AND extsetdata3."type" = :type3) ' .
             ' LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4."setID" = spots."spotid" AND extsetdata4."name" = \'score\' AND extsetdata4."type" = :type4) ' .
             " WHERE (1=1 {$this->Qsearch} {$this->Qsize} {$this->Qcategory} {$this->Qkill} {$this->Qflag} {$this->Qsubcat} {$this->Qspotid} {$this->Qposter} " .
-            " {$this->Qspamlimit} {$this->Qrating} {$this->Qage} {$this->Qadult} AND spot_blacklist.\"spotter_id\" IS NULL)";
+            " {$this->Qspamlimit} {$this->Qrating} {$this->Qage} {$this->Qadult} {$this->Qreference}  AND spot_blacklist.\"spotter_id\" IS NULL)";
         $this->input_arr[':userid1'] = $this->input_arr[':userid2'] = $this->userID;
         $this->input_arr[':superuserid1'] = user_status::SUPER_USERID;
         $this->input_arr[':type1'] = $this->input_arr[':type2'] = $this->input_arr[':type3'] = $this->input_arr[':type4'] = $type;
@@ -200,6 +201,7 @@ class spot_viewer
             $thisset['comments'] = is_numeric($arr['comments']) ? $arr['comments'] : 0;
             $thisset['reports'] = is_numeric($arr['reports']) ? $arr['reports'] : 0;
             $thisset['categorynr'] = $arr['category'];
+            $thisset['anon_url'] = make_url($this->db, trim(strip_tags($arr['url'])), $this->userID);
             $thisset['url'] = trim(strip_tags($arr['url']));
             $thisset['added'] = (is_array($_SESSION['setdata']) && in_setdata($arr['spotid'], 'spot', $_SESSION['setdata'])) ? 1 : 0;
             $thisset['read'] = $arr['alreadyread'];
@@ -364,6 +366,14 @@ class spot_viewer
             $this->Qspotid = ' AND spots."spotid"=:spotid ';
         }
     }
+    public function set_qreference($reference)
+    {
+        if ($reference != '') {
+            $this->input_arr[':reference'] = $reference;
+            $this->Qreference = ' AND spots."reference" = :reference ';
+        }
+    }
+
     public function set_qposter($poster)
     {
         if ($poster != '') {
@@ -470,7 +480,7 @@ class spot_viewer
     {
         return $this->killflag;
     }
-    public function set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order)
+    public function set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order, $reference)
     {
         $this->set_qsearch($search);
         $this->set_qadult($adult);
@@ -479,6 +489,7 @@ class spot_viewer
         $this->set_qspotid($spotid);
         $this->set_qrating($minrating, $maxrating);
         $this->set_qposter($poster);
+        $this->set_qreference($reference);
         $this->set_qcategory($categoryID);
         $this->set_qsubcat($subcats, $not_subcats);
         $this->set_qflags($flag);
@@ -493,6 +504,7 @@ try {
     $search     = html_entity_decode(trim(get_request('search', '')));
     $adult      = urd_user_rights::is_adult($db, $userid);
     $poster     = get_request('poster', '');
+    $reference  = get_request('reference', '');
     $maxage     = get_request('maxage', '');
     $minage     = get_request('minage', '');
     $spotid     = get_request('spotid', '');
@@ -509,7 +521,7 @@ try {
     $view_size  = get_request('view_size', 1024);
 
     $spots_viewer = new spot_viewer($db, $userid);
-    $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order);
+    $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order, $reference);
     list($pages, $activepage, $totalpages, $offset) = $spots_viewer->get_page_count($perpage, $offset, $only_rows);
 
     $allsets = $spots_viewer->get_spot_data($perpage, $offset, $last_line);

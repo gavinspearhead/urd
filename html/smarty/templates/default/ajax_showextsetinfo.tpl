@@ -91,8 +91,15 @@
 	{if $vals.value != "0" && $vals.value != "" && $vals.value != "name"}
 		{$looped="`$looped+1`"}
 		<tr class="vtop small comment"><td class="nowrap bold">{$vals.name}:</td><td>
-		{if $vals.display == 'text'}{$vals.value|escape}{/if}
-		{if $vals.display == 'url'}<span class="buttonlike" onclick="javascript:jump('{$vals.value|escape:javascript}',1);">{$vals.value|escape}</span>{/if}
+		{if $vals.display == 'text'} {$vals.value|escape}{/if}
+		{if $vals.display == 'url'}
+            {$url=$vals.value}
+            {if $url.icon == ''} 
+                <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.display|escape}</span></td></tr>
+            {else}
+                <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.icon|escape}</span></td></tr>
+            {/if}
+        {/if}
 		{if $vals.display == 'number'}<b>{$vals.value|escape}</b>{/if}
 		{if $vals.display == 'checkbox'}{if $vals.value == 1}Yes{else}No{/if}{/if}
 		</td></tr>

@@ -24,13 +24,12 @@
 {* These icon images are a copy of the code in formatsetname.tpl *}
 {include 'include_bin_image.tpl' scope='parent'}
 
-
 {if $view_size >= $max_mobile_viewsize}
-{$small=0}
-{$skippersize= 30}
+    {$small=0}
+    {$skippersize= 30}
 {else}
-{$small=1}
-{$skippersize= 18}
+    {$small=1}
+    {$skippersize= 18}
 {/if}
 
 {capture assign=topskipper}{strip}
@@ -124,11 +123,10 @@ $(document).ready(function() {
     $('#td_set_{$set.spotid}').mouseup( function (e) { start_quickmenu('browse', '{$set.spotid}', {$USERSETTYPE_SPOT}, e); } );
     $('#intimg_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
     $('#wipe_img_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
-    $('#link_img_{$set.spotid}').click( function () { jump('{$set.url|escape:javascript}', true); } );
+    $('#link_img_{$set.spotid}').click( function () { jump('{$set.anon_url|escape:javascript}', true); } );
 });
 </script>
 {/strip}
-
 {/capture}
 
 {* Store flags to be used in class definition: *}

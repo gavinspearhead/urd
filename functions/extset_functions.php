@@ -50,7 +50,7 @@ class urd_extsetinfo
             self::SETTYPE_DOCUMENTARY, self::SETTYPE_TVSHOW, self::SETTYPE_OTHER
     );
 
-    public static function generate_set_info(array $extsetinfo)
+    public static function generate_set_info($db, array $extsetinfo, $userid)
     {
         global $LN;
         // This function determines what extsetinfo can be created for a set. Used for editing sets manually.
@@ -133,8 +133,11 @@ class urd_extsetinfo
                 case 'note':		$displaytype = 'text';		$edittype = 'longtext';					break;
                 default:		    $displaytype = 'text';	    $edittype = 'text';                     break;
             }
-
-            $value = isset($extsetinfo[$field]) ? $extsetinfo[$field] : '';
+            if ($field == 'link') {  
+                $value = isset($extsetinfo[$field]) ? pack_url_data($db, $extsetinfo[$field], $userid) : '';
+            } else {
+                $value = isset($extsetinfo[$field]) ? $extsetinfo[$field] : '';
+            }
 
             $display[] = array(
                     'field' => $field,
@@ -988,11 +991,11 @@ class urd_extsetinfo
         foreach ($save as $name => $value) {
             $value_x = trim($value);
             // Does info exist?
-            $sql = '* FROM extsetdata WHERE "setID"=? AND "name"=? AND "type"=?';
-            $res = $db->select_query($sql, 1, array($setid, $name, $type));
+            $sql = '* FROM extsetdata WHERE "setID"=:setid AND "name"=:name AND "type"=:type';
+            $res = $db->select_query($sql, 1, array(':setid'=>$setid, ':name'=>$name, ':type'=>$type));
 
             // Check if the stored field exists
-            if ($res === FALSE) {
+            if ($res === FALSE || $overwrite === FALSE) {
                 $db->insert_query('extsetdata', array('setID', 'name', 'value', 'committed', 'type'), array($setid, $name, $value_x, $commit, $type));
             } elseif ($overwrite === TRUE) {
                 $db->update_query_2('extsetdata', array('value'=>$value_x, 'committed'=>$commit), '"setID"=? AND "name"=? AND "type"=?', array($setid, $name, $type));

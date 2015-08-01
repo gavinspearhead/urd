@@ -3520,6 +3520,11 @@ function update_search_names(name)
         } else {
             $('#save_search_span').html(x.contents);
             $('#save_search_outer').removeClass('hidden');
+            if (type == 2) {
+                $('#saved_search').change(function() { update_spot_searches(); });
+            } else {
+                $('#saved_search').change(function() { update_browse_searches(); });
+            }
         }
     });
 }
@@ -3807,6 +3812,7 @@ function load_spots(options)
     var order = get_value_from_id('searchorder', '');
     var view_size = get_value_from_id('view_size', '');
     var cat_id = get_selected_cat();
+    var reference = '';
     var data = {};
     var flag = $('#flag>option:selected').val();
     var per_page = $('#perpage').val();
@@ -3864,6 +3870,9 @@ function load_spots(options)
         if (options.setid !== undefined) {
             spotid = options.setid;
         }
+        if (options.reference !== undefined) {
+            reference = options.reference;
+        }
         if (options.next !== undefined) {
             cat_id = options.next;
         }
@@ -3896,6 +3905,7 @@ function load_spots(options)
     data.minrating = minrating;
     data.maxrating = maxrating;
     data.minage = minage;
+    data.reference = reference;
     data.maxage = maxage;
     data.poster = poster;
     data.categoryID = cat_id;

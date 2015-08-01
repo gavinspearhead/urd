@@ -21,7 +21,8 @@
  * $Id$
  */
 
-body, html {
+body, html 
+{
     border: none;
     overflow: hidden;
 }
@@ -55,14 +56,6 @@ td
     padding-top: 0.28em;
     padding-bottom: 0.28em;
     border-width : 0;
-}
-td.preview_right
-{
-    text-align: right;
-    padding-left: 5px;
-    padding-right: 5px;
-    font-family: verdana;
-    font-size: small;
 }
 
 td.preview
@@ -185,12 +178,6 @@ table.rss
 {
     width: 100%;
 }
-
-#stats_div
-{
-    padding-top: 10px;
-    margin-top: 10px;
-}
 td.spacer
 {
     width: 2px;
@@ -200,7 +187,6 @@ tr.preference
 {
    vertical-align: top;
 }
-
 th
 {
    text-align: left;
@@ -215,7 +201,6 @@ th
 {
     cursor: pointer;
 }
-
 .hmid
 {
     margin-left: auto;
@@ -251,11 +236,6 @@ th
     vertical-align: bottom;
     margin-right: auto;
     width: 170px;
-}
-.midbut
-{
-    text-align: center;
-    vertical-align: bottom;
 }
 .rightbut
 {
@@ -310,12 +290,6 @@ th
     margin-right: auto;
     text-align: center;
 }
-table.compact
-{
-    border-collapse: collapse;
-    padding: 0px;
-    margin: 0px;
-}
 td.minimalistic
 {
     padding: 0px;
@@ -368,7 +342,6 @@ td.user, th.user
 {
     min-width: 80%
 }
-
 .width20em 
 {
     width: 20em;
@@ -394,7 +367,6 @@ td.user, th.user
 {
     width: 15px;
 }
-
 .width60
 {
     width: 60px;
@@ -645,19 +617,6 @@ th.round_both_bottom, td.round_both_bottom
     border-radius: 0 0 9px 9px;
     border-collapse: collapse;
 }
-
-.submit_button 
-{
-    margin-right:20%; 
-    margin-top:10px;
-}
-
-.submit_button_right 
-{
-    margin-right:5%; 
-    margin-top:5px;
-}
-
 .on_top 
 {
     z-index:100000;
@@ -852,7 +811,6 @@ div.sets_inner
 
 div.pref_selector
 {
-    width: 1%;
     white-space: nowrap;
     display: table-cell;
     border-collapse: collapse;
@@ -880,7 +838,8 @@ input.sidebar
     width: 4em;
 }
 
-.width100p {
+.width100p 
+{
     width:100%;
 }
 
@@ -891,8 +850,7 @@ table.articles, table.newsservers
     border-spacing:0;
     width: 100%;
 }
-
-.submitsmall, .submit
+.submitsmall
 {
     height: 1.65em;
 }
@@ -918,25 +876,25 @@ li.tab, span.tab
 
 #scrollmenuleft
 {
-    padding-top:0.2em;
+    padding-top:0.3em;
     z-index: 100000;
     position: absolute;
     left: 0px;
     top: 0px;
     width: 10px;
-    height:1.8em;
+    height:1.7em;
     overflow: hidden
 }
 
 #scrollmenuright
 {
     z-index: 100000;
-    padding-top:0.2em;
+    padding-top:0.3em;
     position: absolute;
     right: 0px;
     top: 0px;
     width: 10px;
-    height:1.8em;
+    height:1.7em;
     overflow: hidden;
 }
 .textbox4m
@@ -979,6 +937,210 @@ li.tab, span.tab
     margin-right: 50px;
     clear:both;
 }
+td.settings 
+{
+    width: 50%;
+}
+
+.progressbar > span
+{
+  position: relative;
+  float: left;
+  margin: 0 0;
+  height: 15px;
+  line-height: 15px;
+  text-align: right;
+  border: 0px ;
+  border-radius: 6px;
+}
+
+.progressbar
+{
+  height: 15px;
+  border-left: 0px;
+  border-right: 0px;
+  border-radius: 6px;
+  z-index: 1000;
+}
+.pulldown ul li.smallstatus
+{
+    width: 20px;
+    float: left;
+    position: relative; 
+    list-style-type: none; 
+    height:2em;
+}
+
+#status_msg
+{
+    height:2em;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+.quickmenuon
+{
+    visibility: visible;
+    position: fixed;
+    z-index: 1000005;
+    top: 0px;
+    left: 0px;
+    width: 28em;
+    height: 250px;
+}
+.quickmenubutton
+{
+    border: none;
+    margin: 0px;
+    padding: 0px 4px 1px 4px;
+    width: 28em;
+    height: 2em;
+    text-align: left;
+    vertical-align: top;
+    overflow: hidden;
+}
+table.logintable
+{
+    padding-top: 100px;
+    margin: auto;
+}
+#basketdiv
+{
+}
+#innerbasketdiv
+{
+    max-height: 100px;
+    width: 100%;
+    overflow-y: auto;
+}
+table.innerbaskettable
+{
+    width: 100%;
+}
+/****/
+#ng_headerbox
+{
+    width: 100%;
+    margin: 0px;
+    margin-bottom: -2px;
+}
+#header
+{
+    height: 100px;
+    position: absolute;
+    z-index: 100;
+}
+#transfersdiv
+{
+    width: 100%;
+    float: left;
+    z-index: 10;
+}
+#hideoverlay
+{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+}
+
+table.browsetoptable
+{
+    border-collapse: collapse;
+    padding: 0px;
+    margin: 0px;
+}
+.quickwindowoff
+{
+    visibility: hidden;
+    position: absolute;
+    z-index: 900;
+}
+.quickmenuitem
+{
+    position: absolute;
+}
+div.prefix_transfers,
+div.prefix_prefs
+{
+    margin-top: -2px;
+}
+
+.advanced_search 
+{
+    padding-left:16px;
+}
+textarea.filecontents
+{
+    width: 660px;
+    height: 260px;
+}
+#helpwrapper 
+{
+    position: fixed;
+    height: 0;
+    top: 0px;
+    left: 0px;
+    z-index: 2000;
+}
+th.uwider, td.uwider
+{
+    padding-left: 5px;
+    padding-right: 5px;
+}
+td.uwider
+{
+    padding-left: 15px;
+}
+.quickmenuoff
+{
+    visibility: hidden;
+    position: fixed;
+    z-index: 990;
+}
+#savename_content
+{ 
+    width: 300px;
+    height: 150px;
+    margin-top: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+div.bottom
+{
+    position: absolute;
+    bottom: 10px;
+    right: 9px;
+}
+#alert_inner
+{
+    display: table;
+    text-align: center;
+    height: 150px;
+    width: 500px;
+}
+
+#alert_content 
+{
+    display: table-cell;
+    margin: auto;
+    padding-left:20px;
+    padding-top:10px;
+    padding-right:10px;
+    vertical-align: middle;
+}
+
+.pulldown_last_item
+{
+    border-radius: 0 0 9px 9px;
+}
+table.subcat
+{
+    border-collapse: collapse;
+    border-width: 0px;
+    border-spacing: 0px;
+}
 
 tr.set_content {} /* use for highlighting sets */
 div.resurrect_button {} /* used for buttons on sets */
@@ -986,3 +1148,4 @@ div.remove_button {}/* used for buttons on sets */
 div.wipe_button {}/* used for buttons on sets */
 div.unmark_int_button {}/* used for buttons on sets */
 span.a_tab {} /* used for tabs */
+

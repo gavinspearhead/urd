@@ -73,6 +73,7 @@ function get_default_prefs()
     $prefArray['default_group']     = 0;
     $prefArray['default_spot']      = '';
     $prefArray['default_feed']      = 0;
+    $prefArray['url_redirector']    = 'http://www.nullrefer.com/?';
     $prefArray['stylesheet']        = DEFAULT_STYLESHEET;
     $prefArray['subs_lang']         = 'en';       //subtitle languages
     $prefArray['download_text_file']    = 1;

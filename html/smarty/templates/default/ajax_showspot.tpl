@@ -53,6 +53,12 @@ $(document).ready(function() {
     $('#poster').click( function(e) { load_sets({ 'poster':'{$poster|escape:javascript}' }); } );
     $('#post_comment').click( function(e) { post_spot_comment('{$spotid}'); } );
     $('#report_spam').click( function(e) { report_spam('{$spotid}')} );
+    $('#similar_button').click( function(e) { 
+            {if $reference == ''}
+                load_sets( { 'search' : '{$first_two_words|escape:javascript}' }); });
+            {else}
+                load_sets( { 'reference' : '{$reference|escape:javascript}' }); });
+            {/if}
 });
 </script>
 <input type="hidden" id="spot_subject" value="{$spotid}">
@@ -97,26 +103,51 @@ $(document).ready(function() {
 {/foreach}
 {/foreach}
 
+{$hadref=0}
 {capture assign=extsetoverview}
 	{$looped=0}
 	{foreach $display as $vals}
-	{if $vals.value != "0" && $vals.value != "" && $vals.value != "name"}
-		{$looped="`$looped+1`"}
-		<tr class="vtop small comment"><td class="nowrap bold">{$vals.name}:</td><td>
-		{if $vals.display == 'text'}{$vals.value|escape}{/if}
-		{if $vals.display == 'url'}<span class="buttonlike" onclick="javascript:jump('{$vals.value|escape:javascript}',1);">{$vals.value|escape}</span>{/if}
-		{if $vals.display == 'number'}<b>{$vals.value|escape}</b>{/if}
-		{if $vals.display == 'checkbox'}{if $vals.value == 1}Yes{else}No{/if}{/if}
-		</td></tr>
-	{/if}
+        {if $vals.value != "0" && $vals.value != "" && $vals.value != "name"}
+            {$looped="`$looped+1`"}
+            <tr class="vtop small comment"><td class="nowrap bold">{$vals.name}:</td><td>
+            {if $vals.display == 'text'}{$vals.value|escape}{/if}
+            {if $vals.display == 'url'}
+                {if $hadref == 0} 
+                    <span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
+                    {$hadref=1}
+                {/if}
+            {if $url.icon == ''} 
+                <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.display|escape}</span>
+            {else}
+                <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.icon|escape}</span>        
+            {/if}
+            {/if}
+            {if $vals.display == 'number'}<b>{$vals.value|escape}</b>{/if}
+            {if $vals.display == 'checkbox'}{if $vals.value == 1}Yes{else}No{/if}{/if}
+            </td></tr>
+        {/if}
 	{/foreach}
+    {if $hadref == 0} 
+        {$looped="`$looped+1`"}
+        {$first_two_words}
+        <tr class="vtop small comment"><td class="nowrap bold">{$LN_browse_tag_link}:</td><td>
+		    <span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
+        </td></tr>
+    {/if}
+
 {/capture}
 
 {if $tag != ''}
 <tr class="comment"><td class="nowrap bold">{$LN_spots_tag}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'search':'{$tag|escape:javascript}' });">{$tag|escape}</span></td></tr>
 {/if}
-{if $url != ''}
-<tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td><span class="buttonlike" onclick="javascript:jump('{$url|escape:javascript}',1);">{$url|escape}</span></td></tr>
+{if $url}
+<tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td>
+{if $url.icon == ''} 
+<span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.display|escape}</span>
+{else}
+<span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.icon|escape}</span>
+{/if}
+</td></tr>
 {/if}
 {if $image != ''}
 <tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image|escape}</span></td></tr>

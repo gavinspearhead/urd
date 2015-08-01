@@ -154,10 +154,12 @@ class TagHandler
     public static function handle_url($params, $contents)
     {
         # are only specific images allowed?
+
+
         if ($params['originalparams'] != '') {
             $url = substr($params['originalparams'], 1);
-        } elseif (substr($contents[0]['content'], 0, 7) == 'http://' || substr($contents[0]['content'], 0,8) == 'https://') {
-            $url = $contents[0]['content'];
+        } elseif (substr($contents[0]['content'], 0, 7) == 'http://' || substr($contents[0]['content'], 0, 8) == 'https://') {
+            $url = $contents[0]['content'] ;
         } else {
             return TagHandler::handle_empty($params, $contents);
         }
@@ -181,10 +183,7 @@ class TagHandler
                 $content = TagHandler::$tagconfig['i']['img']['allowedimgs'][$img_name];
             }
         }
-        return Array('prepend' => '<img src="' . $content . '">',
-							 'content' => $origAppend,
-							 'append' => '');
-
+        return array('prepend' => '<img src="' . $content . '">', 'content' => $origAppend, 'append' => ''); 
     }
 
     /* handle the noubb tag */
@@ -197,7 +196,7 @@ class TagHandler
     {
         # quote it
 
-        return Array('prepend' => '<blockquote><strong>' . sprintf(_("%s commented earlier:"), substr($params['originalparams'], 1)). '</strong><br>',
+        return array('prepend' => '<blockquote><strong>' . sprintf(_("%s commented earlier:"), substr($params['originalparams'], 1)). '</strong><br>',
             'content' => $contents,
             'append' => '</blockquote>');
     }

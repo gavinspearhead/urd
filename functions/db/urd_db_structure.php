@@ -677,6 +677,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('comments', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('rating', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('rating_count', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
+        $t->add_column(new urd_column('reference', 'VARCHAR(32)', '', TRUE, 'utf8', ''));
         $t->add_index(new urd_index('spots_prim', 'PRIMARY', array('id')));
         $t->add_index(new urd_index('spot_stamp', '', array('stamp')));
         $t->add_index(new urd_index('spot_size', '', array('size')));

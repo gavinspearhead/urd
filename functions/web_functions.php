@@ -2204,7 +2204,7 @@ function return_result(array $vars=array())
     die(json_encode($vars));
 }
 
-function link_to_url($description)
+function link_to_url(DatabaseConnection $db, $description, $userid)
 {
     $position = 0;
     while (preg_match('|https?:\/\/[-a-z0-9_:./&%!@#$?^()+=\\;]+|i', $description, $matches, PREG_OFFSET_CAPTURE, $position)) {
@@ -2214,7 +2214,7 @@ function link_to_url($description)
         $d2 = substr($description, $urlposition + $l);
         $new_url = $url;
         if ((strpos(substr($d1, -10), '[url]') === FALSE) && (strpos(substr($d2, 0, 10), '[/url]') === FALSE)) {
-            $new_url = '[url]' . $url . '[/url]';
+            $new_url = "[url=" .  make_url($db, $url, $userid) . ']' . $url . '[/url]';
         }
         $new_l = strlen($new_url);
         $description = $d1 . $new_url . $d2;
@@ -2315,3 +2315,36 @@ function find_special_file(DatabaseConnection $db, $setID)
     return array($rv2, $rv1, $rv3, $rv4);
 }
 
+function make_url(DatabaseConnection $db, $url, $userid)
+{
+    $redir = get_pref($db, 'url_redirector', $userid, '');
+    if ($url == '') { 
+        return '';
+    }
+    if ($redir != '') {
+        return $redir . ($url);
+    } else {
+        return $url;
+    }
+}
+
+function find_url_icon($url)
+{
+    if (trim($url) == '') { return '';}
+    $parts = parse_url($url);
+    $host = $parts['host'];
+    if (trim($host) == '') { return ''; }
+    if (substr( $host, -strlen('imdb.com')) == 'imdb.com') { return 'IMDB'; }
+    elseif (substr( $host, -strlen('themoviedb.com')) == 'themoviedb.com') { return 'TMDB'; }
+    elseif (substr( $host, -strlen('filmstarts.de')) == 'filmstarts.de') { return 'Filmstarts'; }
+    elseif (substr( $host, -strlen('tvrage.com')) == 'tvrage.com') { return 'TVrage'; }
+    elseif (substr( $host, -strlen('moviemeter.nl')) == 'moviemeter.nl') { return 'Moviemeter'; }
+    elseif (substr( $host, -strlen('iafd.com')) == 'iafd.com') { return 'IAFD'; }
+    else return '';
+}
+
+
+function pack_url_data(DatabaseConnection $db, $url, $userid)
+{
+    return array('link' => make_url($db, trim(strip_tags($url)), $userid), 'display' => $url, 'icon'=> find_url_icon($url));
+}

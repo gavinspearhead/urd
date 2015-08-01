@@ -1515,10 +1515,14 @@ function in_setdata($setID, $type, array $setdata)
     return FALSE;
 }
 
-function validate_url($url)
+function validate_url($url, $strict=TRUE)
 {
     assert(is_string($url));
-    $res = preg_match ('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/~%&;\[\]]*)?/$|i', $url);
+    if ($strict) {
+        $res = preg_match ('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/~%&;\[\]]*)?/$|i', $url);
+    } else {
+        $res = preg_match ('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/?~%&;\[\]]*)?$|i', $url);
+    }
 
     return $res == 1;
 }
@@ -2824,3 +2828,28 @@ function download_exists(DatabaseConnection $db, $dlid)
     return isset($res[0]['ID']);
 }
 
+function find_reference($url) 
+{
+    $rv = preg_match('/http\:\/\/.*imdb\.(com|de|es|pt|fr|it)\/[\w?\-\/?]*(tt[0-9]+)[\w?\-\/?]*/i', $url, $matches);
+    if ($rv) {
+        if (isset($matches[2])) { 
+            var_dump($matches[2]);
+            return 'imdb:' . $matches[2];
+        }
+    }
+     $rv = preg_match('/http\:\/\/.*moviemeter\.nl\/film\/([0-9]+)/i', $url, $matches);
+    if ($rv) {
+        if (isset($matches[1])) { 
+            var_dump($matches[1]);
+            return 'movm:' . $matches[1];
+        }
+    }
+
+    return '';
+}
+
+function preg_trim($string, $pattern) 
+{
+    $pattern = array('/^' . $pattern . '*/', '/' . $pattern . '*$/');
+    return preg_replace($pattern, '', $string);
+}

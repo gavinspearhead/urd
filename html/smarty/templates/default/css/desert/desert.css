@@ -176,14 +176,14 @@ td.psb_3,td.ps_3
 }
 td.psb_4,td.ps_4
 {
-    font-size: 6pt;
+    font-size: 7pt;
     background-color: #999999;
     width: 25px;
     text-align: center;
 }
 td.psb_5,td.ps_5
 {
-    font-size: 6pt;
+    font-size: 7pt;
     background-color: #aaaaaa;
     width: 25px;
     text-align: center;
@@ -316,19 +316,6 @@ input, select, textarea
     font-size: 8pt;
     border-radius: 5px;
 }
-
-.submit
-{
-    background: #dbdaa9;
-    color: #303030;
-    padding: 1px;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    border: 2px solid;
-    font-weight: bold;
-    border-color:#484848 #484848 #707070 #707070;
-    cursor: pointer;
-    border-radius:4px;
-}
 .submitsmall
 {
     background: #dbdaa9;
@@ -342,12 +329,6 @@ input, select, textarea
     cursor: pointer;
     border-radius:4px;
 } 
-#header
-{
-    height: 100px;
-    position: absolute;
-    z-index: 100;
-}
 #status
 {
     font-size: small;
@@ -402,12 +383,6 @@ input, select, textarea
     border-radius: 9px;
     border: 2px solid #BA7900;
     box-shadow: -3px 3px 3px 4px #49370E;
-}
-#transfersdiv
-{
-    width: 100%;
-    float: left;
-    z-index: 10;
 }
 #nojs
 {
@@ -504,10 +479,6 @@ input, select, textarea
     background: #a68427;
 
 }
-.extsetnamewidth
-{
-    width: 140px;
-}
 .extsetinput
 {
     color: white;
@@ -522,13 +493,6 @@ input, select, textarea
 {
     color: #ddaa55;
 }
-
-.logintable
-{
-    padding-top: 100px;
-    margin: auto;
-}
-
 #minibasketdiv
 {
     margin-left: 8px;
@@ -539,23 +503,6 @@ input, select, textarea
     border-radius: 3px 3px 3px 3px;
     background-color: #DBDAA9;
 }
-
-#basketdiv
-{
-}
-
-#innerbasketdiv
-{
-    max-height: 100px;
-    width: 100%;
-    overflow-y: auto;
-}
-
-.innerbaskettable
-{
-    width: 100%;
-}
-
 .baskettable
 {
     width: 99%;
@@ -564,14 +511,12 @@ input, select, textarea
     border: solid #a68427 1px;
     border-radius: 9px 9px 9px 0;
 }
-
 .basketright
 {
     font-size: x-small;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     text-align: right;
 }
-
 .basketleft
 {
     font-size: x-small;
@@ -594,47 +539,11 @@ table.browsetoptable
     padding: 0;
     margin: 0;
 }
-table.compact
-{
-    border-collapse: collapse;
-    padding: 0;
-    margin: 0;
-}
-td.minimalistic
-{
-    padding: 0;
-    margin: 0;
-}
-.quickmenuoff
-{
-    visibility: hidden;
-    position: fixed;
-    z-index: 990;
-}
-.quickmenuon
-{
-    visibility: visible;
-    position: fixed;
-    z-index: 1000005;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 250px;
-}
-
 .quickmenubutton
 {
     background: #b49828;
-    border: none;
-    margin: 0;
-    padding: 0 4px 1px 4px;
-    width: 250px;
-    height: 24px;
     color: black;
-    text-align: left;
-    vertical-align: top;
     font-size: small;
-    overflow: hidden;
 }
 #quickmenuinner
 {
@@ -649,7 +558,7 @@ td.minimalistic
     background: #000066;
     border: 1px solid #565427;
     font-size: small;
-    height: 24px;
+    height: 2em;
 }
 .qmclose:hover
 {
@@ -810,17 +719,6 @@ a.rss
     text-decoration: none;
 
 }
-span.ng_submit
-{
-    left: 0;
-    position: relative;
-}
-#ng_headerbox
-{
-    width: 100%;
-    margin: 0;
-    margin-bottom: -2px;
-}
 
 div.ng_selector
 {
@@ -833,22 +731,6 @@ div.ng_selector
     padding-right: 10px;
     padding-left: 10px;
     vertical-align: bottom;
-}
-
-div.prefix_transfers,
-div.prefix_prefs
-{
-    margin-top: -2px;
-}
-
-.advanced_search 
-{
-    padding-left:16px;
-}
-textarea.filecontents
-{
-    width: 660px;
-    height: 260px;
 }
 ul.tabs ,div.tabs
 {
@@ -871,26 +753,6 @@ li.tab_selected, span.tab_selected,.tab_selected
     color: #7D3B01;
     background: #dddddd;
     border-color: #606060 #606060 #484848 #484848;
-}
-.leftward 
-{
-    margin-left: 65px;
-    margin-top: 25px;
-}
-#leftcalendar 
-{
-    width: 220px;
-    float: left;
-}
-#rightcalendar 
-{
-    float: left;
-}
-#calendarbottom
-{
-    margin-top: 150px;
-    margin-right: 50px;
-    clear:both;
 }
 .black 
 {
@@ -967,15 +829,6 @@ tr.bottomline
     font-size: 9pt;
     border-radius: 9px;
 }
-
-#helpwrapper 
-{
-    position: fixed;
-    height: 0;
-    top: 0px;
-    left: 0px;
-    z-index: 2000;
-}
 #smallhelp
 {
     position: fixed;
@@ -1001,11 +854,6 @@ tr.bottomline
     margin-top: -150px;
     margin-left: -250px;
 }
-
-td.settings 
-{
-    width: 50%;
-}
 tr.server_enabled
 {
     color: black;
@@ -1015,16 +863,6 @@ tr.server_disabled
     color: #404040;
     font-style : italic;
 }
-th.uwider, td.uwider
-{
-    padding-left: 5px;
-    padding-right: 5px;
-}
-td.uwider
-{
-    padding-left: 15px;
-}
-
 .checkbox_tri
 {
     background-image:url('../../img/icon_cross.png');
@@ -1310,16 +1148,6 @@ td.uwider
     border: 2px solid #BA7900;
     box-shadow: -3px 3px 3px 4px #49370E;
 }
-
-#savename_content
-{ 
-    width: 300px;
-    height: 150px;
-    margin-top: 30px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
 td.ps_hover {
     color: #8d4b11; 
     font-weight: bold;
@@ -1332,26 +1160,6 @@ div.bottom {
     bottom: 10px;
     right: 8px;
 }
-
-#alert_content {
-    display: table-cell;
-    margin: auto;
-    padding-left:20px ;
-    padding-top:10px;
-    padding-right:10px;
-    vertical-align: middle;
-}
-
-
-#alert_inner
-{
-    display: table;
-    text-align: center;
-    height: 150px;
-    width: 500px;
-}
-
-
 .alertdiv
 {
     font-family: verdana, Arial, Helvetica, Sans-Serif;
@@ -1370,8 +1178,6 @@ div.bottom {
     border: 2px solid #BA7900;
     box-shadow: -3px 3px 3px 4px #49370E;
 }
-
-
 #pulldown_menu 
 {
     width: 100%;
@@ -1384,11 +1190,9 @@ div.bottom {
     z-index: 1000;
     position: fixed;
     padding-left: 10px;
-    height: 22px;
+    height: 2em;
     top:0;
 }
-
-
 .pulldown ul li.commando {
     background: #AE8B00;
     border-color: #AE8B00 #7C6000 #1E1700;
@@ -1412,9 +1216,10 @@ div.bottom {
 }
 .pulldown ul li.smallstatus
 {
-    width: 20px;
+    width: 1.75em;
     float: left;
     background: #3f0000;
+    border-right: 1px solid #937709;
     border-color: #887000 #504000 #1E1700;
     background-image: -webkit-linear-gradient(top, #887000, #504000 50%, #1E1700);
     background-image: -moz-linear-gradient(top, #887000, #504000 50%, #1E1700);
@@ -1422,7 +1227,6 @@ div.bottom {
     background-image: linear-gradient(to bottom, #887000, #504000 50%, #1E1700);
     position:relative; 
     list-style-type:none; 
-    border-right: 1px solid #937709;
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
@@ -1438,12 +1242,10 @@ div.bottom {
     z-index: 1200;
     list-style-type:none; 
 }
-
-
 .pulldown ul li.smalllogo 
 {
     width: 40px;
-    height: 22px;
+    height: 2em;
     float: left;
     color: #ffffff;
     position: relative;
@@ -1455,8 +1257,6 @@ div.bottom {
     background-image: linear-gradient(to bottom, #887000, #504000 50%, #1E1700);
     list-style-type: none; 
 }
-
-
 .pulldown ul li:hover ul 
 { 
     display: block; 
@@ -1473,8 +1273,8 @@ div.bottom {
     color: #ffffff;
     text-align: center;
     font-size: small;
-    height: 22px;
-    width: 110px; 
+    height: 2em;
+    width: 9em; 
     float: left;
     position:relative; 
     list-style-type:none; 
@@ -1483,8 +1283,6 @@ div.bottom {
     border-top: 0;
     border-bottom: 0;
 }
-
-
 .pulldown ul li:hover ul li.plain
 {
     background: #403000;
@@ -1495,7 +1293,7 @@ div.bottom {
     background-image: linear-gradient(to bottom, #403000, #261D00 50%, #060500);
     width:250px;
     z-index: 2000;
-    height: 24px;
+    height: 2em;
     border: none;
     overflow: hidden;
     list-style-type:none;
@@ -1511,7 +1309,7 @@ div.bottom {
     background-image: linear-gradient(to bottom, #AE8B00, #7C6000 50%, #342600);
     overflow: hidden;
     border: none;
-    height: 24px;
+    height: 2em;
     list-style-type:none;
 }
 
@@ -1524,16 +1322,11 @@ div.bottom {
     background-image: -o-linear-gradient(top, #403000, #261D00 50%, #060500);
     background-image: linear-gradient(to bottom, #403000, #261D00 50%, #060500);
     width: 450px;
-    height: 24px;
+    height: 2em;
     z-index: 2000;
     border: none;
     overflow: hidden;
     list-style-type:none;
-}
-
-.pulldown_last_item
-{
-    border-radius: 0 0 9px 9px;
 }
 .urdlogo2
 {
@@ -1555,9 +1348,6 @@ div.bottom {
     overflow-x: hidden;
     overflow-y: scroll;
 }
-
-
-
 #contentout
 {
     font-family: Geneva, Arial, Helvetica, sans-serif;
@@ -1571,19 +1361,6 @@ div.bottom {
     overflow-y: auto;
     z-index: 10;
 }
-
-
-#content
-{
-    height:100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    z-index: 10;
-
-}
-
 .Message
 {
     position: fixed;
@@ -1612,28 +1389,6 @@ div.bottom {
     background: linear-gradient(to bottom, #ff7f04 4%,#ff7c00 31%,#ffa73d 74%,#ffa54c 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff7f04', endColorstr='#ffa54c',GradientType=0 ); /* IE6-9 */
 }
-
-#status_indicator 
-{
-    float: left;
-    position: relative;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
-
-
-#status_msg
-{
-    height:22px;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    display: inline-block;
-}
-
-
 #smalllogo
 {
     width: 38px;
@@ -1641,27 +1396,11 @@ div.bottom {
     background: url('../../img/desert/urdlogo_small.png') no-repeat;
     width: 100%;
     margin-left: 1px;
-    margin-top: 1px;
+    margin-top: 3px;
     position: relative;
 
 }
-#scrollmenuleft
-{
-    background: #3f0000;
-    border-color: #887000 #504000 #1E1700;
-    background-image: -webkit-linear-gradient(top, #887000, #504000 50%, #1E1700);
-    background-image: -moz-linear-gradient(top, #887000, #504000 50%, #1E1700);
-    background-image: -o-linear-gradient(top, #887000, #504000 50%, #1E1700);
-    background-image: linear-gradient(to bottom, #887000, #504000 50%, #1E1700);
-    z-index: 100000;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 10px;
-    font-weight: bold;
-    overflow: hidden;
-    height:22px;
-}
+#scrollmenuleft,
 #scrollmenuright
 {
     background: #3f0000;
@@ -1670,14 +1409,7 @@ div.bottom {
     background-image: -moz-linear-gradient(top, #887000, #504000 50%, #1E1700);
     background-image: -o-linear-gradient(top, #887000, #504000 50%, #1E1700);
     background-image: linear-gradient(to bottom, #887000, #504000 50%, #1E1700);
-    z-index: 100000;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    width: 10px;
-    overflow: hidden;
     font-weight: bold;
-    height:22px;
 }
 
 .white
@@ -1712,15 +1444,6 @@ div.bottom {
     overflow: hidden;
     box-shadow: -3px 3px 3px 4px #49370E;
 }
-
-
-table.subcat
-{
-    border-collapse: collapse;
-    border-width: 0px;
-	border-spacing: 0px;
-}
-
 td.subcat_head
 {
     color: white;
@@ -1735,9 +1458,6 @@ td.subcat
 	border-spacing: 0px;
     width: 200px;
 }
-
-
-
 tr.info
 {
     color: white;
@@ -1775,14 +1495,11 @@ table.set_details
     border-collapse: collapse;
     border-spacing: 0;
 }
-
-
 .pulldown ul li.menu_highlight
 {
     background-image:url(none);
     background-color: #dd9900;
 }
-
 input.passwordweak,
 input.passwordincorrect
 {
@@ -1798,28 +1515,13 @@ input.passwordcorrect
     background-color:#70aa70;
 }
 
-.progressbar > span
-{
-  position: relative;
-  float: left;
-  margin: 0 0;
-  height: 12px;
-  line-height: 16px;
-  text-align: right;
-  border: 0px ;
-  border-radius: 6px;
-}
 .progressbar
 {
-  height: 12px;
   background-color: #c0a73a;
-  border-left: 0px;
-  border-right: 0px;
-  border-radius: 6px;
-  z-index: 1000;
 }
-.grey {
-background: #888888;
+.grey 
+{
+  background: #888888;
   background-image: -webkit-linear-gradient(top, #d0d0d0, #ababab 70%, #888888);
   background-image: -moz-linear-gradient(top, #d0d0d0, #ababab 70%, #888888);
   background-image: -o-linear-gradient(top, #d0d0d0, #ababab 70%, #888888);
@@ -1834,8 +1536,7 @@ background: #888888;
     background: -ms-linear-gradient(top, #5a8529 0%,#496e22 70%,#3f5f1d 100%); /* IE10+ */
     background: linear-gradient(to bottom, #5a8529 0%,#496e22 70%,#3f5f1d 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5a8529', endColorstr='#3f5f1d',GradientType=0 ); /* IE6-9 */
-
-  }
+}
 
 .red {
      background: #a42a1a;
@@ -1847,8 +1548,7 @@ background: #888888;
     background: -ms-linear-gradient(top, #b31f0b 0%,#96180a 70%,#801408 100%);
     background: linear-gradient(to bottom, #b31f0b 0%,#96180a 70%,#801408 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b31f0b', endColorstr='#801408',GradientType=0 );
-
-  }
+}
 
 .orange {
   background: #f2b63c;
@@ -1867,7 +1567,6 @@ background: #888888;
   background-image: -o-linear-gradient(top, #aed5ed, #7bbbe2 70%, #5aaadb);
   background-image: linear-gradient(to bottom, #aed5ed, #7bbbe2 70%, #5aaadb);
 }
-
 
 #sidebar_button
 {

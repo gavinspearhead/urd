@@ -33,6 +33,7 @@ $process_name = 'urd_web'; // needed for message format in syslog and logging
 
 require_once "$path_idx_std/../config.php";
 require_once "$path_idx_std/../functions/defines.php";
+require_once "$path_idx_std/../functions/defaults.php";
 require_once "$path_idx_std/../functions/urdversion.php";
 require_once "$path_idx_std/../functions/functions.php";
 require_once "$path_idx_std/../functions/file_functions.php";

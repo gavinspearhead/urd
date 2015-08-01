@@ -21,19 +21,10 @@
  * $Id: settings.tpl 2283 2011-07-30 22:32:07Z gavinspearhead $
  *}
 {strip}
-{if $usersettype == $USERSETTYPE_SPOT}
-    <select id="saved_search" onchange="javascript:update_spot_searches();">
-    <option value="" {if $current == ""}selected="selected"{/if}></option>
-    {foreach $saved_searches as $saved_search}
-    <option value="{$saved_search|escape}" {if $current == $saved_search}selected="selected"{/if}>{$saved_search|escape}</option>
-    {/foreach}
-    </select>
-{else if $usersettype == $USERSETTYPE_GROUP || $usersettype == $USERSETTYPE_RSS}
-    <select id="saved_search" onchange="javascript:update_browse_searches();">
+    <select id="saved_search" class="textbox10m">
     <option value=""></option>
     {foreach $saved_searches as $saved_search}
     <option value="{$saved_search|escape}" {if $saved_search == $current}selected="selected"{/if}>{$saved_search|escape}</option>
     {/foreach}
     </select>
-{/if}
 {/strip}

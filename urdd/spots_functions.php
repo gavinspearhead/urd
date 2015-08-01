@@ -67,6 +67,7 @@ class urd_spots
             'url',
             'nzbs',
             'description',
+            'reference',
             'reports',
             'comments',
             'rating',
@@ -91,6 +92,7 @@ class urd_spots
             $spot_data['url'],
             (($spot_data['nzb'] != '') ? db_compress(serialize($spot_data['nzb'])) : ''),
             db_compress($spot_data['body']),
+            $spot_data['reference'],
             0,
             0,
             0,
@@ -477,7 +479,7 @@ class urd_spots
         }
     }
 
-    private static function parse_links($data)
+    private static function parse_links($data, $spot_url)
     {
         $imdb_link = $moviemeter_link = $default_link = '';
         $links = array();
@@ -497,11 +499,11 @@ class urd_spots
             }
         }
         $link = '';
-        if ($imdb_link != '') {
+        if ($imdb_link != '' && $imdb_link != $spot_url) {
             $link = $imdb_link;
-        } elseif ($moviemeter_link != '') {
+        } elseif ($moviemeter_link != '' && $moviemeter_link != $spot_url) {
             $link = $moviemeter_link;
-        } elseif ($default_link != '') {
+        } elseif ($default_link != '' && $default_link != $spot_url) {
             $link = $default_link;
         } else {
             return FALSE;
@@ -510,15 +512,33 @@ class urd_spots
         return $link;
     }
 
-    private function parse_spots_for_extset_data(array $spot_data, $spotid)
+    private function update_spot_reference(DatabaseConnection $db, $spotid, $reference) 
     {
-        $extset_data = array();
-        $link_data = self::parse_links($spot_data['body']);
-        if (($link_data !== FALSE) && ($link_data != $spot_data['url'])) {
-            $extset_data['link'] = $link_data;
+        $sql = '"reference" FROM spots WHERE "spotid" = :spotid';
+        $res = $db->select_query($sql, 1, array(':spotid'=>$spotid));
+        if (!isset($res[0]['reference'])) {
+            echo_debug("Setting reference: $reference", DEBUG_SERVER);
+            $db->update_query_2('spots', array('reference'=> $reference), '"spotid"=?', array($setid));
         }
-        if (count($extset_data) > 0) {
-            urd_extsetinfo::add_ext_setdata($this->db, $spotid, $extset_data, USERSETTYPE_SPOT, ESI_NOT_COMMITTED);
+    }
+
+
+    private function parse_spots_for_extset_data(DatabaseConnection $db, array $spot_data, $spotid)
+    {
+        $link_datas = self::parse_links($spot_data['body'], $spot_data['url');
+        echo_debug("Found links: " . count( $link_datas), DEBUG_SERVER);
+        foreach ($link_datas as $link_data) {
+            $extset_data = array();
+            if (($link_data !== FALSE) && ($link_data != $spot_data['url'])) {
+                $extset_data['link'] = $link_data;
+            }
+            if (count($extset_data) > 0) {
+//        echo_debug("Found link: $link_data", DEBUG_SERVER);
+                $reference = find_reference($link_data);
+  //      echo_debug("Found ref: $reference", DEBUG_SERVER);
+                urd_extsetinfo::add_ext_setdata($db, $spotid, $extset_data, USERSETTYPE_SPOT, ESI_NOT_COMMITTED, FALSE);
+                self::update_spot_reference($db, $spotid, $reference);
+            }
         }
     }
 
@@ -848,8 +868,9 @@ class urd_spots
                         if (!$spot_data['verified']) {
                             write_log('Signature on spot incorrect', LOG_NOTICE);
                         }
+                        $spot_data['reference'] = find_reference($spot_data['url']);
                         $spotid = $this->add_spot($spot_data);
-                        $this->parse_spots_for_extset_data($spot_data, $spotid);
+                        $this->parse_spots_for_extset_data($this->db, $spot_data, $spotid);
                     }
                 } catch (exception $e) {
                     write_log($e->getMessage(), LOG_WARNING);

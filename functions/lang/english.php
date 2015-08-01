@@ -583,6 +583,8 @@ $LN['pref_download_text_file']      = 'Download articles without attachments';
 $LN['pref_download_text_file_msg']  = 'Download articles text when no attachments is found in the articles';
 $LN['pref_search_terms']            = 'Automatically highlight these terms';
 $LN['pref_blocked_terms']           = 'Automatically hide these terms';
+$LN['pref_url_redirector']          = 'Use URL redirector';
+$LN['pref_url_redirector_msg']      = 'Use URL redirector (e.g. to prevent leaking referer information, leave empty for direct linking)';
 $LN['spam_reports']                 = 'Spam reports';
 $LN['pref_setcompleteness_msg']     = 'Sets with completeness percentage of at least this value will be shown is the groups page';
 $LN['config_spots_max_categories']   = 'Max. number of categories per spot';
@@ -1655,6 +1657,7 @@ $LN['spots_subcategories']          = 'Subcategories';
 $LN['pref_spots_category_mapping']       = 'Spots category mapping for';
 $LN['pref_spots_category_mapping_msg']   = 'Spots category mapping to URD categories';
 
+$LN['spots_similar']     = 'Similar';
 $LN['spots_other']       = 'Other';
 $LN['spots_all']         = 'Everything';
 

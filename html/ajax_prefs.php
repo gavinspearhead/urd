@@ -31,6 +31,8 @@ require_once "$pathap/../functions/pref_functions.php";
 
 verify_access($db, NULL, FALSE, '', $userid, FALSE);
 
+
+
 function get_search_type_array()
 {
     global $LN;
@@ -145,6 +147,10 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
     global $LN;
 
     switch ($name) {
+        case 'url_redirector':
+            $rv = verify_url($value, FALSE);
+
+            return $rv;
         case 'spot_spam_limit':
             $rv = verify_numeric($value, 0, NULL, 1000);
             $value = unformat_size($value, 1000);
@@ -392,6 +398,7 @@ function show_preferences(DatabaseConnection $db, $userid)
     $scripts_path = $dlpath . SCRIPTS_PATH;
 
     $prefArray = load_prefs($db, $userid, TRUE);
+echo_debug_var_file('/tmp/foo', $prefArray);
     $module_config = urd_modules::get_urd_module_config(get_config($db, 'modules'));
 
     $global_scripts_array = get_scripts($db, $scripts_path, $userid, TRUE);
@@ -517,6 +524,9 @@ function show_preferences(DatabaseConnection $db, $userid)
         $setcompleteness_msg = verify_numeric($prefArray['setcompleteness'],0,100,1000);
     }
 
+    if (!isset($url_redirector_msg)) {
+        $url_redirector_msg = verify_url($prefArray['url_redirector'], FALSE);
+    }
     if (!isset($global_scripts_msg)) {
         $global_scripts_msg = '';
     }
@@ -608,6 +618,7 @@ function show_preferences(DatabaseConnection $db, $userid)
         new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $search_options_array, 7),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_group'], 'default_group', $LN['pref_default_group_msg'], $default_group_msg, $groups_array, $prefArray['default_group']),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_feed'], 'default_feed', $LN['pref_default_feed_msg'], $default_feed_msg, $feeds_array, $prefArray['default_feed']),
+        new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_url_redirector'], 'url_redirector', $LN['pref_url_redirector_msg'], $url_redirector_msg, $prefArray['url_redirector']),
     );
 
     $downloading = array (
