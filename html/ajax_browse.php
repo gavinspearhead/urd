@@ -211,7 +211,7 @@ class group_viewer
 
             $thisset['imdblink'] = '';
             if ($arr['imdblink'] != NULL) {
-                $thisset['imdblink'] = make_url($this->db, $arr['imdblink'], $this->userID;
+                $thisset['imdblink'] = make_url($this->db, $arr['imdblink'], $this->userID);
             }
 
             if ($arr['bettername'] != '') {
