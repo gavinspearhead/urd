@@ -163,9 +163,7 @@ class urd_spots
 
                         return FALSE;
                     }
-                    if ($spotter_id == '') {
-                        var_dump($line);
-                    }
+                    
                     $spot_data['spotter_id'] = $spotter_id;
                     break;
                 case 'date':

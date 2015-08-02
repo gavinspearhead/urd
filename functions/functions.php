@@ -1617,7 +1617,7 @@ function store_merge_sets_data(DatabaseConnection $db, $new_setID, $old_setID, $
     }
 }
 
-function start_urdd()
+function start_urdd($web=FALSE)
 {
     global $db;
     $prefs = load_config($db);
@@ -1627,7 +1627,11 @@ function start_urdd()
     $urdd_pars = '-U ' . my_escapeshellarg(get_from_array($prefs,'urdd_pars',''), FALSE);
     if ($urdd == '') {
         write_log('Urdd.sh not found', LOG_ERR);
-        exit(-1);
+        if ($web === FALSE) {
+            exit(-1);
+        } else {
+            return_result(array('error' => 'Urdd.sh not found'));
+        }
     }
     $bandwidth = get_from_array($prefs, 'maxdl', '');
     // Command to a variable, use full path
@@ -1649,6 +1653,10 @@ function start_urdd()
     exec($cmd);
     // Give it some time to start before we check if it's running etc:
     usleep(500000);
+    if ($web !== FALSE) {
+        return_result();
+    }
+
 }
 
 
@@ -2332,7 +2340,6 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
         $genre = get_extsetdata($db, $setID, '%genre');
         $xrated = get_extsetdata($db, $setID, 'xrated') ? 'XXX' : '';
     }
-    //var_dump($category);
     if ($extended_paths) {
 
         $now = time();
@@ -2833,14 +2840,12 @@ function find_reference($url)
     $rv = preg_match('/http\:\/\/.*imdb\.(com|de|es|pt|fr|it)\/[\w?\-\/?]*(tt[0-9]+)[\w?\-\/?]*/i', $url, $matches);
     if ($rv) {
         if (isset($matches[2])) { 
-            var_dump($matches[2]);
             return 'imdb:' . $matches[2];
         }
     }
      $rv = preg_match('/http\:\/\/.*moviemeter\.nl\/film\/([0-9]+)/i', $url, $matches);
     if ($rv) {
         if (isset($matches[1])) { 
-            var_dump($matches[1]);
             return 'movm:' . $matches[1];
         }
     }

@@ -1012,12 +1012,13 @@ try {
         case 'poweron':
             // Turn URDD on
             verify_access($db, NULL, TRUE, '', $userid, TRUE);
-            start_urdd();
+            start_urdd(TRUE);
             break;
         case 'poweroff' :
             // Turn URDD off
             verify_access($db, NULL, TRUE, '', $userid, TRUE);
             stop_urdd($userid);
+            return_result();
             break;
         case 'restart':
             verify_access($db, NULL, TRUE, '', $userid, TRUE);

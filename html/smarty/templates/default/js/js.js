@@ -137,6 +137,7 @@ function control_action(action)
             cmd: action,
             challenge: challenge
         }).done(function(html) {
+            console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                update_message_bar(x.message);
