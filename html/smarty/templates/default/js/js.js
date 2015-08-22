@@ -3385,6 +3385,8 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         data.source = source;
     }
     $.post('ajax_stats.php', data).done(function(html) {
+        console.log(html);
+            
         var y = $.parseJSON(html);
         if (y.error == 0) {
             $('#show_stats').html(y.contents);
@@ -3396,7 +3398,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
             $('#selected').val(type);
             update_search_bar_height();
         } else {
-            update_message_bar(x.error);
+            update_message_bar(y.error);
         }
     });
 }
@@ -4051,6 +4053,7 @@ function load_groupsets(options)
     data.view_size = view_size;
     $('#suggest_div').addClass('hidden'); 
     $.post(url, data).done(function(html) {
+
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -6598,8 +6601,6 @@ window.Modernizr = (function( window, document, undefined ) {
         }
     }
 
-
-
      Modernizr.addTest = function ( feature, test ) {
        if ( typeof feature == 'object' ) {
          for ( var key in feature ) {
@@ -6626,20 +6627,112 @@ window.Modernizr = (function( window, document, undefined ) {
 
        return Modernizr; 
      };
-
-
     setCss('');
     modElem = inputElem = null;
-
-
     Modernizr._version      = version;
-
     Modernizr._prefixes     = prefixes;
-
     Modernizr.testStyles    = injectElementWithStyles;
     return Modernizr;
 
 })(this, this.document);
 ;
 
+
+function load_plot(id, type, extra)
+{
+    var my_chart;
+    var url = 'plot_data.php'
+    var data = {
+        type :type
+    };
+    if (extra !== undefined) {
+        if (extra.source !== undefined) { data.source = extra.source;}
+        if (extra.subtype !== undefined) { data.subtype = extra.subtype;}
+        if (extra.period !== undefined) { data.period = extra.period;}
+        if (extra.cat !== undefined) { data.cat = extra.cat;}
+        if (extra.subcat !== undefined) { data.subcat = extra.subcat;}
+        if (extra.year !== undefined) { data.year = extra.year;}
+        if (extra.month !== undefined) { data.month = extra.month;}
+        if (extra.period !== undefined) { data.period = extra.period;}
+    }
+    console.log(extra);
+    var width = Math.round(($(window).width()) / 2.2);
+    var height = Math.round(($(window).height()) / 1.7);
+    console.log(width, height, id,  $('#' + id).width(), $('#' + id).height());
+    $("#" + id).attr({width:width,height:height})
+//    $("#" + id).width(width);
+  //  $("#" + id).height(height);
+    console.log(width, height, id,  $('#' + id).width(), $('#' + id).height());
+    $.post(url, data).done(function(html) {
+        console.log(html);
+        var x = $.parseJSON(html);
+        var plot_data = [ ];
+        var c_idx;
+        for (var i = 0; i < x.data.length; i++) {
+            c_idx = i % x.fillcolours.length;
+            plot_data.push ( { value: x.data[i], color: x.fillcolours[c_idx], title : x.labels[i] } );
+        }
+        var ctx = document.getElementById(id).getContext("2d");
+
+        if (x.type== 'pie') {
+            var plot_options = {
+                legend : false,
+                inGraphDataShow : true,
+                graphTitleFontSize: 14,
+                graphTitle : x.title
+            };
+
+            my_chart = new Chart(ctx).Pie(plot_data, plot_options);
+        } else if (x.type == 'bar') {
+        } else if (x.type == 'horizontalbar' || x.type == 'stackedbar') {
+            var yaxislabel = '', yaxisminimuminterval = "none";
+            if (x.yaxislabel !== undefined) { yaxislabel = x.yaxislabel; }
+            if (x.yaxisminimuminterval !== undefined) { yaxisminimuminterval = x.yaxisminimuminterval; }
+            var plot_options = { 
+                legend : true,
+                inGraphDataShow : false,
+                inGraphDataVAlign: "above",
+                graphTitleFontSize: 14,
+                graphTitle : x.title,
+                legendPosY: 4,
+                legendPosX: 2,
+                xAxisFontSize: 11,
+                yAxisFontSize: 11,
+                annotateLabel: "<%=v1%> <%=v2%>: <%=v3%> (<%=v6%>%)", 
+                annotateDisplay: true,
+                graphMin : 0,
+                yAxisLabel: yaxislabel,
+                yAxisMinimumInterval: yaxisminimuminterval
+            };
+            var plot_data_sets = [];
+            var tmp, tmp1;
+            for(var i = 0; i < x.data.length; i++) { 
+                c_idx = i % x.fillcolours.length;
+                tmp1 = x.data[i];
+                tmp = {
+                    data: tmp1,
+                    title : x.titles[i],
+                    fillColor: x.fillcolours[c_idx],
+                    strokeColor: x.strokecolours[c_idx]
+                };
+                plot_data_sets.push (tmp);
+            }
+            plot_data = {
+               labels: x.labels,
+               datasets: plot_data_sets,
+            };
+            if (x.type == 'stackedbar') {
+            plot_options.scaleXGridLinesStep= 9999;
+                my_chart = new Chart(ctx).StackedBar(plot_data, plot_options);
+            } else if (x.type == 'horizontalbar') {
+            plot_options.scaleYGridLinesStep= 9999;
+                var rows = x.labels.length;
+                height = Math.round(Math.min (height*2, 16 * rows + 40));
+                console.log(height, rows);
+                $("#" + id).attr({height:height})
+                my_chart = new Chart(ctx).HorizontalBar(plot_data, plot_options);
+            }
+        }
+    });
+}
 

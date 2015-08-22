@@ -561,46 +561,6 @@ function create_graph_years(DatabaseConnection $db, $userid, $graphtitle, Overal
     create_graph($db, $userid, $sizeorcount, $datainput, $legend, $graphtitle, $maxval, 'stackedbars', $ylabel);
 }
 
-function get_sets_stats_date_day(DatabaseConnection $db, $type, $year, $month)
-{
-    assert(is_numeric($year) && is_numeric($month));
-    $ystr = $db->get_extract('year', '"timestamp"');
-    $monthstr = $db->get_extract('month', '"timestamp"');
-    $daystr = $db->get_extract('day', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $daystr AS \"day\" FROM stats WHERE \"action\"=? AND $ystr=? AND $monthstr=? GROUP BY $daystr ORDER BY \"day\" DESC";
-    $res = $db->select_query($qry, array($type, $year, $month));
-    $years = array();
-    if (is_array($res)) {
-        foreach ($res as $row) {
-            $years[ $row['day'] ] = $row ['spot_sum'];
-        }
-    } else {
-        $years = array(0 => 0);
-    }
-
-    return $years;
-}
-
-function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
-{
-    assert(is_numeric($year));
-    $ystr = $db->get_extract('year', '"timestamp"');
-    $monthstr = $db->get_extract('month', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=:type AND $ystr=:year GROUP BY $monthstr ORDER BY \"month\" DESC";
-    $res = $db->select_query($qry, array(':type'=>$type, ':year'=>$year));
-    $years = array();
-
-    if (is_array($res)) {
-        foreach ($res as $row) {
-            $years[ $row['month'] ] = $row['spot_sum'];
-        }
-    } else {
-        $years = array(0 => 0);
-    }
-
-    return $years;
-}
-
 function get_sets_stats_date(DatabaseConnection $db, $type)
 {
     $ystr = $db->get_extract('year', '"timestamp"');
@@ -610,7 +570,7 @@ function get_sets_stats_date(DatabaseConnection $db, $type)
 
     if (is_array($res)) {
         foreach ($res as $row) {
-            $years[ $row['year'] ] = $row['spot_sum'];
+            $years[ $row['year'] ] = (int)$row['spot_sum'];
         }
     } else {
         $years = array(0 => 0);
@@ -634,18 +594,6 @@ function array_join(array $data1, array $data2, array $data3, $key_map=NULL)
     }
 
     return $values;
-}
-
-function get_dow($day, $month, $year)
-{
-    assert(is_numeric($day));
-    assert(is_numeric($month));
-    assert(is_numeric($year));
-    global $LN;
-    $dow = date('w', mktime(0, 0, 0, $month, $day, $year)) + 1;
-    $dow = get_array($LN['short_day_names'], $dow, date('D', mktime(0, 0, 0, $month, $day, $year)));
-
-    return $dow;
 }
 
 function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $year= NULL, $month=NULL)

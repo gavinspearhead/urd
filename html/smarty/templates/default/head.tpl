@@ -108,6 +108,7 @@
 {/if}
 <script type="text/javascript" src="{$JSDIR}/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
+<script type="text/javascript" src="{$JSDIR}/chartnew.js"></script>
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
 </head>
 {urd_flush}

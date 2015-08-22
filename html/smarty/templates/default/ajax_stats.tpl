@@ -28,18 +28,24 @@
         {* Creating the divs as the basis for copy/pasting in javascript later on *}
         <div id="template_overview" >
         {foreach $subtypes as $subtype}
-            <img src="creategraph.php?period=years&amp;subtype={$subtype|escape}&amp;source=size&amp;type=activity&amp;width={$width|escape}" alt=""/>
-            <img src="creategraph.php?period=years&amp;subtype={$subtype|escape}&amp;source=count&amp;type=activity&amp;width={$width|escape}" alt=""/>
+            <canvas id="years_{$subtype}_size"></canvas>
+            <canvas id="years_{$subtype}_count"></canvas>
+      <script>
+            load_plot('years_{$subtype}_size', 'activity', { 'period': 'years', 'source': 'size', 'subtype': '{$subtype|escape:javascript}' });
+            load_plot('years_{$subtype}_count', 'activity', { 'period': 'years', 'source': 'count', 'subtype': '{$subtype|escape:javascript}' });
+      </script>
             <br/>
         {/foreach}
         </div> 
     {else if $period == 'months'}
         <div id="template_{$year}">
         {foreach $subtypes as $subtype}
-            <img class="buttonlike" src="creategraph.php?period=months&amp;year={$year|escape}&amp;subtype={$subtype|escape}&amp;source=size&amp;type=activity&amp;width={$width|escape}" 
-                    alt="" onclick="javascript:select_tab_stats({$year}, 'activity','{$year}', 'days', 'size', '{$subtype}');"/>
-            <img class="buttonlike" src="creategraph.php?period=months&amp;year={$year|escape}&amp;subtype={$subtype|escape}&amp;source=count&amp;type=activity&amp;width={$width|escape}"
-                    alt="" onclick="javascript:select_tab_stats({$year}, 'activity','{$year}', 'days', 'count', '{$subtype}');"/>
+            <canvas id="month_{$subtype}_size" onclick="javascript:select_tab_stats({$year}, 'activity','{$year}', 'days', 'size', '{$subtype}');"></canvas>
+            <canvas id="month_{$subtype}_count" onclick="javascript:select_tab_stats({$year}, 'activity','{$year}', 'days', 'count', '{$subtype}');"></canvas>
+      <script>
+            load_plot('month_{$subtype}_size', 'activity', { 'period': 'months', 'year': {$year|escape:javascript}, 'source': 'size', 'subtype': '{$subtype|escape:javascript}' });
+            load_plot('month_{$subtype}_count', 'activity', { 'period': 'months', 'year': {$year|escape:javascript}, 'source': 'count', 'subtype': '{$subtype|escape:javascript}' });
+      </script>
             <br/>
         {/foreach}
         </div>
@@ -47,54 +53,64 @@
         <div id="template_{$year}">
         {if $year == $thisyear}{$endcnt=$thismonth}{else}{$endcnt=12}{/if}
         {for $cnt=1 to $endcnt}
-        <img src="creategraph.php?period=days&amp;year={$year|escape}&amp;month={$cnt}&amp;subtype={$subtype|escape}&amp;source={$source|escape}&amp;type=activity&amp;width={$width|escape}" alt=""/>
+        <canvas id="c_{$cnt}_{$subtype}_count"></canvas>
+      <script>
+            load_plot('c_{$cnt}_{$subtype}_count', 'activity', { 'period': 'days', 'month': {$cnt},  'year': {$year|escape:javascript}, 'source': 'size', 'subtype': '{$subtype|escape:javascript}' });
+      </script>
         {if $cnt is even}<br/>{/if}
         {/for}
-        {if $endcnt is odd}<img src="creategraph.php?period=blank&amp;width={$width|escape}" alt=""/>{/if}
         </div>
     {/if}
 {else if $type == 'spots_details'}
 <table>
 <tr><td valign="top">
-    <img src="creategraph.php?type=spots_details&amp;period=month&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_details&amp;period=dow&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=1&amp;subcat=b&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=1&amp;subcat=d&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=1&amp;subcat=a&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=1&amp;subcat=c&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=1&amp;subcat=z&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=3&amp;subcat=a&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=3&amp;subcat=b&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=2&amp;subcat=b&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=2&amp;subcat=c&amp;width={$width|escape}" alt=""/>
+      <canvas id="spots_details_month"></canvas>
+      <canvas id="spots_details_dow"></canvas>
+      <canvas id="spots_details_1a"></canvas>
+      <canvas id="spots_details_1b"></canvas>
+      <canvas id="spots_details_1c"></canvas>
+      <canvas id="spots_details_1d"></canvas>
+      <canvas id="spots_details_1z"></canvas>
+      <canvas id="spots_details_3a"></canvas>
+      <canvas id="spots_details_3b"> </canvas>
+      <canvas id="spots_details_2c"></canvas>
+      <script>
+            load_plot('spots_details_month', 'spots_details', { 'period': 'month' });
+            load_plot('spots_details_dow', 'spots_details', { 'period': 'dow' });
+            load_plot('spots_details_1a', 'spots_subcat', { 'cat': 1, 'subcat': 'a'});
+            load_plot('spots_details_1b', 'spots_subcat', { 'cat': 1, 'subcat': 'b'});
+            load_plot('spots_details_1c', 'spots_subcat', { 'cat': 1, 'subcat': 'c'});
+            load_plot('spots_details_1d', 'spots_subcat', { 'cat': 1, 'subcat': 'd'});
+            load_plot('spots_details_1z', 'spots_subcat', { 'cat': 1, 'subcat': 'z'});
+            load_plot('spots_details_3a', 'spots_subcat', { 'cat': 3, 'subcat': 'a'});
+            load_plot('spots_details_3b', 'spots_subcat', { 'cat': 3, 'subcat': 'b'});
+            load_plot('spots_details_2c', 'spots_subcat', { 'cat': 2, 'subcat': 'c'});
+      </script>
 </td>
 <td valign="top">
-    <img src="creategraph.php?type=spots_details&amp;period=week&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_details&amp;period=hour&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=0&amp;subcat=a&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=0&amp;subcat=c&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=0&amp;subcat=b&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=0&amp;subcat=z&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=0&amp;subcat=d&amp;width={$width|escape}" alt=""/>
-    <br/>
-    <img src="creategraph.php?type=spots_subcat&amp;cat=2&amp;subcat=a&amp;width={$width|escape}" alt=""/>
-</td>
+      <canvas id="spots_details_week"></canvas>
+      <canvas id="spots_details_hour"></canvas>
+      <canvas id="spots_details_0a"></canvas>
+      <canvas id="spots_details_0b"></canvas>
+      <canvas id="spots_details_0c"></canvas>
+      <canvas id="spots_details_0z"></canvas>
+      <canvas id="spots_details_0d"></canvas>
+      <canvas id="spots_details_2a"></canvas>
+      <canvas id="spots_details_2b"></canvas>
+
+      <script>
+            load_plot('spots_details_week', 'spots_details', { 'period': 'week' });
+            load_plot('spots_details_hour', 'spots_details', { 'period': 'hour' });
+            load_plot('spots_details_0a', 'spots_subcat', { 'cat': 0, 'subcat': 'a'});
+            load_plot('spots_details_0b', 'spots_subcat', { 'cat': 0, 'subcat': 'b'});
+            load_plot('spots_details_0c', 'spots_subcat', { 'cat': 0, 'subcat': 'c'});
+            load_plot('spots_details_0z', 'spots_subcat', { 'cat': 0, 'subcat': 'z'});
+            load_plot('spots_details_0d', 'spots_subcat', { 'cat': 0, 'subcat': 'd'});
+            load_plot('spots_details_2a', 'spots_subcat', { 'cat': 2, 'subcat': 'a'});
+            load_plot('spots_details_2b', 'spots_subcat', { 'cat': 2, 'subcat': 'b'});
+      </script>
+
+  </td>
 </tr>
 </table>
 
@@ -102,21 +118,32 @@
     {if $period == 'month'}
         {$cnt=0}
         {foreach $years as $year}
-            <img class="buttonlike" src="creategraph.php?type=supply&amp;period=month&year={$year|escape}&amp;width={$width|escape}" alt="" onclick="javascript:select_tab_stats('supply', 'supply', '{$year}', 'day');"/>
+            <canvas id="supply_{$year}" onclick="javascript:select_tab_stats('supply', 'supply', '{$year}', 'day');"></canvas>
+             <script>
+                load_plot('supply_{$year}', 'supply', { 'period': 'month', 'year': '{$year}' });
+            </script>
             {$cnt=$cnt+1}
             {if $cnt is even}<br/>{/if}
         {/foreach}
-        {if $cnt is odd}<img src="creategraph.php?period=blank&amp;width={$width|escape}" alt=""/>{/if}
 
 {else if $period == 'day'}
     {if $year == $thisyear}{$endcnt=$thismonth}{else}{$endcnt=12}{/if}
     {for $cnt=1 to $endcnt}
-        <img src="creategraph.php?type=supply&amp;period=day&year={$year|escape}&month={$cnt}&amp;width={$width|escape}" alt=""/>
+        <canvas id="supply_{$year}_{$cnt}"></canvas>
+             <script>
+                load_plot('supply_{$year}_{$cnt}', 'supply', { 'period': 'day', 'year': '{$year}', 'month': {$cnt} });
+            </script>
         {if $cnt is even}<br/>{/if}
     {/for}
     {if $endcnt is odd}<img src="creategraph.php?type=blank&amp;width={$width|escape}" alt=""/>{/if}
     {else}
-        <img class="buttonlike" src="creategraph.php?type=spots_details&amp;width={$width|escape}" alt="" onclick="javascript:select_tab_stats('supply', 'spots_details');"/>
-        <img class="buttonlike" src="creategraph.php?type=supply&amp;period=year&amp;width={$width|escape}" alt="" onclick="javascript:select_tab_stats('supply', 'supply', null, 'month');"/><br/>
+        <canvas id="spots_details" onclick="javascript:select_tab_stats('supply', 'spots_details');"></canvas>
+        <canvas id="supply_year" onclick="javascript:select_tab_stats('supply', 'supply', null, 'month');"></canvas>
+        <script>
+            load_plot('spots_details', 'spots_details');
+            load_plot('supply_year', 'supply', { 'period' : 'year'});
+        </script>
+
+
     {/if}
 {/if}

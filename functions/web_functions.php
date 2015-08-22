@@ -1617,73 +1617,6 @@ function get_directories(DatabaseConnection $db, $userid)
     return $directories;
 }
 
-function get_spots_stats_by_dow(DatabaseConnection $db)
-{
-    global $LN;
-    $time_stamp = $db->get_dow_timestamp('"stamp"');
-
-    $sql = "count(*) AS cnt, $time_stamp AS dow, \"category\" FROM spots GROUP BY $time_stamp, \"category\" ";
-    $res = $db->select_query($sql);
-    if ($res === FALSE) {
-        $res = array();
-    }
-    $stats = array();
-    foreach (range(1, 7) as $i) {
-            $stats[ ($i - 1) ] = array(html_entity_decode($LN['short_day_names'][$i]), 0, 0, 0, 0);
-    }
-
-    foreach ($res as $row) {
-        $m = $row['dow'];
-        $c = $row['category'] + 1;
-
-        $stats[ $m] [$c] = $row['cnt'];
-    }
-
-    return array_values($stats);
-}
-
-function get_spots_stats_by_period(DatabaseConnection $db, $period)
-{
-    global $LN;
-    if ($period == 'dow') {
-        return get_spots_stats_by_dow($db);
-    }
-    $time_stamp = $db->get_timestamp('"stamp"');
-    $time_extract = $db->get_extract($period, $time_stamp);
-
-    $sql = "count(*) AS cnt, $time_extract AS mnth, \"category\" FROM spots GROUP BY $time_extract, \"category\"";
-    $res = $db->select_query($sql);
-    if ($res === FALSE) {
-        $res = array();
-    }
-    $stats = array();
-    if ($period == 'month') {
-        foreach (range(1,12) as $i) {
-            $stats[ $i ] = array(html_entity_decode($LN['short_month_names'][$i]), 0, 0, 0, 0);
-        }
-    } elseif ($period == 'week') {
-        $max_week = 0;
-        foreach (range(25, 31) as $r) {
-            $max_week = max($max_week, (int) date('W', mktime(0, 0, 0, 12, $r)));
-        }
-        foreach (range(1,$max_week) as $i) {
-            $stats[ $i ] = array($i, 0, 0, 0, 0);
-        }
-    } elseif ($period == 'hour') {
-        foreach (range(0, 23) as $i) {
-            $stats[ $i ] = array($i, 0, 0, 0, 0);
-        }
-    }
-    foreach ($res as $row) {
-        $m = $row['mnth'];
-        $c = $row['category'] + 1;
-
-        $stats[ $m] [$c] = $row['cnt'];
-    }
-
-    return array_values($stats);
-}
-
 function get_spots_stats(DatabaseConnection $db)
 {
     $sql = 'count(*) AS "cnt", "category" FROM spots GROUP BY "category"';
@@ -2343,8 +2276,20 @@ function find_url_icon($url)
     else return '';
 }
 
-
 function pack_url_data(DatabaseConnection $db, $url, $userid)
 {
     return array('link' => make_url($db, trim(strip_tags($url)), $userid), 'display' => $url, 'icon'=> find_url_icon($url));
 }
+
+function get_dow($day, $month, $year)
+{
+    assert(is_numeric($day));
+    assert(is_numeric($month));
+    assert(is_numeric($year));
+    global $LN;
+    $dow = date('w', mktime(0, 0, 0, $month, $day, $year)) + 1;
+    $dow = get_array($LN['short_day_names'], $dow, date('D', mktime(0, 0, 0, $month, $day, $year)));
+
+    return $dow;
+}
+
