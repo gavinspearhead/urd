@@ -2,6 +2,7 @@
 - Added references to spots to search for similar items
 - Load set comments on demand in showing spot details
 - Made interface better usable for touchscreens
+- Rewrode the statisticts to generate plots in javascript
 
 
 
