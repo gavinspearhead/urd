@@ -308,9 +308,9 @@ input, select, textarea
     color: #e0e0e0;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
-    border: 2px solid;
+    border: 1px solid;
     font-weight: bold;
-    border-color:#404040 #282828 #282828 #404040;
+    border-color: #404040 #282828 #282828 #404040;
     cursor: pointer;
     border-radius:4px;
 } 
@@ -330,6 +330,7 @@ input, select, textarea
 }
 .popup525x300
 {
+    visibility: visible;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -363,6 +364,7 @@ input, select, textarea
 
 .popup700x400
 {
+    visibility: visible;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -1327,16 +1329,6 @@ td.ps_hover
     height: 95%;
     overflow-x: auto;
     overflow-y: auto;
-    z-index: 10;
-}
-
-#content
-{
-    height:100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 0;
-    padding-bottom: 0;
     z-index: 10;
 }
 

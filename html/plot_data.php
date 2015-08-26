@@ -152,6 +152,18 @@ if ($sizeorcount != 'size') {
     $sizeorcount = 'count';
 }
 
+function make_graph_data(DatabaseConnection $db, $userid, array $data) 
+{
+    $new_data = array(
+        'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.6),
+        'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
+        'titles'=> array(),
+    );
+    $new_data = array_merge($new_data, $data);
+
+    return $new_data;
+}
+
 function create_spot_data(DatabaseConnection $db, $userid, $graphtitle)
 {
     assert(is_numeric($userid));
@@ -165,14 +177,13 @@ function create_spot_data(DatabaseConnection $db, $userid, $graphtitle)
        $labels[] = $LN[$cats[$key]];
 
     }
-    $data = array('type'=> 'pie',
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'pie',
         'data'=> $stat_data,
-        'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-        'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
+        'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.7),
         'labels'=>$labels,
         'title'=> $graphtitle,
-        'titles'=> array()
-    );
+    ));
 
     return_result($data);
 }
@@ -266,15 +277,13 @@ function create_spot_graph_period(DatabaseConnection $db, $userid, $graphtitle, 
     assert(is_numeric($userid));
     global $LN;
     list($stat_data, $labels, $titles) = get_spots_stats_by_period($db, $period);
-    $data = array(
+    $data = make_graph_data($db, $userid, array(
             'type'=> 'stackedbar',
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
             'data'=> $stat_data,
             'labels'=>$labels,
             'title'=> $graphtitle,
             'titles'=> $titles
-            );
+            ));
 
     return_result($data);
 }
@@ -309,13 +318,13 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
     assert(is_numeric($year));
     $ystr = $db->get_extract('year', '"timestamp"');
     $monthstr = $db->get_extract('month', '"timestamp"');
-    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=:type AND $ystr=:year GROUP BY $monthstr ORDER BY \"month\" DESC";
+    $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=:type AND $ystr = :year GROUP BY $monthstr ORDER BY \"month\" DESC";
     $res = $db->select_query($qry, array(':type'=>$type, ':year'=>$year));
     $years = array();
 
     if (is_array($res)) {
         foreach ($res as $row) {
-            $years[ $row['month'] ] = $row['spot_sum'];
+            $years[ $row['month'] -1 ] = $row['spot_sum'];
         }
             } else {
         $years = array(0 => 0);
@@ -358,14 +367,12 @@ function create_spot_supply_year(DatabaseConnection $db, $userid, $graphtitle)
     $data3 = (get_sets_stats_date($db, stat_actions::RSS_COUNT));
     $labels = array_keys($data1);
         
-    $data = array(
-            'type'=> 'stackedbar',
-            'data'=> array(array_values($data1), array_values($data2), array_values($data3)),
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-            'labels'=>$labels,
-            'title'=> $graphtitle,
-            'titles'=>array($LN['menuspots'], $LN['menugroupsets'], $LN['menursssets']));
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'stackedbar',
+        'data'=> array(array_values($data1), array_values($data2), array_values($data3)),
+        'labels'=>$labels,
+        'title'=> $graphtitle,
+        'titles'=>array($LN['menuspots'], $LN['menugroupsets'], $LN['menursssets'])));
     return_result($data);
 }
 
@@ -374,12 +381,12 @@ function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $y
     global $LN;
     assert(is_numeric($userid));
     $inputdata = array();
-    $data = array(
-            'type'=> 'stackedbar',
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-            'title'=> $graphtitle,
-            'titles'=>array($LN['menuspots'], $LN['menugroupsets'], $LN['menursssets']));
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'stackedbar',
+        'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.6),
+        'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
+        'title'=> $graphtitle,
+        'titles'=>array($LN['menuspots'], $LN['menugroupsets'], $LN['menursssets'])));
 
     if ($month === NULL || !is_numeric($month)) {
         $data1 = get_sets_stats_date_month($db, stat_actions::SPOT_COUNT, $year);
@@ -390,16 +397,16 @@ function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $y
         foreach($labels as $key => $val) {
             $data ['labels'][] = $LN['short_month_names'][$val+1];
         }
-        $data ['data'] =  array(array_values($data1), array_values($data2), array_values($data3));
+        $data ['data'] = array(array_values($data1), array_values($data2), array_values($data3));
     } else {
         $days_per_month = date('t', mktime(0, 0, 0, $month, 1, $year));
         $data1 = get_sets_stats_date_day($db, stat_actions::SPOT_COUNT, $year, $month, $days_per_month);
         $data2 = get_sets_stats_date_day($db, stat_actions::SET_COUNT, $year, $month, $days_per_month);
         $data3 = get_sets_stats_date_day($db, stat_actions::RSS_COUNT, $year, $month, $days_per_month);
-        $data ['data'] =  array(array_values($data1), array_values($data2), array_values($data3));
+        $data ['data'] = array(array_values($data1), array_values($data2), array_values($data3));
         foreach(range(1, $days_per_month) as $d) {
             $dow = get_dow($d, $month, $year);
-            $data ['labels'] [] =  html_entity_decode(get_array($LN['short_day_names'], $dow, date('D', mktime(0, 0, 0, $month, $d, $year)))) ." $d";
+            $data['labels'] [] = html_entity_decode(get_array($LN['short_day_names'], $dow, date('D', mktime(0, 0, 0, $month, $d, $year)))) ." $d";
         }
         
     }
@@ -412,11 +419,11 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     global $width, $height, $pathstat;
     if (!in_array($subcat, array('a', 'b', 'c', 'd', 'z'))) {
         $data = array(
-                'type'=> 'empty',
-                'data'=> array(),
-                'colours'=> array(),
-                'labels'=>array(),
-                'title'=> '');
+            'type'=> 'empty',
+            'data'=> array(),
+            'colours'=> array(),
+            'labels'=>array(),
+            'title'=> '');
         return_result($data);
     }
     $sql = "\"subcat$subcat\" AS \"subcat\" FROM spots WHERE \"category\"=:cat";
@@ -461,14 +468,12 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
         $data [] = $v[1];
         $labels [] = $v[0];
     }
-    $data = array(
-            'type'=> 'horizontalbar',
-            'data'=> array($data),
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-            'labels'=>$labels,
-            'title'=> to_ln(SpotCategories::HeadCat2Desc($cat)),
-            'titles'=>array());
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'horizontalbar',
+        'data'=> array($data),
+        'labels'=>$labels,
+        'title'=> to_ln(SpotCategories::HeadCat2Desc($cat)),
+        'titles'=>array()));
     return_result($data);
 }
 
@@ -509,7 +514,6 @@ QRY1;
     $users = array();
     $months = array();
     $maxval = 0;
-   // echo_debug_var_file('/tmp/foo',$qry);
 
     foreach($res as $row) {
         $year = $row['year'];
@@ -531,6 +535,7 @@ QRY1;
             $users[ $u ] = $u;
         }
     }
+    ksort($users);
     
     $suffix = '';
     if ($sizeorcount == 'size') {
@@ -556,18 +561,21 @@ QRY1;
         $new_data[$name] = array_values($tmp_data);
     }
     $data = array_values($new_data);
+    foreach($users as &$u) {
+        if ($u == '__anonymous') {
+            $u = $LN['unknown'];
+        }
+    }
     $legend = array_values($users);
     foreach (range(1,12) as $i) {
-        $labels [] = html_entity_decode($LN['short_month_names'][$i]);
+        $labels[] = html_entity_decode($LN['short_month_names'][$i]);
     }
-    $data = array(
-            'type'=> 'stackedbar',
-            'data'=> $data,
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-            'labels'=>$labels,
-            'title'=> $graphtitle,
-            'titles'=>$legend);
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'stackedbar',
+        'data'=> $data,
+        'labels'=>$labels,
+        'title'=> $graphtitle,
+        'titles'=>$legend));
     if ($sizeorcount == 'size') {
         $data['yaxislabel'] = $suffix;
     } else {
@@ -626,6 +634,7 @@ QRY1;
             $users[ $u ] = $u;
         }
     }
+    ksort($users);
     
     $suffix = '';
     if ($sizeorcount == 'size') {
@@ -651,17 +660,20 @@ QRY1;
         }
         $new_data[$name] = array_values($tmp_data);
     }
+    foreach($users as &$u) {
+        if ($u == '__anonymous') {
+            $u = $LN['unknown'];
+        }
+    }
     $data = array_values($new_data);
     $legend = array_values($users);
     $labels = array_keys($row_template);
-    $data = array(
-            'type'=> 'stackedbar',
-            'data'=> $data,
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-            'labels'=>$labels,
-            'title'=> $graphtitle,
-            'titles'=>$legend);
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'stackedbar',
+        'data'=> $data,
+        'labels'=>$labels,
+        'title'=> $graphtitle,
+        'titles'=>$legend));
     if ($sizeorcount == 'size') {
         $data['yaxislabel'] = $suffix;
     } else {
@@ -736,6 +748,7 @@ QRY1;
             $users[ $u ] = $u;
         }
     }
+    ksort($users);
     $suffix = '';
     if ($sizeorcount == 'size') {
         list($d, $suffix, $factor) = format_size($maxval, 'h', $LN['byte_short'], 1024, 0);
@@ -760,17 +773,20 @@ QRY1;
         }
         $new_data[$name] = array_values($tmp_data);
     }
+    foreach($users as &$u) {
+        if ($u == '__anonymous') {
+            $u = $LN['unknown'];
+        }
+    }
     $data = array_values($new_data);
     $legend = array_values($users);
     $labels = array_keys($row_template);
-    $data = array(
-            'type'=> 'stackedbar',
-            'data'=> $data,
-            'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.5),
-            'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-            'labels'=>$labels,
-            'title'=> $graphtitle,
-            'titles'=>$legend);
+    $data = make_graph_data($db, $userid, array(
+        'type'=> 'stackedbar',
+        'data'=> $data,
+        'labels'=>$labels,
+        'title'=> $graphtitle,
+        'titles'=>$legend));
     if ($sizeorcount == 'size') {
         $data['yaxislabel'] = $suffix;
     } else {
@@ -784,7 +800,7 @@ switch ($type) {
         $graphtitle = $LN[$subtype] . ' (' . $LN[$sizeorcount] . ')';
         $atype = array_search($subtype, $nametypes);
         if ($atype === FALSE) { 
-            return_result(array('error'=> "Unknown type"));
+            return_result(array('error'=> $LN['error_unknowntype']));
         }
         if ($period == 'years') {
             get_stats_by_year($db, $userid, $atype, $isadmin, 0, $sizeorcount, html_entity_decode( $graphtitle));

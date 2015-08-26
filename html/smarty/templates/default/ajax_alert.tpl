@@ -20,7 +20,7 @@
  * $Author: gavinspearhead $
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
-<div class="set_title centered">{$LN_fatal_error_title}</div>
+<div class="set_title head centered">{$LN_fatal_error_title}</div>
 <div id="alert_inner">
     <div id="alert_content">
         <div id="alert_message">{$msg}</div>

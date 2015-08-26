@@ -137,7 +137,7 @@ function control_action(action)
             cmd: action,
             challenge: challenge
         }).done(function(html) {
-            console.log(html);
+            //console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                update_message_bar(x.message);
@@ -2487,7 +2487,7 @@ function show_quick_display(options)
     }
     if (add_rows == 0) {
         var loading_msg = $('#loading_msg').val();
-        show_overlayed_content_1(loading_msg, 'quickwindowon');
+        show_overlayed_content_1(loading_msg, 'popup700x400');
     }
     $.post(url, {
             type: type,
@@ -2501,7 +2501,7 @@ function show_quick_display(options)
         var x = $.parseJSON(html);
         if (x.error == 0) {
             if (add_rows == 0) {
-                show_overlayed_content_1(x.contents, 'quickwindowon');
+                show_overlayed_content_1(x.contents, 'popup700x400');
                 // we increase the size beyond the default if div is not large enough for the contents
                 var height = Math.floor($(window).height() * 0.9);
                 var used_height = $('#td_sets').get(0).scrollHeight;
@@ -2917,7 +2917,7 @@ function edit_file(fileid)
     };
 
     var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'quickwindowon');
+    show_overlayed_content_1(loading_msg, 'popup700x400');
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -2979,7 +2979,7 @@ function edit_categories()
     };
     close_browse_divs();
     var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'quickwindowon');
+    show_overlayed_content_1(loading_msg, 'popup525x300');
 
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
@@ -3385,7 +3385,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         data.source = source;
     }
     $.post('ajax_stats.php', data).done(function(html) {
-        console.log(html);
+        //console.log(html);
             
         var y = $.parseJSON(html);
         if (y.error == 0) {
@@ -6645,6 +6645,10 @@ function load_plot(id, type, extra)
     var data = {
         type :type
     };
+    var bg_color = $('#stats_table').css('background-color');
+    var txt_color = $('#stats_table').css('color');
+    //console.log(bg_color, txt_color);
+
     if (extra !== undefined) {
         if (extra.source !== undefined) { data.source = extra.source;}
         if (extra.subtype !== undefined) { data.subtype = extra.subtype;}
@@ -6655,22 +6659,25 @@ function load_plot(id, type, extra)
         if (extra.month !== undefined) { data.month = extra.month;}
         if (extra.period !== undefined) { data.period = extra.period;}
     }
-    console.log(extra);
+   // console.log(extra);
     var width = Math.round(($(window).width()) / 2.2);
     var height = Math.round(($(window).height()) / 1.7);
-    console.log(width, height, id,  $('#' + id).width(), $('#' + id).height());
+    //console.log(width, height, id,  $('#' + id).width(), $('#' + id).height());
     $("#" + id).attr({width:width,height:height})
 //    $("#" + id).width(width);
   //  $("#" + id).height(height);
-    console.log(width, height, id,  $('#' + id).width(), $('#' + id).height());
     $.post(url, data).done(function(html) {
-        console.log(html);
+        //console.log(html);
         var x = $.parseJSON(html);
         var plot_data = [ ];
         var c_idx;
         for (var i = 0; i < x.data.length; i++) {
             c_idx = i % x.fillcolours.length;
-            plot_data.push ( { value: x.data[i], color: x.fillcolours[c_idx], title : x.labels[i] } );
+            plot_data.push ( { 
+                value: x.data[i], 
+                color: x.fillcolours[c_idx],
+                title : x.labels[i] 
+            } );
         }
         var ctx = document.getElementById(id).getContext("2d");
 
@@ -6679,7 +6686,10 @@ function load_plot(id, type, extra)
                 legend : false,
                 inGraphDataShow : true,
                 graphTitleFontSize: 14,
-                graphTitle : x.title
+                graphTitle : x.title,
+                segmentShowStroke: false,
+                graphTitleFontColor: txt_color,
+                inGraphDataFontColor :txt_color,
             };
 
             my_chart = new Chart(ctx).Pie(plot_data, plot_options);
@@ -6702,8 +6712,16 @@ function load_plot(id, type, extra)
                 annotateDisplay: true,
                 graphMin : 0,
                 yAxisLabel: yaxislabel,
-                yAxisMinimumInterval: yaxisminimuminterval
+                yAxisMinimumInterval: yaxisminimuminterval,
+                graphTitleFontColor: txt_color,
+                legendFontColor: txt_color,
+                scaleFontColor: txt_color,
+                yAxisFontColor: txt_color
             };
+            if(x.labels.length >12) {
+                plot_options['barValueSpacing']= 2;
+            }
+
             var plot_data_sets = [];
             var tmp, tmp1;
             for(var i = 0; i < x.data.length; i++) { 
@@ -6722,13 +6740,13 @@ function load_plot(id, type, extra)
                datasets: plot_data_sets,
             };
             if (x.type == 'stackedbar') {
-            plot_options.scaleXGridLinesStep= 9999;
+                plot_options.scaleXGridLinesStep= 9999;
                 my_chart = new Chart(ctx).StackedBar(plot_data, plot_options);
             } else if (x.type == 'horizontalbar') {
-            plot_options.scaleYGridLinesStep= 9999;
+                plot_options.scaleYGridLinesStep= 9999;
                 var rows = x.labels.length;
                 height = Math.round(Math.min (height*2, 16 * rows + 40));
-                console.log(height, rows);
+                //console.log(height, rows);
                 $("#" + id).attr({height:height})
                 my_chart = new Chart(ctx).HorizontalBar(plot_data, plot_options);
             }

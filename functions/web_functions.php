@@ -25,7 +25,7 @@
 if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
-
+header('Content-Type: text/html; charset=utf-8');
 $pathwf = realpath(dirname(__FILE__));
 
 require_once "$pathwf/autoincludes.php";

@@ -325,58 +325,6 @@ input,select, textarea
     overflow-x: hidden;
 }
 
-.popup525x300
-{
-    border: 2px solid #004586;
-    border-radius: 9px;
-    color: #f1f1f1;
-    background: #282828;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 525px;
-    height: 300px;
-    margin-left: -262px;
-    margin-top: -150px;
-    box-shadow: -3px 3px 3px 4px #000000;
-}
-
-.calendardiv
-{
-    border-radius: 9px;
-    border: 2px solid #004586;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 510px;
-    height: 300px;
-    margin-left: -255px;
-    margin-top: -150px;
-    background: #282828;
-    color: #f1f1f1;
-    box-shadow: -3px 3px 3px 4px #000000;
-}
-
-
-.popup700x400
-{
-    border-radius: 9px;
-    border: 2px solid #004586;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 700px;
-    height: 400px;
-    margin-left: -350px;
-    margin-top: -200px;
-    z-index: 1500;
-    background: #282828;
-    color: #f1f1f1;
-    box-shadow: -3px 3px 3px 4px #000000;
-}
 #nojs
 {
     position:absolute;
@@ -385,22 +333,27 @@ input,select, textarea
 }
 .submitsmall
 {
-    color: #d1d1d1;
+    color: #d1d1df;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
-    border: 1px solid;
     font-weight: bold;
-    border-color: #434343 #373737 #535353 #373737;
     cursor: pointer;
-    border-radius:4px;
-    background: #606060; /* Old browsers */
-    background: -moz-linear-gradient(top, #606060 0%, #0d0d0d 24%, #0a0a0a 66%, #4e4e4e 100%, #606060 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#606060), color-stop(24%,#0d0d0d), color-stop(66%,#0a0a0a), color-stop(100%,#4e4e4e), color-stop(100%,#606060)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #606060 0%,#0d0d0d 24%,#0a0a0a 66%,#4e4e4e 100%,#606060 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#606060', endColorstr='#606060',GradientType=0 ); /* IE6-9 */
+    border-left: 1px;
+    border-right: 1px; 
+    border-color: #565656;
+    border-top: 0;
+    border-bottom: 0;
+    border-style: solid;
+
+    border-radius:5px;
+    background: #0d0d0d; /* Old browsers */
+    background: -moz-linear-gradient(top, #565656 0%, #0d0d0d 20%, #0a0a0a 60%, #0d0d0d 80%, #565656 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#565656), color-stop(20%,#0d0d0d), color-stop(60%,#0a0a0a), color-stop(80%,#0d0d0d), color-stop(100%,#565656)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #565656 0%,#0d0d0d 20%,#0a0a0a 60%,#0d0d0d 800%,#565656 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #565656 0%,#0d0d0d 20%,#0a0a0a 60%,#0d0d0d 800%,#565656 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #565656 0%,#0d0d0d 20%,#0a0a0a 60%,#0d0d0d 80%,#565656 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #565656 0%,#0d0d0d 20%,#0a0a0a 60%,#0d0d0d 80%,#565656 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#565656', endColorstr='#565656',GradientType=0 ); /* IE6-9 */
 } 
 
 /* Divs */
@@ -414,9 +367,15 @@ input,select, textarea
 
 .popup525x300
 {
-    border: 2px solid #004586;
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#004586;
     border-radius: 9px;
     color: #f1f1f1;
+    visibility: visible;
     background: #282828;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
@@ -426,13 +385,18 @@ input,select, textarea
     height: 300px;
     margin-left: -262px;
     margin-top: -150px;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
 
 .calendardiv
 {
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#004586;
     border-radius: 9px;
-    border: 2px solid #004586;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -443,14 +407,19 @@ input,select, textarea
     margin-top: -150px;
     background: #282828;
     color: #f1f1f1;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
-
 
 .popup700x400
 {
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#004586;
     border-radius: 9px;
-    border: 2px solid #004586;
+    visibility: visible;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -462,7 +431,7 @@ input,select, textarea
     z-index: 1500;
     background: #282828;
     color: #f1f1f1;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
 #nojs
 {
@@ -485,7 +454,7 @@ input,select, textarea
     margin-top: -150px;
     background: #282828;
     color: #f1f1f1;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
     border-radius: 9px;
     border: 2px solid #004586;
 }
@@ -602,12 +571,6 @@ table.basketbuttons
     margin-top: -1px;
     border-radius: 0 0 9px 9px;
 }
-#quickmenuinner
-{
-    position: relative;
-    box-shadow: -3px 3px 3px 4px #000000;
-    width: 250px;
-}
 .quickmenubutton
 {
     background-color: #212121;
@@ -625,25 +588,9 @@ table.basketbuttons
     border: 1px solid #111111;
     font-size: small;
     height: 2em;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
-.quickwindowon
-{
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 800px;
-    height: 450px;
-    margin-left: -400px;
-    margin-top: -225px;
-    border-radius: 9px;
-    background: #282828;
-    visibility: visible;
-    overflow: hidden;
-    z-index: 900;
-    border: 2px solid #004586;
-    text-align: center;
-    box-shadow: -3px 3px 3px 4px #000000;
-}
+
 #logindiv
 {
     border-radius: 9px;
@@ -655,8 +602,9 @@ table.basketbuttons
     margin-left: -350px;
     margin-top: -200px;
     padding-left: 10px;
-    border: 2px solid #212121;
+    border: 2px solid #414141;
     background: #282828;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
 
 #textcontent, #controlcontent
@@ -1170,7 +1118,6 @@ tr.server_disabled
 .savenamediv
 {
     font-family: verdana, Arial, Helvetica, Sans-Serif;
-    border: 2px solid #004586;
     border-radius: 9px;
     color: #f1f1f1;
     background: #282828;
@@ -1183,12 +1130,23 @@ tr.server_disabled
     margin-left: -175px;
     margin-top: -100px;
     z-index: 2000;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#004586;
 }
 .alertdiv
 {
+    border-left: 2px;
+    border-top: 0;
+    border-bottom: 2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#004586;
     border-radius: 9px;
-    border: 2px solid #004586;
     color: #f1f1f1;
     background: #282828;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
@@ -1201,7 +1159,7 @@ tr.server_disabled
     margin-top: -100px;
     text-align: center;
     z-index: 2200000;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
 td.ps_hover 
 {
@@ -1400,14 +1358,6 @@ div.bottom {
     width: 100%;
     overflow-x: hidden;
 }
-#content
-{
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    z-index: 10;
-}
 .Message
 {
     position: fixed;
@@ -1483,7 +1433,7 @@ div.bottom {
     color: #f1f1f1;
     z-index: 2000;
     overflow: hidden;
-    box-shadow: -3px 3px 3px 4px #000000;
+    box-shadow: -3px 3px 3px 4px #001133;
 }
 
 td.subcat_head
@@ -1519,7 +1469,6 @@ tr.comment
 }
 .set_title
 {
-    background-color:#004586;
     width: 100%;
     padding-top: 8px;
     padding-bottom: 6px;

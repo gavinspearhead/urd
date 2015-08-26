@@ -22,7 +22,7 @@
  */
 /* 
 Colours needed for statistics  as RGB tuples
-stat_colour1: 200,200,200
+stat_colour1: 225,225,225
 stat_colour2: 125, 125, 125
 stat_colour3: 75, 75, 75
 stat_colour4: 150,150, 150
@@ -328,6 +328,7 @@ input, select, textarea
     margin-left: -262px;
     margin-top: -150px;
     background: #747474;
+    visibility: visible;
     border-radius: 9px;
     border: 2px solid #d0d0d0;
     box-shadow: -3px 3px 3px 4px #444444;
@@ -353,6 +354,7 @@ input, select, textarea
 {
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
+    visibility: visible;
     left: 50%;
     top: 50%;
     width: 700px;
@@ -1323,15 +1325,6 @@ td.ps_hover
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
-}
-#content
-{
-    height:100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    z-index: 10;
 }
 .Message
 {

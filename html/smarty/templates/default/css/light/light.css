@@ -311,18 +311,22 @@ input,select, textarea
     color: #444444;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
-    border: 1px solid;
     font-weight: bold;
-    border-color: #a3a3a3 #919191 #b3b3b3 #919191;
+    border-left: 1px;
+    border-right: 1px; 
+    border-color: #a8aab6;
+    border-top: 0;
+    border-bottom: 0;
+    border-style: solid;
     cursor: pointer;
     border-radius:4px;
     background: #f5f6f6; /* Old browsers */
-    background: -moz-linear-gradient(top, #f5f6f6 0%, #dbdce2 10%, #b8bac6 50%, #dddfe3 93%, #f5f6f6 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f6f6), color-stop(10%,#dbdce2), color-stop(50%,#b8bac6), color-stop(93%,#dddfe3), color-stop(100%,#f5f6f6)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #f5f6f6 0%,#dbdce2 10%,#b8bac6 50%,#dddfe3 93%,#f5f6f6 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #f5f6f6 0%,#dbdce2 10%,#b8bac6 50%,#dddfe3 93%,#f5f6f6 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #f5f6f6 0%,#dbdce2 10%,#b8bac6 50%,#dddfe3 93%,#f5f6f6 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 10%,#b8bac6 50%,#dddfe3 93%,#f5f6f6 100%); /* W3C */
+    background: -moz-linear-gradient(top, #a8aab6 0%, #dbdce2 10%, #bf5f6f6 50%, #dddfe3 90%, #a8aab6 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a8aab6), color-stop(20%,#dbdce2), color-stop(50%,#f5f6f6), color-stop(80%,#dddfe3), color-stop(100%,#a8aab6)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #a8aab6 0%,#dbdce2 20%,#f5f6f6 50%,#dddfe3 90%,#a8aab6 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #ba8aab6 0%,#dbdce2 20%,#f5f6f6 50%,#dddfe3 80%,#a8aab6 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #a8aab6 0%,#dbdce2 20%,#f5f6f6 50%,#dddfe3 80%,#a8aab6 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #a8aab6 0%,#dbdce2 20%,#f5f6f6 50%,#dddfe3 80%,#a8aab6 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f6f6', endColorstr='#f5f6f6',GradientType=0 ); /* IE6-9 */
 } 
 
@@ -336,10 +340,16 @@ input,select, textarea
 }
 .popup525x300
 {
-    border: 2px solid #498BF4;
+    border-left: 2px;
+    visibility: visible;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#498BF4;
     border-radius: 9px;
     color: black;
-    background: #EAEAEA;
+    background: white;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -353,8 +363,13 @@ input,select, textarea
 
 .calendardiv
 {
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#498BF4;
     border-radius: 9px;
-    border: 2px solid #498BF4;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -370,8 +385,13 @@ input,select, textarea
 
 .popup700x400
 {
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#498BF4;
     border-radius: 9px;
-    border: 2px solid #498BF4;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     position: fixed;
     left: 50%;
@@ -381,9 +401,10 @@ input,select, textarea
     margin-left: -350px;
     margin-top: -200px;
     z-index: 1500;
-    background: #EAEAEA;
+    background: white;
     color: #555555;
     box-shadow: -3px 3px 3px 4px #bbbbbb;
+    visibility: visible;
 }
 #nojs
 {
@@ -539,31 +560,6 @@ table.basketbuttons
     background: #aaaaaa;
     border: 1px solid #111111;
     font-size: small;
-    height: 24px;
-}
-#quickmenuinner
-{
-    position: relative;
-    box-shadow: -3px 3px 3px 4px #bbbbbb;
-    width: 250px;
-}
-
-.quickwindowon
-{
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 800px;
-    height: 450px;
-    margin-left: -400px;
-    margin-top: -250px;
-    border-radius: 9px;
-    background: #ffffff;
-    visibility: visible;
-    overflow: hidden;
-    z-index: 900;
-    border: 2px solid #498BF4;
-    text-align: center;
     box-shadow: -3px 3px 3px 4px #bbbbbb;
 }
 #logindiv
@@ -579,6 +575,7 @@ table.basketbuttons
     padding-left: 10px;
     border: 2px solid #498BF4;
     background: white;
+    box-shadow: -3px 3px 3px 4px #bbbbbb;
 }
 #controlcontent
 {
@@ -1100,7 +1097,12 @@ tr.server_disabled
 {
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     border-radius: 9px;
-    border: 2px solid #498BF4;
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#498BF4;
     box-shadow: -3px 3px 3px 4px #bbbbbb;
     background: #EAEAEA;
     color: black;
@@ -1126,7 +1128,12 @@ td.ps_hover
 .alertdiv
 {
     border-radius: 9px;
-    border: 2px solid #498BF4;
+    border-left: 2px;
+    border-top:  0 ;
+    border-bottom:  2px;
+    border-right: 2px;
+    border-style: solid;
+    border-color:#498BF4;
     color: black;
     background: #EAEAEA;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
@@ -1311,7 +1318,6 @@ td.ps_hover
     overflow-y: auto;
     z-index: 10;
 }
-
 .content 
 {
     font-family: Geneva, Arial, Helvetica, sans-serif;
@@ -1322,17 +1328,6 @@ td.ps_hover
     width: 100%;
     overflow-x: hidden;
 }
-
-#content
-{
-    height:100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    z-index: 10;
-}
-
 .Message
 {
     position: fixed;
@@ -1460,7 +1455,6 @@ tr.comment
 
 .set_title
 {
-    background-color:#498AF4;
     text-align: center;
     width: 100%;
     padding-top: 8px;

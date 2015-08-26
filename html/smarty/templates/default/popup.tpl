@@ -23,7 +23,7 @@
 {* Ajax page, doesn't need a head/foot tpl *}
 {block name=header}
 <div class="closebutton buttonlike noborder fixedright down5" id="{block name="close_button_id"}close_button{/block}"></div>
-<div class="set_title centered">{block name="title"}{/block}</div>
+<div class="set_title head centered">{block name="title"}{/block}</div>
 {/block}
 <div class="light">
 {block name="contents"}

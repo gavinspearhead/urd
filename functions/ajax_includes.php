@@ -36,7 +36,7 @@ define ('SKIP_LANG', 1);
 if (!file_exists('../.installed')) {
     die;
 }
-
+header('Content-Type: text/html; charset=utf-8');
 $process_name = 'urd_web'; // needed for message format in syslog and logging
 
 $pathhtmli = realpath(dirname(__FILE__));

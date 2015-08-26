@@ -129,12 +129,10 @@ $(document).ready(function() {
 	{/foreach}
     {if $hadref == 0} 
         {$looped="`$looped+1`"}
-        {$first_two_words}
         <tr class="vtop small comment"><td class="nowrap bold">{$LN_browse_tag_link}:</td><td>
 		    <span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
         </td></tr>
     {/if}
-
 {/capture}
 
 {if $tag != ''}
@@ -159,7 +157,7 @@ $(document).ready(function() {
 {else}0{/if}
 </td></tr>
 {if $looped > 0}
-<tr><td colspan="2">&nbsp;</td></tr>
+<tr class="comment"><td colspan="2">&nbsp;</td></tr>
 {$extsetoverview}
 {/if}
 

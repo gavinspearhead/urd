@@ -298,19 +298,6 @@ input, select, textarea
     border-radius: 5px;
 }
 
-.submit
-{
-    color: #101010;
-    background-color: #bbdafa;
-    padding: 1px;
-    font-family: verdana, Arial, Helvetica, Sans-Serif;
-    border: 1px solid;
-    font-weight: bold;
-    border-color: #333d68 #213c68 #433d68 #213c68;
-    cursor: pointer;
-    border-radius:4px;
-}
-
 .submitsmall
 {
     background-color: #bbdafa;
@@ -342,6 +329,7 @@ input, select, textarea
     width: 525px;
     height: 300px;
     margin-left: -262px;
+    visibility: visible;
     margin-top: -150px;
     border-radius: 9px;
     background: #253D63;
@@ -371,6 +359,7 @@ input, select, textarea
     position: fixed;
     left: 50%;
     top: 50%;
+    visibility: visible;
     width: 700px;
     height: 400px;
     margin-left: -350px;
@@ -528,7 +517,7 @@ table.basketbuttons
 }
 .quickmenuitem
 {
-    position: fixed;
+    position: absolute;
     background: #000066;
     border: 1px solid #002c3d;
     font-size: small;
@@ -1310,16 +1299,6 @@ td.ps_hover
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-}
-#content
-{
-    height:100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    z-index: 10;
-
 }
 .Message
 {

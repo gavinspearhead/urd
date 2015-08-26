@@ -318,14 +318,14 @@ input, select, textarea
 }
 .submitsmall
 {
-    background: #dbdaa9;
+    background-color: #dbdaa9;
     color: #303030;
     padding: 0px 3px 0px 3px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
     font-size: small;
-    border: 2px solid;
+    border: 1px solid;
     font-weight: bold;
-    border-color:#484848 #484848 #707070 #707070;
+    border-color: #484848 #484848 #707070 #707070;
     cursor: pointer;
     border-radius:4px;
 } 
@@ -342,6 +342,7 @@ input, select, textarea
     position: fixed;
     left: 50%;
     top: 50%;
+    visibility: visible;
     width: 525px;
     height: 300px;
     margin-left: -262px;
@@ -379,6 +380,7 @@ input, select, textarea
     height: 400px;
     margin-left: -350px;
     margin-top: -200px;
+    visibility: visible;
     background: #654D13;
     border-radius: 9px;
     border: 2px solid #BA7900;
@@ -478,6 +480,10 @@ input, select, textarea
     border-collapse: collapse;
     background: #a68427;
 
+}
+.extsetnamewidth
+{
+    width: 140px;
 }
 .extsetinput
 {
@@ -1351,7 +1357,7 @@ div.bottom {
 #contentout
 {
     font-family: Geneva, Arial, Helvetica, sans-serif;
-    position: relative;
+    position: absolute;
     display:block;
     top: 0px;
     left: 0px;

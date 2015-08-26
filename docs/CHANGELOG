@@ -3,6 +3,7 @@
 - Load set comments on demand in showing spot details
 - Made interface better usable for touchscreens
 - Rewrode the statisticts to generate plots in javascript
+- Cleanud up darkness and light stylesheets
 
 
 
