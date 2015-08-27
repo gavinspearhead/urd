@@ -560,6 +560,9 @@ table.basketbuttons
     background: #aaaaaa;
     border: 1px solid #111111;
     font-size: small;
+}
+#quickmenuinner
+{
     box-shadow: -3px 3px 3px 4px #bbbbbb;
 }
 #logindiv

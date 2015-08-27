@@ -501,9 +501,7 @@ table.basketbuttons
 
 #quickmenuinner
 {
-    position: relative;
     box-shadow: -3px 3px 3px 4px #202025;
-    width: 250px;
 }
 .quickmenubutton
 {

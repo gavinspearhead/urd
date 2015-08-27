@@ -27,7 +27,8 @@
 {/block}
 <div class="light">
 {block name="contents"}
-<center>{$LN_loading}</center>
+<br/><br/>
+<div class="center bold">{$LN_loading}</div>
 {/block}
 </div>
 </div>

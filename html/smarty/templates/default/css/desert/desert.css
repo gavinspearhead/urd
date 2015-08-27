@@ -553,9 +553,7 @@ table.browsetoptable
 }
 #quickmenuinner
 {
-    position: relative;
     box-shadow: -3px 3px 3px 4px #49370E;
-    width: 250px;
 }
 
 .quickmenuitem

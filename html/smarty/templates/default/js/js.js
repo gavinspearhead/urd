@@ -2460,8 +2460,8 @@ function show_quickmenu(type, subject, srctype, e)
 
 var loading_popup_content = '';
 function show_loading_popup()
-{
-    console.log(loading_popup_content);
+{   
+    // we cache it because it is always the same and can simply reuse it.
     if (loading_popup_content != '') {
         show_overlayed_content_1(loading_popup_content, 'popup700x400');
     } else {

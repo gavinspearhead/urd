@@ -581,16 +581,17 @@ table.basketbuttons
 {
     background-color: #414141;
 }
-.quickmenuitem
+.quickmenuitem 
 {
     position: absolute;
-    background: #aaaaaa;
     border: 1px solid #111111;
     font-size: small;
     height: 2em;
-    box-shadow: -3px 3px 3px 4px #001133;
 }
-
+#quickmenuinner
+{
+    box-shadow: -3px 3px 3px 4px #707070;
+}
 #logindiv
 {
     border-radius: 9px;
