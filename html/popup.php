@@ -1,5 +1,5 @@
-{* Smarty *}
-{*
+<?php
+/*
  *  This file is part of Urd.
  *
  *  Urd is free software; you can redistribute it and/or modify
@@ -15,19 +15,21 @@
  *  along with this program. See the file "COPYING". If it does not
  *  exist, see <http://www.gnu.org/licenses/>.
  *
- * $LastChangedDate: 2014-06-26 00:01:04 +0200 (do, 26 jun 2014) $
- * $Rev: 3116 $
+ * $LastChangedDate: 2014-05-30 00:49:17 +0200 (vr, 30 mei 2014) $
+ * $Rev: 3077 $
  * $Author: gavinspearhead@gmail.com $
- * $Id: ajax_preview.tpl 3116 2014-06-25 22:01:04Z gavinspearhead@gmail.com $
- *}
-{* Ajax page, doesn't need a head/foot tpl *}
-{block name=header}
-<div class="closebutton buttonlike noborder fixedright down5" id="{block name="close_button_id"}close_button{/block}"></div>
-<div class="set_title head centered">{block name="title"}&nbsp;{/block}</div>
-{/block}
-<div class="light">
-{block name="contents"}
-<center>{$LN_loading}</center>
-{/block}
-</div>
-</div>
+ * $Id: ajax_editposts.php 3077 2014-05-29 22:49:17Z gavinspearhead@gmail.com $
+ */
+define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
+$__auth = 'silent';
+
+$pathaet = realpath(dirname(__FILE__));
+
+
+require_once "$pathaet/../functions/ajax_includes.php";
+
+
+init_smarty();
+$data = $smarty->fetch('popup.tpl');
+echo_debug_var_file('/tmp/foo',$data);
+echo $data;

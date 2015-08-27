@@ -589,12 +589,16 @@ function _hide_overlayed_content(content, back)
 
 function _show_overlayed_content(html, style, content, back, close_button)
 {
-    $(content).html('');
+    if (html != '') { 
+        $(content).html('');
+    }
     if (html.substr(0, 7) == ':error:') {
         set_message('message_bar', html.substr(7), 5000);
     } else {
         $(content).css({'width': '', 'height': '', 'margin': ''});
-        $(content).html(html);
+        if (html != '') { 
+            $(content).html(html);
+        }
         $(content).removeClass();
         $(content).addClass(style);
         $(document).keydown(function(e) {
@@ -1505,9 +1509,8 @@ function show_preview(dlid, binary_id, group_id, _first)
         binary_id: binary_id,
         group_id: group_id
     };
-    var loading_msg = $('#loading_msg').val();
     if (_first === undefined) { 
-        show_overlayed_content_1(loading_msg, 'popup700x400');
+        show_loading_popup();
     }
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
@@ -2455,6 +2458,20 @@ function show_quickmenu(type, subject, srctype, e)
     return true;
 }
 
+var loading_popup_content = '';
+function show_loading_popup()
+{
+    console.log(loading_popup_content);
+    if (loading_popup_content != '') {
+        show_overlayed_content_1(loading_popup_content, 'popup700x400');
+    } else {
+        $.post('popup.php').done(function(html) {
+            loading_popup_content = html;
+            show_overlayed_content_1(loading_popup_content, 'popup700x400');
+        });
+    }
+}
+
 function show_quick_display(options)
 {
     // Fill menu
@@ -2486,9 +2503,8 @@ function show_quick_display(options)
         }
     }
     if (add_rows == 0) {
-        var loading_msg = $('#loading_msg').val();
-        show_overlayed_content_1(loading_msg, 'popup700x400');
-    }
+        show_loading_popup();
+    } 
     $.post(url, {
             type: type,
             srctype: srctype,
@@ -2916,8 +2932,7 @@ function edit_file(fileid)
         challenge: challenge
     };
 
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'popup700x400');
+    show_loading_popup();
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -2978,9 +2993,8 @@ function edit_categories()
         challenge: challenge
     };
     close_browse_divs();
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'popup525x300');
 
+    show_loading_popup();
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
@@ -3542,8 +3556,7 @@ function show_savename()
         name: save_name,
         cmd: 'show'
     };
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'savenamediv');
+    show_loading_popup();
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         show_overlayed_content_1(x.contents, 'savenamediv');
@@ -4512,8 +4525,7 @@ function show_contents(file, idx)
 {
     var url = 'ajax_get_textfile.php';
     var challenge = get_value_from_id('challenge', '');
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'popup700x400');
+    show_loading_popup();
     $.post(url, {
         file: file,
         idx: idx,
@@ -4548,8 +4560,7 @@ function show_image(file, idx)
     var preview = get_value_from_id('preview', '');
     var width = Math.floor($(window).width() * 0.9);
     var height = Math.floor($(window).height() * 0.9);
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'popup700x400');
+    show_loading_popup();
 
     $.post(url, {
             file: file,
@@ -5841,8 +5852,7 @@ function update_ng_time(type, group_id)
 function show_post_spot()
 {
     var url = 'ajax_post_spot.php';
-    var loading_msg = $('#loading_msg').val();
-    show_overlayed_content_1(loading_msg, 'popup700x400');
+    show_loading_popup();
 
     $.post(url, { cmd: 'show' }).done(function(html) {
         var x = $.parseJSON(html);
