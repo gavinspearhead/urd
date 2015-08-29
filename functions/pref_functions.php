@@ -355,13 +355,13 @@ function match_all($haystack, $needles)
     return $rv != 0;
 }
 
-function verify_url($text, $strict=TRUE)
+function verify_url($text, $strict=TRUE, $maybeblank=FALSE)
 {
     global $LN;
-    if (validate_url($text, $strict)) {
+    if (validate_url($text, $strict) || ($text == '' && $maybeblank)) {
         return '';
     } else {
-        if ($text == '') {
+        if ($text == '' && ! $maybeblank) {
             $msg = $LN['error_notleftblank'];
         } else {
             $msg = $LN['error_invalidvalue'] . "'<i>$text</i>'<br/> " . $LN['error_urlstart'];

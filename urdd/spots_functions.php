@@ -481,20 +481,19 @@ class urd_spots
     {
         $imdb_link = $moviemeter_link = $default_link = '';
         $links = array();
-        $rv = preg_match_all('|(https?:\/\/[-a-z0-9_:./&%!@#$?^()+=\\;]+)|i', $data, $matches);
+        $rv = preg_match_all('|(https?:\/\/[-a-z0-9_:./&%!@,#$?^()+=\\;]+)|i', $data, $matches);
         if ($rv > 0) {
-            foreach ($matches[1] as $match) {
-                $links[] = $match;
+            foreach ($matches[1] as $link) {
+                if ((stristr($link, 'imdb.') !== FALSE) && ($imdb_link == '')) {
+                    $imdb_link = $link;
+                } elseif ((stristr($link, 'moviemeter.') !== FALSE) && ($moviemeter_link == '')) {
+                    $moviemeter_link = $link;
+                } elseif ($default_link == '') {
+                    $default_link = $link;
+                }
             }
-        }
-        foreach ($links as $link) {
-            if (stristr($link, 'imdb.') !== FALSE && $imdb_link == '') {
-                $imdb_link = $link;
-            } elseif (stristr($link, 'moviemeter.') !== FALSE && $moviemeter_link == '') {
-                $moviemeter_link = $link;
-            } elseif ($default_link == '') {
-                $default_link = $link;
-            }
+        } else {
+            return FALSE;
         }
         $link = '';
         if ($imdb_link != '' && $imdb_link != $spot_url) {
@@ -513,7 +512,7 @@ class urd_spots
     private function update_spot_reference(DatabaseConnection $db, $spotid, $reference) 
     {
         $sql = '"reference" FROM spots WHERE "spotid" = :spotid';
-        $res = $db->select_query($sql, 1, array(':spotid'=>$spotid));
+        $res = $db->select_query($sql, 1, array(':spotid' => $spotid));
         if (!isset($res[0]['reference'])) {
             echo_debug("Setting reference: $reference", DEBUG_SERVER);
             $db->update_query_2('spots', array('reference'=> $reference), '"spotid"=?', array($setid));
@@ -530,7 +529,7 @@ class urd_spots
             $extset_data['link'] = $link_data;
         }
         if (count($extset_data) > 0) {
-            //        echo_debug("Found link: $link_data", DEBUG_SERVER);
+            echo_debug("Found link: $link_data", DEBUG_SERVER);
             $reference = find_reference($link_data);
             //      echo_debug("Found ref: $reference", DEBUG_SERVER);
             urd_extsetinfo::add_ext_setdata($db, $spotid, $extset_data, USERSETTYPE_SPOT, ESI_NOT_COMMITTED, FALSE);

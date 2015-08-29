@@ -148,7 +148,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
 
     switch ($name) {
         case 'url_redirector':
-            $rv = verify_url($value, FALSE);
+            $rv = verify_url($value, FALSE, TRUE);
 
             return $rv;
         case 'spot_spam_limit':

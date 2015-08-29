@@ -599,8 +599,6 @@ table.browsetoptable
     background-image: url('../../img/classic/windowbg_largest.png');
     background-repeat: no-repeat;
 }
-
-
 #textcontent
 {
     border: 1px solid #040000;
@@ -641,7 +639,6 @@ table.browsetoptable
     background-image:url('../../img/icon_minus.png');
     background-color:#440000;
 }
-
 input[type=text], textarea, select, input[type=password], input[type=checkbox], input[type=radio], input[type=file], input[type=email]
 {
     background-color: #202020;
@@ -652,7 +649,6 @@ input[type=text], textarea, select, input[type=password], input[type=checkbox], 
     padding-top:0px;
     font-size: small;
 }
-
 option
 {
     background-color: #202020;
@@ -660,7 +656,6 @@ option
     color : #eeeeee;
     border-color:#454545 #454545 #282828 #282828;
 }
-
 input[readonly] 
 {
     background-color: #202020;
