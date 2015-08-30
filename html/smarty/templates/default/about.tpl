@@ -35,10 +35,9 @@
 <br/>
 <script>
 $(document).ready(function() {
-        update_search_bar_height();
-        $('#urd_logo').click( function() { jump('index.php'); });
-    }
-);
+    update_search_bar_height();
+    $('#urd_logo').click( function() { jump('index.php'); });
+});
 </script>
 
 {/block}

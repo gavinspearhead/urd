@@ -30,13 +30,12 @@
     {foreach $comments as $comment}
     <tr class="comment_poster"><td colspan="2">
     <div class="floatleft">
-    {if $comment.user_avatar != ''}<img class="floatleft" src="{$comment.user_avatar}"/>&nbsp; {/if}
+    {if $comment.user_avatar != ''}<img class="floatleft" src="{$comment.user_avatar}"/>&nbsp;{/if}
     {$LN_showsetinfo_postedby}: {$comment.from|escape} ({$comment.userid|escape})&nbsp; </div>
     <div class="floatright"> @ {$comment.stamp|escape}</div>
     <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:add_blacklist('{$comment.userid|escape:javascript}', 'spotterid');" {urd_popup type="small" text=$LN_quickmenu_addblacklist }></div>
     </td></tr>
     <tr class="comment"><td colspan="2">
-
     {$comment.comment}
     </td></tr>
     <tr class="comment"><td colspan="2"><br/></td></tr>
@@ -103,49 +102,49 @@ $(document).ready(function() {
 {/foreach}
 {/foreach}
 
+{capture assign=similar} 
+<span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
+{/capture}
+{$urls=''}
+
 {$hadref=0}
 {capture assign=extsetoverview}
 	{$looped=0}
 	{foreach $display as $vals}
         {if $vals.value != "0" && $vals.value != "" && $vals.value != "name"}
             {$looped="`$looped+1`"}
-            <tr class="vtop small comment"><td class="nowrap bold">{$vals.name}:</td><td>
-            {if $vals.display == 'text'}{$vals.value|escape}{/if}
             {if $vals.display == 'url'}
-                {if $hadref == 0} 
-                    <span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
-                    {$hadref=1}
+                {capture assign=urls} {$urls}
+                {if $vals.value.icon == ''} 
+                    <span class="buttonlike" onclick="javascript:jump('{$vals.value.link|escape:javascript}',1);">{$vals.value.display|escape} </span>
+                {else}
+                    <span class="buttonlike highlight_comments" onclick="javascript:jump('{$vals.value.link|escape:javascript}',1);" {urd_popup type="small" text="{$vals.value.display|escape:javascript}"}">{$vals.value.icon|escape}</span>        
                 {/if}
-            {if $url.icon == ''} 
-                <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.display|escape}</span>
+                {/capture}
             {else}
-                <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.icon|escape}</span>        
+                <tr class="vtop small comment"><td class="nowrap bold">{$vals.name}:</td><td>
+                {if $vals.display == 'text'} {$vals.value|escape}{/if}
+                {if $vals.display == 'number'}<b>{$vals.value|escape}</b>{/if}
+                {if $vals.display == 'checkbox'}{if $vals.value == 1}Yes{else}No{/if}{/if}
+                </td></tr>
             {/if}
-            {/if}
-            {if $vals.display == 'number'}<b>{$vals.value|escape}</b>{/if}
-            {if $vals.display == 'checkbox'}{if $vals.value == 1}Yes{else}No{/if}{/if}
-            </td></tr>
         {/if}
 	{/foreach}
-    {if $hadref == 0} 
-        {$looped="`$looped+1`"}
-        <tr class="vtop small comment"><td class="nowrap bold">{$LN_browse_tag_link}:</td><td>
-		    <span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
-        </td></tr>
-    {/if}
 {/capture}
 
 {if $tag != ''}
-<tr class="comment"><td class="nowrap bold">{$LN_spots_tag}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'search':'{$tag|escape:javascript}' });">{$tag|escape}</span></td></tr>
+    <tr class="comment"><td class="nowrap bold">{$LN_spots_tag}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'search':'{$tag|escape:javascript}' });">{$tag|escape}</span></td></tr>
 {/if}
-{if $url}
-<tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td>
-{if $url.icon == ''} 
-<span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.display|escape}</span>
-{else}
-<span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);">{$url.icon|escape}</span>
-{/if}
-</td></tr>
+{if $url != ''}
+    <tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td>
+    {$similar} 
+    {if $url.icon == ''} 
+        <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.display|escape}</span>
+    {else}
+        <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.icon|escape}</span>
+    {/if}
+    {$urls}
+    </td></tr>
 {/if}
 {if $image != ''}
 <tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image|escape}</span></td></tr>

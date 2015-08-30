@@ -101,7 +101,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         }
     }
     if (!$only_rows) {
-        $url = trim(strip_tags($row['url']));
+        $url = (strip_tags($row['url']));
         $url = pack_url_data($db, $url, $userid);
         /// too quick and dirty --- clean up XXX
         $image_file = $image = '';
@@ -142,7 +142,6 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     }
 
     $first_two_words = implode(' ', $arr);
-
     if (!$only_rows) {
         $smarty->assign(array(
             'show_image' =>   $show_image,
@@ -172,6 +171,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
             'binarytype' =>   $binarytype, // Binarytype
             'binarytypes' =>  $binarytypes,  // All
             'display' =>      $display));      // All values
+
         return $smarty->fetch('ajax_showspot.tpl');
     } else {
         return $smarty->fetch('ajax_showspotcomments.tpl');

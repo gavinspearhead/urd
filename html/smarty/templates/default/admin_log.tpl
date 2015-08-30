@@ -44,10 +44,10 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-        show_logs();
-        $('#searchbar').html( $('#searchformdiv').html());
-        $('#search_button').click( function() { show_logs(); });
-        $('#search').keypress( function(e) { return submit_enter(e, show_logs); });
+    show_logs();
+    $('#searchbar').html( $('#searchformdiv').html());
+    $('#search_button').click( function() { show_logs(); });
+    $('#search').keypress( function(e) { return submit_enter(e, show_logs); });
 });
 </script>
 {/block}

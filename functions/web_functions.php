@@ -2263,22 +2263,41 @@ function make_url(DatabaseConnection $db, $url, $userid)
 
 function find_url_icon($url)
 {
-    if (trim($url) == '') { return '';}
+    static $url_icons = array (
+        'IMDB' => 'imdb.com',
+        'TMDB' => 'themoviedb.com',
+        'Filmstarts' => 'filmstarts.de',
+        'TVrage' => 'tvrage.com',
+        'Moviemeter' => 'moviemeter.nl',
+        'IAFD' => 'iafd.com',
+        'XXX-Image' => 'xxx-image.com',
+        'NZBIndex' => 'NZBindex.nl',
+        'WIKI' => 'wikipedia.org',
+        'YouTube' => 'youtube.com',
+        'FilmTotaal' => 'filmtotaal.nl',
+        'Imgbox' => 'imgbox.com',
+        'Imgur' => 'imgur.com',
+        'MijnSerie' => 'mijnserie.nl',
+    );
+
+    $url = trim($url);
+    if ($url == '') { return '';}
     $parts = parse_url($url);
     $host = $parts['host'];
     if (trim($host) == '') { return ''; }
-    if (substr( $host, -strlen('imdb.com')) == 'imdb.com') { return 'IMDB'; }
-    elseif (substr( $host, -strlen('themoviedb.com')) == 'themoviedb.com') { return 'TMDB'; }
-    elseif (substr( $host, -strlen('filmstarts.de')) == 'filmstarts.de') { return 'Filmstarts'; }
-    elseif (substr( $host, -strlen('tvrage.com')) == 'tvrage.com') { return 'TVrage'; }
-    elseif (substr( $host, -strlen('moviemeter.nl')) == 'moviemeter.nl') { return 'Moviemeter'; }
-    elseif (substr( $host, -strlen('iafd.com')) == 'iafd.com') { return 'IAFD'; }
-    else return '';
+    foreach($url_icons as $icon => $hostname) {
+        if (substr($host, -strlen($hostname)) == $hostname) { return $icon; }
+    }
+    return '';
 }
 
 function pack_url_data(DatabaseConnection $db, $url, $userid)
 {
-    return array('link' => make_url($db, trim(strip_tags($url)), $userid), 'display' => $url, 'icon'=> find_url_icon($url));
+    $url = strip_tags(trim($url));
+    if ($url == '') { 
+        return '';
+    }
+    return array('link' => make_url($db, $url, $userid), 'display' => $url, 'icon'=> find_url_icon($url));
 }
 
 function get_dow($day, $month, $year)
