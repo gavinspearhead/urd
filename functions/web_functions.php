@@ -2271,7 +2271,7 @@ function find_url_icon($url)
         'Moviemeter' => 'moviemeter.nl',
         'IAFD' => 'iafd.com',
         'XXX-Image' => 'xxx-image.com',
-        'NZBIndex' => 'NZBindex.nl',
+        'NZBIndex' => 'nzbindex.nl',
         'WIKI' => 'wikipedia.org',
         'YouTube' => 'youtube.com',
         'FilmTotaal' => 'filmtotaal.nl',
@@ -2283,7 +2283,7 @@ function find_url_icon($url)
     $url = trim($url);
     if ($url == '') { return '';}
     $parts = parse_url($url);
-    $host = $parts['host'];
+    $host = strtolower($parts['host']);
     if (trim($host) == '') { return ''; }
     foreach($url_icons as $icon => $hostname) {
         if (substr($host, -strlen($hostname)) == $hostname) { return $icon; }
