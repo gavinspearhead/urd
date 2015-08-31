@@ -523,13 +523,13 @@ class urd_spots
     private function parse_spots_for_extset_data(DatabaseConnection $db, array $spot_data, $spotid)
     {
         $link_data = self::parse_links($spot_data['body'], $spot_data['url']);
-        echo_debug("Found links: " . count( $link_data), DEBUG_SERVER);
+        //echo_debug("Found links: " . count( $link_data), DEBUG_SERVER);
         $extset_data = array();
         if (($link_data !== FALSE) && ($link_data != $spot_data['url'])) {
             $extset_data['link'] = $link_data;
         }
         if (count($extset_data) > 0) {
-            echo_debug("Found link: $link_data", DEBUG_SERVER);
+            //echo_debug("Found link: $link_data", DEBUG_SERVER);
             $reference = find_reference($link_data);
             //      echo_debug("Found ref: $reference", DEBUG_SERVER);
             urd_extsetinfo::add_ext_setdata($db, $spotid, $extset_data, USERSETTYPE_SPOT, ESI_NOT_COMMITTED, FALSE);
@@ -602,7 +602,7 @@ class urd_spots
                 $msg_ids[] = $row['message_id'];
                 $ids[ $row['message_id'] ] = array('id' => $row['id'], 'spotid' => $row['spotid']);
             }
-            unset($res);
+           unset($res);
             try {
                 $headers = $nzb->get_header_multi($msg_ids);
             } catch (exception $e) {

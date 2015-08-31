@@ -107,7 +107,8 @@ div.light
 table.statistics
 {
     margin-top: 1px;
-    background-color: #dddddd;
+    background-color: #b0dddd;
+    color: black;
     border: thin solid black;   
 }
 .xxsmall

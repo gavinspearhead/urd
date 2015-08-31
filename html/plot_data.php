@@ -85,7 +85,7 @@ class colour_map
         foreach ($lines as $line) {
             if (preg_match('/stat_colour([0-9]+)\s*:\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)/', $line, $matches)) {
                 if (isset($matches[4])) {
-                    $colours[$matches[1]] = array ($matches[2], $matches[3],$matches[4]);
+                    $colours[$matches[1]] = array($matches[2], $matches[3],$matches[4]);
                 }
             }
         }
@@ -130,6 +130,15 @@ class colour_map
         }
         return $colors;
     }
+    public static function get_rgb_code(DatabaseConnection $db, $index, $userid, $alpha)
+    {
+        $cm = self::get_colour_map($db, $userid);
+        if (isset($cm[$index])) {
+        $c = $cm[$index];
+        return "rgba({$c[0]},{$c[1]},{$c[2]},$alpha)";
+        }
+        return 'rgba(0,0,0,1)';
+    }
 }
 
 $isadmin = urd_user_rights::is_admin($db, $userid);
@@ -157,6 +166,7 @@ function make_graph_data(DatabaseConnection $db, $userid, array $data)
     $new_data = array(
         'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.6),
         'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
+        'textcolour'=> colour_map::get_rgb_code($db, $userid, 1),
         'titles'=> array(),
     );
     $new_data = array_merge($new_data, $data);

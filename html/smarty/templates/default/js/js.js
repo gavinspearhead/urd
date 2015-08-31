@@ -6672,10 +6672,7 @@ function load_plot(id, type, extra)
    // console.log(extra);
     var width = Math.round(($(window).width()) / 2.2);
     var height = Math.round(($(window).height()) / 1.7);
-    //console.log(width, height, id,  $('#' + id).width(), $('#' + id).height());
     $("#" + id).attr({width:width,height:height})
-//    $("#" + id).width(width);
-  //  $("#" + id).height(height);
     $.post(url, data).done(function(html) {
         //console.log(html);
         var x = $.parseJSON(html);
@@ -6697,9 +6694,11 @@ function load_plot(id, type, extra)
                 inGraphDataShow : true,
                 graphTitleFontSize: 14,
                 graphTitle : x.title,
+                legendFontColor: x.textcolour,
                 segmentShowStroke: false,
                 graphTitleFontColor: txt_color,
-                inGraphDataFontColor :txt_color,
+                inGraphDataFontColor: txt_color,
+                legendFontColor: txt_color,
             };
 
             my_chart = new Chart(ctx).Pie(plot_data, plot_options);
@@ -6726,7 +6725,8 @@ function load_plot(id, type, extra)
                 graphTitleFontColor: txt_color,
                 legendFontColor: txt_color,
                 scaleFontColor: txt_color,
-                yAxisFontColor: txt_color
+                yAxisFontColor: txt_color,
+                legendFontColor: txt_color,
             };
             if(x.labels.length >12) {
                 plot_options['barValueSpacing']= 2;
