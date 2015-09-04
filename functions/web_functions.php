@@ -2263,32 +2263,45 @@ function make_url(DatabaseConnection $db, $url, $userid)
 
 function find_url_icon($url)
 {
-    static $url_icons = array (
-        'IMDB' => 'imdb.com',
-        'TMDB' => 'themoviedb.com',
-        'Filmstarts' => 'filmstarts.de',
-        'TVrage' => 'tvrage.com',
-        'Moviemeter' => 'moviemeter.nl',
-        'IAFD' => 'iafd.com',
-        'XXX-Image' => 'xxx-image.com',
-        'NZBIndex' => 'nzbindex.nl',
-        'WIKI' => 'wikipedia.org',
-        'YouTube' => 'youtube.com',
-        'FilmTotaal' => 'filmtotaal.nl',
-        'Imgbox' => 'imgbox.com',
-        'Imgur' => 'imgur.com',
-        'MijnSerie' => 'mijnserie.nl',
+    global $LN;
+    static $url_icons = array(
+        'anonymousxxl.nl' => 'XXX-Image',
+        'erocard.info' => 'XXX-Image',
+        'filmstarts.de' => 'Filmstarts',
+        'filmtotaal.nl' =>'FilmTotaal',
+        'iafd.com' => 'IAFD',
+        'imagecurl.com' => 'ImageCurl',
+        'imdb.com' => 'IMDB',
+        'imgbox.com' => 'Imgbox',
+        'imgur.com' =>'Imgur' ,
+        'metal-archives.com' => 'MetalArchives',
+        'mijnserie.nl' => 'MijnSerie',
+        'moviemeter.nl' => 'Moviemeter',
+        'nzbindex.nl' => 'NZBIndex',
+        'oohmygod.nl' => 'XXX-Image',
+        'themoviedb.com' => 'TMDB',
+        'tvrage.com' => 'TVrage',
+        'wikipedia.org' => 'WIKI',
+        'xxx-image.com'=>  'XXX-Image',
+        'xxximage.nl' => 'XXX-Image' ,
+        'youtube.com' => 'YouTube',
     );
 
     $url = trim($url);
-    if ($url == '') { return '';}
+    if ($url == '') { 
+        return '';
+    }
     $parts = parse_url($url);
     $host = strtolower($parts['host']);
-    if (trim($host) == '') { return ''; }
-    foreach($url_icons as $icon => $hostname) {
-        if (substr($host, -strlen($hostname)) == $hostname) { return $icon; }
+    if (trim($host) == '') { 
+        return '';
     }
-    return '';
+    foreach($url_icons as  $hostname => $icon) {
+        if (substr($host, -strlen($hostname)) == $hostname) { 
+            return $icon;
+        }
+    }
+    return $LN['bin_other'];
 }
 
 function pack_url_data(DatabaseConnection $db, $url, $userid)

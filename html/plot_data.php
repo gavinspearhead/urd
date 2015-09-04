@@ -614,7 +614,7 @@ function get_stats_by_year(DatabaseConnection $db, $userid, $type, $admin, $from
                 $ystr AS "year" FROM stats LEFT JOIN users ON users."ID" = stats."userid"
                 WHERE $ystr > :fromyear1
                 AND "action" = :type1 $quser GROUP BY "name", $ystr
-                 ORDER BY year, "name"
+                ORDER BY year, "name"
 QRY1;
     $res = $db->select_query($qry, $input_arr);
     if (!is_array($res)) {
@@ -813,7 +813,7 @@ switch ($type) {
             return_result(array('error'=> $LN['error_unknowntype']));
         }
         if ($period == 'years') {
-            get_stats_by_year($db, $userid, $atype, $isadmin, 0, $sizeorcount, html_entity_decode( $graphtitle));
+            get_stats_by_year($db, $userid, $atype, $isadmin, 2014, $sizeorcount, html_entity_decode( $graphtitle));
         } elseif ($period == 'months') {
             $graphtitle =  $graphtitle . ' - ' . $year;
             get_stats_by_month($db, $userid, $atype, $isadmin, $year, $sizeorcount,  html_entity_decode($graphtitle));

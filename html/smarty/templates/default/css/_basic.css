@@ -1154,6 +1154,16 @@ table.subcat
     padding-bottom: 0;
     z-index: 10;
 }
+#smallhelp
+{
+    position: fixed;
+    z-index: 2000;
+    padding: 2px 5px 2px 5px;
+    margin: 4px;
+    min-width: 100px;
+    max-width: 350px;
+    border-radius: 9px;
+}
 
 tr.set_content {} /* use for highlighting sets */
 div.resurrect_button {} /* used for buttons on sets */

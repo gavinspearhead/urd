@@ -817,16 +817,9 @@ li.tab_selected,span.tab_selected, .tab_selected
 }
 #smallhelp
 {
-    border-radius: 9px; 
-    position: fixed;
     background-color: #282828;
     color: #ffffff;
-    z-index: 2000;
-    padding: 2px 5px 2px 5px;
     border: 2px solid #004586;
-    margin: 4px;
-    min-width: 100px;
-    max-width: 250px;
     font-size: 9pt;
 }
 .innerwaitingdiv

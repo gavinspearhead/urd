@@ -107,7 +107,6 @@ $(document).ready(function() {
 {/capture}
 {$urls=''}
 
-{$hadref=0}
 {capture assign=extsetoverview}
 	{$looped=0}
 	{foreach $display as $vals}
@@ -135,17 +134,17 @@ $(document).ready(function() {
 {if $tag != ''}
     <tr class="comment"><td class="nowrap bold">{$LN_spots_tag}:</td><td><span class="buttonlike" onclick="javascript:load_sets({ 'search':'{$tag|escape:javascript}' });">{$tag|escape}</span></td></tr>
 {/if}
-{if $url != ''}
     <tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td>
     {$similar} 
-    {if $url.icon == ''} 
-        <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.display|escape}</span>
-    {else}
-        <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.icon|escape}</span>
+    {if $url != ''} 
+        {if $url.icon == ''} 
+            <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.display|escape}</span>
+        {else}
+            <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.icon|escape}</span>
+        {/if}
     {/if}
     {$urls}
     </td></tr>
-{/if}
 {if $image != ''}
 <tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image|escape}</span></td></tr>
 {/if}

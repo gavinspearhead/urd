@@ -759,31 +759,10 @@ li.tab_selected,span.tab_selected, .tab_selected
 
 #smallhelp
 {
-    position: fixed;
     background-color: #ffffff;
     color: #111111;
-    z-index: 2000;
-    padding: 2px 5px 2px 5px;
     border: 2px solid #498AF4;
-    margin: 4px;
-    min-width: 100px;
-    max-width: 250px;
     font-size: 9pt;
-    border-radius: 9px;
-}
-#smallhelp
-{
-    position: fixed;
-    background-color: #235BD9;
-    color: #ffffff;
-    z-index: 2000;
-    padding: 2px 5px 2px 5px;
-    border: 2px solid #253D63;
-    margin: 4px;
-    min-width: 100px;
-    max-width: 250px;
-    font-size: 9pt;
-    border-radius: 9px;
 }
 .innerwaitingdiv
 {

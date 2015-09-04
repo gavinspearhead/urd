@@ -789,17 +789,10 @@ li.tab_selected, span.tab_selected, .tab_selected
 }
 #smallhelp
 {
-    position: fixed;
     background-color: #300000;
     color: #ffffff;
-    z-index: 2000;
-    padding: 2px 5px 2px 5px;
-    min-width: 100px;
-    max-width: 250px;
     border: 2px solid #700000;
     font-size: 9pt;
-    margin: 4px;
-    border-radius: 9px;
 }
 tr.server_enabled
 {

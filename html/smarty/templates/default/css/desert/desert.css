@@ -818,36 +818,13 @@ tr.bottomline
     width: 0;
     z-index: 3000;
 }
-
 #smallhelp
 {
-    position: fixed;
-    background-color: #ffffff;
-    color: #111111;
-    z-index: 2000;
-    padding: 2px 5px 2px 5px;
-    border: 2px solid #498AF4;
-    margin: 4px;
-    min-width: 100px;
-    max-width: 250px;
-    font-size: 9pt;
-    border-radius: 9px;
-}
-#smallhelp
-{
-    position: fixed;
     background-color: #654D13;
     color: #ffffff;
-    z-index: 2000;
-    padding: 2px 5px 2px 5px;
-    margin: 4px;
     border: 2px solid #BA7900;
-    min-width: 100px;
-    max-width: 250px;
     font-size: 9pt;
-    border-radius: 9px;
 }
-
 .innerwaitingdiv
 {
     position: fixed;
