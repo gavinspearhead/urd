@@ -31,8 +31,6 @@ require_once "$pathap/../functions/pref_functions.php";
 
 verify_access($db, NULL, FALSE, '', $userid, FALSE);
 
-
-
 function get_search_type_array()
 {
     global $LN;
@@ -525,7 +523,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
     }
 
     if (!isset($url_redirector_msg)) {
-        $url_redirector_msg = verify_url($prefArray['url_redirector'], FALSE);
+        $url_redirector_msg = verify_url($prefArray['url_redirector'], FALSE, TRUE);
     }
     if (!isset($global_scripts_msg)) {
         $global_scripts_msg = '';

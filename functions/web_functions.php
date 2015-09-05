@@ -2283,7 +2283,7 @@ function find_url_icon($url)
         'tvrage.com' => 'TVrage',
         'wikipedia.org' => 'WIKI',
         'xxx-image.com'=>  'XXX-Image',
-        'xxximage.nl' => 'XXX-Image' ,
+        'xxximages.nl' => 'XXX-Image' ,
         'youtube.com' => 'YouTube',
     );
 
