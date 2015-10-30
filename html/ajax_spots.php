@@ -25,7 +25,6 @@ if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 }
 
-
 $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
@@ -40,13 +39,13 @@ verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE, '', $userid, TRUE);
 class spot_viewer
 {
     private static $sort_orders = array (
-            '',
-            'title',
-            'stamp',
-            'size',
-            'url',
-            'comments',
-            'reports',
+        '',
+        'title',
+        'stamp',
+        'size',
+        'url',
+        'comments',
+        'reports',
     );
 
     private $Qsearch = '';
@@ -519,6 +518,8 @@ try {
     $only_rows  = get_request('only_rows', 0);
     $offset     = get_request('offset', 0);
     $view_size  = get_request('view_size', 1024);
+    $spot_view  = get_request('spot_view', 0);
+
 
     $spots_viewer = new spot_viewer($db, $userid);
     $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order, $reference);
@@ -544,6 +545,7 @@ try {
    }
 
     $smarty->assign(array(
+        'spot_view' =>          $spot_view,
         'only_rows' =>          $only_rows,
         'view_size' =>          $view_size,
         'categoryID' =>	        $categoryID,

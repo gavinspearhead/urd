@@ -1209,8 +1209,10 @@ function load_quick_status()
 {
     var url = 'ajax_showstatus.php';
     $.post(url, { type: 'quick' }).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
+        console.log(x.contents);
             $('#status_msg').html(x.contents);
         }
     });
@@ -3417,7 +3419,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
     });
 }
 
-function show_help(msg, header, th)
+function show_help(msg, header, th, xpos, ypos)
 {
     $('#helpheader').html(header);
     $('#helpbody').html(msg);
@@ -3427,18 +3429,26 @@ function show_help(msg, header, th)
     var h = $(window).height();
     var w = $(window).width();
     var s = $('#helptext').outerHeight();
-    var new_pos, ac, rc;
+    var new_pos, ac, rc, left;
+    console.log(xpos, ypos);
+    if (!$.isNumeric(xpos) || ! $.isNumeric(ypos)) {
+        new_pos = pos.top;
+        left = Math.round(w / 4);
+    } else {
+        new_pos = Math.round(ypos);
+        left = Math.round(xpos);
+    }
     if (pos.top + s + 30 < h) {
-        new_pos = pos.top + th.outerHeight() + 6; // +6 to allow for the callout
+        new_pos = new_pos + th.outerHeight() + 6; // +6 to allow for the callout
         rc = 'bubble_bottom';
         ac = 'bubble_top';
     } else {
-        new_pos = pos.top - s - 6;
+        new_pos = new_pos - s - 6;
         ac = 'bubble_bottom';
         rc = 'bubble_top';
     }
     $('#helpwrapper').css('top', new_pos);
-    $('#helpwrapper').css('left', Math.round(w / 4));
+    $('#helpwrapper').css('left', left);
     $('#helpwrapper').outerHeight($('#helptext').outerHeight());
     $('#helpwrapper').removeClass(rc);
     $('#helpwrapper').addClass(ac);
@@ -3914,7 +3924,15 @@ function load_spots(options)
     }
     $('#suggest_div').addClass('hidden');  
     hide_overlayed_content();
-    var url = 'ajax_spots.php';
+    //var show_new_spots = false; 
+    var show_new_spots = get_value_from_id('spot_view', 1);
+    console.log(show_new_spots);
+    var url;
+    if (show_new_spots != 1) { 
+        url = 'ajax_spots_alt.php';
+    } else {
+        url = 'ajax_spots.php';
+    }
     data.search = search;
     data.minsetsize = minsetsize;
     data.maxsetsize = maxsetsize;
@@ -3931,6 +3949,7 @@ function load_spots(options)
     data.flag = flag;
     data.order = order;
     $.post(url, data).done(function(html) {
+        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage)
@@ -3951,7 +3970,8 @@ function load_spots(options)
                 uncheck_all(cat_id);
                 update_rss_url();
             } else {
-                $('#spots_table>tbody tr').eq(-2).after(x.content);
+                $('#spots_table>tbody tr').eq(-2).after(x.content); // for old spots view
+                $('#sets_list').append(x.content); // for old spots view
             }
             highlight_handler();
             set_scroll_handler('#contentout', load_sets);
@@ -6751,8 +6771,10 @@ function load_plot(id, type, extra)
             };
             if (x.type == 'stackedbar') {
                 plot_options.scaleXGridLinesStep= 9999;
+                plot_options.maxBarWidth= Math.round(width / 4);
                 my_chart = new Chart(ctx).StackedBar(plot_data, plot_options);
             } else if (x.type == 'horizontalbar') {
+                plot_options.maxBarWidth= Math.round(height / 4);
                 plot_options.scaleYGridLinesStep= 9999;
                 var rows = x.labels.length;
                 height = Math.round(Math.min (height*2, 16 * rows + 40));

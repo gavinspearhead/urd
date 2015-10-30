@@ -1,3 +1,4 @@
+{strip}
 {* Smarty *}
 {*
  *  This file is part of Urd.
@@ -21,7 +22,6 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: ajax_showstatus.tpl 3121 2014-06-27 15:26:47Z gavinspearhead@gmail.com $
  *}
-{strip}
 {if $type == 'icon'}
     {if $isadmin}
         {if $isconnected}
@@ -58,7 +58,7 @@
 
 {if $type == 'disk'}
     {if $isconnected}
-        <div style="margin-top:5px" class="nooverflow">
+        <div style="" class="down3 nooverflow">
         {urd_progressbar width=96 complete=$nodisk_perc done=progress_done2 remain=progress_done background=green colour=red} 
         </div>
         <ul class="last plain">

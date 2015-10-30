@@ -2325,3 +2325,15 @@ function get_dow($day, $month, $year)
     return $dow;
 }
 
+function get_first_two_words($line)
+{
+    $tmp = explode(' ', $line);
+    $arr = array();
+    foreach($tmp as &$word) {
+        $word = preg_trim($word, '[^A-Za-z0-9]');
+        if ($word != '') $arr[]= $word;
+        if (count($arr) >=2) break;
+    }
+
+    return implode(' ', $arr);
+}

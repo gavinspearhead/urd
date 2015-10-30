@@ -69,6 +69,7 @@
 <input type="hidden" name="dlname" id="dlname" value=""/>
 <input type="hidden" name="lastdivid" id="lastdivid" value=""/>
 <input type="hidden" name="type" id="type" value="spots"/>
+<input type="hidden" id="spot_view" value="{$spot_view}"/>
 </div>
 {/capture}
 

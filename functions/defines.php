@@ -327,3 +327,8 @@ class basket_type
     const SMALL = 2;
 }
 
+class spot_view
+{
+    const CLASSIC = 1;
+    const MODERN  = 2;
+}

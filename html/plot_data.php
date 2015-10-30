@@ -813,7 +813,7 @@ switch ($type) {
             return_result(array('error'=> $LN['error_unknowntype']));
         }
         if ($period == 'years') {
-            get_stats_by_year($db, $userid, $atype, $isadmin, 2014, $sizeorcount, html_entity_decode( $graphtitle));
+            get_stats_by_year($db, $userid, $atype, $isadmin, 0, $sizeorcount, html_entity_decode( $graphtitle));
         } elseif ($period == 'months') {
             $graphtitle =  $graphtitle . ' - ' . $year;
             get_stats_by_month($db, $userid, $atype, $isadmin, $year, $sizeorcount,  html_entity_decode($graphtitle));

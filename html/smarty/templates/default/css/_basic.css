@@ -272,6 +272,10 @@ th
     position: relative;
     display: inline-block;
 }
+.inlineblock
+{
+    display: inline-block;
+}
 
 .centered_nojs
 {
@@ -298,7 +302,7 @@ td.minimalistic
 .nowrap
 {
     white-space: nowrap;
-    overflow-x:hidden;
+    overflow-x: hidden;
 }
 .small
 {
@@ -352,20 +356,20 @@ td.user, th.user
 }
 .width32
 {
-    width: 32px;
+    width: 3.2em;
 }
 .width25
 {
-    width: 25px;
+    width: 2.3em;
 }
 .width20
 {
-    width: 20px;
+    width: 2em;
 }
 
 .width15
 {
-    width: 15px;
+    width: 1.3em;
 }
 .width60
 {
@@ -435,7 +439,7 @@ td.user, th.user
 
 .down3
 {
-    margin-top:0.5em;
+    margin-top:0.4em;
 }
 
 .up3
@@ -453,7 +457,7 @@ td.user, th.user
 
 .downm8
 {
-    margin-top:-8px;
+ margin-top:-8px;
 }
 
 .overflow
@@ -477,14 +481,14 @@ td.user, th.user
 }
 img.max180x180 
 {
-    max-width: 180px;
-    max-height: 180px;
+    max-width: 18em;
+    max-height: 18em;
 }
 
 img.max100x100 
 {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 10em;
+    max-height: 10em;
 }
 .minsize100
 {
@@ -870,7 +874,7 @@ li.tab, span.tab
 .highlight_spam,
 .highlight_whitelist
 {
-    padding: 0.25em 0.3em 0.25em 0.3em;
+    padding: 0.2em 0.3em 0.2em 0.3em;
     border-radius:3px;
 }
 
@@ -1165,6 +1169,60 @@ table.subcat
     border-radius: 9px;
 }
 
+.spotbox
+{
+    position: relative;
+    width: 39em;
+    height:16em;
+    float: left;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0.2em;
+    margin: 0.2em;
+}
+.spot_thumbnail2
+{
+    position: relative;
+    display: inline;
+    right: 0.2em;
+    top: 1.2em;
+}
+
+.spot_descriptionbox
+{
+    width: 28em;
+    height:10em;
+}
+
+.nooverflow
+{
+    overflow-x: hidden;
+    overflow-y: hidden;
+    white-space: pre-wrap;
+}
+.buttonbox 
+{
+    position: absolute;
+    width: 98%;
+    bottom: 0;
+    padding: 0.25em;
+}
+
+.width31
+{
+    width: 31em;
+}
+
+.clearfix:after
+{
+    content: "";
+    display: table;
+    clear: both;
+    width: 100%;
+}
+
+
+div.set_content {}
 tr.set_content {} /* use for highlighting sets */
 div.resurrect_button {} /* used for buttons on sets */
 div.remove_button {}/* used for buttons on sets */

@@ -53,6 +53,17 @@ function get_basket_type_array()
     return $basket_type_array;
 }
 
+function get_spotview_array()
+{
+    global $LN;
+    $spotview = array(
+        spot_view::MODERN => $LN['spot_view_modern'],
+        spot_view::CLASSIC => $LN['spot_view_classic']
+    );
+
+    return $spotview;
+}
+
 function get_encrar_array()
 {
     global $LN;
@@ -207,6 +218,8 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
             return verify_array($value, array_keys(get_encrar_array()));
         case 'search_type':
             return verify_array($value, array_keys(get_search_type_array()));
+        case 'spot_view':
+            return verify_array($value, array_keys(get_spotview_array()));
         case 'basket_type':
             return verify_array($value, array_keys(get_basket_type_array()));
         case 'default_group':
@@ -408,6 +421,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
 
     $languages = array_map('htmlentities', get_languages());
     $basket_type_array = get_basket_type_array();
+    $spot_view_array = get_spotview_array();
     $encrar_array = get_encrar_array();
 
     $search_options = array();
@@ -463,6 +477,9 @@ echo_debug_var_file('/tmp/foo', $prefArray);
     if (!isset($basket_type_msg)) {
         $basket_type_msg = verify_array($prefArray['basket_type'], array_keys($basket_type_array));
     }
+    if (!isset($spot_view_msg)) {
+        $spot_view_msg = verify_array($prefArray['spot_view'], array_keys($spot_view_array));
+    }
     if (!isset($search_terms_msg)) {
         $search_terms_msg = verify_text_area($prefArray['search_terms']);
     }
@@ -494,13 +511,13 @@ echo_debug_var_file('/tmp/foo', $prefArray);
         $maxsetname_msg = verify_numeric($prefArray['maxsetname'],1, NULL, 1000);
     }
     if (!isset($download_delay_msg)) {
-        $download_delay_msg = verify_numeric($prefArray['download_delay'],0, NULL, 1000);
+        $download_delay_msg = verify_numeric($prefArray['download_delay'], 0, NULL, 1000);
     }
     if (!isset($recovery_size_msg)) {
-        $recovery_size_msg = verify_numeric($prefArray['recovery_size'],0, NULL, 1000);
+        $recovery_size_msg = verify_numeric($prefArray['recovery_size'], 0, NULL, 1000);
     }
     if (!isset($rarfile_size_msg)) {
-        $rarfile_size_msg = verify_numeric($prefArray['rarfile_size'],0, NULL, 1000, 'k');
+        $rarfile_size_msg = verify_numeric($prefArray['rarfile_size'], 0, NULL, 1000, 'k');
     }
 
     if (!isset($subs_lang_msg)) {
@@ -519,7 +536,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
         $poster_email_msg = verify_text_opt('poster_email', TRUE, NULL);
     }
     if (!isset($setcompleteness_msg)) {
-        $setcompleteness_msg = verify_numeric($prefArray['setcompleteness'],0,100,1000);
+        $setcompleteness_msg = verify_numeric($prefArray['setcompleteness'], 0, 100, 1000);
     }
 
     if (!isset($url_redirector_msg)) {
@@ -586,6 +603,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
     );
 
     $spots = array(
+        new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_spot_view'],  'spot_view', $LN['pref_spot_view_msg'], $spot_view_msg, $spot_view_array, $prefArray['spot_view']),
         new pref_numeric_noformat(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_spot_spam_limit'], 'spot_spam_limit', $LN['pref_spot_spam_limit_msg'], $spot_spam_limit_msg, $prefArray['spot_spam_limit']),
         new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_image'], 'show_image', $LN['pref_show_image_msg'], $show_image_msg, $prefArray['show_image']),
         new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_show_subcats'], 'show_subcats', $LN['pref_show_subcats_msg'], $show_subcats_msg, $prefArray['show_subcats']),

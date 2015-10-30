@@ -133,15 +133,8 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         'srctype' =>      $srctype,
     ));
     
-    $tmp = explode(' ', $row['title']);
-    $arr = array();
-    foreach($tmp as &$word) {
-        $word = preg_trim($word, '[^A-Za-z0-9]');
-        if ($word != '') $arr[]= $word;
-        if (count($arr) >=2) break;
-    }
-
-    $first_two_words = implode(' ', $arr);
+   
+    $first_two_words = get_first_two_words($row['title']);
     if (!$only_rows) {
         $smarty->assign(array(
             'show_image' =>   $show_image,

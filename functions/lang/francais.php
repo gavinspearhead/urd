@@ -691,6 +691,10 @@ $LN['pref_mail_user_sets_msg']   = 'Envoyer un message si un ensemble int&eacute
 $LN['descending']       = 'D&eacute;croissant';
 $LN['ascending']        = 'Croissant';
 
+$LN['pref_spot_view']     = 'Spots overview style';
+$LN['pref_spot_view_msg'] = 'The view to use for the spots overview';
+$LN['spot_view_modern']    = 'Modern';
+$LN['spot_view_classic']    = 'Classic';
 $LN['pref_basket_type']     = 'Type de panier de t&eacute;l&eacute;chargement';
 $LN['pref_basket_type_msg'] = 'Le type of de panier de t&eacute;l&eacute;chargement utilis&eacute; par d&eacute;faut';
 $LN['basket_type_small']    = 'Compact';

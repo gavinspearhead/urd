@@ -59,28 +59,28 @@ function get_default_prefs()
     for ($i = 1; $i <= search_option::MAX_SEARCH_OPTIONS; $i++) {
         $prefArray['button'.$i] = 'none';		// the search_options
     }
-    $prefArray['spot_spam_limit']   = 0;
-    $prefArray['rarfile_size']      = 1000;
-    $prefArray['recovery_size']     = 5;
+    $prefArray['spot_spam_limit']   = 0;        // minimum number of spam reports for a spot to remove it
+    $prefArray['rarfile_size']      = 1000;      /// default size of a rar file when creating posts
+    $prefArray['recovery_size']     = 5;        // recovery percentage when par2ing files
     $prefArray['download_delay']    = 0; // number of seconds the download gets delayed
-    $prefArray['poster_name']       = '';
-    $prefArray['poster_email']      = '';
-    $prefArray['poster_default_text'] = '';
-    $prefArray['format_dl_dir']     = '';
-    $prefArray['add_setname']       = 1;
-    $prefArray['show_image']        = 0;
-    $prefArray['show_subcats']      = 0;
-    $prefArray['default_group']     = 0;
-    $prefArray['default_spot']      = '';
-    $prefArray['default_feed']      = 0;
-    $prefArray['url_redirector']    = 'http://www.nullrefer.com/?';
-    $prefArray['stylesheet']        = DEFAULT_STYLESHEET;
+    $prefArray['poster_name']       = '';       // default name of the poster
+    $prefArray['poster_email']      = '';       // default email address of the poster
+    $prefArray['poster_default_text'] = '';     // signature text for the posts
+    $prefArray['format_dl_dir']     = '';       // format for the download directory, to specify the dir structure where to dl the files
+    $prefArray['add_setname']       = 1;        // add the set name to the download directory as a directory
+    $prefArray['show_image']        = 0;        // show images in spots
+    $prefArray['show_subcats']      = 0;        // show a hovering display of subcats for spots
+    $prefArray['default_group']     = 0;        // the default groups to show in the groups overview
+    $prefArray['default_spot']      = '';       // the default search option to show in spots overview
+    $prefArray['default_feed']      = 0;        // the default feed to show in rss overview
+    $prefArray['url_redirector']    = 'http://www.nullrefer.com/?';     // use a redirector for external links
+    $prefArray['stylesheet']        = DEFAULT_STYLESHEET;       // the style to be used by the user
     $prefArray['subs_lang']         = 'en';       //subtitle languages
-    $prefArray['download_text_file']    = 1;
+    $prefArray['download_text_file']    = 1;    // 
     $prefArray['cancel_crypted_rars']   = 0; // Check for encrypted RARs when downloading, and cancel DL if found
     $prefArray['saved_spot_searches']   = serialize(array());  // not used in prefs !!!
     $prefArray['basket_type']           = basket_type::LARGE;
-
+    $prefArray['spot_view']             = spot_view::CLASSIC;
     return $prefArray;
 }
 

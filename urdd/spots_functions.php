@@ -611,7 +611,7 @@ class urd_spots
             $ratings = array();
             foreach ($headers as $msg_id => $header) {
                 if (!isset($ids[ $msg_id ]) || !is_array($header)) {
-                    echo_debug($e->getMessage(), DEBUG_SERVER);
+                    echo_debug('Message not found' . $msg_id, DEBUG_SERVER);
                     continue;
                 }
                 $this_id = $ids[ $msg_id ]['id'];

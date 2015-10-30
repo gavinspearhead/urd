@@ -53,11 +53,11 @@ $(document).ready(function() {
     $('#post_comment').click( function(e) { post_spot_comment('{$spotid}'); } );
     $('#report_spam').click( function(e) { report_spam('{$spotid}')} );
     $('#similar_button').click( function(e) { 
-            {if $reference == ''}
-                load_sets( { 'search' : '{$first_two_words|escape:javascript}' }); });
-            {else}
-                load_sets( { 'reference' : '{$reference|escape:javascript}' }); });
-            {/if}
+        {if $reference == ''}
+            load_sets( { 'search' : '{$first_two_words|escape:javascript}' }); });
+        {else}
+            load_sets( { 'reference' : '{$reference|escape:javascript}' }); });
+        {/if}
 });
 </script>
 <input type="hidden" id="spot_subject" value="{$spotid}">
@@ -69,7 +69,7 @@ $(document).ready(function() {
 {if $image != '' && $image_from_db == 0}
 <div class="spot_thumbnail noborder buttonlike"><img src="{$image}" id="image_inline" class="max180x180" alt=""/></div>
 {/if}
-{if image_from_db == 1}
+{if $image_from_db == 1}
 <div class="spot_thumbnail noborder buttonlike"><img src="show_image.php?spotid={$spotid}" id="image_db" class="max180x180" alt=""/></div>
 {/if}
 {if $image_file != ''}

@@ -677,6 +677,10 @@ $LN['pref_blocked_terms_msg']= 'Automatically match these search terms against a
 $LN['descending']       = 'Descending';
 $LN['ascending']        = 'Ascending';
 
+$LN['pref_spot_view']     = 'Spots overview style';
+$LN['pref_spot_view_msg'] = 'The view to use for the spots overview';
+$LN['spot_view_modern']    = 'Modern';
+$LN['spot_view_classic']    = 'Classic';
 $LN['pref_basket_type']     = 'Download basket type';
 $LN['pref_basket_type_msg'] = 'The type of download basket that is used by default';
 $LN['basket_type_small']    = 'Compact';

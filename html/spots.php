@@ -174,6 +174,7 @@ list($size, $suffix) = format_size($totbin, 'h', '', 1000);
 init_smarty($title, 1, $add_menu);
 
 $smarty->assign(array(
+    'spot_view' =>    (get_pref($db, 'spot_view', $userid, spot_view::CLASSIC) ==  spot_view::CLASSIC) ?  spot_view::CLASSIC : spot_view::MODERN,
     'total_articles'=> $size . $suffix,
     'search'=>		$search,
     'isadmin'=>		$isadmin,
