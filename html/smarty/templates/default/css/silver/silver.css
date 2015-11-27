@@ -1545,3 +1545,17 @@ div.suggest
     padding-right: 3px;
 }
 
+.spotbox
+{
+    border: 1px solid #bbbbbb;
+    color: #333333;
+    background-color: #ffffff;
+}
+.spot_descriptionbox
+{
+}
+
+.spot_thumbimg
+{
+    border:  solid 1px #777777;
+}

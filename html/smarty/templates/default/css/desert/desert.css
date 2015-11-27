@@ -1579,3 +1579,17 @@ div.suggest
 }
 
 
+.spotbox
+{
+    border: 1px solid #bbbbbb;
+    color: #111111;
+    background-color: #a48200;
+}
+.spot_descriptionbox
+{
+}
+
+.spot_thumbimg
+{
+    border:  solid 1px #aaaaaa;
+}
