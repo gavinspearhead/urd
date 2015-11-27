@@ -1209,10 +1209,8 @@ function load_quick_status()
 {
     var url = 'ajax_showstatus.php';
     $.post(url, { type: 'quick' }).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
-        console.log(x.contents);
             $('#status_msg').html(x.contents);
         }
     });
@@ -3430,7 +3428,6 @@ function show_help(msg, header, th, xpos, ypos)
     var w = $(window).width();
     var s = $('#helptext').outerHeight();
     var new_pos, ac, rc, left;
-    console.log(xpos, ypos);
     if (!$.isNumeric(xpos) || ! $.isNumeric(ypos)) {
         new_pos = pos.top;
         left = Math.round(w / 4);
@@ -3926,7 +3923,6 @@ function load_spots(options)
     hide_overlayed_content();
     //var show_new_spots = false; 
     var show_new_spots = get_value_from_id('spot_view', 1);
-    console.log(show_new_spots);
     var url;
     if (show_new_spots != 1) { 
         url = 'ajax_spots_alt.php';
@@ -3949,7 +3945,6 @@ function load_spots(options)
     data.flag = flag;
     data.order = order;
     $.post(url, data).done(function(html) {
-        console.log(html);
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage)
