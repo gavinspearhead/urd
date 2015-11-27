@@ -134,8 +134,8 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     ));
     
    
-    $first_two_words = get_first_two_words($row['title']);
     if (!$only_rows) {
+        $first_two_words = get_first_two_words($row['title']);
         $smarty->assign(array(
             'show_image' =>   $show_image,
             'image_file' =>   $image_file,
