@@ -2516,6 +2516,8 @@ function show_quick_display(options)
     ).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
+            $('#overlay_content2').hide();
+            $('#overlay_back2').hide();
             if (add_rows == 0) {
                 show_overlayed_content_1(x.contents, 'popup700x400');
                 // we increase the size beyond the default if div is not large enough for the contents

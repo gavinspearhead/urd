@@ -183,13 +183,28 @@ $(document).ready(function() {
 
 {if $show_image}
 {if $set.image != '' && $set.image_from_db == 0}
-<div class="spot_thumbnail2  buttonlike floatright"><img src="{$set.image}" id="image_inline" class="max100x100 spot_thumbimg" alt=""/></div>
+<div class="spot_thumbnail2  buttonlike floatright"><img src="{$set.image}" id="image_inline_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#image_inline_{$set.spotid}").click( function(e) { jump('{$set.image|escape:javascript}', true);return false; } ); 
+});
+</script>
 {/if} 
 {if $set.image_from_db == 1}
 <div class="spot_thumbnail2  buttonlike floatright"><img src="show_image.php?spotid={$set.spotid}" id="image_db_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#image_db_{$set.spotid}").click( function(e) { jump('show_image.php?spotid={$set.spotid|escape:javascript}', true);return false; } ); 
+});
+</script>
 {/if}
 {if $set.image_file != ''}
 <div class="spot_thumbnail2  buttonlike floatright"><img src="getfile.php?raw=1&amp;file={$set.image_file}" id="image_file_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#image_file_{$set.spotid}").click( function(e) { show_spot_image('getfile.php?file={$set.image_file|escape:javascript}&raw=1', true); return false;} ); 
+});
+</script>
 {/if}
 {/if}
  
