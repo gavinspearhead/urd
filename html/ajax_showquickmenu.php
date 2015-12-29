@@ -129,6 +129,7 @@ try {
                         }
                     }
                 }
+                $items[] = new QuickMenuItem('mail_set', $LN['email_set'], 'mail_set');
                 if ($selection == 1) {
                     $items[] = new QuickMenuItem('add_search', $LN['quickmenu_add_search'], 'add_search');
                     $items[] = new QuickMenuItem('add_block', $LN['quickmenu_add_block'], 'add_block');

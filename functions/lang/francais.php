@@ -52,6 +52,10 @@ $LN['error']            = 'Erreur';
 $LN['atonce']           = 'Imm&eacute;diatement';
 $LN['browse']           = 'Parcourir';
 
+$LN['spot']             = 'Spot';
+$LN['set']              = 'Ensemle';
+$LN['rss_feed']         = 'Flux RSS';
+
 // Special:
 $LN['urdname']          = 'URD';
 $LN['decimalseparator'] = ',';
@@ -1652,6 +1656,7 @@ $LN['editcategories']       = 'Editer les cat&eacute;gories';
 $LN['ng_tooltip_category']  = 'Cat&eacute;gorie';
 
 $LN['post_message']         = 'Poster un message';
+$LN['email_set']            = 'Envoyer les infomations de l&#39;ensemble';
 $LN['post_messagetext']     = 'Texte du message';
 $LN['post_messagetextext']  = 'Contenu du message &agrave; poster';
 $LN['post_newsgroupext2']   = 'Newsgroup dans lequel le message sera post&eacute;';

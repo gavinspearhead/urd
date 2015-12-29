@@ -52,6 +52,13 @@ $LN['details']          = 'Detaljer';
 $LN['error']            = 'Fel';
 $LN['atonce']           = 'At once';
 $LN['browse']           = 'Browse';
+
+
+$LN['spot']             = 'Spot';
+$LN['set']              = 'Set';
+$LN['rss_feed']         = 'RSS Feed';
+
+
 // Special:
 $LN['urdname']          = 'URD';
 $LN['decimalseparator'] = '.';
@@ -550,7 +557,7 @@ $LN['pref_minngsize']        = 'Min. antal artiklar i Usenet-grupp';
 $LN['config_global_hiddenfiles']        = 'Visa inte dolda filer';
 $LN['config_global_hidden_files_list']  = 'Lista &ouml;ver dolda filer';
 $LN['pref_url_redirector']          = 'Use URL redirector';
-uLN['pref_url_redirector_msg']      = 'Use URL redirector (e.g. to prevent leaking referer information, leave empty for direct linking)';
+$LN['pref_url_redirector_msg']      = 'Use URL redirector (e.g. to prevent leaking referer information, leave empty for direct linking)';
 $LN['pref_hiddenfiles']             = 'Visa inte dolda filer';
 $LN['pref_hidden_files_list']       = 'Lista &ouml;ver dolda filer';
 $LN['pref_defaultsort']      = 'F&auml;ltet som anv&auml;nds f&ouml;r att sortera seten';
@@ -1670,6 +1677,7 @@ $LN['editcategories']       = 'Editera kategorier';
 $LN['ng_tooltip_category']  = 'Kategori';
 
 $LN['post_message']         = 'Posta ett meddelande';
+$LN['email_set']            = 'Email set information';
 $LN['post_messagetext']     = 'Meddelandets text';
 $LN['post_messagetextext']  = 'Inneh&aring;llet i meddelandet som ska postas';
 $LN['post_newsgroupext2']   = 'Usenet-gruppen som meddelandet ska postas i';

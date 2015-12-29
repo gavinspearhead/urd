@@ -23,13 +23,24 @@
 {* Ajax page, doesn't need a head/foot tpl *}
 
 {extends file="popup.tpl"}
-{block name=title}{if $type=='group'}{$LN_post_message}{else}{$LN_quickmenu_comment_spot}{/if}{/block}
+{block name=title}
+{if $type=='group'}
+{$LN_post_message}
+{else if $type=='email'}
+{$LN_email_set}
+{else}
+{$LN_quickmenu_comment_spot}
+{/if}
+{/block}
 {block name=contents}
 <div class="light">
 <br/>
 <input type="hidden" id="type" value="{$type|escape:htmlall}"/>
 <input type="hidden" id="reference" value="{$reference|escape:htmlall}"/>
 <table class="hmid">
+<tr {if $type!='email'} class="hidden"{/if} ><td class="nowrap bold" {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_email}:</td>
+<td><input type="email" class="width300" name="to_email" id="to_email" placeholder="{$LN_email}" {if $type == 'email'}required{/if} /></td>
+</td>
 <tr {if $type!='group'} class="hidden"{/if} ><td class="nowrap bold" {urd_popup type="small" text=$LN_post_newsgroupext2}>{$LN_post_newsgroup}:</td>
 <td>
 <select name="newsgroup" id="groupid" class="width300">
@@ -45,14 +56,19 @@
 {html_options options=$ratings selected=$groupid}
 </select>
 {/if}
-<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td><td><textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea></td>
+<tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_messagetextext}>{$LN_post_messagetext}:</td>
+<td>
+<textarea name="messagetext" id="messagetext" rows="8" class="width300" placeholder="{$LN_post_messagetext}" required>{$content|escape:htmlall}</textarea>
+</td>
+{if $type=='comment'} 
 <td>{foreach $smileys as $smiley}
 <img src="{$IMGDIR}/smileys/{$smiley}.gif" alt="{$smiley}" name="{$smiley}" title="{$smiley}" class="button" onclick="javascript:add_text('[img={$smiley|escape:javascript}]', $('#messagetext'));">
 {/foreach}
 
 <td>
+{/if}
 <tr><td colspan="3">&nbsp;</td></tr>
-<tr><td colspan="3" class="centered"><input type="submit" value="{if  $type == 'comment'}{$LN_post_comment}{else}{$LN_post_post}{/if}" id="post_submit" class="submitsmall"/></td></tr>
+<tr><td colspan="3" class="centered"><input type="submit" value="{if  $type == 'comment'}{$LN_post_comment}{else if $type == 'email'}Send Email{else}{$LN_post_post}{/if}" id="post_submit" class="submitsmall"/></td></tr>
 
 </table>
 </div>

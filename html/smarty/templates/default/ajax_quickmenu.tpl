@@ -107,6 +107,10 @@
 <button class="quickmenubutton" onclick="javascript:follow_link('{$item->id}', 'unhide', '{$srctype}');close_quickmenu();">
 {/if}
 
+{if $item->type == 'mail_set'}
+<button class="quickmenubutton" onclick="javascript:mail_set('{$subject}', '{$srctype}');close_quickmenu();">
+{/if}
+
 {$item->name}
 {if $item->submenu} <div class="floatright">&gt;</div>
 {/if}

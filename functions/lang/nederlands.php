@@ -50,6 +50,12 @@ $LN['details']          = 'Details';
 $LN['error']            = 'Fout';
 $LN['atonce']           = 'Meteen';
 $LN['browse']           = 'Bladeren';
+
+
+$LN['spot']             = 'Spot';
+$LN['set']              = 'Set';
+$LN['rss_feed']         = 'RSS Bron';
+
 // Special:
 $LN['urdname']          = 'URD';
 $LN['decimalseparator'] = ',';
@@ -1634,6 +1640,7 @@ $LN['config_formatstrings'] = 'Formaat string';
 $LN['config_formatstring']  = 'Formaat string voor';
 
 $LN['post_message']         = 'Post een bericht';
+$LN['email_set']            = 'Email set informatie';
 $LN['post_messagetext']     = 'Berichttekst';
 $LN['post_messagetextext']  = 'De inhoud van het bericht';
 $LN['post_newsgroupext2']   = 'De nieuwsgroep waar het bericht naar wordt gestuurd';

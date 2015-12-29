@@ -47,13 +47,12 @@ class urd_mail
         self::$data['custom_url'] = '';
     }
 
-    private static function send_mail(DatabaseConnection $db, $msg, $sender, $email, $subject)
+    public static function send_mail(DatabaseConnection $db, $msg, $sender, $email, $subject)
     {
         assert($email != '');
         $sendmail = get_config($db, 'sendmail');
         if (!$sendmail) { // sending mail not allowed by admin
-
-            return;
+            throw new exception($LN['error_couldnotsendmail']);
         }
         $msg = wordwrap($msg, 70, "\r\n");
         $headers = "From: $sender" . "\r\n" .
@@ -61,6 +60,7 @@ class urd_mail
             'X-Mailer: URD/' . urd_version::get_version();
 
         $rv = mail($email, $subject, $msg, $headers);
+
         if ($rv === FALSE) {
             global $LN;
             throw new exception ($LN['error_couldnotsendmail'], ERR_SEND_FAILED);

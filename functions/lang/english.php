@@ -51,6 +51,10 @@ $LN['error']            = 'Error';
 $LN['atonce']           = 'At once';
 $LN['browse']           = 'Browse';
 
+$LN['spot']             = 'Spot';
+$LN['set']              = 'Set';
+$LN['rss_feed']         = 'RSS Feed';
+
 // Special:
 $LN['urdname']          = 'URD';
 $LN['decimalseparator'] = '.';
@@ -1248,7 +1252,7 @@ $LN['users_allow_update']   = 'Allow updating databases';
 $LN['users_addnew']         = 'Add new user';
 $LN['users_delete']         = 'Delete user';
 $LN['users_enable']         = 'Enable user';
-$LN['users_disable']         = 'Disable user';
+$LN['users_disable']        = 'Disable user';
 $LN['users_rights']         = 'Set editor';
 $LN['users_rights_help']    = 'Allows this user to edit set information in the supply pages';
 $LN['users_last_active']    = 'Last active';
@@ -1620,6 +1624,7 @@ $LN['config_formatstrings'] = 'Format strings';
 $LN['config_formatstring']  = 'Format string for';
 
 $LN['post_message']         = 'Post a message';
+$LN['email_set']            = 'Email set information';
 $LN['post_messagetext']     = 'Message text';
 $LN['post_messagetextext']  = 'The content of the message to post';
 $LN['post_newsgroupext2']   = 'The newsgroup to which the message will be posted';

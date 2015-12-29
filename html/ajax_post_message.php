@@ -68,7 +68,7 @@ try {
             $rating = get_request('rating', 0);
             $headers = '';
             $header_data = array();
-            if (!is_numeric($groupid)) {
+            if (!is_numeric($groupid) && $type != 'email') {
                 throw new exception ($LN['error_invalidgroupid']);
             }
             if ($reference != '') {
@@ -104,13 +104,22 @@ try {
                 $rndstr = generate_password(15);
                 $messageid = generate_hash($reference_msgid, $rndstr);
                 prepare_message($db, $userid, $messageid, $header_data);
+            } elseif ($type == 'email') {
+                $to_email = trim(get_request('to_email', ''));
+                if (!verify_email($to_email)) {
+                    throw new exception($LN['error_invalidemail']); 
+                }
+                $message = html_entity_decode($message, ENT_QUOTES, 'ISO-8859-1');
+                urd_mail::send_mail($db, $message, $email, $to_email, $subject);
+                return_result(array('message'=>$LN['taskpostmessage']));
+                break;
             }
             if ($header_data != array()) {
                 $headers = serialize($header_data);
             }
             $post_id = $db->insert_query('post_messages',
-                    array('userid', 'groupid', 'subject', 'poster_id', 'poster_name', 'message', 'headers'),
-                    array($userid, $groupid, $subject, $email, $poster, $message, $headers), TRUE);
+                array('userid', 'groupid', 'subject', 'poster_id', 'poster_name', 'message', 'headers'),
+                array($userid, $groupid, $subject, $email, $poster, $message, $headers), TRUE);
             $uc->post_message($post_id);
             $uc->disconnect();
             return_result(array('message'=>$LN['taskpostmessage']));
@@ -118,10 +127,12 @@ try {
 
         case 'show':
             $type = get_request('type', '');
+            $src = get_request('src', '');
             $reference = $subject = $content = '';
             $poster_email = $prefs['poster_email'];
             $poster_name = $prefs['poster_name'];
-            if ($spotid != '' && $type == 'report') {
+            if ($spotid != '' && $type == 'report') { // spam report for spots
+
                 $group = get_config($db, 'spots_reports_group');
                 $groups = array(group_by_name($db, $group) => $group);
                 $sql = '"messageid", "title" FROM spots WHERE "spotid"=?';
@@ -134,7 +145,7 @@ try {
                 $subject = "REPORT <$messageid> $title";
                 $content = 'SPAM';
                 $reference = "$messageid";
-            } elseif ($spotid != '' && $type == 'comment') {
+            } elseif ($spotid != '' && $type == 'comment') { // spot comment
                 $group = get_config($db, 'spots_comments_group');
                 $groups = array(group_by_name($db, $group) => $group);
                 $sql = '"messageid", "title" FROM spots WHERE "spotid"=?';
@@ -152,7 +163,32 @@ try {
                 } else {
                     $content = @implode("\n", $content);
                 }
+            } elseif ($spotid != '' && $src != '' && $type == 'email') {
+                $title = 'aoeuaouauea';
+                $groups = array();
+                $default_content = @unserialize($prefs['poster_default_text']);
+                if ($default_content === FALSE) { 
+                    $default_content = ''; 
+                } else {
+                    $default_content = @implode("\n", $default_content);
+                }
+                if ($src == USERSETTYPE_SPOT) { 
+                    $set_type = $LN['spot'];
+                } else {
+                    $set_type = $LN['set'];
+                }
 
+                list($name, $group, $size) = get_set_info($db, $spotid, $src);
+                list($size, $suffix) = format_size($size, 'h');
+                $subject = "$set_type: $name";
+                $content = "$name ($size $suffix)\n$default_content";
+                if ($src == USERSETTYPE_GROUP) { 
+                    $content = $LN['post_newsgroup'] . ': ' . $group . "\n". $LN['browse_subject'] . ': ' . $content;
+                } elseif ($src == USERSETTYPE_RSS) { 
+                    $content = $LN['rss_feed'] . ': ' . $group . "\n" . $LN['browse_subject'] . ': ' . $content;
+                } else {
+                    $content = $LN['browse_subject'] . ': ' . $content;
+                }
             } else {
                 $type = 'group';
                 $groupinfo = get_all_active_groups($db);
@@ -169,14 +205,14 @@ try {
             $smarty->assign(array(
                 'groups'=>    	    $groups,
                 'ratings'=>    	    range(0,10),
-                'type'=>    	        $type,
+                'type'=>    	    $type,
                 'smileys'=>    	    get_smileys($smarty->getTemplateVars('IMGDIR')),
-                'reference'=>   	    $reference,
+                'reference'=>       $reference,
                 'content'=>    	    $content,
                 'subject'=>    	    $subject,
                 'groupid'=>    	    $groupid,
                 'poster_name'=>    	$poster_name,
-                'poster_email'=>    	$poster_email));
+                'poster_email'=>    $poster_email));
 
             $contents = $smarty->fetch('ajax_post_message.tpl');
             return_result(array('contents'=>$contents));

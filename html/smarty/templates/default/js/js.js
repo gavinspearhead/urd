@@ -137,7 +137,6 @@ function control_action(action)
             cmd: action,
             challenge: challenge
         }).done(function(html) {
-            //console.log(html);
             var x = $.parseJSON(html);
             if (x.error == 0) {
                update_message_bar(x.message);
@@ -940,13 +939,16 @@ function show_usenet_servers(order, direction)
     });
 }
 
-function show_post_message(type, spotid)
+function show_post_message(type, spotid, src)
 {
     var url = 'ajax_post_message.php';
     var data = {
         type: type,
         cmd: 'show'
     };
+    if (src !== null) {
+        data.src = src;
+    }
 
     if (spotid !== null) {
         data.spotid = spotid;
@@ -2141,6 +2143,7 @@ function post_message()
     var rating = get_value_from_id('rating');
     var postername = get_value_from_id('postername');
     var posteremail = get_value_from_id('posteremail');
+    var to_email = get_value_from_id('to_email');
     var challenge = get_value_from_id('challenge');
     var message = get_value_from_id('messagetext');
     var url = 'ajax_post_message.php';
@@ -2149,6 +2152,7 @@ function post_message()
         subject: subject,
         postername: postername,
         posteremail: posteremail,
+        to_email: to_email,
         message: message,
         rating: rating,
         reference: reference,
@@ -2156,7 +2160,7 @@ function post_message()
         groupid: $('#groupid>option:selected').val(),
         challenge: challenge
     };
-     $.post(url, data).done(function(html) {
+    $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);
         if (x.error == 0) {
             hide_overlayed_content();
@@ -3401,8 +3405,6 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         data.source = source;
     }
     $.post('ajax_stats.php', data).done(function(html) {
-        //console.log(html);
-            
         var y = $.parseJSON(html);
         if (y.error == 0) {
             $('#show_stats').html(y.contents);
@@ -6674,7 +6676,6 @@ function load_plot(id, type, extra)
     };
     var bg_color = $('#stats_table').css('background-color');
     var txt_color = $('#stats_table').css('color');
-    //console.log(bg_color, txt_color);
 
     if (extra !== undefined) {
         if (extra.source !== undefined) { data.source = extra.source;}
@@ -6686,12 +6687,10 @@ function load_plot(id, type, extra)
         if (extra.month !== undefined) { data.month = extra.month;}
         if (extra.period !== undefined) { data.period = extra.period;}
     }
-   // console.log(extra);
     var width = Math.round(($(window).width()) / 2.2);
     var height = Math.round(($(window).height()) / 1.7);
     $("#" + id).attr({width:width,height:height})
     $.post(url, data).done(function(html) {
-        //console.log(html);
         var x = $.parseJSON(html);
         var plot_data = [ ];
         var c_idx;
@@ -6775,11 +6774,15 @@ function load_plot(id, type, extra)
                 plot_options.scaleYGridLinesStep= 9999;
                 var rows = x.labels.length;
                 height = Math.round(Math.min (height*2, 16 * rows + 40));
-                //console.log(height, rows);
                 $("#" + id).attr({height:height})
                 my_chart = new Chart(ctx).HorizontalBar(plot_data, plot_options);
             }
         }
     });
+}
+
+function mail_set(setid, src)
+{
+    show_post_message('email', setid, src);
 }
 
