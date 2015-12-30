@@ -58,6 +58,8 @@ if ($isadmin) {
     );
 }
 
+$add_menu['actions'][] = new menu_item2('unmark_int_all', 'browse_toggleint', urd_modules::URD_CLASS_SPOTS, '', 'command');
+
 if (urd_user_rights::is_poster($db, $userid)) {
     $add_menu['actions'][] = new menu_item2('post_spot', 'transfers_post_spot', urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_SPOTS, '', 'command');
 }

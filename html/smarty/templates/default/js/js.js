@@ -1428,13 +1428,14 @@ function process_whichbutton(buttonval, rightclick)
         add_setname: add_setname,
         challenge: challenge
     };
-
     var set_ids = new Array();
     $('input[name="set_ids[]"]').each(function() {
+        console.log($(this).val());
         set_ids.push($(this).val());
     }
     );
     data.set_ids = set_ids;
+console.log(data);
 
     $.post(url, data).done(function(html) {
         var content = $.parseJSON(html);
@@ -2377,8 +2378,10 @@ function update_quick_menu_images()
 
 function close_quickmenu()
 {
+    clearTimeout(mouse_timeout); // if it hasn't shown yet, prevent it from showing
+    hide_popup('quickmenu', 'quickmenu'); // if it has shown make sure to close it
     has_quickmenu = 0;
-    hide_popup('quickmenu', 'quickmenu');
+    mouse_timeout = null;
 }
 
 function show_quickmenu(type, subject, srctype, e)
@@ -2747,13 +2750,13 @@ function toggle_group_of_sets(startset, stopset, type)
     var thissetvalue = null;
     var toggleitems = [];
 
-    $("input[name='setdata[]']").each(function() {
+    $("input[name='set_ids[]']").each(function() {
         // We want to toggle the last set as well, but definitely not the first one
         // (it got toggled when the user clicked it, don't toggle it back)
 
         // Also, setdata[] stuff always starts with "set_"!
 
-        thissetvalue = $(this).attr('id').substr(4);
+        thissetvalue = $(this).val();
         // Looping through all sets, we will encounter startset and stopset.
         // And not necessarily in that order!
 
@@ -3929,10 +3932,11 @@ function load_spots(options)
     var show_new_spots = get_value_from_id('spot_view', 1);
     var url;
     if (show_new_spots != 1) { 
-        url = 'ajax_spots_alt.php';
+        data.type = 1;
     } else {
-        url = 'ajax_spots.php';
+        data.type = 0;
     }
+    url = 'ajax_spots.php';
     data.search = search;
     data.minsetsize = minsetsize;
     data.maxsetsize = maxsetsize;
@@ -4085,7 +4089,6 @@ function load_groupsets(options)
     data.view_size = view_size;
     $('#suggest_div').addClass('hidden'); 
     $.post(url, data).done(function(html) {
-
         var x = $.parseJSON(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
@@ -5027,6 +5030,7 @@ function show_spot_image(url)
     $('#overlay_content2').html(new_img);
     $('#overlay_back2').show();
     $('#overlay_content2').show();
+    close_quickmenu();
 }
 
 function toggle_usenet_auth(id, checkbox_id) 
@@ -6396,6 +6400,8 @@ function do_command(command, message)
         show_savename();
     } else if (command == 'delete_search') {
         delete_search_confirm();
+    } else if (command == 'unmark_int_all') {
+        process_whichbutton('unmark_int_all', false);
     } else {
         show_alert('Unknown command: ' + command);
     }

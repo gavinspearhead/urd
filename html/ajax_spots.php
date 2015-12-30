@@ -77,14 +77,17 @@ class spot_viewer
     private $search_type = '';
     private $totalsets = 0;
     private $int_sets = 0;
+    private $type = 0; // 0 : basic; 1 :modern
 
-    public function __construct(DatabaseConnection& $db, $userid)
+    public function __construct(DatabaseConnection& $db, $userid, $type)
     {
         assert(is_numeric($userid));
         $this->db = &$db;
         $this->userID = $userid;
         $this->now = time();
         $this->input_arr = array();
+        $this->type = $type;
+        syslog(LOG_INFO, $type);
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
 
@@ -94,6 +97,9 @@ class spot_viewer
         $basic_browse_query = ' FROM spots ';
         if (!$do_count) { 
             $basic_browse_query .= ' LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id" AND spot_whitelist."userid" IN (:userid, :superuserid) AND spot_whitelist."status" = :wlstatus)';
+            if ($this->type == 1) {
+                $basic_browse_query .= ' LEFT JOIN spot_images ON (spots."spotid" = spot_images."spotid") ';
+            }
             $this->input_arr[':userid'] = $this->userID;
             $this->input_arr[':superuserid'] = user_status::SUPER_USERID;
             $this->input_arr[':wlstatus'] = whitelist::ACTIVE;
@@ -114,7 +120,12 @@ class spot_viewer
     }
     private function get_spots($interesting_only=FALSE)
     {
-        $sql = '"title", spots."size", spots."spotid", "stamp", spots."reports", spots."comments", spots."poster",' .
+        $sql = '';
+        if ($this->type == 1) {
+            $sql .= 'spots."description", "image", "image_file", "reference", ';
+        }
+
+        $sql .= '"title", spots."size", spots."spotid", spots."stamp", spots."reports", spots."comments", spots."poster",' .
             '"category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz", spots."url", ' . 
             'extsetdata2."value" AS "bettername", spots."rating" AS spots_rating, spot_whitelist."spotter_id" AS "whitelisted", ' .
             '(CASE WHEN usersetinfo."statusread" IS NULL OR usersetinfo."statusread" <> 1 THEN 0 ELSE 1 END) AS "alreadyread", ' .
@@ -128,6 +139,7 @@ class spot_viewer
             $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL)';
         }
         $sql .= " ORDER BY {$this->Qorder}";
+        echo_debug_var_file('/tmp/foo', $sql);
         return $sql;
     }
     private function get_spots_count($interesting_only)
@@ -233,6 +245,25 @@ class spot_viewer
             if (isset($_SESSION['last_login']) && $_SESSION['last_login'] > 0 && $group_lastupdate > 0) {
                 $last_check_time = min($_SESSION['last_login'], $group_lastupdate);
                 $thisset['new_set'] = ($arr['stamp'] > $last_check_time) ? 1 : 0;
+            }
+            
+            if ($this->type == 1) {
+                $thisset['reference'] = $arr['reference'];
+                $thisset['description'] = db_decompress($arr['description']);
+                $thisset['first_two_words'] = get_first_two_words($thisset['subject']);
+                $thisset['image_file'] = $thisset['image'] = '';
+                $thisset['image_from_db'] = 0;
+
+                if (substr($arr['image'], 0, 10) == 'data:image') {
+                    $thisset['image_from_db'] = 1;
+                } elseif (substr($arr['image'], 0, 9) == 'articles:') {
+                    $thisset['image_file'] = get_dlpath($this->db). IMAGE_CACHE_PATH . $arr['spotid'] . '.jpg';
+                    if (!file_exists($thisset['image_file'])) {
+                        $thisset['image_file'] = '';
+                    }
+                } else {
+                    $thisset['image'] = trim(strip_tags($arr['image']));
+                }
             }
 
             $thisset['subcata'] = get_subcats($arr['category'], $arr['subcata']);
@@ -376,8 +407,10 @@ class spot_viewer
     public function set_qposter($poster)
     {
         if ($poster != '') {
-            $this->input_arr[':poster'] = "%$poster%";
-            $this->Qposter = " AND spots.\"poster\" {$this->search_type} :poster ";
+            $this->input_arr[':poster1'] = "%$poster%";
+            $this->input_arr[':poster2'] = "%$poster%";
+            $this->Qposter = " AND (spots.\"poster\" {$this->search_type} :poster1 ";
+            $this->Qposter .= " OR spots.\"spotter_id\" {$this->search_type} :poster2 ) ";
         }
     }
     public function set_qspamlimit()
@@ -394,7 +427,7 @@ class spot_viewer
             $order = '';
         }
 
-        $def_sort = map_default_sort(load_prefs($this->db, $this->userID), array('subject'=> 'title', 'date'=>'stamp', 'better_subject'=>'title'));
+        $def_sort = map_default_sort(load_prefs($this->db, $this->userID), array('subject'=> 'title', 'date'=>'spots.stamp', 'better_subject'=>'title'));
 
         $orderfield = str_ireplace(' desc', '', $order); // $order should be 'complete/subject/date/size' and optional ' desc' or 'asc'.
         $orderfield = trim(str_ireplace(' asc', '', $orderfield));
@@ -429,13 +462,13 @@ class spot_viewer
             $this->maxage = $maxage;
             $maxage = $this->now - ($maxage * 3600 * 24);
             $this->input_arr[':maxage'] = $maxage;
-            $this->Qage .= ' AND "stamp" >= :maxage';
+            $this->Qage .= ' AND spots."stamp" >= :maxage';
         }
         if (is_numeric($minage) && $minage > 0) {
             $this->minage = $minage;
             $minage = $this->now - ($minage * 3600 * 24);
             $this->input_arr[':minage'] = $minage;
-            $this->Qage .= ' AND "stamp" <= :minage';
+            $this->Qage .= ' AND spots."stamp" <= :minage';
         }
     }
 
@@ -449,12 +482,12 @@ class spot_viewer
                 if ($s[0] == $this->categoryID) {
                     $sc = $s[1];
                     $sci = $s[1] . $s[2];
-                    $this->Qsubcat .= ' OR ' . "( \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
+                    $this->Qsubcat .= ' OR (' . " \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
                 } else {
                     $hcat = $s[0];
                     $sc = $s[1];
                     $sci = $s[1] . $s[2];
-                    $this->Qsubcat .= ' OR ' . "(\"category\" = '$hcat' AND \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
+                    $this->Qsubcat .= ' OR (\"category\" = ' . "'$hcat' AND \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
                 }
             }
             $this->Qsubcat .= ')';
@@ -503,6 +536,7 @@ try {
     $search     = html_entity_decode(trim(get_request('search', '')));
     $adult      = urd_user_rights::is_adult($db, $userid);
     $poster     = get_request('poster', '');
+    $type       = get_request('type', 0);
     $reference  = get_request('reference', '');
     $maxage     = get_request('maxage', '');
     $minage     = get_request('minage', '');
@@ -518,16 +552,14 @@ try {
     $only_rows  = get_request('only_rows', 0);
     $offset     = get_request('offset', 0);
     $view_size  = get_request('view_size', 1024);
-    $spot_view  = get_request('spot_view', 0);
 
-
-    $spots_viewer = new spot_viewer($db, $userid);
+    $spots_viewer = new spot_viewer($db, $userid, $type);
     $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order, $reference);
     list($pages, $activepage, $totalpages, $offset) = $spots_viewer->get_page_count($perpage, $offset, $only_rows);
 
     $allsets = $spots_viewer->get_spot_data($perpage, $offset, $last_line);
     $rssurl = $spots_viewer->get_rss_url($perpage);
-
+    $show_image = get_pref($db, 'show_image', $userid, FALSE);
     init_smarty();
     $smarty->assign(array(
         'rssurl' =>	        $rssurl, 
@@ -545,10 +577,10 @@ try {
    }
 
     $smarty->assign(array(
-        'spot_view' =>          $spot_view,
         'only_rows' =>          $only_rows,
         'view_size' =>          $view_size,
         'categoryID' =>	        $categoryID,
+        'show_image' =>         $show_image,
         'allsets' =>		    $allsets,
         'show_subcats' =>       get_pref($db, 'show_subcats', $userid, 0),
         'show_comments' =>      get_config($db, 'download_spots_comments', 0),
@@ -556,8 +588,12 @@ try {
         'USERSETTYPE_RSS' =>   	USERSETTYPE_RSS,
         'USERSETTYPE_SPOT' =>   USERSETTYPE_SPOT)
     );
-
-    $content = $smarty->fetch('ajax_spots.tpl');
+    
+    if ($type == 1) {
+        $content = $smarty->fetch('ajax_spots_alt.tpl');
+    } else {
+        $content = $smarty->fetch('ajax_spots.tpl');
+    }
 
     return_result(array(
         'content' => $content,

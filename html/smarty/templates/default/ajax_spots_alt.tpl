@@ -173,11 +173,12 @@ $(document).ready(function() {
 {capture assign=setdesc}{$set.name|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
 {if $set.reports gt 0}{$spamreports=$set.reports}<div {urd_popup type="small" text="$spamreports $LN_spam_reports"} class="highlight_spam center width15 inline floatright">{$set.reports}</div>{/if}
 {if $show_comments > 0}
-        {$setcomments=$set.comments}
-        <div class=" highlight_comments center width25 inline floatright" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$setcomments}</div>
-    {/if}
+    {$setcomments=$set.comments}
+    <div class=" highlight_comments center width25 inline floatright" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$setcomments}</div>
+{/if}
 <div class="inlineblock floatleft" style="margin-right:0.2em;">{$spot_icon}</div>
-<div class="inlineblock floatleft width31 nowrap down2">{$set.number} {$setdesc} </div>
+<div class="inlineblock floatleft width31 nowrap down2">{$set.number} -- {$setdesc}</div>
+<input type="hidden" name="set_ids[]" value="{$set.spotid}"/>
 </div>
 {/strip}
 
@@ -202,7 +203,7 @@ $(document).ready(function() {
 <div class="spot_thumbnail2  buttonlike floatright"><img src="getfile.php?raw=1&amp;file={$set.image_file}" id="image_file_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#image_file_{$set.spotid}").click( function(e) { show_spot_image('getfile.php?file={$set.image_file|escape:javascript}&raw=1', true); return false;} ); 
+    $("#image_file_{$set.spotid}").click( function(e) { show_spot_image('getfile.php?file={$set.image_file|escape:javascript}&raw=1', true); e.stopPropagation(); return false;} ); 
 });
 </script>
 {/if}
@@ -235,6 +236,10 @@ $(document).ready(function() {
 
 </div>
 </div>
+{foreachelse}
+{if $only_rows == 0}
+<div class="centered highlight even bold">{$LN_error_nosetsfound}</div>
+{/if}
 {/foreach}
 {if $only_rows == 0}
 </div>

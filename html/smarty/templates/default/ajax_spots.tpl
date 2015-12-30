@@ -108,7 +108,7 @@
 {foreach $allsets as $set}
 
 {capture assign=smallbuttons}{strip}	
-<input type="hidden" name="setdata[]" id="set_{$set.spotid}" value=""/>
+<input type="hidden" id="set_{$set.spotid}" value=""/>
 <div id="divset_{$set.spotid}" class="inline iconsize buttonlike"></div>
 
 <script type="text/javascript">

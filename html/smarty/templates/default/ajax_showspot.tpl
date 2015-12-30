@@ -50,6 +50,7 @@ $(document).ready(function() {
     $('#image_db').click( function(e) { jump('show_image.php?spotid={$spotid|escape:javascript}', true); } ); 
     $('#image_file').click( function(e) { show_spot_image('getfile.php?file={$image_file|escape:javascript}&raw=1', true); } ); 
     $('#poster').click( function(e) { load_sets({ 'poster':'{$poster|escape:javascript}' }); } );
+    $('#spotter_id').click( function(e) { load_sets({ 'poster':'{$spotter_id|escape:javascript}' }); } );
     $('#post_comment').click( function(e) { post_spot_comment('{$spotid}'); } );
     $('#report_spam').click( function(e) { report_spam('{$spotid}')} );
     $('#similar_button').click( function(e) { 
@@ -82,7 +83,7 @@ $(document).ready(function() {
 <tr class="comment"><td class="nowrap bold">{$LN_browse_subject}:</td><td>{$title|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_size}:</td><td>{$filesize|escape}</td></tr>
 <tr class="comment"><td class="nowrap bold">{$LN_browse_age}:</td><td>{$age|escape} ({$timestamp|escape})</td></tr>
-<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span id="poster" class="buttonlike">{$poster|escape} ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
+<tr class="comment"><td class="nowrap bold">{$LN_showsetinfo_postedby}:</td><td><span id="poster" class="buttonlike">{$poster|escape}</span><span id="spotter_id" class="buttonlike"> ({$spotter_id|escape}){if $whitelisted}&nbsp;</span><div {urd_popup type="small" text="$LN_browse_userwhitelisted"} class="highlight_whitelist inline center width15">{$LN_whitelisttag}</div>{/if}</td></tr>
 
 {foreach $subcata as $k=>$cat}<tr class="comment"><td class="nowrap bold">{$k}:</td>
 <td>
