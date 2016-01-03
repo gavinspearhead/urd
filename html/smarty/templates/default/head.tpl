@@ -24,6 +24,7 @@
  *}
 
 {capture assign=urdmenu}
+{strip}
 <div id="scrollmenuright" class="buttonlike white">&gt;</div>
 <div id="scrollmenuleft" class="buttonlike white">&lt;</div>
 <div id="menu">
@@ -37,9 +38,11 @@
             </li>
             <li class="smallstatus"><div id="smallstatus">&nbsp;</div></li>
             <li class="normal" id="status_item">
-                <div id="status_msg" class="nooverflow"><div class="centered2">
-    <div class="down3 nooverflow">XXXXX </div>
-    </div></div>
+                <div id="status_msg">
+                    <div class="centered2">
+                        <div class="down3 nooverflow"></div>
+                    </div>
+                </div>
                 <div class="downm8">
                 <ul id="status_activity">
                     <li class="activity plain pulldown_last_item"></li>
@@ -86,6 +89,7 @@
         </div>
     </div>
 </div>
+{/strip}
 {/capture}
 
 

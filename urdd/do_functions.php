@@ -238,8 +238,8 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     $str .= '<!-- Created by ' . urd_version::get_urd_name() . ' ' . urd_version::get_version() . ' : http://www.urdland.com : The web-based usenet resource downloader. -->' . "\n";
     $size += fwrite($file, $str);
     try {
-        $query = '"binaryID", count(*) AS cnt, max("groupID") AS "groupID", max("name") AS subject FROM downloadarticles WHERE "downloadID"=? GROUP BY "binaryID" ORDER BY "binaryID"';
-        $res = $db->select_query($query, array($dlid));
+        $query = '"binaryID", count(*) AS cnt, max("groupID") AS "groupID", max("name") AS subject FROM downloadarticles WHERE "downloadID"=:dlid GROUP BY "binaryID" ORDER BY "binaryID"';
+        $res = $db->select_query($query, array(':dlid'=>$dlid));
         if ($res === FALSE) {
             throw new exception('Could not find any articles', INTERNAL_FAILURE);
         }
@@ -680,10 +680,10 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 $db->delete_query('queueinfo');
                 $db->delete_query('postinfo');
             } else {
-                $db->delete_query('downloadinfo', 'userid=?', array($userid));
+                $db->delete_query('downloadinfo', 'userid=:userid', array(':userid'=>$userid));
                 $db->delete_query('downloadarticles', '"downloadID" NOT IN (SELECT "ID" FROM downloadinfo)');
-                $db->delete_query('queueinfo', 'userid=?', array($userid));
-                $db->delete_query('postinfo', 'userid=?', array($userid));
+                $db->delete_query('queueinfo', 'userid=:userid', array(':userid'=>$userid));
+                $db->delete_query('postinfo', 'userid=:userid', array(':userid'=>$userid));
             }
         } elseif ($arg == 'users') {
             if ($isadmin) {
@@ -714,18 +714,18 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 }
                 $quser2 = '';
                 if (!$isadmin) {
-                    $quser2 = ' AND userid=?';
-                    $input_arr[] = $userid;
+                    $quser2 = ' AND userid=:userid';
+                    $input_arr[':userid'] = $userid;
                 }
-                $qry = "1=1 $quser2 AND \"start_time\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
-                $db->delete_query('downloadinfo', $qry, array_merge($input_arr, array($timestamp, $finished_status, $rar_failed, $par_failed, $cksfv_failed, $cancelled_status, $failed_status)));
+                $qry = "1=1 $quser2 AND \"start_time\" < :time AND \"status\" IN (:status1, :status2, :status3, :status4, :status5, :status6) ";
+                $db->delete_query('downloadinfo', $qry, array_merge($input_arr, array(':time'=>$timestamp, ':status1'=>$finished_status, ':status2'=>$rar_failed,':status3'=> $par_failed,':status4'=> $cksfv_failed, ':status5'=>$cancelled_status, ':status6'=>$failed_status)));
 
-                $qry = "1=1 $quser2 AND \"start_time\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
-                $db->delete_query('postinfo', $qry, array_merge($input_arr, array($timestamp, $post_finished_status, $post_rar_failed_status, $post_par_failed_status, $post_cancelled_status)));
+                $qry = "1=1 $quser2 AND \"start_time\" < :time AND \"status\" IN (:status1, :status2, :status3, :status4) ";
+                $db->delete_query('postinfo', $qry, array_merge($input_arr, array(':time'=>$timestamp, ':status1'=>$post_finished_status, ':status2'=>$post_rar_failed_status, ':status3'=>$post_par_failed_status, ':status4'=>$post_cancelled_status)));
 
                 // Clean up queueinfo:
-                $qry = "1=1 $quser2 AND \"lastupdate\" < ? AND (\"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ? OR \"status\" = ?) ";
-                $db->delete_query('queueinfo', $qry, array_merge($input_arr, array($timestamp, QUEUE_FINISHED, QUEUE_FAILED, QUEUE_CRASH, QUEUE_CANCELLED, QUEUE_REMOVED)));
+                $qry = "1=1 $quser2 AND \"lastupdate\" < :time AND (\"status\" IN (:status1, :status2, :status3, :status4, :status5) ";
+                $db->delete_query('queueinfo', $qry, array_merge($input_arr, array(':time'=> $timestamp, ':status1'=>QUEUE_FINISHED, ':status2'=>QUEUE_FAILED,':status3'=> QUEUE_CRASH,':status4'=> QUEUE_CANCELLED,':status5'=> QUEUE_REMOVED)));
             }
 
             // Clean downloadarticles from any lost records:
@@ -783,7 +783,7 @@ function do_clean_users(DatabaseConnection $db)
     $cnt = $res[0]['cnt'];
     if ($cnt > 0) {
         write_log("Deleting $cnt users", LOG_NOTICE);
-        $db->delete_query('users', '"isadmin" != ? AND "last_active" < ? AND "regtime" < ?', array(user_status::USER_ADMIN, $timestamp, $timestamp));
+        $db->delete_query('users', '"isadmin" != :isadmin AND "last_active" < :time1 AND "regtime" < :time2', array(':isadmin'=> user_status::USER_ADMIN, ':time1'=> $timestamp, ':time2'=> $timestamp));
     } else {
         write_log('No users to delete', LOG_INFO);
     }
@@ -1914,12 +1914,12 @@ function do_delete_set(DatabaseConnection $db, action $item)
         $res = $db->select_query($sql, array(':setid'=>$setid));
         $binary_ids = ($res === FALSE) ? array() : $res;
 
-        $db->delete_query('setdata', '"ID" = ?', array($setid));
-        $db->delete_query("binaries_$group_id", '"setID" = ?', array($setid));
+        $db->delete_query('setdata', '"ID" = :id', array(':id'=>$setid));
+        $db->delete_query("binaries_$group_id", '"setID" = :id', array(':id'=> $setid));
 
         foreach ($binary_ids as $row) {
             $bin_id = $row['binaryID'];
-            $db->delete_query("parts_$group_id", '"binaryID" = ?', array($bin_id));
+            $db->delete_query("parts_$group_id", '"binaryID" = :id', array(':id'=>$bin_id));
         }
         $groupids[$group_id] = 1;
         update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, (int) (($cnt / $l) * 100), $cmt);
@@ -1941,7 +1941,7 @@ function do_delete_spot(DatabaseConnection $db, action $item)
     $l = count($setids);
     $cnt = 0;
     foreach ($setids as $setid) {
-        $db->delete_query('spots', '"spotid"=?', array($setid));
+        $db->delete_query('spots', '"spotid"=:id', array(':id'=>$setid));
         update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete');
@@ -1958,7 +1958,7 @@ function do_delete_set_rss(DatabaseConnection $db, action $item)
     foreach ($setids as $setid) {
         $feed_id = get_feedid_for_set($db, $setid);
         $feeds[$feed_id] = 1;
-        $db->delete_query('rss_sets', '"setid"=?', array($setid));
+        $db->delete_query('rss_sets', '"setid"=:id', array(':id'=>$setid));
         update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, 0, (int) (($cnt / $l) * 100), 'Complete');
     }
     foreach ($feeds as $feed => $dummy) {

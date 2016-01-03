@@ -58,7 +58,7 @@
 
 {if $type == 'disk'}
     {if $isconnected}
-        <div style="" class="down3 nooverflow">
+        <div class="down3 nooverflow">
         {urd_progressbar width=96 complete=$nodisk_perc done=progress_done2 remain=progress_done background=green colour=red} 
         </div>
         <ul class="last plain">
