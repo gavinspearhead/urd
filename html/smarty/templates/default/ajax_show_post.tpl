@@ -72,13 +72,13 @@
 <tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_recoveryext} >{$LN_post_recovery}:</td>
 <td><input type="text" name="recovery" id="recovery" {urd_popup type="small" text=$LN_post_recoveryext} value="{$recovery_size|escape}" class="textbox4m" {$readonlystr} required/>%</td></tr>
 <tr><td class="nowrap bold" {urd_popup type="small" text=$LN_post_rarfilesext}>{$LN_post_rarfiles}:</td>
-<td><input type="text" name="filesize" id="filesize" {urd_popup type="small" text=$LN_post_rarfilesext} value="{$rarfile_size|escape}" class="textbox4m" {$readonlystr} required/></td></tr>
+<td><input type="text" name="filesize" id="filesize" {urd_popup type="small" text=$LN_post_rarfilesext} value="{$rarfile_size|escape}" class="textbox4m" {$readonlystr} required/> k{$LN_byte_short}</td></tr>
 <tr><td class="nowrap bold">{$LN_post_delete_files}:</td>
 <td> {urd_checkbox value="$delete_files" name="delete_files" id="delete_files" readonly=$readonly}</td></tr>
 <tr><td class="nowrap bold">{$LN_browse_schedule_at}:</td>
 <td><input id="timestamp" name="timestamp" type="text" value="{$start_time|escape}" class="textbox28m" {$readonlystr}/></td></tr>
 {if $readonly == 0}
-<tr><td>&nbsp;</td></tr>
+<!--tr><td>&nbsp;</td></tr-->
 <tr><td colspan="2" class="centered"><input type="submit" value="{$LN_post_post}" id="submit_button" class="submitsmall"/></td></tr>
 {/if}
 

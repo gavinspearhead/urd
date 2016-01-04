@@ -55,7 +55,7 @@ function connect_db($check_db=TRUE)
         case 'mysqli': // only for old db_configs
         case 'pdo_mysql': // only for old db_configs
             $db = new DatabaseConnection_mysql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
-                    $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
+                $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
         case 'postgres':
         case 'postgres9': // only for old db_configs
@@ -63,12 +63,12 @@ function connect_db($check_db=TRUE)
         case 'postgres7': // only for old db_configs
         case 'pdo_pgsql': // only for old db_configs
             $db = new DatabaseConnection_psql($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
-                    $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
+                $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
         case 'sqlite':
         case 'pdo_sqlite': // only for old db_configs
             $db = new DatabaseConnection_sqlite($config['databasetype'], $config['db_hostname'], (isset($config['db_port']) ? $config['db_port'] : ''),
-                    $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
+                $config['db_user'], $config['db_password'], $config['database'], $config['db_engine']);
             break;
         default:
             throw new exception ('Database type not supported');
@@ -302,7 +302,7 @@ abstract class DatabaseConnection
         $col_str = '';
         reset($columns);
         if (count($columns) != count($values)) {
-            throw new exception ('Could not execute update query; columns and values do not match');
+            throw new exception('Could not execute update query; columns and values do not match');
         }
         foreach($columns as $c) {
             $col_str .= "\"$c\"=?, ";

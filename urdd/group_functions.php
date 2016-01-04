@@ -67,8 +67,8 @@ class TableGroups
 
 class urdd_group 
 {
-    const MAX_INSERT_PARTS          = 200;
-    const GENSETS_STEPSIZE          = 50;
+    const MAX_INSERT_PARTS   = 200;
+    const GENSETS_STEPSIZE   = 50;
     
     const DIRTY = 1;
     const CLEAN = 0;
@@ -609,6 +609,7 @@ class urdd_group
 
         return TRUE;
     }
+    
     public function check_group_subscribed($groupid)
     {
         if (!group_subscribed($this->db, $groupid)) {
@@ -617,8 +618,7 @@ class urdd_group
             $this->subscribe($groupid, $exp);
         }
     }
-
-
+    
     public function unsubscribe($groupid) // set to inactive an remove the binaries table
     {
         assert(is_numeric($groupid));
@@ -711,7 +711,7 @@ class urdd_group
                 $articlesmax += $r[0]['articlesmax'];
             }
 
-            $this->db->delete_query('setdata', '"ID"=?', array($setid2));
+            $this->db->delete_query('setdata', '"ID"=:setid', array(':setid'=>$setid2));
             store_merge_sets_data($this->db, $setid1, $setid2, USERSETTYPE_GROUP, ESI_NOT_COMMITTED);
         }
         unset($setids);

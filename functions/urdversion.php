@@ -30,7 +30,7 @@ class urd_version
 {
     const urd_version       = '1.14.0';
     const urd_status        = 'stable';
-    const copyright         = '2007-2015 &copy; Styck &amp; Spearhead';
+    const copyright         = '2007-2016 &copy; Styck &amp; Spearhead';
     const extset_version    = '1.0';
     const long_name         = 'Usenet Resource Downloader';
     const short_name        = 'URD';
