@@ -1172,8 +1172,8 @@ table.subcat
 .spotbox
 {
     position: relative;
-    width: 39em;
-    height:16em;
+    width: 39.5em;
+    height:18em;
     float: left;
     overflow-x: hidden;
     overflow-y: hidden;
@@ -1190,8 +1190,7 @@ table.subcat
 
 .spot_descriptionbox
 {
-    width: 28em;
-    height:10em;
+    width: 29em;
 }
 .nooverflow
 {
@@ -1202,9 +1201,10 @@ table.subcat
 .buttonbox 
 {
     position: absolute;
-    width: 98%;
+    _width: 98%;
     bottom: 0;
     padding: 0.25em;
+    right: 0;
 }
 
 .width31

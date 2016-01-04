@@ -122,7 +122,7 @@ class spot_viewer
     {
         $sql = '';
         if ($this->type == 1) {
-            $sql .= 'spots."description", "image", "image_file", "reference", ';
+            $sql .= 'spots."description", "image", "image_file", "reference", spots."spotter_id", ';
         }
 
         $sql .= '"title", spots."size", spots."spotid", spots."stamp", spots."reports", spots."comments", spots."poster",' .
@@ -248,8 +248,9 @@ class spot_viewer
             }
             
             if ($this->type == 1) {
+                $thisset['spotter_id'] = $arr['spotter_id'];
                 $thisset['reference'] = $arr['reference'];
-                $thisset['description'] = db_decompress($arr['description']);
+                $thisset['description'] = trim(db_decompress($arr['description']));
                 $thisset['first_two_words'] = get_first_two_words($thisset['subject']);
                 $thisset['image_file'] = $thisset['image'] = '';
                 $thisset['image_from_db'] = 0;

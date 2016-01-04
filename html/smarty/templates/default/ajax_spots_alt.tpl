@@ -26,10 +26,10 @@
 
 {if $view_size >= $max_mobile_viewsize}
     {$small=0}
-    {$skippersize= 30}
+    {$skippersize=30}
 {else}
     {$small=1}
-    {$skippersize= 18}
+    {$skippersize=18}
 {/if}
 
 {capture assign=topskipper}{strip}
@@ -87,7 +87,11 @@ $(document).ready(function() {
     $('#link_img_{$set.spotid}').click( function () { jump('{$set.anon_url|escape:javascript}', true); } );
     $('#similar_button_{$set.spotid}').click( function(e) { 
         {if $set.reference == ''}
-            load_sets( { 'search' : '{$set.first_two_words|escape:javascript}' }); });
+            {if $set.first_two_words == ''}
+                $('similar_button_{$set.spotid}').hide();
+            {else}
+                load_sets( { 'search' : '{$set.first_two_words|escape:javascript}' }); });
+            {/if}
         {else}
             load_sets( { 'reference' : '{$set.reference|escape:javascript}' }); });
         {/if}
@@ -174,7 +178,7 @@ $(document).ready(function() {
 {if $set.reports gt 0}{$spamreports=$set.reports}<div {urd_popup type="small" text="$spamreports $LN_spam_reports"} class="highlight_spam center width15 inline floatright">{$set.reports}</div>{/if}
 {if $show_comments > 0}
     {$setcomments=$set.comments}
-    <div class=" highlight_comments center width25 inline floatright" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$setcomments}</div>
+    <div class="highlight_comments center width25 inline floatright" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$setcomments}</div>
 {/if}
 <div class="inlineblock floatleft" style="margin-right:0.2em;">{$spot_icon}</div>
 <div class="inlineblock floatleft width31 nowrap down2">{$set.number} -- {$setdesc}</div>
@@ -184,7 +188,7 @@ $(document).ready(function() {
 
 {if $show_image}
 {if $set.image != '' && $set.image_from_db == 0}
-<div class="spot_thumbnail2  buttonlike floatright"><img src="{$set.image}" id="image_inline_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
+<div class="spot_thumbnail2 buttonlike floatright"><img src="{$set.image}" id="image_inline_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
 <script type="text/javascript">
 $(document).ready(function() {
     $("#image_inline_{$set.spotid}").click( function(e) { jump('{$set.image|escape:javascript}', true);return false; } ); 
@@ -192,7 +196,7 @@ $(document).ready(function() {
 </script>
 {/if} 
 {if $set.image_from_db == 1}
-<div class="spot_thumbnail2  buttonlike floatright"><img src="show_image.php?spotid={$set.spotid}" id="image_db_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
+<div class="spot_thumbnail2 buttonlike floatright"><img src="show_image.php?spotid={$set.spotid}" id="image_db_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
 <script type="text/javascript">
 $(document).ready(function() {
     $("#image_db_{$set.spotid}").click( function(e) { jump('show_image.php?spotid={$set.spotid|escape:javascript}', true);return false; } ); 
@@ -200,7 +204,7 @@ $(document).ready(function() {
 </script>
 {/if}
 {if $set.image_file != ''}
-<div class="spot_thumbnail2  buttonlike floatright"><img src="getfile.php?raw=1&amp;file={$set.image_file}" id="image_file_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
+<div class="spot_thumbnail2 buttonlike floatright"><img src="getfile.php?raw=1&amp;file={$set.image_file}" id="image_file_{$set.spotid}" class="max100x100 spot_thumbimg" alt=""/></div>
 <script type="text/javascript">
 $(document).ready(function() {
     $("#image_file_{$set.spotid}").click( function(e) { show_spot_image('getfile.php?file={$set.image_file|escape:javascript}&raw=1', true); e.stopPropagation(); return false;} ); 
@@ -209,28 +213,29 @@ $(document).ready(function() {
 {/if}
 {/if}
  
-<span class="bold">{$LN_browse_age}:</span> <span class="nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</span><br>
-<span class="bold">{$LN_size}:</span> <span class="nowrap">{$set.size}</span><br>
+<span class="bold">{$LN_browse_age}:</span>&nbsp;<span class="nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</span><br>
+<span class="bold">{$LN_size}:</span>&nbsp;<span class="nowrap">{$set.size}</span><br>
+<span class="bold">{$LN_showsetinfo_postedby}:</span>&nbsp;<span id="poster" class="nowrap">{$set.poster|escape}</span>&nbsp;<span id="spotter_id" class="nowrap">({$set.spotter_id|escape})</span>
 
 <div class="nooverflow spot_descriptionbox">
 {$set.description}
 </div>
 
 <div class="buttonbox">&nbsp;
-<div class="floatleft">{$smallbuttons}</div>
  
 <div class="floatright">
 {$similar}
 {if $set.url != ''}
     <div id="link_img_{$set.spotid}" class="inline iconsize {$linkpic} buttonlike" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
-	{elseif $set.rating != 0}
+{elseif $set.rating != 0}
     <div class="inline iconsize {$linkpic}"></div>
 {else}&nbsp;
-	{/if}
-    {if $isadmin}
+{/if}
+{if $isadmin}
     <div id="wipe_img_{$set.spotid}" class="inline iconsize purgeicon buttonlike" {urd_popup type="small" text=$LN_browse_deleteset}></div>
-    {/if}
-    <div id="intimg_{$set.spotid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+{/if}
+<div id="intimg_{$set.spotid}" class="inline iconsize {$interestingimg} buttonlike" {urd_popup type="small" text=$LN_browse_toggleint }></div>
+{$smallbuttons}
 </div>
 </div>
 
@@ -252,16 +257,9 @@ $(document).ready(function() {
 
 <script type="text/javascript">
 $(document).ready(function() {
-    /*$('#browsesubjecttd').click( function () { change_sort_order('title') } );
-    $('#head_reports').click( function () { change_sort_order('reports', 'desc') } );
-    $('#head_comments').click( function () { change_sort_order('comments', 'desc') } );
-    $('#head_stamp').click( function () { change_sort_order('stamp', 'desc') } );
-    $('#head_size').click( function () { change_sort_order('size', 'desc') } );
-    $('#head_url').click( function () { change_sort_order('url') } );*/
     $('div.resurrect_button').click( function (e) { which_button('unmark_kill_all', e); } );
     $('div.remove_button').click( function (e) { which_button('mark_kill_all', e); } );
     $('div.wipe_button').click( function (e) { which_button('wipe_all', e) } );
     $("div.unmark_int_button").click( function (e) { which_button('unmark_int_all', e); } );
-
 });
 </script>

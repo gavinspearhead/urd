@@ -2331,8 +2331,8 @@ function get_first_two_words($line)
     $arr = array();
     foreach($tmp as &$word) {
         $word = preg_trim($word, '[^A-Za-z0-9]');
-        if ($word != '') $arr[]= $word;
-        if (count($arr) >=2) break;
+        if ($word != '' && !is_numeric($word) && strlen($word) > 2) $arr[] = $word;
+        if (count($arr) >= 2) break;
     }
 
     return implode(' ', $arr);

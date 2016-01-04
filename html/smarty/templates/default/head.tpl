@@ -134,7 +134,7 @@
     <div id="helptext" class="helptext">
         <div id="helpheader"></div>
         <div id="helpbody"></div>
-</div>
+    </div>
 </div>
 
 <input type="hidden" id="challenge" value="{$challenge}"/>
