@@ -188,11 +188,11 @@ function create_spot_data(DatabaseConnection $db, $userid, $graphtitle)
 
     }
     $data = make_graph_data($db, $userid, array(
-        'type'=> 'pie',
-        'data'=> $stat_data,
-        'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.7),
-        'labels'=>$labels,
-        'title'=> $graphtitle,
+        'type' => 'pie',
+        'data' => $stat_data,
+        'fillcolours' => colour_map::get_rgb_codes($db, $userid, 0.7),
+        'labels' =>$labels,
+        'title' => $graphtitle,
     ));
 
     return_result($data);
@@ -245,15 +245,17 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
     $stats = array();
     $labels = array();
     $titles = array();
+    $offset = 0;
     if ($period == 'month') {
         foreach (range(1,4) as $i) {
-            $stats[ $i ] = array_fill(0, 12 , 0);
+            $stats[ $i ] = array_fill(0, 11, 0);
         }
         foreach (range(1,12) as $i) {
             $labels [] = html_entity_decode($LN['short_month_names'][$i]);
         }   
+        $offset = 1;
     } elseif ($period == 'week') {
-        $max_week = 0;
+        $max_week = 52;
         foreach (range(25, 31) as $r) {
             $max_week = max($max_week, (int) date('W', mktime(0, 0, 0, 12, $r)));
         }
@@ -261,11 +263,12 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
             $stats[ $i ] = array_fill(0, $max_week, 0);
         }
         foreach (range(0, $max_week) as $i) {
-            $labels [] = $i;
+            $labels [] = $i + 1;
         }
+        $offset = 0;
     } elseif ($period == 'hour') {
         foreach (range(1, 4) as $i) {
-            $stats[ $i ] = array_fill(0,23.0);
+            $stats[ $i ] = array_fill(0, 23, 0);
         }
         foreach (range(0, 23) as $i) {
             $labels [] = $i;
@@ -276,7 +279,7 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
         $m = $row['mnth'];
         $c = $row['category'] + 1;
 
-        $stats[ $c ] [$m] = (int)$row['cnt'];
+        $stats[ $c ] [$m - $offset] = (int)$row['cnt'];
         $titles[$c-1] = $LN[$cats[$c-1]];
     }
     return array(array_values($stats), $labels, $titles);

@@ -5135,7 +5135,7 @@ function update_setting(id, type, optionals)
         }
         option = $('#' + id).attr('name');
         value = $('#' + id).val().join(':');
-        timeout = 800;
+        timeout = 1200;
     } else {
         option = $('#' + id).attr('name');
         value = $('#' + id).val();
@@ -6697,6 +6697,7 @@ function load_plot(id, type, extra)
     var height = Math.round(($(window).height()) / 1.7);
     $("#" + id).attr({width:width,height:height})
     $.post(url, data).done(function(html) {
+            console.log(html);
         var x = $.parseJSON(html);
         var plot_data = [ ];
         var c_idx;
