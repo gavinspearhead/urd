@@ -73,7 +73,8 @@ function get_default_prefs()
     $prefArray['default_group']     = 0;        // the default groups to show in the groups overview
     $prefArray['default_spot']      = '';       // the default search option to show in spots overview
     $prefArray['default_feed']      = 0;        // the default feed to show in rss overview
-    $prefArray['url_redirector']    = 'http://www.nullrefer.com/?';     // use a redirector for external links
+    $prefArray['url_redirector']    = '';     // use a redirector for external links
+    //$prefArray['url_redirector']    = 'http://www.nullrefer.com/?';     // use a redirector for external links
     $prefArray['stylesheet']        = DEFAULT_STYLESHEET;       // the style to be used by the user
     $prefArray['subs_lang']         = 'en';       //subtitle languages
     $prefArray['download_text_file']    = 1;    // 

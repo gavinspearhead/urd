@@ -157,7 +157,7 @@ onchange="javascript:update_setting('{$block->id|escape:javascript}', '{$b_type|
 {if $b_type == "multiselect"}
     {$name=$block->id} 
     <input type="hidden" id="{$name}_orig_size" value="{$block->size}"/>
-    <select name="{$block->name}" id="{$name}" size="2" class="textbox18m" multiple="multiple" onfocus="javascript:collapse_select('{$name}','size');" {$block->javascript}
+    <select name="{$block->name}" id="{$name}" size="2" class="textbox18m" multiple="multiple" {$block->javascript}
      onchange="javascript:update_setting('{$name|escape:javascript}', '{$b_type|escape:javascript}');"
     >
     {$opts=$block->options_triple}
