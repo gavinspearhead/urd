@@ -67,7 +67,7 @@ class spotparser
 	} # correctElmContents
 
 
-    public function parse_full($xmlStr)
+    static public function parse_full($xmlStr)
     {
         # Gebruik een spot template zodat we altijd de velden hebben die we willen
         $tpl_spot = array(

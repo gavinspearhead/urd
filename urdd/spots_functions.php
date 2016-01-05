@@ -227,8 +227,7 @@ class urd_spots
 
     private static function parse_spot_data(array &$spot_data)
     {
-        $spotParser = new spotparser();
-        $spot_data = array_merge($spotParser->parse_full($spot_data['xml']), $spot_data);
+        $spot_data = array_merge(spotparser::parse_full($spot_data['xml']), $spot_data);
     }
 
     public function expire_spots($dbid)
