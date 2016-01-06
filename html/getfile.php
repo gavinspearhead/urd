@@ -49,7 +49,7 @@ if ($file === FALSE) {
 $dlpath = get_dlpath($db);
 $done_path = $dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
 $preview_path = $dlpath . PREVIEW_PATH . $username . DIRECTORY_SEPARATOR;
-$cache_path = $dlpath . CACHE_PATH . DIRECTORY_SEPARATOR;
+$cache_path = $dlpath . CACHE_PATH;
 
 if ($is_admin) {
     if (substr($file, 0, strlen($dlpath)) != $dlpath) {
@@ -57,7 +57,7 @@ if ($is_admin) {
     }
 } else {
     if (substr($file, 0, strlen($done_path)) != $done_path && substr($file, 0, strlen($preview_path)) != $preview_path && substr($file, 0, strlen($cache_path)) != $cache_path) {
-        throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'), NULL, NULL, $closelink);
+        throw new exception($LN['error_filenotallowed'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
     }
 }
 if (!file_exists($file) || !is_readable($file)) {

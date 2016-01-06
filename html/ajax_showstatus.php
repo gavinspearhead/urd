@@ -48,9 +48,9 @@ try {
     if ($type == 'quick' || $type == 'icon') {
         $counter = 0;
         if ($isconnected) {
-            $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status"= :status';
+            $sql = 'count("ID") as "counter" FROM queueinfo WHERE "status" = :status';
             $res = $db->select_query($sql, array(':status' => QUEUE_RUNNING));
-            $counter = isset($res[0]['counter']) ? $res[0]['counter']: 0;
+            $counter = isset($res[0]['counter']) ? $res[0]['counter'] : 0;
         }
         $smarty->assign('counter', $counter);
     } elseif ($type == 'disk') {
@@ -108,7 +108,7 @@ try {
             }
             unset($res);
             $cnt = count($tasks);
-            $input_arr = array(':preview'=>2, ':hidden'=>0);
+            $input_arr = array(':preview' => 2, ':hidden' => 0);
             $sql = '* FROM downloadinfo WHERE "preview" = :preview AND "hidden" = :hidden';
             if (!$isadmin) {
                 $input_arr[':userid'] = $userid;
@@ -153,9 +153,9 @@ try {
             }
 
             $smarty->assign(array (
-                        'tasks'	=> $tasks,
-                        'previews'=> $previews,
-                        'counter'=>	$cnt)
+                'tasks'	=> $tasks,
+                'previews'=> $previews,
+                'counter'=>	$cnt)
             );
         }
     }

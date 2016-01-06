@@ -488,7 +488,7 @@ class spot_viewer
                     $hcat = $s[0];
                     $sc = $s[1];
                     $sci = $s[1] . $s[2];
-                    $this->Qsubcat .= ' OR (\"category\" = ' . "'$hcat' AND \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
+                    $this->Qsubcat .= ' OR ("category" = ' . "'$hcat' AND \"subcat$sc\" {$this->search_type} '%$sci|%' ) ";
                 }
             }
             $this->Qsubcat .= ')';

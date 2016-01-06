@@ -187,12 +187,8 @@ function get_config(DatabaseConnection& $db, $name, $default = NULL, $force=FALS
     assert ($name != '');
 
     if ($force === TRUE) {
-        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option"=:name', array(':userid'=>user_status::SUPER_USERID, ':name'=>$name));
-        if (isset($res['value'])){ 
-            return $res['value'];
-        } else {
-            return $default;
-        }
+        $res = $db->select_query('"value" FROM preferences WHERE "userID" = :userid AND "option" = :name', array(':userid'=>user_status::SUPER_USERID, ':name'=>$name));
+        return (isset($res['value']) ? ($res['value']) : $default);
     }
     $val = config_cache::get(user_status::SUPER_USERID);
     if (isset($val[$name])) {
@@ -215,12 +211,8 @@ function get_pref(DatabaseConnection& $db, $name, $userid, $default=NULL, $force
     global $LN;
     assert ($name != '' && is_numeric($userid));
     if ($force === TRUE) {
-        $res = $db->select_query('"value" FROM preferences WHERE "userID"=:userid AND "option"=:name', array(':userid'=>$userid, ':name'=>$name));
-        if (isset($res['value'])){ 
-            return $res['value'];
-        } else {
-            return $default;
-        }
+        $res = $db->select_query('"value" FROM preferences WHERE "userID" = :userid AND "option" = :name', array(':userid'=>$userid, ':name'=>$name));
+        return (isset($res['value']) ? ($res['value']) : $default);
     }
 
     $val = config_cache::get($userid);
@@ -249,7 +241,7 @@ function load_config(DatabaseConnection& $db, $force = FALSE)
         }
     }
 
-    $res = $db->select_query('"option", "value" FROM preferences WHERE "userID"=:userid', array(':userid'=>user_status::SUPER_USERID));
+    $res = $db->select_query('"option", "value" FROM preferences WHERE "userID" = :userid', array(':userid'=>user_status::SUPER_USERID));
     if (!is_array($res)) {
         $res = array();
     }
@@ -272,7 +264,7 @@ function load_prefs(DatabaseConnection& $db, $userid, $force = FALSE)
             return $val;
         }
     }
-    $query = '"userID", "option", "value" FROM preferences WHERE "userID"=:userid';
+    $query = '"userID", "option", "value" FROM preferences WHERE "userID" = :userid';
 
     $res = $db->select_query($query, array(':userid' => $userid));
     if (!is_array($res)) {
