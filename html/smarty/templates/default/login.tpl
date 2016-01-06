@@ -37,7 +37,7 @@
 {if $message != ''}
 <tr><td colspan="2"><span class="warning_highlight">{$message}</span></td></tr>
 {/if}
-<tr><td class="nowrap bold">{$LN_username}:</td><td><input type="text" name="username" class="textbox18m" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
+<tr><td class="nowrap bold">{$LN_username}:</td><td><input type="text" name="username" id="username" class="textbox18m" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
 <tr><td class="nowrap bold">{$LN_password}:</td><td><input type="password" id="pass" class="textbox18m" name="pass" placeholder="{$LN_password}" required/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="pw_button"></div></td></tr>
 <tr><td colspan="2"></td></tr>
@@ -74,6 +74,7 @@ $(document).ready(function() {
     $('#urd_logo').click( function() { jump('http://www.urdland.com'); });
     $('#language_select').change( function() { submit_language_login(); });
     $('#login_submit').click ( function() { $('#urd_login_form').submit(); });
+    $('#pass').keyup( function(e) { console.log('aoeuoa'); if ( $('#username').val() != '' &&  $('#pass').val() != '' && e.keyCode == 13) {  $('#urd_login_form').submit();} });
 });
 </script>
 </form>
