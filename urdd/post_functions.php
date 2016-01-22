@@ -420,7 +420,7 @@ function do_post_spot(DatabaseConnection $db, action $item)
         $image_segments = post_binary_data($db, $res[0]['poster_name'], 'urd@spot.net', $bin_group, $nntp, $image);
         $poster_headers = create_spot_data($db, $res[0], $userid, $nzb_segments, $image_segments);
         post_message($db, $item, $poster_headers, $res[0]['description'], $spots_group_id, $res[0]['subject'], 'urd@spot.net', $res[0]['poster_name']);
-        $status = POST_FINISHED;
+        $status = QUEUE_FINISHED;
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'Complete'); 
         add_stat_data($db, stat_actions::POST_SPOT_COUNT, 1, $userid);
     } catch (exception $e) {
@@ -624,8 +624,8 @@ function do_post_batch(DatabaseConnection $db, action $item)
                     $failed_count++;
                 }
                 $db->update_query_2('post_files', array('status'=>$art_status, 'articleid'=> $articleid), '"id"=?', array($a_file['id']));
-                $sql = 'count(*) AS cnt FROM post_files WHERE "status" IN (?, ?) AND "postid"=?';
-                $rv = $db->select_query($sql, array(POST_FINISHED, POST_FAILED, $postid));
+                $sql = 'count(*) AS cnt FROM post_files WHERE "status" IN (:stat1, :stat2) AND "postid"=:postid';
+                $rv = $db->select_query($sql, array(':stat1'=>POST_FINISHED, ':stat2'=>POST_FAILED,':postid'=> $postid));
                 if ($res === FALSE) {
                     throw new exception('Post not found?', POST_FAILURE);
                 }

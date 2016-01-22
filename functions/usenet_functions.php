@@ -333,8 +333,8 @@ function set_priority_usenet_server(DatabaseConnection $db, $id, $priority)
 function get_priority_usenet_server(DatabaseConnection $db, $id)
 {
     assert(is_numeric($id));
-    $sql = '"priority" FROM usenet_servers WHERE "id"=?';
-    $res = $db->select_query($sql, 1, array($id));
+    $sql = '"priority" FROM usenet_servers WHERE "id"=:id';
+    $res = $db->select_query($sql, 1, array(':id'=>$id));
     if (isset($res[0]['priority'])) {
         return $res[0]['priority'];
     }
@@ -349,7 +349,7 @@ function delete_usenet_server(DatabaseConnection $db, $id)
     if ($update_id == $id) { // if we delete the preferred server, we reset the preferred server
         set_config($db, 'preferred_server', 0);
     }
-    $db->delete_query('usenet_servers', '"id"=?', array($id));
+    $db->delete_query('usenet_servers', '"id"=:id', array(':id'=>$id));
 }
 
 function clear_all_usenet_servers(DatabaseConnection $db)

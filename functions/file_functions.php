@@ -90,9 +90,9 @@ function delete_files($files, $dir)
 function get_dlpath(DatabaseConnection $db)
 {
     global $LN;
+    clearstatcache();
     $dlpath = get_config($db, 'dlpath');
     add_dir_separator($dlpath);
-    clearstatcache();
     if (!is_dir($dlpath)) {
         throw new exception ($LN['error_nodlpath'] . " ($dlpath)", ERR_PATH_NOT_FOUND);
     }

@@ -320,8 +320,8 @@ function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NUL
         $cols['status'] = $status;
     }
     if ($eta !== NULL) {
-        $eta = round($eta);
         assert(is_numeric($eta));
+        $eta = round($eta);
         $cols['ETA'] = $eta;
     }
     if ($progress !== NULL) {
@@ -885,20 +885,20 @@ function get_post_articles_count_status(DatabaseConnection $db, $id, $status)
     return $res[0]['cnt'];
 }
 
-function get_download_articles_count_status(DatabaseConnection $db, $id, $status)
+function get_download_articles_count_status(DatabaseConnection $db, $dlid, $status)
 {
-    assert(is_numeric($id));
-    $query = 'count("ID") AS cnt FROM downloadarticles WHERE "downloadID"=? AND "status"=?';
-    $res = $db->select_query($query, 1, array($id, $status));
+    assert(is_numeric($dlid));
+    $query = 'count("ID") AS cnt FROM downloadarticles WHERE "downloadID"= :dlid AND "status"= :status';
+    $res = $db->select_query($query, 1, array('dlid'=> $dlid, ':status'=>$status));
 
     return $res[0]['cnt'];
 }
 
-function get_download_articles_count(DatabaseConnection $db, $id)
+function get_download_articles_count(DatabaseConnection $db, $dlid)
 {
-    assert(is_numeric($id));
-    $query = 'count("ID") AS cnt FROM downloadarticles WHERE "downloadID"=?';
-    $res = $db->select_query($query, 1, array($id));
+    assert(is_numeric($dlid));
+    $query = 'count("ID") AS cnt FROM downloadarticles WHERE "downloadID"=:dlid';
+    $res = $db->select_query($query, 1, array(':dlid'=> $dlid));
 
     return $res[0]['cnt'];
 }
@@ -963,7 +963,7 @@ function get_download_password(DatabaseConnection $db, $id)
     assert(is_numeric($id));
     $query = '"password" FROM downloadinfo WHERE "ID"=:id';
     $res = $db->select_query($query, 1, array(':id'=>$id));
-    if ($res === FALSE) {
+    if (!isset($res[0]['password'])) {
         throw new exception ($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
 
@@ -975,7 +975,7 @@ function get_download_destination(DatabaseConnection $db, $id)
     global $LN;
     assert(is_numeric($id));
     $res = $db->select_query('"destination" FROM downloadinfo WHERE "ID"=:id', 1, array(':id'=>$id));
-    if ($res === FALSE) {
+    if (!isset($res[0]['destination'])) {
         throw new exception($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
 
@@ -1001,7 +1001,7 @@ function get_download_par_files(DatabaseConnection $db, $id)
 
     $query = '"download_par" FROM downloadinfo WHERE "ID"=:id';
     $res = $db->select_query($query, 1, array(':id'=>$id));
-    if ($res === FALSE) {
+    if (!isset($res[0]['download_par'])) {
         global $LN;
         throw new exception ($LN['error_downloadnotfound'], ERR_DOWNLOAD_NOT_FOUND);
     }
@@ -1146,7 +1146,7 @@ function get_start_time(DatabaseConnection $db, $dlid)
     assert(is_numeric($dlid));
     $res = $db->select_query('"start_time" FROM downloadinfo WHERE "ID"=:id', 1, array(':id'=>$dlid));
 
-    return (!isset($res[0])) ? FALSE : $res[0]['start_time'];
+    return (!isset($res[0]['start_time'])) ? FALSE : $res[0]['start_time'];
 }
 
 function set_start_time(DatabaseConnection $db, $dlid, $start_time)
@@ -1366,7 +1366,7 @@ function check_dl_lock(DatabaseConnection $db, $dlid) // return TRUE if not lock
 {
     global $LN;
     assert (is_numeric($dlid));
-    $res = $db->select_query('"lock" FROM downloadinfo WHERE "ID"=?', 1, array($dlid));
+    $res = $db->select_query('"lock" FROM downloadinfo WHERE "ID"=:dlid', 1, array(':dlid'=>$dlid));
     if (!isset($res[0]['lock'])) {
         throw new exception ($LN['error_downloadnotfound'] . ": $dlid", ERR_DOWNLOAD_NOT_FOUND);
     }
@@ -1559,8 +1559,8 @@ function get_stat_id(DatabaseConnection $db, $dlid, $is_post=FALSE)
 {
     assert(is_numeric($dlid));
     list($table, $idrow) = ($is_post ? array('postinfo', 'id') : array('downloadinfo', 'ID'));
-    $sql = "\"stat_id\" FROM $table WHERE \"$idrow\"=?";
-    $res = $db->select_query($sql, 1, array($dlid));
+    $sql = "\"stat_id\" FROM $table WHERE \"$idrow\"=:dlid";
+    $res = $db->select_query($sql, 1, array(':dlid' => $dlid));
 
     return (!isset($res[0]['stat_id'])) ? FALSE : $res[0]['stat_id'];
 }
@@ -1984,7 +1984,7 @@ function update_dlinfo_groupid(DatabaseConnection $db, $dlid, $groupid)
 function get_groupid_dlinfo(DatabaseConnection $db, $dlid)
 {
     assert(is_numeric($dlid));
-    $res = $db->select_query('"groupid" FROM downloadinfo WHERE "ID"=?', array($dlid));
+    $res = $db->select_query('"groupid" FROM downloadinfo WHERE "ID"=:dlid', array(':dlid'=>$dlid));
 
     return !isset($res[0]['groupid']) ? 0 : $res[0]['groupid'];
 }
@@ -1993,7 +1993,7 @@ function get_post_name(DatabaseConnection $db, $id)
 {
     global $LN;
     assert(is_numeric($id));
-    $res = $db->select_query('"subject" FROM postinfo WHERE "id"=?', 1, array($id));
+    $res = $db->select_query('"subject" FROM postinfo WHERE "id"=:post_id', 1, array(':post_id'=>$id));
     if (isset($res[0]['subject'])) {
         return $res[0]['subject'];
     } else {
@@ -2004,8 +2004,8 @@ function get_post_name(DatabaseConnection $db, $id)
 function get_feeds_by_category(DatabaseConnection $db, $userid, $categoryID)
 {
     assert(is_numeric($userid) && is_numeric($categoryID));
-    $sql = '"feedid" FROM userfeedinfo WHERE "userid"=? AND "category"=?';
-    $res = $db->select_query($sql, array($userid, $categoryID));
+    $sql = '"feedid" FROM userfeedinfo WHERE "userid"=:userid AND "category"=:cat';
+    $res = $db->select_query($sql, array(':userid'=>$userid, ':cat'=>$categoryID));
     if (!is_array($res)) {
         return array();
     }
@@ -2020,8 +2020,8 @@ function get_feeds_by_category(DatabaseConnection $db, $userid, $categoryID)
 function get_groups_by_category(DatabaseConnection $db, $userid, $categoryID)
 {
     assert(is_numeric($userid) && is_numeric($categoryID));
-    $sql = '"groupid" FROM usergroupinfo WHERE "userid"=? AND "category"=?';
-    $res = $db->select_query($sql, array($userid, $categoryID));
+    $sql = '"groupid" FROM usergroupinfo WHERE "userid"=:userid AND "category"=:cat';
+    $res = $db->select_query($sql, array(':userid'=>$userid, ':cat'=>$categoryID));
     if (!is_array($res)) {
         return array();
     }
@@ -2036,13 +2036,12 @@ function get_groups_by_category(DatabaseConnection $db, $userid, $categoryID)
 function verify_tool(DatabaseConnection $db, $toolname, $optional=FALSE)
 {
     try {
-        $path = get_config($db, "{$toolname}_path" );
+        $path = get_config($db, "{$toolname}_path");
     } catch (exception $e) {
         if (!$optional) {
             throw $e;
         }
         write_log("Config parameter not set {$toolname}_path", LOG_WARNING);
-
         return;
     }
     if (!$optional && $path == '') {

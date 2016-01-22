@@ -101,7 +101,7 @@ define('POST_YYENCODED',        3); // yyencode complete
 define('POST_ACTIVE',           11); // posting
 define('POST_QUEUED',           12); // put on queue
 define('POST_PAUSED',           13); // posting paused
-define('POST_FINISHED',         14  ); // posting succeeded
+define('POST_FINISHED',         14); // posting succeeded
 define('POST_CANCELLED',        25); // post cancelled
 define('POST_STOPPED',          26); // post is terminated, but requeued
 define('POST_SHUTDOWN',         27); // used when process is sent kill term command

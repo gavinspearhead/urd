@@ -38,14 +38,14 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         'spots."spotter_id" AS "spotterid", spot_whitelist."spotter_id" AS "whitelisted", "reference" ' . 
         'FROM spots LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id") ' .
         'WHERE "spotid"=:setid';
-    $offset = get_request('offset', 1);
-    $only_rows  = get_request('add_rows', 0);
-    $count = get_request('perpage', 10);
 
     $res = $db->select_query($sql, 1, array(':setid'=>$setID));
     if (!isset($res[0])) {
         throw new exception($LN['error_spotnotfound'] . ': '.$setID);
     }
+    $offset = get_request('offset', 1);
+    $only_rows  = get_request('add_rows', 0);
+    $count = get_request('perpage', 10);
     $spotid = $res[0]['spotid'];
     if (!$only_rows) {
         $row = $res[0];
@@ -67,10 +67,10 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $subcatc = get_subcats($row['category'], $row['subcatc']);
         $subcatd = get_subcats($row['category'], $row['subcatd']);
         $whitelisted = $row['whitelisted'] == NULL ? 0 : 1;
-        $sql = 'image_file, image FROM spot_images WHERE "spotid"=:setid AND "fetched"=:fetched';
+        $sql = '"image_file", "image" FROM spot_images WHERE "spotid" = :setid AND "fetched" = :fetched';
         $img_res = $db->select_query($sql, array(':setid'=>$setID, ':fetched'=>1));
     }
-    $sql = '* FROM spot_comments WHERE "spotid" = :spotid ORDER BY "stamp" ASC';
+    $sql = '"userid", "comment", "stamp", "user_avatar", "from" FROM spot_comments WHERE "spotid" = :spotid ORDER BY "stamp" ASC';
     $spotres = $db->select_query($sql, $count, $offset, array(':spotid'=>$setID));
     $comments = array();
     if (is_array($spotres)) {
@@ -106,11 +106,11 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         /// too quick and dirty --- clean up XXX
         $image_file = $image = '';
         $image_from_db = 0;
-        if (isset($img_res[0]) &&  $show_image) {
+        if (isset($img_res[0]) && $show_image) {
             if (substr($img_res[0]['image'], 0, 10) == 'data:image') {
                 $image_from_db = 1;
             } elseif (substr($img_res[0]['image'], 0, 9) == 'articles:') {
-                $image_file = get_dlpath($db). IMAGE_CACHE_PATH . $setID . '.jpg';
+                $image_file = get_dlpath($db) . IMAGE_CACHE_PATH . $setID . '.jpg';
                 if (!file_exists($image_file)) {
                     $image_file = '';
                 }

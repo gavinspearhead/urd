@@ -35,7 +35,7 @@
 <table class="logintable">
 <tr><td colspan="2"><h3 class="title">{$LN_login_title2} <a href="http://www.urdland.com">URD</a></h3></td></tr>
 {if $message != ''}
-<tr><td colspan="2"><span class="warning_highlight">{$message}</span></td></tr>
+    <tr><td colspan="2"><span class="warning_highlight">{$message}</span></td></tr>
 {/if}
 <tr><td class="nowrap bold">{$LN_username}:</td><td><input type="text" name="username" id="username" class="textbox18m" value="{$username|escape}" autofocus="autofocus" placeholder="{$LN_username}" required/></td></tr>
 <tr><td class="nowrap bold">{$LN_password}:</td><td><input type="password" id="pass" class="textbox18m" name="pass" placeholder="{$LN_password}" required/>&nbsp;&nbsp; 
@@ -63,8 +63,9 @@
 </td>
 </tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td><a href="forgot_password.php">{$LN_login_forgot_password}</a></td>{if $register == 1}
-<td><a href="register.php">{$LN_login_register}</a></td></tr>
+<tr><td><a href="forgot_password.php">{$LN_login_forgot_password}</a></td>
+{if $register == 1}
+    <td><a href="register.php">{$LN_login_register}</a></td></tr>
 {/if}
 </table>
 
@@ -74,7 +75,7 @@ $(document).ready(function() {
     $('#urd_logo').click( function() { jump('http://www.urdland.com'); });
     $('#language_select').change( function() { submit_language_login(); });
     $('#login_submit').click ( function() { $('#urd_login_form').submit(); });
-    $('#pass').keyup( function(e) { console.log('aoeuoa'); if ( $('#username').val() != '' &&  $('#pass').val() != '' && e.keyCode == 13) {  $('#urd_login_form').submit();} });
+    $('#pass').keyup( function(e) { if ( $('#username').val() != '' && $('#pass').val() != '' && e.keyCode == 13) { $('#urd_login_form').submit();} });
 });
 </script>
 </form>

@@ -109,7 +109,7 @@ try {
             unset($res);
             $cnt = count($tasks);
             $input_arr = array(':preview' => 2, ':hidden' => 0);
-            $sql = '* FROM downloadinfo WHERE "preview" = :preview AND "hidden" = :hidden';
+            $sql = '"name", "size", "groupid", "ID", "status", "done_size" FROM downloadinfo WHERE "preview" = :preview AND "hidden" = :hidden';
             if (!$isadmin) {
                 $input_arr[':userid'] = $userid;
                 $sql .= ' AND "userid"=:userid ';

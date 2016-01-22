@@ -53,7 +53,7 @@ if (!$rv_php2) {
 $OUT .= '<tr><td class="install2">PHP command line interface installed</td>';
 $OUT .= GenRetVal($php_cli, $rv_php2b);
 if (!$rv_php2b) {
-    $OUT .= ShowHelp("Please install the PHP command line interface, e.g. 'apt-get install php5-cli' as root.");
+    $OUT .= ShowHelp("Please install the PHP command line interface, e.g. try 'apt-get install php5-cli' as root.");
 }
 
 $OUT .= '<tr><td class="install2">PHP has Safe Mode disabled</td>';
@@ -65,13 +65,13 @@ if (!$rv_php3) {
 $OUT .= '<tr><td class="install2">PHP has Register Globals disabled</td>';
 $OUT .= GenRetVal(CheckPHPRegGlobals(), $rv_php4);
 if (!$rv_php4) {
-    $OUT .= ShowHelp('Register Globals is the biggest security hole ever. It also breaks URD in places, so you must disable it in the file ' . htmlentities( $php_ini_path_apache) . '.');
+    $OUT .= ShowHelp('Register Globals is the biggest security hole ever. It also breaks URD in places, so you must disable it in the file ' . htmlentities($php_ini_path_apache) . '.');
 }
 
 $OUT .= '<tr><td class="install2">PHP module pcntl available</td>';
 $OUT .= GenRetVal(CheckPHPpcntl($_SESSION['php_path']), $rv_php6);
 if (!$rv_php6) {
-    $OUT .= ShowHelp("The pcntl module is required by the URD daemon. Note that there currently is no Windows pcntl support. This and the other PHP modules should automatically be installed when you 'apt-get install php5-cli'.");
+    $OUT .= ShowHelp("The pcntl module is required by the URD daemon. Note that there currently is no Windows pcntl support. This and the other PHP modules should automatically be installed when you 'apt-get install php5-cli' as root.");
 }
 
 $OUT .= '<tr><td class="install2">PHP date.timezone set</td>';
@@ -112,32 +112,32 @@ if (!$rv_php8b) {
 $OUT .= '<tr><td class="install2">PHP module mcrypt available</td>';
 $OUT .= GenRetVal(CheckPHPmcrypt($_SESSION['php_path']), $rv_php8c);
 if (!$rv_php8c) {
-    $OUT .= ShowHelp('The mcrypt module is required by URD. Try: sudo apt-get install php5-mcrypt; sudo php5enmod mcrypt');
+    $OUT .= ShowHelp('The mcrypt module is required by URD. Try: \'apt-get install php5-mcrypt; php5enmod mcrypt\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module GD available</td>';
 $OUT .= GenRetVal(CheckPHPgd(), $rv_phpgd);
 if (!$rv_phpgd) {
-    $OUT .= ShowHelp('The gd module is required, needed for captchas in the registration form and statistics. Please make sure you restart the webserver after installing it.');
+    $OUT .= ShowHelp('The gd module is required, needed for captchas in the registration form and statistics. Please make sure you restart the webserver after installing it. Try: \'apt-get install php5-gd\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module XMLreader/writer available</td>';
 $OUT .= GenRetVal(CheckPHPXMLRW(), $rv_phpxmlrw);
 if (!$rv_phpxmlrw) {
     $OUT .= ShowHelp('The XMLreader and XMLwriter module is optional but required for backing-up URD configuration. ' .
-            'Try: sudo pecl install XMLReader && sudo pecl install XMLwriter.  Please restart the webserver after installing it');
+            'Try: \'pecl install XMLReader && pecl install XMLwriter\' as root. Please restart the webserver after installing it');
 }
 
 $OUT .= '<tr><td class="install2">PHP module CURL available</td>';
 $OUT .= GenRetVal(CheckPHPCURL(), $rv_phpcurl);
 if (!$rv_phpcurl) {
-    $OUT .= ShowHelp('The CURL module is required by the URD daemon. Try: sudo apt-get install php5-curl');
+    $OUT .= ShowHelp('The CURL module is required by the URD daemon. Try: \'apt-get install php5-curl\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module GMP available</td>';
 $OUT .= GenRetVal(CheckPHPGMP(), $rv_phpgmp);
 if (!$rv_phpgmp) {
-    $OUT .= ShowHelp('The GMP module is required by the URD daemon. Try: sudo apt-get install php5-gmp');
+    $OUT .= ShowHelp('The GMP module is required by the URD daemon. Try: \'apt-get install php5-gmp\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module SPL available</td>';
@@ -159,7 +159,7 @@ if (!$rv_php_df) {
 $OUT .= '<tr><td class="install2">PHP Disabled classes</td>';
 $OUT .= GenRetVal(check_disabled_classes($_SESSION['php_path']), $rv_php_dc);
 if (!$rv_php_dc) {
-    $OUT .= ShowHelp("If the disabled_classes variable is set in $php_ini_path_cli URD might not work properly.");
+    $OUT .= ShowHelp('If the disabled_classes variable is set in ' . htmlentities($php_ini_path_cli) . ' URD might not work properly.');
 }
 $OUT .= '<tr><td class="install2">PHP memory limit &ge; 128 MB</td>';
 $OUT .= GenRetVal(CheckPHPMemory($_SESSION['php_path']), $rv_php10);
@@ -167,7 +167,7 @@ if (!$rv_php10) {
     $OUT .= ShowHelp("The current PHP memory limit (for the command line interface) is too low, please raise it to 128 MB in the (cli!) php.ini file - " . 
         htmlentities($php_ini_path_cli) . ".<br> E.g. memory_limit = 128M; note the M here, not MB!");
 }
-if ($rv_php && $rv_php2 && $rv_php3 && $rv_php4 && $rv_php6 && $rv_php7&& $rv_php7a && $rv_php8c && $rv_php8 && $rv_php9 && $rv_php10 && $rv_phpcurl && $rv_phpgmp && $rv_phpgd) {
+if ($rv_php && $rv_php2 && $rv_php3 && $rv_php4 && $rv_php6 && $rv_php7 && $rv_php7a && $rv_php8c && $rv_php8 && $rv_php9 && $rv_php10 && $rv_phpcurl && $rv_phpgmp && $rv_phpgd) {
     $OUT .= '<tr><td><a onclick="LoadPage(2);">'.$continuepic.'</a>';
     if (!$rv_php_df || !$rv_php_dc || !$rv_php_obd) {
         $OUT .= '<a onclick="LoadPage(1);">'.$refreshpic.'</a>';

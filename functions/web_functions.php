@@ -1663,7 +1663,6 @@ function is_nfo_file($ext)
     return in_array(strtolower($ext), array('nfo'));
 }
 
-
 function insert_wbr($str, $size = 64)
 {
     assert(is_numeric($size));
@@ -2112,13 +2111,13 @@ function generate_hash($prefix, $infix=FALSE)
 function get_smileys($dir, $full= FALSE)
 {
     $smileys = array();
-    $_smileys = glob($dir. DIRECTORY_SEPARATOR . '/smileys/' . '*.gif');
+    $_smileys = glob($dir. DIRECTORY_SEPARATOR . '/smileys/*.gif');
     foreach($_smileys as $smiley) {
         $s = basename($smiley, '.gif');
         if (!$full) {
-            $smileys [$s] = $s;
+            $smileys[$s] = $s;
         } else {
-            $smileys [$s] = $smiley;
+            $smileys[$s] = $smiley;
         }
 
     }
@@ -2267,6 +2266,7 @@ function find_url_icon($url)
     static $url_icons = array(
         'anonymousxxl.nl' => 'XXX-Image',
         'erocard.info' => 'XXX-Image',
+        'erotiekjournaal.nl' => 'XXX-Image',
         'filmstarts.de' => 'Filmstarts',
         'filmtotaal.nl' =>'FilmTotaal',
         'iafd.com' => 'IAFD',
@@ -2284,6 +2284,7 @@ function find_url_icon($url)
         'wikipedia.org' => 'WIKI',
         'xxx-image.com'=>  'XXX-Image',
         'xxximages.nl' => 'XXX-Image' ,
+        'xxxhost.nl' => 'XXX-Image' ,
         'youtube.com' => 'YouTube',
     );
 
@@ -2296,7 +2297,7 @@ function find_url_icon($url)
     if (trim($host) == '') { 
         return '';
     }
-    foreach($url_icons as  $hostname => $icon) {
+    foreach($url_icons as $hostname => $icon) {
         if (substr($host, -strlen($hostname)) == $hostname) { 
             return $icon;
         }

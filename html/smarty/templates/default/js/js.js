@@ -580,9 +580,9 @@ function hide_overlayed_content2()
 
 function _hide_overlayed_content(content, back)
 {
+    $(content).html('');
     $(back).hide();
     $(content).hide();
-    $(content).html('');
     $(document).keydown(function() { });
 }
 

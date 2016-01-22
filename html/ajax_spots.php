@@ -87,7 +87,6 @@ class spot_viewer
         $this->now = time();
         $this->input_arr = array();
         $this->type = $type;
-        syslog(LOG_INFO, $type);
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
 
@@ -167,7 +166,7 @@ class spot_viewer
 
         return get_pages($this->totalsets, $perpage, $offset);
     }
-    public function get_spot_data($perpage, $offset, &$last_item)
+    public function get_spot_data($perpage, $offset, &$last_item, $userid)
     {
         assert(is_numeric($perpage) && is_numeric($offset));
         global $LN;
@@ -250,7 +249,12 @@ class spot_viewer
             if ($this->type == 1) {
                 $thisset['spotter_id'] = $arr['spotter_id'];
                 $thisset['reference'] = $arr['reference'];
-                $thisset['description'] = trim(db_decompress($arr['description']));
+                $description = trim(db_decompress($arr['description']));
+                $description = link_to_url($this->db, $description, $userid);
+                $ubb = new UbbParse($description);
+                TagHandler::setDeniedTags( array() );
+                //TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
+                $thisset['description'] = insert_wbr($ubb->parse());
                 $thisset['first_two_words'] = get_first_two_words($thisset['subject']);
                 $thisset['image_file'] = $thisset['image'] = '';
                 $thisset['image_from_db'] = 0;
@@ -558,7 +562,7 @@ try {
     $spots_viewer->set_search_options($search, $adult, $minage, $maxage, $spotid, $minrating, $maxrating, $poster, $categoryID, $subcats, $not_subcats, $flag, $minsetsize, $maxsetsize, $order, $reference);
     list($pages, $activepage, $totalpages, $offset) = $spots_viewer->get_page_count($perpage, $offset, $only_rows);
 
-    $allsets = $spots_viewer->get_spot_data($perpage, $offset, $last_line);
+    $allsets = $spots_viewer->get_spot_data($perpage, $offset, $last_line, $userid);
     $rssurl = $spots_viewer->get_rss_url($perpage);
     $show_image = get_pref($db, 'show_image', $userid, FALSE);
     init_smarty();

@@ -349,7 +349,7 @@ function get_username(DatabaseConnection $db, $userid)
 
 function get_userid(DatabaseConnection $db, $username)
 {
-    $res = $db->select_query('"ID" FROM users WHERE "name"=?', 1, array($username));
+    $res = $db->select_query('"ID" FROM users WHERE "name"=:name', 1, array(':name'=>$username));
 
     return isset($res[0]['ID']) ? $res[0]['ID'] : FALSE;
 }

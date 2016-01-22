@@ -25,11 +25,7 @@ $__auth = 'silent';
 
 $pathaet = realpath(dirname(__FILE__));
 
-
 require_once "$pathaet/../functions/ajax_includes.php";
 
-
 init_smarty();
-$data = $smarty->fetch('popup.tpl');
-echo_debug_var_file('/tmp/foo',$data);
-echo $data;
+echo $smarty->fetch('popup.tpl');

@@ -100,8 +100,8 @@ class DatabaseConnection_mysql extends DatabaseConnection
     public function drop_user($user, $host='localhost')
     {
         $host = ($host == 'localhost') ? 'localhost' : '%';
-        $sql = 'User FROM mysql.user WHERE "User"=? AND "Host"=?';
-        $res = $this->select_query($sql, array($user, $host));
+        $sql = 'User FROM mysql.user WHERE "User"=:user AND "Host"=:host';
+        $res = $this->select_query($sql, array(':user'=>$user, ':host'=>$host));
         if (isset($res[0]['User'])) {
             $this->escape($user);
             $sql = 'DROP USER "' . $user . '"@' . $host;

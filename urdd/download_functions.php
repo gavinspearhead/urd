@@ -218,7 +218,7 @@ function get_batchsize($preview, $total_ready)
     } else {
         $factor = 3;
     }
-
+// we randomize the batch size a bit, so that the status updates will come more frequently.
     mt_srand(getmypid() + time() + $total_ready);
     $batch_size = ($factor * batch_size::DL_BATCH_SIZE) + mt_rand(0, batch_size::DL_BATCH_SIZE);
     return $batch_size;
@@ -227,7 +227,6 @@ function get_batchsize($preview, $total_ready)
 function start_download(DatabaseConnection $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $groupid = 0;
     $dlid = $item->get_args();
     if (check_dl_lock($db, $dlid) === FALSE) { // if db still locked
         echo_debug('Dl still locked, sleeping', DEBUG_SERVER); // todo needs fixing
@@ -235,7 +234,6 @@ function start_download(DatabaseConnection $db, action $item)
         return DB_LOCKED;
     }
     $stat_id = get_stat_id($db, $dlid);
-
     $dbid = $item->get_dbid();
     $total_ready = get_download_articles_count_status($db, $dlid, DOWNLOAD_READY);
     $total = get_download_articles_count($db, $dlid);
@@ -253,16 +251,18 @@ function start_download(DatabaseConnection $db, action $item)
     $done = $cnt = 0;
     $first_batch_size = max(4, round(batch_size::DL_BATCH_SIZE / 4)); // the first batch is always small, so we get a quick progress update
     $dir = get_download_destination($db, $dlid);
-    $start_time = get_start_time($db, $dlid);
-    $now = time();
-    if ($start_time > $now) {
-        set_start_time($db, $dlid, $now);
-    }
+    $groupid = 0;
 
     $req_status      = DOWNLOAD_READY;
     $dl_status       = DOWNLOAD_ACTIVE;
     $done_status     = DOWNLOAD_FINISHED;
     $failed_status   = DOWNLOAD_FAILED;
+    
+    $start_time = get_start_time($db, $dlid);
+    $now = time();
+    if ($start_time > $now) {
+        set_start_time($db, $dlid, $now);
+    }
 
     // Update status:
     update_dlinfo_status($db, $dl_status, $dlid);
