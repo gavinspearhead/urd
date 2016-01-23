@@ -155,12 +155,20 @@ class TagHandler
     {
         # are only specific images allowed?
 
-
+        echo_debug_var_file('/tmp/foo', $params);
+        echo_debug_var_file('/tmp/foo', $contents);
+        $url = '';
         if ($params['originalparams'] != '') {
-            $url = substr($params['originalparams'], 1);
-        } elseif (substr($contents[0]['content'], 0, 7) == 'http://' || substr($contents[0]['content'], 0, 8) == 'https://') {
+            if (strtolower(substr($params['originalparams'], 0, 5)) == '[url=') {
+                $par = substr($params['originalparams'], 5);
+                if (strtolower(substr($par, 0, 7)) == 'http://' || strtolower(substr($par, 0, 8)) == 'https://') {
+                    $url = $par;
+                }
+            }
+        } elseif (strtolower(substr($contents[0]['content']), 0, 7) == 'http://' || strtolower(substr($contents[0]['content'], 0, 8)) == 'https://') {
             $url = $contents[0]['content'] ;
-        } else {
+        } 
+        if ($url == '') {
             return TagHandler::handle_empty($params, $contents);
         }
 
@@ -183,9 +191,9 @@ class TagHandler
                 $content = TagHandler::$tagconfig['i']['img']['allowedimgs'][$img_name];
             }
         }
-        return array('prepend' => '<img src="' . $content . '">', 'content' => $origAppend, 'append' => ''); 
+        return array('prepend' => '<img src="' . $content . '"/>', 'content' => $origAppend, 'append' => ''); 
     }
-
+    
     /* handle the noubb tag */
     public static function handle_noubb($params, $contents)
     {
