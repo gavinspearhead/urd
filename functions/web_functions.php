@@ -2264,9 +2264,14 @@ function find_url_icon($url)
 {
     global $LN;
     static $url_icons = array(
+        'amazon.com' => 'Amazon',
+        'amazon.co.uk' => 'Amazon',
+        'amazon.de' => 'Amazon',
         'anonymousxxl.nl' => 'XXX-Image',
+        'bol.com' => 'Bol',
         'erocard.info' => 'XXX-Image',
         'erotiekjournaal.nl' => 'XXX-Image',
+        'facebook.com' => 'Facebook',
         'filmstarts.de' => 'Filmstarts',
         'filmtotaal.nl' =>'FilmTotaal',
         'iafd.com' => 'IAFD',
@@ -2278,8 +2283,10 @@ function find_url_icon($url)
         'mijnserie.nl' => 'MijnSerie',
         'moviemeter.nl' => 'Moviemeter',
         'nzbindex.nl' => 'NZBIndex',
-        'oohmygod.nl' => 'XXX-Image',
+        'ooohmygod.nl' => 'XXX-Image',
+        'steampowered.com' => 'Steam',
         'themoviedb.com' => 'TMDB',
+        'themoviedb.org' => 'TMDB',
         'tvrage.com' => 'TVrage',
         'wikipedia.org' => 'WIKI',
         'xxx-image.com'=>  'XXX-Image',
