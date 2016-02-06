@@ -32,11 +32,11 @@
 {$LN_error_error}: {$message}
 </div>
 {elseif $srctype == 'edit'}
-<div>
+<div id="editbuttons">
 	<input type="hidden" id="extsetinfodisplay:{$setID}" name="extsetinfodisplay:{$setID}" value="edit"/>
 	<form id="ext_setinfo_{$setID}">
 	<div><input type="hidden" name="values[binarytype]" value="{$binarytype|escape}"/></div>
-<table class="set_details ">
+    <table class="set_details ">
 		<tr class="comment"><td class="bold">
 		{$LN_showsetinfo_typeofbinary}:
 		</td><td class="extsetinput">

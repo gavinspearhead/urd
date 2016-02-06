@@ -1430,12 +1430,10 @@ function process_whichbutton(buttonval, rightclick)
     };
     var set_ids = new Array();
     $('input[name="set_ids[]"]').each(function() {
-        console.log($(this).val());
         set_ids.push($(this).val());
     }
     );
     data.set_ids = set_ids;
-console.log(data);
 
     $.post(url, data).done(function(html) {
         var content = $.parseJSON(html);
@@ -2530,7 +2528,7 @@ function show_quick_display(options)
                 // we increase the size beyond the default if div is not large enough for the contents
                 var height = Math.floor($(window).height() * 0.9);
                 var used_height = $('#td_sets').get(0).scrollHeight;
-                var max_height = $('#td_sets').css('max-height').replace('px', '');
+                var max_height = $('#overlay_content').css('height').replace('px', '') - $('#popup_title').css('height').replace('px', '');
                 if ((used_height > max_height && height > max_height) || height < used_height) {
                     var width = Math.floor($(window).width() * 0.75);
                     $('#overlay_content').css('width', width);

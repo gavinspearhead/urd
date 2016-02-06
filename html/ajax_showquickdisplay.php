@@ -51,7 +51,6 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $row = $res[0];
         $show_image = get_pref($db, 'show_image', $userid, FALSE);
         $description = db_decompress($row['description']);
-           
         $description = strip_tags($description);
         $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
         $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
@@ -134,7 +133,6 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         'srctype' =>      $srctype,
     ));
     
-   
     if (!$only_rows) {
         $first_two_words = get_first_two_words($row['title']);
         $smarty->assign(array(
@@ -170,7 +168,6 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     } else {
         return $smarty->fetch('ajax_showspotcomments.tpl');
     }
-
 }
 
 // Functions follow:
@@ -247,6 +244,9 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         'binarytypes' =>    $binarytypes,  // All
         'display' =>        $display));      // All values
     $poster = '';
+    $par2s = 0;
+    $files = array();
+    $totalsize = $size;
 
     if ($type == USERSETTYPE_GROUP) {
         $groupname = group_name($db, $groupID);
@@ -261,15 +261,6 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         if (isset($res1[0]['poster'])) {
             $poster = $res1[0]['poster'];
         }
-    } elseif ($type == USERSETTYPE_RSS) {
-        $groupname = feed_name($db, $groupID);
-    }
-
-    $par2s = 0;
-
-    $files = array();
-
-    if ($type == USERSETTYPE_GROUP) {
         $totalsize = 0;
         foreach ($res as $arr) {
             $file = array();
@@ -280,8 +271,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
             list($_size, $suffix) = format_size($size, 'h', $LN['byte_short'], 1024, 1);
             $size = $_size . ' ' . $suffix;
             //$size = readable_size($size, 1, $LN['byte_short']);
-            $filename = $arr['subject'];
-            $filename = str_ireplace('yEnc','',$filename);
+            $filename = str_ireplace('yEnc','',$arr['subject']);
 
             $file['cleanfilename'] = $filename;
             $file['binaryID'] = $arr['binaryID'];
@@ -297,25 +287,24 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
                 $par2s++;
             }
         }
-    } else {
-        // now what
-        $totalsize = $size;
+    } elseif ($type == USERSETTYPE_RSS) {
+        $groupname = feed_name($db, $groupID);
     }
 
     list($_size, $suffix) = format_size($totalsize, 'h', $LN['byte_short'], 1024, 1);
     $totalsize = $_size . ' ' . $suffix;
 
     $smarty->assign(array(
-        'articlesmax'=>          $articlesmax,
-        'binaries'=>             $binaries,
-        'groupID'=>              $groupID,
-        'groupname'=>            $groupname,
-        'files'=>                $files,
-        'setname'=> 	        	$setname,
-        'fromnames'=>            $poster,
-        'totalsize'=>            $totalsize,
-        'par2s'=>                $par2s,
-        'type'=>                 $type));
+        'articlesmax'=>     $articlesmax,
+        'binaries'=>        $binaries,
+        'groupID'=>         $groupID,
+        'groupname'=>       $groupname,
+        'files'=>           $files,
+        'setname'=> 	   	$setname,
+        'fromnames'=>       $poster,
+        'totalsize'=>       $totalsize,
+        'par2s'=>           $par2s,
+        'type'=>            $type));
     return $smarty->fetch('ajax_showextsetinfo.tpl');
 }
 
