@@ -2139,14 +2139,14 @@ function return_result(array $vars=array())
 function link_to_url(DatabaseConnection $db, $description, $userid)
 {
     $position = 0;
-    while (preg_match('|https?:\/\/[-a-z0-9_:./&%!@#$?^()+=\\;]+|i', $description, $matches, PREG_OFFSET_CAPTURE, $position)) {
+    while (preg_match('|https?:\/\/[-=a-z0-9_:./&%!@#$?^()+\\\\;]+|i', $description, $matches, PREG_OFFSET_CAPTURE, $position)) {
         list($url, $urlposition) = $matches[0];
         $d1 = substr($description, 0, $urlposition);
         $l = strlen($url);
         $d2 = substr($description, $urlposition + $l);
         $new_url = $url;
         if ((strpos(substr($d1, -10), '[url]') === FALSE) && (strpos(substr($d2, 0, 10), '[/url]') === FALSE)) {
-            $new_url = "[url=" .  make_url($db, $url, $userid) . ']' . $url . '[/url]';
+            $new_url = '[url=' .  make_url($db, $url, $userid) . ']' . $url . '[/url]';
         }
         $new_l = strlen($new_url);
         $description = $d1 . $new_url . $d2;

@@ -51,8 +51,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $row = $res[0];
         $show_image = get_pref($db, 'show_image', $userid, FALSE);
         $description = db_decompress($row['description']);
-        echo_debug_var_file('/tmp/foo', $description);
-            
+           
         $description = strip_tags($description);
         $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
         $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);

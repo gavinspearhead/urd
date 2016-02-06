@@ -371,7 +371,7 @@ class ubbparse
     {
         $parseresult = $this->tokenize();
         $result = $this->converttoubb($parseresult);
-
+        $result[0] = preg_replace('|\\[\\/[a-zA-Z]+]|','', $result[0]);
         return $result[0];
     }
 
