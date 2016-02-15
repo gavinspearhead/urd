@@ -221,7 +221,7 @@ function set_userfeedinfo(DatabaseConnection $db, $userid, $feedid, $minsetsize,
 {
     assert(is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize));
     $sql = '"feedid" FROM userfeedinfo WHERE "feedid" = :feedid AND "userid" = :userid';
-    $res = $db->select_query($sql, 1, array(':userid'=>$feedid, ':userid'=>$userid));
+    $res = $db->select_query($sql, 1, array(':feedid'=>$feedid, ':userid'=>$userid));
     if ($res === FALSE) {
         $db->insert_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'feedid', 'userid', 'category'), array($minsetsize, $maxsetsize, $visible, $feedid, $userid, $category));
     } else {
@@ -237,11 +237,11 @@ function set_userfeedinfo_value(DatabaseConnection $db, $userid, $feedid, $optio
         throw new exception($LN['error_invalidvalue']);
     }
     $sql = '"feedid" FROM userfeedinfo WHERE "feedid" = :feedid AND "userid" = :userid';
-    $res = $db->select_query($sql, 1,  array(':userid'=>$feedid, ':userid'=>$userid));
+    $res = $db->select_query($sql, 1,  array(':feedid'=>$feedid, ':userid'=>$userid));
     if ($res === FALSE) {
         $db->insert_query('userfeedinfo', array('minsetsize', 'maxsetsize', 'visible', 'feedid', 'userid', 'category'), array(0, 0, 1, $feedid, $userid, 0));
     }
-    $db->update_query_2('userfeedinfo', array($option=>$value), '"feedid"=:? AND "userid"=?', array($feedid,$userid));
+    $db->update_query_2('userfeedinfo', array($option=>$value), '"feedid"=? AND "userid"=?', array($feedid,$userid));
 }
 
 function set_usergroupinfo(DatabaseConnection $db, $userid, $groupid, $minsetsize, $maxsetsize, $visible, $category)

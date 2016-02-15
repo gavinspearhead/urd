@@ -5717,7 +5717,7 @@ function toggle_visibility(type, group_id)
 {
     var url, data;
     var challenge = get_value_from_id('challenge', '');
-    if (type == 'groups') {
+    if (type == 'group') {
         url = 'ajax_groups.php';
         data = {
              cmd: 'toggle_visibility',
@@ -5725,7 +5725,7 @@ function toggle_visibility(type, group_id)
              challenge: challenge,
              visibility: $('#visible_' + group_id).val()
         };
-    } else {
+    } else if (type == 'rss') {
         url = 'ajax_rss_feeds.php';
         data = {
             cmd: 'toggle_visibility',
@@ -5733,6 +5733,8 @@ function toggle_visibility(type, group_id)
             challenge: challenge,
             visibility: $('#visible_' + group_id).val()
         };
+    } else {
+            update_message_bar(type + "??");
     }
     $.post(url, data).done(function(html) {
         var x = $.parseJSON(html);

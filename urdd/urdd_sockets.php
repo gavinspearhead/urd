@@ -80,7 +80,7 @@ class urdd_sockets
                         break;
                     }
                     // ok we found a command... do something with it
-                    //echo_debug('read line: [' . preg_replace ('/pass .*/i', 'PASS XXX', preg_replace("/[\n\r]/", '', $line)) . ']', DEBUG_MAIN); // filter out passwords
+                    // echo_debug('read line: [' . preg_replace ('/pass .*/i', 'PASS XXX', preg_replace("/[\n\r]/", '', $line)) . ']', DEBUG_MAIN); // filter out passwords
                     $response = '';
                     $cmd = do_command($db, $line, $response, $conn_list, $s, $servers, NULL, NULL, FALSE);
                     if ($cmd == URDD_NOCOMMAND) {

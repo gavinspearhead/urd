@@ -1624,7 +1624,7 @@ function do_subscribe(DatabaseConnection $db, array $arg_list, server_data &$ser
 
                 return $response;
             } elseif (!$onoff && $is_subscribed !== FALSE) {
-                $res = $ug->unsubscribe($db, $id);
+                $res = $ug->unsubscribe($id);
                 $ug->purge_binaries($id);
 
                 return urdd_protocol::get_response($res ? 200 : 402);
