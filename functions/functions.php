@@ -379,7 +379,7 @@ function set_period_rss(urdd_client $uc, DatabaseConnection $db, $id, $first_upd
 {
     assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
     // $time = update-time that's displayed in the newsgroup page
-    $db->update_query_2('rss_urls', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"id"=:id', array(':id'=>$id));
+    $db->update_query_2('rss_urls', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"id"=?', array($id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE_RSS, $id, $first_update, $period * 3600);
 }
 
@@ -387,7 +387,7 @@ function set_period(urdd_client $uc, DatabaseConnection $db, $id, $first_update,
 {
     assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
     // $time = update-time that's displayed in the newsgroup page
-    $db->update_query_2('groups', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=:id', array(':id'=>$id));
+    $db->update_query_2('groups', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=?', array($id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE, $id, $first_update, $period * 3600);
 }
 

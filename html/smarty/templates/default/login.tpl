@@ -52,7 +52,6 @@
 </td></tr>
 <tr><td class="nowrap bold">{$LN_login_bindip}:</td><td>
 {urd_checkbox value="$bind_ip_address" name="ipaddr" id="ipaddr" data="{$ip_address}"} 
-
 </td></tr>
 <tr><td colspan="2"></td></tr>
 <tr><td colspan="1"><input type="button" value="{$LN_login_login}" id="login_submit" class="submitsmall"/></td>
@@ -68,6 +67,7 @@
     <td><a href="register.php">{$LN_login_register}</a></td></tr>
 {/if}
 </table>
+</form>
 
 <script>
 $(document).ready(function() {
@@ -78,7 +78,6 @@ $(document).ready(function() {
     $('#pass').keyup( function(e) { if ( $('#username').val() != '' && $('#pass').val() != '' && e.keyCode == 13) { $('#urd_login_form').submit();} });
 });
 </script>
-</form>
 </div>
 
 {/block}

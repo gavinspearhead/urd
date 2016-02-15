@@ -1373,7 +1373,6 @@ function transfer_edit(cmd, dlid)
     });
 }
 
-
 function which_button(buttonval, e)
 {
     var rightclick = false;
@@ -1431,8 +1430,7 @@ function process_whichbutton(buttonval, rightclick)
     var set_ids = new Array();
     $('input[name="set_ids[]"]').each(function() {
         set_ids.push($(this).val());
-    }
-    );
+    });
     data.set_ids = set_ids;
 
     $.post(url, data).done(function(html) {
