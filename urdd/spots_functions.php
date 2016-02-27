@@ -617,7 +617,7 @@ class urd_spots
                 try {
                     $cnt++;
                     $comment = self::parse_spot_comment($header, $spots_blacklist);
-                    if (!isset($comment['references'], $comment['from'], $comment['date'], $comment['user-key'])) {
+                    if (!isset($comment['references'], $comment['from'], $comment['date'], $comment['user-key'], $comment['lines'])) {
                         throw new exception('Invalid spot comment ' . $msg_id);
                     }
                     $date = $comment['date'];

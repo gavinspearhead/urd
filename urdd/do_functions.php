@@ -714,7 +714,7 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 }
                 $quser2 = '';
                 if (!$isadmin) {
-                    $quser2 = ' AND userid=:userid';
+                    $quser2 = ' AND userid=:userid ';
                     $input_arr[':userid'] = $userid;
                 }
                 $qry = "1=1 $quser2 AND \"start_time\" < :time AND \"status\" IN (:status1, :status2, :status3, :status4, :status5, :status6) ";
@@ -724,8 +724,8 @@ function do_cleandb(DatabaseConnection $db, action $item)
                 $db->delete_query('postinfo', $qry, array_merge($input_arr, array(':time'=>$timestamp, ':status1'=>$post_finished_status, ':status2'=>$post_rar_failed_status, ':status3'=>$post_par_failed_status, ':status4'=>$post_cancelled_status)));
 
                 // Clean up queueinfo:
-                $qry = "1=1 $quser2 AND \"lastupdate\" < :time AND (\"status\" IN (:status1, :status2, :status3, :status4, :status5) ";
-                $db->delete_query('queueinfo', $qry, array_merge($input_arr, array(':time'=> $timestamp, ':status1'=>QUEUE_FINISHED, ':status2'=>QUEUE_FAILED,':status3'=> QUEUE_CRASH,':status4'=> QUEUE_CANCELLED,':status5'=> QUEUE_REMOVED)));
+                $qry = "1=1 $quser2 AND \"lastupdate\" < :time AND \"status\" IN (:status1, :status2, :status3, :status4, :status5) ";
+                $db->delete_query('queueinfo', $qry, array_merge($input_arr, array(':time'=> $timestamp, ':status1'=>QUEUE_FINISHED, ':status2'=>QUEUE_FAILED,':status3'=> QUEUE_CRASH,':status4'=> QUEUE_CANCELLED, ':status5' => QUEUE_REMOVED)));
             }
 
             // Clean downloadarticles from any lost records:
