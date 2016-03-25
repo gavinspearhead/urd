@@ -6,7 +6,7 @@
 {if !$allow_robots}
 <meta name="robots" content="noindex, nofollow"/>
 {/if}
-<script type="text/javascript" src="{$JSDIR}/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="{$JSDIR}/jquery-2.2.2.min.js"></script>
 <script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
 <link rel="stylesheet" href="{$CSSDIR}/_basic.css" type="text/css"/>

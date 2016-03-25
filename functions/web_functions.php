@@ -2287,6 +2287,7 @@ function find_url_icon($url)
         'steampowered.com' => 'Steam',
         'themoviedb.com' => 'TMDB',
         'themoviedb.org' => 'TMDB',
+        'tvmaze.com' => 'TVmaze',
         'tvrage.com' => 'TVrage',
         'wikipedia.org' => 'WIKI',
         'xxx-image.com'=>  'XXX-Image',

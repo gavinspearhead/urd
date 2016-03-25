@@ -86,6 +86,7 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('RLS',                       'http://www.rlslog.net/?s=$q'),
         new search_option('Rotten Tomatoes',           'http://www.rottentomatoes.com/search/full_search.php?search=$q'),
         new search_option('Start Page',                'https://startpage.com/eng/advanced-search.html?&cat=web&query=$q'),
+        new search_option('TV Maze',                   'https://www.tvmaze.com/search.php?q=$q'),
         new search_option('TV Rage',                   'https://www.tvrage.com/search.php?search=$q'),
         new search_option('Twitter',                   'https://twitter.com/search/$q'),
         new search_option('Wikipedia (English)',       'https://en.wikipedia.org/wiki/Special:Search?search=$q'),

@@ -1,6 +1,7 @@
 1.14 
 - Added alternative view for spots
 - Added references to spots to search for similar items
+- Added tvmaze as search option
 - Load set comments on demand in showing spot details
 - Made interface better usable for touchscreens
 - Rewrote the statistics to generate plots in javascript
@@ -8,6 +9,7 @@
 - Fixed install instructions mistake for mcrypt
 - Added searching on spotter id
 - Updated smarty to 3.1.29
+- Updated to jquery 2.2.2 
 
 
 
