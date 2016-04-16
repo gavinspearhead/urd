@@ -94,7 +94,7 @@
             {if $task@last && empty($previews)}{$add_class="pulldown_last_item"}{else}{$add_class=""}{/if}
             <li class="activity {$add_class}"><div class="down3 buttonlike" onclick="jump('{$tasklink}')">
 
-            {$task.task} <b>{$task.args|truncate:32:'':true}</b>{if $task.counter > 1} (x{$task.counter}){/if}:
+            {$task.task}&nbsp;<b>{$task.args|truncate:32:'':true}</b>{if $task.counter > 1} (x{$task.counter}){/if}:
             {if $task.niceeta <> -1}
                 {* Show ETA: *}
                 <span class="xxsmall">({$task.progress}% {$LN_eta}: {$task.niceeta|escape:htmlall})</span> 
