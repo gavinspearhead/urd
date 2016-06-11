@@ -146,6 +146,7 @@ class URD_NNTP
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         $this->disconnect();
         $this->connect($this->auth, $this->username, $this->password);
+        declare(ticks=1);
         if ($this->newsgroup != '') {
             $this->select_group_name($this->newsgroup, $code);
         }

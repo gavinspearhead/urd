@@ -22,6 +22,16 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
+
+function _stream_select (&$read, &$write, &$except, $tv_sec, $tv_usec = 0)
+{
+    if (function_exists('pcntl_signal_dispatch')) {
+        pcntl_signal_dispatch();
+    }
+    
+    stream_select($read, $write, $except, $tv_sec, $tv_usec);
+}
+
 /**
  * Generalised Socket class.
  *
@@ -70,7 +80,7 @@ class socket
         $this->port = (int) 0;
         $this->addr = '';
         $this->persistent = FALSE;
-        $this->blocking = TRUE;
+        $this->blocking = FALSE;
         $this->line_length = (int) 2048;
     }
     public function __destruct ()
@@ -197,7 +207,7 @@ class socket
         $this->check_connected();
 
         $this->blocking = $mode;
-        socket_set_blocking($this->fp, $this->blocking);
+        stream_set_blocking($this->fp, $this->blocking);
 
         return true;
     }
@@ -260,7 +270,7 @@ class socket
         $null = NULL;
         $r = array ($this->fp);
         // do a quick check first, typically this succeeds and we do less expensive time() calls
-        $rv = stream_select($r, $null, $null, 0, 10);
+        $rv = _stream_select($r, $null, $null, 0, 10);
         if (count($r) > 0) {
             return TRUE;
         }
@@ -270,7 +280,7 @@ class socket
         while (1) {
             $null = NULL;
             $r = array($this->fp);
-            $rv = stream_select($r, $null, $null, $timeout);
+            $rv = _stream_select($r, $null, $null, $timeout);
             if ($rv === FALSE) {
                 $timeout = max(0, $timeout - (time() - $start_time));
                 continue;
@@ -293,7 +303,7 @@ class socket
         }
         $null = NULL;
         $w = array($this->fp);
-        $rv = stream_select($null, $w, $null, 0, 10); // do a quick check first
+        $rv = _stream_select($null, $w, $null, 0, 10); // do a quick check first
         if (count($w) > 0) {
             return TRUE;
         }
@@ -302,7 +312,7 @@ class socket
         while (1) {
             $null = NULL;
             $w = array($this->fp);
-            $rv = stream_select($null, $w, $null, $timeout);
+            $rv = _stream_select($null, $w, $null, $timeout);
             if ($rv === FALSE) {
                 $timeout = max(0, $timeout - (time() - $start_time));
                 continue;
@@ -624,7 +634,7 @@ public function select($state, $tv_sec, $tv_usec = 0)
     if ($state & self::NET_SOCKET_ERROR) {
         $except[] = $this->fp;
     }
-    if (FALSE === stream_select($read, $write, $except, $tv_sec, $tv_usec)) {
+    if (FALSE === _stream_select($read, $write, $except, $tv_sec, $tv_usec)) {
         return FALSE;
     }
 

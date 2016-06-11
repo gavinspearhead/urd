@@ -494,7 +494,8 @@ class nfo_parser
 
         foreach ($str as $line) {
             foreach ($fn as $f) {
-                nfo_parser::set_info($file_nfo, $f[1], nfo_parser::$f[0]($line));
+                $tmp = $f[0];
+                nfo_parser::set_info($file_nfo, $f[1], nfo_parser::$tmp($line));
             }
         }
         if (!$dont_follow) {

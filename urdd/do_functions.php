@@ -441,7 +441,7 @@ function do_update_rss(DatabaseConnection $db, action $item)
     return NO_ERROR;
 }
 
-function update_headers(DatabaseConnection $db, &$nzb, array &$groupArr, action $item, $server_id)
+function update_headers(DatabaseConnection $db, URD_NNTP &$nzb, array &$groupArr, action $item, $server_id)
 {
     assert(is_numeric($server_id));
     $groupArr['compressed_headers'] = get_compressed_headers($db, $server_id); // ugly code really
@@ -2298,10 +2298,11 @@ function do_getspot_reports(DatabaseConnection $db, action $item)
     }
 }
 
-function do_getspot_comments(DatabaseConnection $db, action $item)
+function do_getspot_comments(DatabaseConnection& $db, action& $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
+    echo "auao";
     try {
         $ug = new urdd_group($db);
         $comments_group = get_config($db, 'spots_comments_group');

@@ -21,9 +21,8 @@
  * $Author: gavinspearhead@gmail.com $
  * $Id: urdd.php 3088 2014-06-08 16:21:08Z gavinspearhead@gmail.com $
  */
+declare(ticks=1); // we need this for the signals to work properly.... all hail the splendid php documentation :-|
 define('ORIGINAL_PAGE', 'URDD');
-
-declare(ticks = 1); // we need this for the signals to work properly.... all hail the splendid php documentation :-|
 
 $pathu = realpath(dirname(__FILE__));
 
@@ -170,7 +169,12 @@ function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
         urdd_protocol::COMMAND_UPDATE_RSS          => 'do_update_rss'
     );
     if (isset($cmd_table[$cmd_code])) {
-        $rv = $cmd_table[$cmd_code]($db, $item);
+        $fn = $cmd_table[$cmd_code];
+        if ($cmd_code == urdd_protocol::COMMAND_GETSPOT_COMMENTS) {
+                do_getspot_comments($db, $item);
+        } else {
+        $rv = $fn($db, $item);
+        }
     } else {
         write_log('Error: unknown action');
         throw new exception('Error: unknown action', ERR_UNKNOWN_ACTION);
@@ -451,6 +455,7 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
         }
 
         try {
+            pcntl_signal(SIGCHLD, 'sig_handler', FALSE); // we want the signal ... but it needn't do anything
             $servers->add_thread(new thread($pid, $item));
             echo_debug("Worker forked: PID $pid", DEBUG_SERVER);
             $servers->queue_delete($par_db, $item->get_id(), user_status::SUPER_USERID); // remove the item from the queue
@@ -462,7 +467,11 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
     } else { // child
         $nntp_enabled = $servers->get_nntp_enabled();
         unset($servers, $db, $command, $pid);
-        start_child($item, $conn_list, $nntp_enabled);
+//        declare(ticks=1) {
+   //         register_tick_function('pcntl_signal_dispatch');
+     //       register_tick_function('var_dump', 1);
+            start_child($item, $conn_list, $nntp_enabled);
+ //       }
     }
 
     return FALSE;
@@ -535,7 +544,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
     $username = get_config($db, 'run_update');
     if ($username != '0') { // some install magic, after the install we run update group automagically with the user given by the installer
         set_config($db, 'run_update', '0');
-        if (check_user($db, $username) === TRUE) {
+        if (check_user(db, $username) === TRUE) {
             // run the update groups command when just installed as the main user/admin
             // should do this differently // TODO
             $userid = get_userid($db, $username);
@@ -770,9 +779,9 @@ set_assert(TRUE);
 //set_assert(FALSE);
 $is_child = FALSE; // this is the main start up, so we are always the parent
 // make PHP verbose
-ini_set('display_errors', 1);
-ini_set('log_errors', 1);
-ini_set('error_reporting', E_ALL|E_STRICT|E_DEPRECATED);
+ini_set('display_errors', '1');
+ini_set('log_errors', '1');
+//ini_set('error_reporting', E_ALL|E_STRICT|E_DEPRECATED);
 
 try {
     verify_installed();

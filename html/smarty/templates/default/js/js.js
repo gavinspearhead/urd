@@ -98,7 +98,7 @@ function task_action(action, task)
     };
     if (action !== null) {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 load_tasks();
                 update_message_bar(x.message);
@@ -118,7 +118,7 @@ function job_action(action, job)
             job: job,
             challenge: challenge
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 load_jobs();
                 update_message_bar(x.message);
@@ -137,7 +137,7 @@ function control_action(action)
             cmd: action,
             challenge: challenge
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                update_message_bar(x.message);
             } else {
@@ -166,7 +166,7 @@ function ng_action(action, id)
             group: id,
             challenge: challenge
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                update_message_bar(x.message);
             } else {
@@ -201,7 +201,7 @@ function set_basket_type(type)
 function get_basket_type()
 {
     $.post('ajax_processbasket.php', { command: 'get' }).done(function(html) {
-       var x = $.parseJSON(html);
+       var x = JSON.parse(html);
        update_basket_display(x.basket_type);
    });
 }
@@ -233,7 +233,7 @@ function update_basket_display(basket_type)
         dl_dir: dl_dir,
         challenge: challenge
     }).done(function(html) {
-        var content = $.parseJSON(html);
+        var content = JSON.parse(html);
         if (content.error != 0) {
             update_message_bar(content.error);
             return;
@@ -469,7 +469,7 @@ function submit_viewfiles_action(fileid, command)
             challenge: challenge
             }
         ).done(function(html) {
-           var x = $.parseJSON(html);
+           var x = JSON.parse(html);
            if (x.error == 0) {
                show_files({ 'curdir': dir, 'reset_offset': false });
                update_message_bar(x.message);
@@ -544,7 +544,7 @@ function load_transfers()
         url,
         data
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
 
         if (x.error == 0) {
             show_content_div_2(x.contents, 'transfersdiv');
@@ -663,7 +663,7 @@ function load_control()
 {
     var url = 'ajax_admincontrol.php';
     $.post(url).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'controldiv');
             update_search_bar_height();
@@ -701,7 +701,7 @@ function show_users(order, direction)
     }
 
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'usersdiv');
             update_search_bar_height();
@@ -779,7 +779,7 @@ function show_blacklist(options)
         }
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             if (add_rows == 0) {
                 show_content_div_2(x.contents, 'usersdiv');
@@ -836,7 +836,7 @@ function show_files(options)
     $('#search').keypress(function(event) { do_keypress_viewfiles(event); });
     var url = 'ajax_editviewfiles.php';
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
             if (add_rows == 0) {
@@ -889,7 +889,7 @@ function show_buttons(order, direction)
         data.sort_dir = direction;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'buttonsdiv');
             update_search_bar_height();
@@ -928,7 +928,7 @@ function show_usenet_servers(order, direction)
         data.sort_dir = direction;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'usenetserversdiv');
             highlight_handler();
@@ -959,7 +959,7 @@ function show_post_message(type, spotid, src)
     }
     data.groupid = $('#select_groupid>option:selected').val();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#post_submit').click( function () { post_message(); } );
@@ -978,7 +978,7 @@ function show_uploadnzb(dir, name)
         data.filename = name;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#url').click( function() { update_setname('url') });
@@ -1005,7 +1005,7 @@ function show_edit_post(postid)
         cmd: 'showrename', 
         postid: postid
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
         } else {
@@ -1018,7 +1018,7 @@ function show_post()
 {
     var url = 'ajax_show_post.php';
     $.post(url).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#submit_button').click( function() { create_post(); } );
@@ -1066,7 +1066,7 @@ function load_jobs(order, direction)
         data.sort_dir = direction;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'jobsdiv');
             update_widths('descr_td');
@@ -1109,7 +1109,7 @@ function load_tasks(order, direction, clear_offset)
         data.offset = offsetval;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'tasksdiv');
             update_widths('descr_td');
@@ -1174,7 +1174,7 @@ function load_disk_status()
 {
     var url = 'ajax_showstatus.php';
     $.post(url, { type: 'disk' }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             if (!x.connected) {
                 $('#disk_li').addClass('hidden');
@@ -1198,7 +1198,7 @@ function load_activity_status(force)
 
     var url = 'ajax_showstatus.php';
     $.post(url, { type: 'activity' }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#status_activity').html(x.contents);
             $('#urd_poweron').click (function() { control_action('poweron', '', ''); load_quick_status();} ) ;
@@ -1211,13 +1211,13 @@ function load_quick_status()
 {
     var url = 'ajax_showstatus.php';
     $.post(url, { type: 'quick' }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#status_msg').html(x.contents);
         }
     });
     $.post(url, { type: 'icon' }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#smallstatus').html(x.contents);
             $('#urdd_enable').click (function() { control_action('poweron', '', ''); load_quick_status();} ) ;
@@ -1306,7 +1306,7 @@ function mark_read(setid, cmd, type)
         data.challenge = challenge;
     }
     $.post(url, data).done(function(html) {
-        var content = $.parseJSON(html);
+        var content = JSON.parse(html);
         if (content.error == 0) {
             var thetr = $('#base_row_' + setid);
             /* Only update display if backend succeeded: */
@@ -1347,7 +1347,7 @@ function post_edit(cmd, postid)
             challenge: challenge
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         }
@@ -1365,7 +1365,7 @@ function transfer_edit(cmd, dlid)
             challenge: challenge
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         }
@@ -1392,7 +1392,7 @@ function which_button(buttonval, e)
         });
         var data = { whichbutton: 'checksize', 'set_ids' : set_ids };
         $.post(url, data).done(function(html) {
-            var content = $.parseJSON(html);
+            var content = JSON.parse(html);
             if (content.error != 0){ /*&& content.message != '') {
                 show_confirm(content.message, function() {
                     process_whichbutton(buttonval, rightclick);
@@ -1434,7 +1434,7 @@ function process_whichbutton(buttonval, rightclick)
     data.set_ids = set_ids;
 
     $.post(url, data).done(function(html) {
-        var content = $.parseJSON(html);
+        var content = JSON.parse(html);
         if (content.error == 0) {
             update_basket_display();
             update_message_bar(content.message);
@@ -1491,7 +1491,7 @@ function select_preview(binid, gid)
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             blink_status();
         } else {
@@ -1512,7 +1512,7 @@ function show_preview(dlid, binary_id, group_id, _first)
         show_loading_popup();
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             if (x.filetype == 'image') {
@@ -1543,7 +1543,7 @@ function delete_preview(dlid)
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
          if (x.error == 0) {
              load_activity_status(1);
              update_message_bar(x.message);
@@ -1571,7 +1571,7 @@ function delete_blacklist(id, msg)
     };
     var f = function() {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 if (x.action == 'delete') {
                     $('#item' + id).hide();
@@ -1608,7 +1608,7 @@ function enable_blacklist(id)
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             if (x.action == 'hide') {
                 $('#item' + id).hide();
@@ -1653,7 +1653,7 @@ function buttons_action(action, uid)
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             if (action == 'edit') {
                 show_overlayed_content_1(x.contents, 'popup525x300');
@@ -1679,7 +1679,7 @@ function user_update_setting(uid, action, value)
         challenge: challenge
     };
      $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_users();
             update_search_bar_height();
@@ -1706,7 +1706,7 @@ function user_action(action, uid)
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             if (action == 'edit') {
                 show_overlayed_content_1(x.contents, 'popup700x400');
@@ -1740,7 +1740,7 @@ function usenet_action(action, uid)
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_usenet_servers();
             update_message_bar(x.message);
@@ -1779,7 +1779,7 @@ function upload_handler(url, fn)
             contentType: false,
             processData: false
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error != 0) {
                 update_message_bar(x.error);
                 fn(-1);
@@ -1823,7 +1823,7 @@ function show_popup_remote(referrer, command)
         data.cmd = command;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -1832,7 +1832,7 @@ function show_popup_remote(referrer, command)
             $('#browse_button').click( function () { $('#files').click(); });
             $('#files').change( function () { $('#_files').val($(this).val()); });
             upload_handler(url, function(xmlHttp2) {
-                var y = $.parseJSON(html);
+                var y = JSON.parse(html);
                 if (y.error == 0) {
                     hide_overlayed_content();
                     reload_page(referrer);
@@ -1860,7 +1860,7 @@ function show_rename_transfer(dlid)
             dlid: dlid
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -1887,7 +1887,7 @@ function edit_group(id)
             id: id
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -1909,7 +1909,7 @@ function edit_rss(id)
             id: id
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -1928,7 +1928,7 @@ function edit_usenet_server(id, only_auth)
     var url = 'ajax_edit_usenet_servers.php';
     var data = { cmd: 'showeditusenetserver', id: id, only_auth: (only_auth ? '1' : '0') };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -1965,7 +1965,7 @@ function update_group()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -2005,7 +2005,7 @@ function update_rss()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
         } else {
@@ -2030,7 +2030,7 @@ function update_buttons()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             show_buttons();
@@ -2075,7 +2075,7 @@ function update_user()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             show_users();
@@ -2121,7 +2121,7 @@ function update_usenet_server()
         posting: posting
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             show_usenet_servers();
@@ -2158,7 +2158,7 @@ function post_message()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             update_message_bar(x.message);
@@ -2196,7 +2196,7 @@ function create_post()
         timestamp: timestamp
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
         } else {
@@ -2235,7 +2235,7 @@ function rename_transfer()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
         } else {
@@ -2303,7 +2303,7 @@ function rename_file_form(fileid)
         challenge: challenge
     };
     $.post(url,data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup525x300');
             $('#apply_button').click( function() { update_filename(); });
@@ -2332,7 +2332,7 @@ function update_filename()
         group: group
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             show_files({ 'curdir': directory, 'reset_offset': false });
@@ -2410,7 +2410,7 @@ function show_quickmenu(type, subject, srctype, e)
         }
     ).done(function(html) {
         has_quickmenu = 0;
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#quickmenu').html(x.contents);
             update_quick_menu_images();
@@ -2517,7 +2517,7 @@ function show_quick_display(options)
             offset: offset
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#overlay_content2').hide();
             $('#overlay_back2').hide();
@@ -2566,7 +2566,7 @@ function guess_extset_info_safe(setID, type)
                 subject: setID
             }
         ).done(function() {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 show_quick_display({ srctype: 'seteditesi', subject: setID, type:type});
             } else {
@@ -2590,7 +2590,7 @@ function guess_basket_extset_info(setID, type)
             setname: setname
         };
         $.post(url, data).done(function() {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 // Reload to show the new info:
                 load_sets();
@@ -2617,7 +2617,7 @@ function guess_extset_info(setID, type)
             setname: setname
         };
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 close_quickmenu();
             // Also echo the new setname into the TD:
@@ -2641,7 +2641,7 @@ function save_extset_binary_type(setID, sel, srctype, type)
         'values[binarytype]' : binarytype
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_quick_display({srctype:'seteditesi', subject:setID, type:type});
         } else {
@@ -2664,7 +2664,7 @@ function save_extset_info(setID, type)
     }
     hide_overlayed_content();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
         // Also echo the new setname into the TD
             $('#td_set_' + setID).html(x.contents);
@@ -2683,7 +2683,7 @@ function remove_rss(id, msg)
             id: id,
             challenge: challenge
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 load_subscriptions();
             } else {
@@ -2702,7 +2702,7 @@ function confirm_delete_account(id, msg)
                 challenge: challenge
             }
         ).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 show_alert(x.message);
                 setTimeout(function() { jump('logout.php'); } , 5005);
@@ -2724,7 +2724,7 @@ function fold_transfer(id, type)
             type: type
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#' + id + type).toggleClass('dynimgplus');
             $('#' + id + type).toggleClass('dynimgminus');
@@ -2939,7 +2939,7 @@ function edit_file(fileid)
 
     show_loading_popup();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             $('#filename_editfile').focus();
@@ -2978,7 +2978,7 @@ function save_file()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             show_files({ 'curdir' : null, 'reset_offset': false });
@@ -3001,7 +3001,7 @@ function edit_categories()
 
     show_loading_popup();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup525x300');
             $('#cat_name').focus();
@@ -3026,7 +3026,7 @@ function get_category_name()
         id: idx
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             cat_name.val(x.name);
             cat_id.val(idx);
@@ -3054,7 +3054,7 @@ function update_category_name()
         challenge: challenge
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             load_subscriptions();
             hide_overlayed_content();
@@ -3080,7 +3080,7 @@ function delete_category()
     };
 
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             hide_overlayed_content();
             load_subscriptions();
@@ -3117,7 +3117,7 @@ function show_calendar(month, year, clear_time)
         }
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             var n_year, n_month;
             show_overlayed_content_2(x.contents, 'calendardiv');
@@ -3256,7 +3256,7 @@ function update_adult(type, id)
         return;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -3404,7 +3404,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         data.source = source;
     }
     $.post('ajax_stats.php', data).done(function(html) {
-        var y = $.parseJSON(html);
+        var y = JSON.parse(html);
         if (y.error == 0) {
             $('#show_stats').html(y.contents);
             var x = document.getElementsByName('tabs');
@@ -3540,7 +3540,7 @@ function update_search_names(name)
         current: name
     };
      $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0 || x.count == 0) {
             $('#save_search_outer').addClass('hidden');
             $('#save_search_span').html('');
@@ -3568,7 +3568,7 @@ function show_savename()
     };
     show_loading_popup();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         show_overlayed_content_1(x.contents, 'savenamediv');
         $('#savename_val').focus();
     });
@@ -3600,7 +3600,7 @@ function delete_search()
             name: sname
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_search_names('');
             update_message_bar(x.message);
@@ -3647,7 +3647,7 @@ function save_browse_search()
     data.search = search;
     hide_overlayed_content();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_search_names(sname);
             update_message_bar(x.contents);
@@ -3686,7 +3686,7 @@ function save_spot_search()
     data.search = search;
     hide_overlayed_content();
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_search_names(sname);
             update_message_bar(x.message);
@@ -3716,7 +3716,7 @@ function update_browse_searches(name)
             cmd: 'get',
             cat: 0
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         $('#save_category').val('');
         if (x.error == 0) {
             if (x.count > 0) {
@@ -3772,7 +3772,7 @@ function update_spot_searches(name)
             cmd: 'get'
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         setvalbyid('save_category', '');
         update_search_names(name);
         if (x.error == 0) {
@@ -3949,7 +3949,7 @@ function load_spots(options)
     data.flag = flag;
     data.order = order;
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#minage').val(x.minage)
             $('#maxage').val(x.maxage);
@@ -4085,7 +4085,7 @@ function load_groupsets(options)
     data.view_size = view_size;
     $('#suggest_div').addClass('hidden'); 
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
             $('#maxage').val(x.maxage);
@@ -4269,7 +4269,7 @@ function load_rsssets(options)
     data.flag = flag;
     data.view_size = view_size;
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
             $('#maxage').val(x.maxage);
@@ -4343,7 +4343,7 @@ function show_alert(msg)
 {
     var url = 'ajax_alert.php';
     $.post(url, { msg: msg }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         show_overlayed_content_1(x.contents, 'alertdiv');
 
         $('#okbutton').click(function() {
@@ -4368,7 +4368,7 @@ function show_confirm(msg, fn)
 {
     var url = 'ajax_alert.php';
     $.post(url, { msg: msg, allow_cancel: 1 }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         show_overlayed_content_1(x.contents, 'alertdiv');
         $('#cancelbutton').click(function() { hide_overlayed_content(); });
         $('#okbutton').click(function() {
@@ -4437,7 +4437,7 @@ function load_groups(options)
     }
 
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'groupsdiv');
             $('#waitingdiv').addClass('hidden');
@@ -4504,7 +4504,7 @@ function load_rss_feeds(options)
         data.page_tab = page_tab;
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_content_div_2(x.contents, 'rss_feeds_div');
             $('#button_global').click( function () { toggle_table('feedstable', 'user', 'admin'); });
@@ -4550,7 +4550,7 @@ function show_contents(file, idx)
         challenge: challenge
     }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.contents, 'popup700x400');
             var width = Math.floor($(window).width() * 0.9);
@@ -4589,7 +4589,7 @@ function show_image(file, idx)
             challenge: challenge
         }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             if (preview != 0) {
                 $('#textcontent').html(x.contents);
@@ -4829,7 +4829,7 @@ function add_whitelist(id, type)
     var confirmmsg = get_value_from_id('whitelist_confirm_msg', 'Add spotter to whitelist?');
     show_confirm(confirmmsg, function() {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 update_message_bar(x.message);
             } else {
@@ -4851,7 +4851,7 @@ function add_poster_blacklist(id)
     var confirmmsg = get_value_from_id('blacklist_confirm_msg', 'Add poster to blacklist?');
     show_confirm(confirmmsg, function() {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 update_message_bar(x.message);
             } else {
@@ -4878,7 +4878,7 @@ function add_blacklist(id, type, global)
     var confirmmsg = get_value_from_id('blacklist_confirm_msg', 'Add spotter to blacklist?');
     show_confirm(confirmmsg, function() {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 update_message_bar(x.message);
             } else {
@@ -4973,12 +4973,12 @@ function show_spot_image(url)
 {
     var new_img = new Image();
     new_img.src = url;
-    $(new_img).load(function() {
+    $(new_img).on('load', function() {
         var maxWidth = Math.floor($(window).width() * 0.9);
         var maxHeight = Math.floor($(window).height() * 0.9);
         var ratio = 0;
-        var width = $(new_img).width();
-        var height = $(new_img).height();
+        var width = $(this).width();
+        var height = $(this).height();
         if (width > maxWidth) {
             ratio = (maxWidth / width);
             $(new_img).attr({
@@ -5018,7 +5018,7 @@ function show_spot_image(url)
 
     $('#overlay_back2').mouseup(function() {
         if ($('#overlay_content2').parent().is('div') && $('#overlay_content2').parent().attr('id') == 'overlay_wrap2') {
-            $('#overlay_content2').unwrap('<div/>');
+            $('#overlay_content2').unwrap();
         }
         $('#overlay_content2').hide();
         $('#overlay_back2').hide();
@@ -5069,7 +5069,7 @@ function delete_setting(name)
         challenge: challenge,
         option: name }
     ).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5142,7 +5142,7 @@ function update_setting(id, type, optionals)
     data.type = type;
     var send_data = function() {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 $('#stop_mark_' + id).hide();
                 update_message_bar(x.message);
@@ -5328,7 +5328,7 @@ function handle_passwords_change(opw_id, npw_id1, npw_id2, sub_id, username)
             newpass2: npw2,
             challenge: challenge
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 update_message_bar(x.message);
             } else {
@@ -5363,7 +5363,7 @@ function load_prefs()
         cmd: 'show',
         current_tab: current_tab
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         show_content_div_2(x.contents, 'settingsdiv');
         update_search_bar_height();
         update_tab_position();
@@ -5419,7 +5419,7 @@ function reset_prefs(msg)
             cmd: 'reset',
             challenge: challenge
         }).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 load_prefs();
                 update_message_bar(x.message);
@@ -5458,7 +5458,8 @@ function show_logs()
         sort_dir: sort_dir
     };
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
+        console.log('aouea');
         if (x.error == 0) {
             show_content_div_2(x.contents, 'logdiv');
             update_search_bar_height();
@@ -5559,7 +5560,7 @@ function submit_registration()
         register_captcha: captcha,
         submit_button: 1
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#form').hide();
             $('#sent').show();
@@ -5579,7 +5580,7 @@ function submit_forgot_password()
         username: username,
         email: email
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#sent_table').show();
             $('#form_table').hide();
@@ -5630,7 +5631,7 @@ function subscribe_rss(feedid)
     }
     var url = 'ajax_rss_feeds.php';
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5666,7 +5667,7 @@ function subscribe_ng(groupid)
     }
     var url = 'ajax_groups.php';
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5704,7 +5705,7 @@ function update_ng_value(type, option, group_id)
     }
 
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5737,7 +5738,7 @@ function toggle_visibility(type, group_id)
             update_message_bar(type + "??");
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5770,7 +5771,7 @@ function update_user_ng_value(type, option, group_id)
         };
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5803,7 +5804,7 @@ function update_category(type, group_id)
         };
     }
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             update_message_bar(x.message);
         } else {
@@ -5850,7 +5851,7 @@ function update_ng_time(type, group_id)
     timeout = 2500;
     var send_data = function() {
         $.post(url, data).done(function(html) {
-            var x = $.parseJSON(html);
+            var x = JSON.parse(html);
             if (x.error == 0) {
                 update_message_bar(x.error);
                 if ($('#period_' + group_id + '>option:selected').val() == 0) {
@@ -5876,7 +5877,7 @@ function show_post_spot()
     show_loading_popup();
 
     $.post(url, { cmd: 'show' }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             show_overlayed_content_1(x.content, 'popup700x400');
             change_spotsubcats();
@@ -5903,7 +5904,7 @@ function change_spotsubcats()
         cmd: 'category_info',
         category: $('#category>option:selected').val()
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error == 0) {
             $('#subcats').html(x.content);
             var height = 500, width = 700;
@@ -5963,7 +5964,7 @@ function upload_file(id, type, post_id, fn)
         contentType: false,
         processData: false
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         if (x.error != 0) {
             update_message_bar(x.error);
             fn(-1);
@@ -6000,7 +6001,7 @@ function post_spot()
         nzb_file: nzb,
         image_file: img
     }).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
 
         if (x.error == 0) {
             var rv1 = 0, rv2 = 0;
@@ -6036,7 +6037,7 @@ function cancel_post(post_id)
         cmd: 'start_post',
         postid: post_id
     }).done(function(html) {
-        var r = $.parseJSON(html);
+        var r = JSON.parse(html);
         if (r.error != 0) {
             update_message_bar(r.error);
         }
@@ -6050,7 +6051,7 @@ function start_post(post_id)
         cmd: 'start_post',
         postid: post_id
     }).done(function(html) {
-        var r = $.parseJSON(html);
+        var r = JSON.parse(html);
         if (r.error != 0) {
             update_message_bar(r.error);
         }
@@ -6149,7 +6150,7 @@ function load_side_bar(fn)
     if (type == 'spots') {
         url = 'ajax_load_spot_sidebar.php';
         $.post(url).done(function(html) {
-            var r = $.parseJSON(html);
+            var r = JSON.parse(html);
             if (r.error != 0) {
                 update_message_bar(r.error);
             } else {
@@ -6171,7 +6172,7 @@ function load_side_bar(fn)
     } else if (type == 'groups') {
         url = 'ajax_load_browse_sidebar.php';
         $.post(url).done(function(html) {
-            var r = $.parseJSON(html);
+            var r = JSON.parse(html);
             if (r.error != 0) {
                 update_message_bar(r.error);
             } else {
@@ -6191,7 +6192,7 @@ function load_side_bar(fn)
     } else if (type == 'rss') {
         url = 'ajax_load_rss_sidebar.php';
         $.post(url).done(function(html) {
-            var r = $.parseJSON(html);
+            var r = JSON.parse(html);
             if (r.error != 0) {
                 update_message_bar(r.error);
             } else {
@@ -6428,7 +6429,7 @@ function suggest(type, suggest_div, text_bar, e)
         feed: feed_id,
         type: type
     }).done(function(html) {
-        var r = $.parseJSON(html);
+        var r = JSON.parse(html);
         if (r.counter > 0 && r.error == 0) {
             $('#' + suggest_div).css( {left: $('#search').offset().left }); // reposition it below the searchbar
             $('#' + suggest_div).html(r.content);
@@ -6695,7 +6696,7 @@ function load_plot(id, type, extra)
     var height = Math.round(($(window).height()) / 1.7);
     $("#" + id).attr({width:width,height:height})
     $.post(url, data).done(function(html) {
-        var x = $.parseJSON(html);
+        var x = JSON.parse(html);
         var plot_data = [ ];
         var c_idx;
         for (var i = 0; i < x.data.length; i++) {

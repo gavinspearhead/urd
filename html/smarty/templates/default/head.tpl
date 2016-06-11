@@ -112,7 +112,8 @@
 {if isset($rssurl) && $rssurl != ""}
 <link rel="alternate" type="application/rss+xml" href="{$rssurl}" title="URD"/> 
 {/if}
-<script type="text/javascript" src="{$JSDIR}/jquery-2.2.2.min.js"></script>
+<script type="text/javascript" src="{$JSDIR}/jquery-3.0.0.min.js"></script>
+<script type="text/javascript" src="{$JSDIR}/jquery-migrate-3.0.0.js"></script>
 <script type="text/javascript" src="{$JSDIR}/jquery-ui.js"></script>
 <script type="text/javascript" src="{$JSDIR}/chartnew.js"></script>
 <script type="text/javascript" src="{$JSDIR}/js.js"></script>
