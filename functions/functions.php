@@ -64,8 +64,8 @@ function unformat_size($val, $base = 1024, $default_mul='')
 {
      // default_mul is the default multiplier from SI: M=1000^2, K=1000, G=100^3 etc if no multiplier is found like in 100M ==> 100 * 1000^2
     global $LN;
-    assert(is_numeric($base));
     static $exps = array('y' => 8, 'z'=> 7, 'e'=> 6, 'p'=> 5, 't'=>4, 'g' => 3, 'm'=>2, 'k'=>1);
+    assert(is_numeric($base));
     $val = trim($val);
     if ($val == '') {
         throw new exception($LN['error_notanumber']);

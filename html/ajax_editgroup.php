@@ -121,7 +121,7 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
     } catch (exception $e) {
         throw new exception($LN['error_invalidvalue'] . ' ' . $e->getMessage());
     }
-    if ($newmaxsetsize < $newminsetsize) {
+    if ($newmaxsetsize < $newminsetsize && $newmaxsetsize != 0 && $newminsetsize != 0) {
         throw new exception($LN['error_invalidvalue']);
     }
 
@@ -162,11 +162,11 @@ function update_group_info(DatabaseConnection $db, $id, $userid)
             // if we have a proper schedule set it here
 
             set_period($uc, $db, $id, $nicetime, $period->get_interval(), $time, $period->get_id());
-            if (is_numeric($id)) {
-                update_group_state($db, $id, $newsubscribed, $newexpire, $newminsetsize, $newmaxsetsize, $newadult);
-            } else {
-                throw new exception($LN['error_invalidgroupid']);
-            }
+        }
+        if (is_numeric($id)) {
+            update_group_state($db, $id, $newsubscribed, $newexpire, $newminsetsize, $newmaxsetsize, $newadult);
+        } else {
+            throw new exception($LN['error_invalidgroupid']);
         }
     }
 }

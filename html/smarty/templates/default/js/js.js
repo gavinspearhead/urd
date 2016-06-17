@@ -1970,8 +1970,8 @@ function update_group()
             update_message_bar(x.error);
         } else {
             hide_overlayed_content();
+            load_groups();
         }
-        load_groups();
     });
 }
 
@@ -5686,6 +5686,7 @@ function update_ng_value(type, option, group_id)
     }
     if (type == 'groups') {
         url = 'ajax_groups.php';
+    console.log('aoeua');
         data = {
             cmd: cmd,
             group_id: group_id,
@@ -5853,7 +5854,7 @@ function update_ng_time(type, group_id)
         $.post(url, data).done(function(html) {
             var x = JSON.parse(html);
             if (x.error == 0) {
-                update_message_bar(x.error);
+                update_message_bar(x.message);
                 if ($('#period_' + group_id + '>option:selected').val() == 0) {
                     $('#time1_' + group_id).val('');
                     $('#time2_' + group_id).val('');

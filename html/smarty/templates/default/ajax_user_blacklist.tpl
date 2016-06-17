@@ -112,7 +112,9 @@
 	</td>
 </tr>
 {foreachelse}
-<tr><td colspan="9" class="centered highlight even bold">{$LN_error_nousersfound}</td></tr>
+{if $only_rows == 0}
+    <tr><td colspan="9" class="centered highlight even bold">{$LN_error_nousersfound}</td></tr>
+{/if}
 {/foreach}
 
 {if $only_rows == 0}

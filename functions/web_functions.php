@@ -2046,7 +2046,7 @@ function verify_expire(DatabaseConnection $db, $expire, $name)
         throw new exception($name . ': ' . $LN['error_invalidvalue'] . ': ' . $LN['ng_expire_time'] . ' ' . htmlentities($expire));
     }
     if ($expire > $max_expire || $expire < 1) {
-        throw new exception($name . ': ' . $LN['error_bogusexptime'] . ': ' . htmlentities($expire) . ' XXX ' . $max_expire);
+        throw new exception($name . ': ' . $LN['error_bogusexptime'] . ': ' . htmlentities($expire) . ' &gt ' . $max_expire);
     }
 }
 

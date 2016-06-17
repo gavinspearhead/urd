@@ -302,6 +302,8 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
 
 try {
     $cmd = get_request('cmd');
+    $uprefs = load_config($db);
+    $uc = new urdd_client($db, $uprefs['urdd_host'], $uprefs['urdd_port'],$userid);
     $message = '';
     switch($cmd) {
         case 'export_settings':
@@ -406,8 +408,9 @@ try {
                 $feed_id = get_post('feed_id');
                 $option = get_post('option');
                 $value = get_post('value');
-                if ($option == 'expire' && ($value > $max_exp || $value < 1)) {
-                    throw new exception($name . ': ' . $LN['error_bogusexptime']);
+                if ($option == 'expire') {
+                    $name = get_feed_by_id($db, $feed_id);
+                    verify_expire($db, $value, $name);
                 }
                 set_rss_value($db, $feed_id, $option, $value);
                 $message = $LN['saved'];
