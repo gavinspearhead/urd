@@ -2521,30 +2521,25 @@ function show_quick_display(options)
         if (x.error == 0) {
             $('#overlay_content2').hide();
             $('#overlay_back2').hide();
-            if (add_rows == 0) {
-                show_overlayed_content_1(x.contents, 'popup700x400');
-                // we increase the size beyond the default if div is not large enough for the contents
-                var height = Math.floor($(window).height() * 0.9);
-                var used_height = $('#td_sets').get(0).scrollHeight;
-                var max_height = $('#overlay_content').css('height').replace('px', '') - $('#popup_title').css('height').replace('px', '');
-                if ((used_height > max_height && height > max_height) || height < used_height) {
-                    var width = Math.floor($(window).width() * 0.75);
-                    $('#overlay_content').css('width', width);
-                    $('#overlay_content').css('height', height);
-                    $('#overlay_content').css('marginTop', (- Math.floor(height / 2)));
-                    $('#overlay_content').css('marginLeft', (- Math.floor(width / 2)));
-                    $('#overlay_content').css('top', '50%');
-                    $('#overlay_content').css('left', '50%');
-                    var title_height = $('#text_title').outerHeight() + 28;
-                    var inner_height = $('#overlay_content').innerHeight();
-                    $('#td_sets').css('height', inner_height - title_height);
-                    $('#td_sets').css('max-height', inner_height - title_height);
-                    set_scroll_handler('#td_sets', show_quick_display);
-                }
-                $('#td_sets').scrollTop(0);
-            } else {
-                $('#spotdetails_table tr:last').after(x.contents);
+            show_overlayed_content_1(x.contents, 'popup700x400');
+            // we increase the size beyond the default if div is not large enough for the contents
+            var height = Math.floor($(window).height() * 0.9);
+            var used_height = $('#td_sets').get(0).scrollHeight;
+            var max_height = $('#overlay_content').css('height').replace('px', '') - $('#popup_title').css('height').replace('px', '');
+            if ((used_height > max_height && height > max_height) || height < used_height) {
+                var width = Math.floor($(window).width() * 0.75);
+                $('#overlay_content').css('width', width);
+                $('#overlay_content').css('height', height);
+                $('#overlay_content').css('marginTop', (- Math.floor(height / 2)));
+                $('#overlay_content').css('marginLeft', (- Math.floor(width / 2)));
+                $('#overlay_content').css('top', '50%');
+                $('#overlay_content').css('left', '50%');
+                var title_height = $('#popup_title').outerHeight() + 28;
+                var inner_height = $('#overlay_content').innerHeight();
+                $('#td_sets').css('height', inner_height - title_height);
+                $('#td_sets').css('max-height', inner_height - title_height);
             }
+            $('#td_extsets').scrollTop(0);
 
         } else {
             update_message_bar(x.error);
@@ -4563,7 +4558,7 @@ function show_contents(file, idx)
                 'top': '50%',
                 'left': '50%'
             });
-            var title_height = $('#text_title').height() + 14;
+            var title_height = $('#popup_title').height() + 14;
             $('#inner_content').css('height', height - title_height);
         } else {
             update_message_bar(x.error);

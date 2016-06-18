@@ -24,9 +24,9 @@
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 
 
-function exception_handler(exception $exception)
+function exception_handler($exception)
 {
-    die_html('Error: ' .  $exception->getMessage());
+    die('Error: ' .  $exception->getMessage());
 }
 
 set_exception_handler('exception_handler');
@@ -34,6 +34,7 @@ set_exception_handler('exception_handler');
 
 $pathhtmli = realpath(dirname(__FILE__));
 require_once "$pathhtmli/../functions/defines.php";
+require_once "$pathhtmli/../functions/defaults.php";
 require_once "$pathhtmli/../config.php";
 
 if (isset($config['urdweb_logfile'])) {
@@ -58,7 +59,6 @@ $db = connect_db(FALSE);  // initialise the database
 $prefs = load_config($db); // load the root prefs
 
 // first include all the php files that only define stuff
-require_once "$pathhtmli/../functions/defines.php";
 
 require_once "$pathhtmli/../functions/web_functions.php";
 

@@ -250,13 +250,13 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 
     if ($type == USERSETTYPE_GROUP) {
         $groupname = group_name($db, $groupID);
-        $sql = "* FROM binaries_{$groupID} WHERE \"setID\"=:setid ORDER BY \"subject\" ASC";
+        $sql = "* FROM binaries_{$groupID} WHERE \"setID\" = :setid ORDER BY \"subject\" ASC";
         $res = $db->select_query($sql, array(':setid'=>$setID));
         if (!isset($res[0])) {
             throw new exception($LN['error_binariesnotfound']);
         }
         $bin_id = $res[0]['binaryID'];
-        $sql = "MAX(\"fromname\") AS \"poster\" FROM parts_{$groupID} WHERE \"binaryID\"=:bin_id";
+        $sql = "MAX(\"fromname\") AS \"poster\" FROM parts_{$groupID} WHERE \"binaryID\" = :bin_id";
         $res1 = $db->select_query($sql, 1, array(':bin_id'=>$bin_id));
         if (isset($res1[0]['poster'])) {
             $poster = $res1[0]['poster'];
