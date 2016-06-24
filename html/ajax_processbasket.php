@@ -220,6 +220,7 @@ function display_basket(DatabaseConnection $db, $userid)
     $show_merge = ($show_merge && count($addedsets) >= 2);
     $default_basket_type = get_pref($db, 'basket_type', $userid, basket_type::LARGE);
     $basket_type = get_request('basket_type', $default_basket_type);
+    //var_dump($basket_type, $default_basket_type);
     $_SESSION['basket_type'] = ($basket_type == basket_type::SMALL ? basket_type::SMALL : basket_type::LARGE);
     init_smarty();
     $smarty->assign(array(
@@ -345,7 +346,8 @@ try {
         clear_basket();
         break;
     case 'get':
-        return_result(array('error' => 0, 'basket_type' => (get_session('basket_type', basket_type::SMALL) == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE));
+        $default_basket_type = get_pref($db, 'basket_type', $userid, basket_type::LARGE);
+        return_result(array('error' => 0, 'basket_type' => (get_session('basket_type', $default_basket_type) == basket_type::SMALL) ? basket_type::SMALL : basket_type::LARGE));
         break;
     case 'set':
         $basket_type = get_request('basket_type', basket_type::SMALL);

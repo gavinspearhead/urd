@@ -6643,7 +6643,7 @@ window.Modernizr = (function( window, document, undefined ) {
          feature = feature.toLowerCase();
 
          if ( Modernizr[feature] !== undefined ) {
-                                              return Modernizr;
+          return Modernizr;
          }
 
          test = typeof test == 'function' ? test() : test;
