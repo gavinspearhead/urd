@@ -105,7 +105,7 @@ class db_update_mysql extends db_update_abs
         $cols = $this->create_indexlist($colList);
         if (!$this->indexExists($idxname, $tablename)) {
             if ($idxType == 'UNIQUE') {
-                $this->db->execute_query('ALTER IGNORE TABLE ' . $tablename . ' ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols );");
+                $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols );");
             } elseif ($idxType == 'PRIMARY') {
                 if ($this->indexExists('PRIMARY', $tablename)) {
                     $this->db->execute_query('ALTER TABLE ' . $tablename . " DROP PRIMARY KEY, ADD PRIMARY KEY ( $cols );");

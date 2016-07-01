@@ -920,7 +920,7 @@ function show_config(DatabaseConnection $db, $userid)
     return $smarty->fetch('ajax_settings.tpl');
 }
 
-function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$value)
+function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$value, $userid)
 {
     global $LN, $isadmin;
 
@@ -1511,7 +1511,7 @@ function set_configuration(DatabaseConnection $db, urdd_client $uc, $userid, $na
         case 'email':
         case 'textarea':
         case 'select':
-            $rv = verify_text_field($db, $uc, $name, $value);
+            $rv = verify_text_field($db, $uc, $name, $value, $userid);
             if ($rv != '') {
                 throw new exception($rv['msg']);
             }
