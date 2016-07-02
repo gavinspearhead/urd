@@ -28,7 +28,6 @@ if (!defined('ORIGINAL_PAGE')) {
 
 $pathprf = realpath(dirname(__FILE__));
 
-require_once "$pathprf/periods.php";
 require_once "$pathprf/error_codes.php";
 
 class user_levels

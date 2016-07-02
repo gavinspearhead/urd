@@ -26,7 +26,6 @@ $__auth = 'silent';
 
 $pathaet = realpath(dirname(__FILE__));
 require_once "$pathaet/../functions/ajax_includes.php";
-require_once "$pathaet/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_GROUPS, TRUE, '', $userid, TRUE);
 

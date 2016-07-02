@@ -123,6 +123,8 @@ class periods_c
     }
 }
 
+global $periods;
+
 $periods = new periods_c;
 
 $periods->add(new period_c(0, NULL, NULL,0));

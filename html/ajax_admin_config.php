@@ -28,7 +28,6 @@ $pathaac = realpath(dirname(__FILE__));
 
 require_once "$pathaac/../functions/ajax_includes.php";
 require_once "$pathaac/../functions/pref_functions.php";
-require_once "$pathaac/../functions/periods.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 

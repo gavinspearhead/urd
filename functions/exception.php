@@ -33,7 +33,7 @@ require_once "$pathexc/smarty.php";
 define ('DEFAULT_MSG', 'Our sincere apologies but a fatal error has occurred. For more information, turn on DEBUG mode.');
 
 // Default exception handler:
-function exception_handler(exception $exception)
+function exception_handler($exception)
 {
     global $__message, $LN, $config, $smarty;
     $this_script = basename($_SERVER['PHP_SELF']);

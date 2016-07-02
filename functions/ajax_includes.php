@@ -81,6 +81,7 @@ require_once "$pathhtmli/../html/fatal_error.php";
 require_once "$pathhtmli/smarty.php";
 // then execute code we always need
 require_once "$pathhtmli/fix_magic.php";
+require_once "$pathhtmli/periods.php";
 require_once "$pathhtmli/../urdd/urdd_client.php";
 
 stored_files::garbage_collect();

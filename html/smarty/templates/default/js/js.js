@@ -5359,10 +5359,14 @@ function load_prefs()
         current_tab: current_tab
     }).done(function(html) {
         var x = JSON.parse(html);
-        show_content_div_2(x.contents, 'settingsdiv');
-        update_search_bar_height();
-        update_tab_position();
-        highlight_handler();
+        if (x.error == 0) {
+            show_content_div_2(x.contents, 'settingsdiv');
+            update_search_bar_height();
+            update_tab_position();
+            highlight_handler();
+        } else {
+            update_message_bar(x.error);
+        }
     });
 }
 

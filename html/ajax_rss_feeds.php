@@ -26,7 +26,6 @@ define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $pathng = realpath(dirname(__FILE__));
 
 require_once "$pathng/../functions/ajax_includes.php";
-require_once "$pathng/../functions/periods.php";
 
 verify_access($db, urd_modules::URD_CLASS_RSS, FALSE, '', $userid, TRUE);
 
