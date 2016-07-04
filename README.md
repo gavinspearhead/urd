@@ -9,4 +9,4 @@ While some other programs offer similar services (e.g. Ninan, Sabnzbd), URD does
 
 That isn’t to say that NZB files are unsupported.  URD allows both exporting of NZB files (from a set, for example) and importing.And what is more, URD can also obtain NZBs directly from spots such as spotnet uses.
 
-See [http://urdland.com] for more information
+See [http://urdland.com](http://urdland.com) for more information
