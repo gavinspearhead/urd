@@ -2302,7 +2302,6 @@ function do_getspot_comments(DatabaseConnection& $db, action& $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     //run update headers first on spots group
-    echo "auao";
     try {
         $ug = new urdd_group($db);
         $comments_group = get_config($db, 'spots_comments_group');
