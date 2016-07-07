@@ -3013,7 +3013,6 @@ function get_category_name()
 {
     var cat_name = $('#cat_name');
     var cat_id = $('#cat_id');
-
     var idx = $('#category_id>option:selected').val();
     var url = 'ajax_editcategory.php';
     var data = {
@@ -3384,7 +3383,7 @@ function select_tab_stats(tab, type, year, period, source, subtype)
         subtype = source = year = null;
     }
 
-    var width = ($(window).width()) / 2.2;
+    var width = Math.round(($(window).width()) / 2.2);
     var data = { type: type, width: String(width) };
     if (year != null) {
         data.year = year;
@@ -3420,10 +3419,10 @@ function show_help(msg, header, th, xpos, ypos)
     $('#helpheader').html(header);
     $('#helpbody').html(msg);
     var pos = th.offset();
-    $('#helpwrapper').removeClass('hidden');
-    $('#helpwrapper').css('max-width', $(window).width() / 2);
     var h = $(window).height();
     var w = $(window).width();
+    $('#helpwrapper').removeClass('hidden');
+    $('#helpwrapper').css('max-width', Math.round(w / 2));
     var s = $('#helptext').outerHeight();
     var new_pos, ac, rc, left;
     if (!$.isNumeric(xpos) || ! $.isNumeric(ypos)) {
@@ -6293,6 +6292,8 @@ function do_command(command, message)
         control_action('updatespots');
     } else if (command == 'expirespots') {
         control_action('expirespots');
+    } else if (command == 'imdb_watchlist') {
+        control_action('imdb_watchlist');
     } else if (command == 'purgespots') {
         control_action_confirm('purgespots', message + '?');
     } else if (command == 'editcategories') {

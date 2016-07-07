@@ -39,7 +39,7 @@ function connect_db($check_db=TRUE)
     $db_config = my_realpath("$pathdbc/../") . '/dbconfig.php';
     $res = @include $db_config;
     if (!$res) {
-        throw new exception("Require file $db_config not found. Perhaps you need to reinstall URD.\n");
+        throw new exception("Require file $db_config not found. Perhaps you need to reinstall URD.");
     }
 
     if (!isset($config['db_engine'])) {
@@ -274,7 +274,7 @@ abstract class DatabaseConnection
                     echo_debug_trace($e1, DEBUG_DATABASE);
                     throw new exception("Could not execute SQL query \"$sql\" " . $e1->getMessage());
                 }
-            } elseif ((($dbtype == 'mysql') && ($errCode == 1062 || $errCode == 23000)) ||(strpos($e->getMessage(),'duplicate key value violates unique constraint') !== FALSE)) {
+            } elseif ((($dbtype == 'mysql') && ($errCode == 1062 || $errCode == 23000)) ||(strpos($e->getMessage(), 'duplicate key value violates unique constraint') !== FALSE)) {
                 // ignore duplicate key error messages, they'll happen with inserting group data :/
                 echo_debug("Database problem: ($errCode) " . $e->getMessage(), DEBUG_DATABASE);
                 return FALSE;
@@ -288,7 +288,7 @@ abstract class DatabaseConnection
         }
         try {
             $rv = $query->fetchAll();
-            if ($rv == array()) {
+            if ($rv == []) {
                 return FALSE;
             }
         } catch(exception $e) {
@@ -322,7 +322,7 @@ abstract class DatabaseConnection
     public function update_query_2($table, array $values, $where='', $input_arr=FALSE)
     {
         $col_str = '';
-        $vals = array();
+        $vals = [];
         foreach($values as $c=>$v) {
             $col_str .= "\"$c\"=?, ";
             $vals[] = $v;
@@ -348,7 +348,7 @@ abstract class DatabaseConnection
      */
         assert(is_string($table) && assert(is_bool($get_last_ID)));
 
-        if ($values == array() ) {
+        if ($values == [] ) {
             return FALSE;
         }
 
@@ -385,12 +385,12 @@ abstract class DatabaseConnection
      */
         assert(is_string($table) && assert(is_bool($get_last_ID)));
 
-        if ($values == array() ) {
+        if ($values == [] ) {
             return FALSE;
         }
 
         $col_str = $val_str = '';
-        $vals = array();
+        $vals = [];
 
         foreach ($values as $col => $val) {
             $col_str .= "\"$col\", ";
@@ -505,6 +505,14 @@ abstract class DatabaseConnection
     public function commit_transaction()
     {
         return $this->DB->commit();
+    }
+    public function ErrorNo() 
+    {
+        return $this->DB->ErrorNo();
+    }
+    public function ErrorMsg() 
+    {
+        return $this->DB->ErrorMsg();
     }
 
 

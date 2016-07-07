@@ -817,6 +817,14 @@ function add_blacklist(DatabaseConnection $db, $userid)
     return_result();
 }
 
+function update_imdb_watchlist(DatabaseConnection $db, urdd_client $uc, $userid)
+{
+    global $LN;
+    $uc->get_imdb_watchlist();
+    $uc->disconnect();
+    return_result(array('message' => $LN['success2']));
+}
+
 function delete_preview(DatabaseConnection $db, urdd_client $uc, $userid)
 {
     global $LN;
@@ -857,6 +865,9 @@ try {
     }
 
     switch ($command) {
+        case 'imdb_watchlist':
+            update_imdb_watchlist($db, $uc, $userid);
+            break;
         case 'delete_preview':
             delete_preview($db, $uc, $userid);
             break;

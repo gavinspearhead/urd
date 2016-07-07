@@ -437,7 +437,7 @@ function get_set_size($name)
     }
 
     // "Catch all": (no ( or ['s required, just 2 numbers with '/','\','of' or '-' in between)
-    if (preg_match("/([0-9]+)[\/of\- ]+([0-9]+)/", $name, $vars)) {
+    if (preg_match("/([0-9]+)[\/of\-_ ]+([0-9]+)/", $name, $vars)) {
         return $vars[2];
     }
 
@@ -1431,7 +1431,7 @@ function get_all_spots_blacklist(DatabaseConnection $db, $userid=NULL)
 {
     $sql = '* FROM spot_blacklist';
     $inputarr = array();
-    if (!is_null($userid)) {
+    if ($userid !== NULL) {
         assert (is_numeric($userid));
         $sql .= ' WHERE "userid"=:userid ';
         $inputarr[':userid'] = $userid;
@@ -1450,7 +1450,7 @@ function get_all_spots_whitelist(DatabaseConnection $db, $userid=NULL)
 {
     $sql = '* FROM spot_whitelist';
     $inputarr = array();
-    if (!is_null($userid)) {
+    if ($userid !== NULL) {
         assert (is_numeric($userid));
         $inputarr[':userid'] = $userid;
         $sql .= ' WHERE "userid" = :userid ';
@@ -1766,7 +1766,7 @@ function clear_all_spots_blacklist($db, $userid=NULL)
 {
     $where = '';
     $input_arr = array();
-    if (!is_null($userid)) {
+    if ($userid !== NULL) {
         assert(is_numeric($userid));
         $where = '"userid"=?';
         $input_arr[] = $userid;
@@ -1777,8 +1777,8 @@ function clear_all_spots_blacklist($db, $userid=NULL)
 function clear_all_spots_whitelist($db, $userid=NULL)
 {
     $where = '';
-    $input_arr = array();
-    if (!is_null($userid)) {
+    $input_arr = [];
+    if ($userid !== NULL) {
         assert(is_numeric($userid));
         $where = '"userid"=?';
         $input_arr[] = $userid;
@@ -1941,7 +1941,7 @@ function deyenc($msg)
     $yenc = get_config($db, 'yydecode_path');
     $cmd = "/bin/sh -c '$yenc -v -b -i -l -o - ' ";
     // always returns an error cos the size is bogus
-    $pipes = array();
+    $pipes = [];
     $descriptorspec = array(
         0 => array('pipe', 'r'), // where we will write to
         1 => array('pipe', 'w'), // well get the output from here
@@ -2007,9 +2007,9 @@ function get_feeds_by_category(DatabaseConnection $db, $userid, $categoryID)
     $sql = '"feedid" FROM userfeedinfo WHERE "userid"=:userid AND "category"=:cat';
     $res = $db->select_query($sql, array(':userid'=>$userid, ':cat'=>$categoryID));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
-    $groups = array();
+    $groups = [];
     foreach ($res as $row) {
         $groups[$row['feedid']] = $row['feedid'];
     }
@@ -2023,9 +2023,9 @@ function get_groups_by_category(DatabaseConnection $db, $userid, $categoryID)
     $sql = '"groupid" FROM usergroupinfo WHERE "userid"=:userid AND "category"=:cat';
     $res = $db->select_query($sql, array(':userid'=>$userid, ':cat'=>$categoryID));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
-    $groups = array();
+    $groups = [];
     foreach ($res as $row) {
         $groups[$row['groupid']] = $row['groupid'];
     }
@@ -2496,7 +2496,7 @@ function round_rating($rating, $min=0, $max=10)
 function split_args($args)
 {
     // like explode on whitespace, but also parse a string for quotes, backslashes
-    $arg_list = array();
+    $arg_list = [];
     $item = $quote = '';
     $len = strlen($args);
     for ($i = 0; $i < $len; $i++) {
@@ -2583,7 +2583,7 @@ function get_compressed_headers(DatabaseConnection $db, $server_id)
 
 function check_xrated($groupname)
 {
-    $is_xrated = array('erotic', 'sex', 'nude', 'porn', 'gay', 'xxx', 'nudism', 'seks', 'milf');
+    $is_xrated = ['erotic', 'sex', 'nude', 'porn', 'gay', 'xxx', 'nudism', 'seks', 'milf'];
     foreach ($is_xrated as $str) {
         if (stripos($groupname, $str) !== FALSE) {
             return TRUE;
@@ -2724,7 +2724,7 @@ function get_scripts(DatabaseConnection $db, $dir, $userid, $global = TRUE)
         $username = get_username($db, $userid);
         $files = glob("$dir/$username/*." . URDD_SCRIPT_EXT);
     }
-    $filenames = array();
+    $filenames = [];
     sort($files);
 
     foreach ($files as $fn) {
@@ -2781,7 +2781,7 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
     // global == NULL ==> all of the blacklist
 {
     $Qsource = $Qstatus = $Quserid = '';
-    $input_arr = array();
+    $input_arr = [];
     if ($source !== NULL) {
         $input_arr[':src'] = $source;
         $Qsource = ' AND "source"= :src';
@@ -2802,9 +2802,9 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
     $sql = '"id", "spotter_id", "source" FROM spot_blacklist WHERE 1=1 '. "$Qsource $Qstatus $Quserid";
     $res = $db->select_query($sql, $input_arr);
     if ($res === FALSE) {
-        $res = array();
+        $res = [];
     }
-    $blacklist = array();
+    $blacklist = [];
     foreach ($res as $row) {
         $blacklist[ $row['spotter_id'] ] = 0;
     }
@@ -2842,7 +2842,7 @@ function find_reference($url)
             return 'imdb:' . $matches[2];
         }
     }
-     $rv = preg_match('/http\:\/\/.*moviemeter\.nl\/film\/([0-9]+)/i', $url, $matches);
+    $rv = preg_match('/http\:\/\/.*moviemeter\.nl\/film\/([0-9]+)/i', $url, $matches);
     if ($rv) {
         if (isset($matches[1])) { 
             return 'movm:' . $matches[1];

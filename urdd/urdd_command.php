@@ -741,6 +741,13 @@ class commands_list
         return URDD_NOERROR;
     }
 
+    public static function command_get_imdb_watchlist(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
+    {
+        $response = queue_get_imdb_watchlist($db, $servers, $userid, $priority);
+
+        return URDD_NOERROR;
+    }
+
     public static function command_check_version(DatabaseConnection $db, $args, $line, &$response, conn_list &$conn_list, $sock, server_data &$servers, $userid=NULL, $priority=NULL, $internal=FALSE)
     {
         $response = queue_check_version($db, $servers, $userid, $priority);
@@ -978,6 +985,7 @@ $commands_list->register_command( new command('EXPIRE_SPOTS', 'command_expire_sp
 // FINDSERVERS has need_nntp set to false, because it is special and it doesn't use the nntp slots
 $commands_list->register_command( new command('FINDSERVERS', 'command_findservers', TRUE, TRUE, urdd_protocol::COMMAND_FINDSERVERS, FALSE, 'FINDSERVERS [EXTENDED]', 'Autoconfigure usenet servers', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('GENSETS', 'command_gensets',TRUE, TRUE, urdd_protocol::COMMAND_GENSETS, FALSE, 'GENSETS ID', 'Generate sets for group ID', '%n', FALSE, TRUE, FALSE, urd_modules::URD_CLASS_GROUPS, 'M'));
+$commands_list->register_command( new command('GET_IMDB_WATCHLIST', 'command_get_imdb_watchlist',TRUE, FALSE, urdd_protocol::COMMAND_GET_IMDB_WATCHLIST, FALSE, 'GET_IMDB_WATCHLIST', 'Get the IMDB watch list', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('GET_NFO', 'command_getnfo',TRUE, TRUE, urdd_protocol::COMMAND_GETNFO, TRUE, 'GET_NFO', 'Get the nfo files of all updates', '', TRUE, FALSE, FALSE, urd_modules::URD_CLASS_GROUPS, ''));
 $commands_list->register_command( new command('GET_BLACKLIST', 'command_getblacklist',TRUE, TRUE, urdd_protocol::COMMAND_GETBLACKLIST, FALSE, 'GET_BLACKLIST', 'Get the blacklist for spots', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_SPOTS, ''));
 $commands_list->register_command( new command('GET_WHITELIST', 'command_getwhitelist',TRUE, TRUE, urdd_protocol::COMMAND_GETWHITELIST, FALSE, 'GET_WHITELIST', 'Get the whitelist for spots', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_SPOTS, ''));

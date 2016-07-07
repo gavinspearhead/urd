@@ -67,8 +67,8 @@ class TableGroups
 
 class urdd_group 
 {
-    const MAX_INSERT_PARTS   = 200;
-    const GENSETS_STEPSIZE   = 50;
+    const MAX_INSERT_PARTS = 200;
+    const GENSETS_STEPSIZE = 50;
     
     const DIRTY = 1;
     const CLEAN = 0;
@@ -98,24 +98,24 @@ class urdd_group
         // Store these in the database and also mark the relevant binaries as dirty
 
         // Determine the affected binaries:
-        $binaries = array();
+        $binaries = [];
         foreach ($tables as $table) {
             $binaries[$table->binaryID] = 1;
         }
 
         // Save parts:
         $x = 1;
-        static $cols = array('binaryID', 'messageID', 'subject', 'fromname', 'date', 'partnumber', 'size');
-        $vals = array();
+        static $cols = ['binaryID', 'messageID', 'subject', 'fromname', 'date', 'partnumber', 'size'];
+        $vals = [];
 
         try {
             $this->db->start_transaction();
             foreach ($tables as $table) {
                 if ($x % self::MAX_INSERT_PARTS == 0) {
                     $this->db->insert_query("parts_$groupID", $cols, $vals);
-                    $vals = array();
+                    $vals = [];
                 }
-                $vals[] = array($table->binaryID, $table->messageID, $table->subject, $table->fromname, $table->date, $table->partnumber, $table->size);
+                $vals[] = [$table->binaryID, $table->messageID, $table->subject, $table->fromname, $table->date, $table->partnumber, $table->size];
                 $x++;
             }
             // Insert the remaining values (if any):
@@ -131,7 +131,7 @@ class urdd_group
         unset($table);
         // Update the binaries
         $x = (int) 1;
-        $binarieslist = array();
+        $binarieslist = [];
         try {
             foreach ($binaries as $binary => $dummy) {
 
@@ -145,7 +145,7 @@ class urdd_group
                     // Remove the last , before running the query:
                     $this->db->update_query_2("binaries_$groupID ", array('dirty' => self::DIRTY), '"binaryID" IN ( ' . 
                                 str_repeat('?,', count($binarieslist) - 1) . '? )', $binarieslist);
-                    $binarieslist = array();
+                    $binarieslist = [];
                     $x = (int) 1;
                 }
                 $binarieslist[] = $binary;
@@ -211,7 +211,7 @@ class urdd_group
             $cnt += count($res);
 
             // $l is going to be the list of the binaryID's that we have just gotten back
-            $l = array();
+            $l = [];
             foreach ($res as $row) {
                 $l[] = $row['binaryID'];
             }
@@ -227,10 +227,10 @@ class urdd_group
 
             $res = $this->db->select_query($sql, $l);
             unset($l);
-            $vals = $vals_nfo = array();
+            $vals = $vals_nfo = [];
             // For each row, export to binaries_X
             if (!is_array($res)) {
-                $res = array();
+                $res = [];
             }
             foreach ($res as $row) {
                 // Determine SetID:
@@ -256,7 +256,7 @@ class urdd_group
                 // This is it:
                 $setID = md5($dlname . $groupname . $poster . $cntFull);
 
-                $vals[] = array ($row['binaryID'], $row['subject'], $row['mindate'], $row['totalsize'], $row['parttotal'], $setID, self::SETCHANGED);
+                $vals[] = array($row['binaryID'], $row['subject'], $row['mindate'], $row['totalsize'], $row['parttotal'], $setID, self::SETCHANGED);
                 if ($is_nfo_file) {
                     $vals_nfo[] = array($setID, $groupID, $row['binaryID']);
                 }
@@ -267,10 +267,10 @@ class urdd_group
 
                     // Not INSERT DELAYED because then generating sets will fail; as the binaries aren't there yet
                     $this->db->insert_query('binaries_' . $groupID, $cols, $vals, FALSE);
-                    $vals = array();
+                    $vals = [];
                     if (count($vals_nfo) > 0) {
                         $this->db->insert_query('nfo_files', $cols_nfo, $vals_nfo, FALSE);
-                        $vals_nfo = array();
+                        $vals_nfo = [];
                     }
                 }
             }
@@ -278,11 +278,11 @@ class urdd_group
             // If batch was not complete, make sure we do the remaining ones now:
             if (count($vals) > 0) {
                 $this->db->insert_query('binaries_' . $groupID, $cols, $vals, FALSE);
-                $vals = array();
+                $vals = [];
             }
             if (count($vals_nfo) > 0) {
                 $this->db->insert_query('nfo_files', $cols_nfo, $vals_nfo, FALSE);
-                $vals_nfo = array();
+                $vals_nfo = [];
             }
 
             $t_time = microtime(TRUE);
@@ -290,7 +290,7 @@ class urdd_group
             if ($cnt > 0 && $total > 0) {
                 $ETA = floor((($total - $cnt) * ($t_time - $s_time) / $cnt) / .75);
                 $progress = floor((75 * $cnt) / $total);
-                update_queue_status($this->db, $id, NULL, $ETA, $progress, NULL, NULL);
+                update_queue_status($this->db, $id, NULL, $ETA, $progress);
             }
         }
     }
@@ -304,7 +304,7 @@ class urdd_group
         $stepsize = self::GENSETS_STEPSIZE;
         $offset = $cnt = 0;
         $sql = "count(*) AS total FROM (SELECT DISTINCT \"setID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty) AS tmp";
-        $res = $this->db->select_query($sql, array(':dirty'=>self::SETCHANGED));
+        $res = $this->db->select_query($sql, [':dirty'=>self::SETCHANGED]);
         if (!isset($res[0]['total'])) {
             write_log('No binaries found', LOG_NOTICE);
 
@@ -314,7 +314,7 @@ class urdd_group
         $s_time = microtime(TRUE);
         $sql_select_bins = "DISTINCT \"setID\" FROM binaries_$groupID WHERE \"dirty\" = :dirty";
         while (1) {
-            $res = $this->db->select_query($sql_select_bins, $stepsize, array(':dirty' => self::SETCHANGED));
+            $res = $this->db->select_query($sql_select_bins, $stepsize, [':dirty' => self::SETCHANGED]);
             if (!is_array($res) && $offset == 0) {
                 write_log("No new binaries found for group with id $groupID!", LOG_NOTICE);
 
@@ -325,17 +325,17 @@ class urdd_group
             }
             $cnt += count($res);
 
-            $l = array();
+            $l = [];
             foreach ($res as $row) {
                 $l[] = $row['setID'];
             }
             $binary_str = str_repeat('?,', count($l) -1) . '?';
-            $this->db->delete_query('setdata', "\"ID\" IN ($binary_str) AND \"groupID\" = ?", array_merge($l, array($groupID)));
+            $this->db->delete_query('setdata', "\"ID\" IN ($binary_str) AND \"groupID\" = ?", array_merge($l, [$groupID]));
             $sql = '"setID", count("binaryID") AS bins, MIN("subject") AS subject, MIN("date") AS date, SUM("bytes") AS totalsize ' .
                 "FROM \"binaries_$groupID\" WHERE \"setID\" IN ($binary_str) GROUP BY \"setID\"";
             $res = $this->db->select_query($sql, $l);
             $offset += $stepsize;
-            $set_list = array();
+            $set_list = [];
             // For each row, export to binaries_X
             foreach ($res as $arr) {
                 $size = $arr['totalsize'];
@@ -362,7 +362,7 @@ class urdd_group
             $this->db->update_query_2("binaries_$groupID", array('dirty' => self::CONSISTENT), "\"setID\" IN ($binary_str)", $l);
             $t_time = microtime(TRUE);
             $ETA = floor((($total - $cnt) * ($t_time - $s_time) / $cnt));
-            update_queue_status($this->db, $id, NULL, $ETA, floor(85 + ((15 * $cnt) / $total)), NULL, NULL);
+            update_queue_status($this->db, $id, NULL, $ETA, floor(85 + ((15 * $cnt) / $total)));
         }
     }
 
@@ -382,7 +382,7 @@ class urdd_group
             "FROM \"binaries_$groupID\" WHERE binaries_$groupID.\"setID\"=:setid GROUP BY \"setID\"";
 
         $res1 = $this->db->select_query($sql, array(':setid'=>$setID_filter));
-        $set_list = array();
+        $set_list = [];
         // To minimise memory requirements, we update setdata per set, instead of all at the end:
         if (is_array($res1)) {
             foreach ($res1 as $arr) {
@@ -393,13 +393,13 @@ class urdd_group
                 $set_array->subject = $name;  // 1st hit determines the subject, correct.
                 // If the subject name is "Some Random Movie [1/104]", then:
                 $set_array->articlesmax = get_set_size($arr['subject']);   // This is '104'
-                $set_array->binaries =  $arr['bins'];           // And this is the number of files belonging to the set. (hopefully 104).
+                $set_array->binaries = $arr['bins'];           // And this is the number of files belonging to the set. (hopefully 104).
                 $set_array->size = $arr['totalsize'];
                 $set_array->date = $arr['date'];        // 1st hit also determines the set date.
                 $set_list[] = $set_array;
                 if (count($set_list) >= $stepsize) {
                     $this->add_sets($set_list);
-                    $set_list = array();
+                    $set_list = [];
                 }
             }
             if (count($set_list) > 0) {
@@ -411,10 +411,10 @@ class urdd_group
     private function add_sets(array $sets)
     {
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
-        static $cols = array('ID', 'groupID', 'subject', 'articlesmax', 'binaries', 'date', 'size');
-        $vals = array();
+        static $cols = ['ID', 'groupID', 'subject', 'articlesmax', 'binaries', 'date', 'size'];
+        $vals = [];
         foreach ($sets as $set) {
-            $vals[] = array($set->setID, $set->groupID, $set->subject, $set->articlesmax, $set->binaries, $set->date, $set->size);
+            $vals[] = [$set->setID, $set->groupID, $set->subject, $set->articlesmax, $set->binaries, $set->date, $set->size];
         }
         if (count($vals) > 0) {
             $this->db->insert_query('setdata', $cols, $vals);
@@ -488,7 +488,7 @@ class urdd_group
             $Qcomplete = "OR (\"articlesmax\" != 0 AND floor((\"binaries\" * 100) / $GREATEST(1, \"articlesmax\")) < '$expire_percentage' AND \"date\" < '$expire_incomplete' )";
         }
         $res = $this->db->delete_query('setdata', "\"groupID\"=? AND (\"date\"<? $Qcomplete) $keep_int", array_merge(array($groupID), $input_arr));
-        update_queue_status ($this->db, $dbid, NULL, 0, 30);
+        update_queue_status($this->db, $dbid, NULL, 0, 30);
 
         $res = $this->db->delete_query('usersetinfo', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type"=?', array($type));
 
@@ -599,12 +599,12 @@ class urdd_group
             $urd_db->add_tables($db_update);
 
         } catch (exception $e) {
-            throw new exception('Cannot create table: ' . $e->getMessage() . ' - ' . $this->db->DB->ErrorMsg() . '(' . $this->db->DB->ErrorNo() . ')', DB_FAILURE);
+            throw new exception('Cannot create table: ' . $e->getMessage() . ' - ' . $this->db->ErrorMsg() . '(' . $this->db->ErrorNo() . ')', DB_FAILURE);
         }
         try {
             update_group_state($this->db, $groupid, newsgroup_status::NG_SUBSCRIBED, $expire, $minsetsize, $maxsetsize);
         } catch (exception $e) {
-            throw new exception('Subscribe failed: ' . $this->db->DB->ErrorMsg() . '(' . $this->db->DB->ErrorNo() . ')', DB_FAILURE);
+            throw new exception('Subscribe failed: ' . $this->db->ErrorMsg() . '(' . $this->db->ErrorNo() . ')', DB_FAILURE);
         }
 
         return TRUE;
@@ -631,14 +631,14 @@ class urdd_group
             $expire = get_config($this->db, 'default_expire_time');
             update_group_state($this->db, $groupid, newsgroup_status::NG_UNSUBSCRIBED, $expire, 0, 0);
         } catch (exception $e) {
-            throw new exception('Unsubscribe failed: ' . $this->db->DB->ErrorMsg() . '(' . $this->db->DB->ErrorNo() . ')', DB_FAILURE);
+            throw new exception('Unsubscribe failed: ' . $this->db->ErrorMsg() . '(' . $this->db->ErrorNo() . ')', DB_FAILURE);
         }
 
         try {
             $this->db->drop_table("binaries_$groupid");
             $this->db->drop_table("parts_$groupid");
         } catch (exception $e) {
-            throw new exception('Cannot drop table: ' . $this->db->DB->ErrorMsg() . '(' . $this->db->DB->ErrorNo() . ')', DB_FAILURE);
+            throw new exception('Cannot drop table: ' . $this->db->ErrorMsg() . '(' . $this->db->ErrorNo() . ')', DB_FAILURE);
         }
         // Also mark as 'clean' in group table, otherwise re-subscribe uses bad last_record info.
         $this->db->update_query_2('groups', array('last_record'=>0, 'last_updated'=>0, 'setcount'=>0), '"ID" = ?', array($groupid)); 

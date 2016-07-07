@@ -633,9 +633,9 @@ class Base_NNTP_Client
     protected function cmd_listgroup($newsgroup = NULL, $range = NULL)
     {
         $command = 'LISTGROUP';
-        if (!is_null($newsgroup)) {
+        if ($newsgroup !== NULL) {
             $command .= ' ' . $newsgroup;
-            if (!is_null($range)) {
+            if ($range !== NULL) {
                 $command .= ' ' . $range;
             }
         }
@@ -741,7 +741,7 @@ class Base_NNTP_Client
     protected function cmd_article($article = NULL)
     {
         $command = 'ARTICLE';
-        if (!is_null($article)) {
+        if ($article !== NULL) {
             $command .= " <$article>";
         }
 
@@ -783,7 +783,7 @@ class Base_NNTP_Client
         if (is_array($article)) {
             return $this->cmd_head_multi($article);
         }
-        if (!is_null($article)) {
+        if ($article !== NULL) {
             $command .= " <$article>";
         }
         // tell the newsserver we want the header of an article
@@ -814,7 +814,7 @@ class Base_NNTP_Client
     {
         $command = 'HEAD';
        
-        $resps = array();
+        $resps = [];
         foreach ($articles as $article) {
             // tell the newsserver we want the header of an article
             $this->_send_command_fast($command . " <$article>");
@@ -865,7 +865,7 @@ class Base_NNTP_Client
     protected function cmd_body($article = NULL)
     {
         $command = 'BODY';
-        if (!is_null($article)) {
+        if ($article !== NULL) {
             $command .= " <$article>";
         }
         // tell the newsserver we want the body of an article
@@ -901,7 +901,7 @@ class Base_NNTP_Client
     protected function cmd_stat($article = NULL)
     {
         $command = 'STAT';
-        if (!is_null($article)) {
+        if ($article !== NULL) {
             $command .= " <$article>";
         }
 
@@ -1092,7 +1092,7 @@ class Base_NNTP_Client
     {
         $date = gmdate('ymd His', $time);
 
-        if (is_null($distributions)) {
+        if ($distributions !== NULL) {
             $command = 'NEWGROUPS ' . $date . ' GMT';
         } else {
             $command = 'NEWGROUPS ' . $date . ' GMT <' . $distributions . '>';
@@ -1104,7 +1104,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOW: // 231, REF977: 'list of new newsgroups follows'
                 $data = $this->_get_text_response();
 
-                $groups = array();
+                $groups = [];
                 foreach ($data as $line) {
                     $arr = explode(' ', ltrim($line));
 
@@ -1138,10 +1138,10 @@ class Base_NNTP_Client
             $newsgroups = implode(',', $newsgroups);
         }
 
-        if (is_null($distribution)) {
+        if ($distribution === NULL) {
             $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT';
         } else {
-            if (is_array())
+            if (is_array($distribution))
                 $distribution = implode(',', $distribution);
 
             $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT <' . $distribution . '>';
@@ -1156,7 +1156,7 @@ class Base_NNTP_Client
 
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_NEW_ARTICLES_FOLLOW: // 230, RFC977: 'list of new articles by message-id follows'
-                $messages = array();
+                $messages = [];
                 foreach ($this->_get_text_response() as $line) {
                     $messages[] = $line;
                 }
@@ -1182,7 +1182,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW: // 215, RFC977: 'list of newsgroups follows'
                 $data = $this->_get_text_response();
 
-                $groups = array();
+                $groups = [];
                 $cnt = 0;
                 foreach ($data as $line) {
                     $arr = explode(' ', ltrim($line));
@@ -1230,7 +1230,7 @@ class Base_NNTP_Client
     protected function cmd_list_active($db, $wildmat = NULL)
     {
         $command = 'LIST ACTIVE';
-        if (!is_null($wildmat))
+        if ($wildmat !== NULL)
             $command .= ' ' . $wildmat;
 
         $response = $this->_send_command($command);
@@ -1255,7 +1255,7 @@ class Base_NNTP_Client
     protected function cmd_list_newsgroups($wildmat = NULL)
     {
         $command = 'LIST NEWSGROUPS';
-        if (!is_null($wildmat)) {
+        if ($wildmat !== NULL) {
             $command .= ' ' . $wildmat;
         }
 
@@ -1264,7 +1264,7 @@ class Base_NNTP_Client
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW: // 215, RFC2980: 'information follows'
                 $data = $this->_get_text_response();
-                $groups = array();
+                $groups = [];
 
                 foreach ($data as $line) {
                     if (preg_match("/^(\S+)\s+(.*)$/", ltrim($line), $matches)) {
@@ -1297,7 +1297,7 @@ class Base_NNTP_Client
     protected function cmd_over($range = NULL)
     {
         $command = 'OVER';
-        if (!is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
 
@@ -1343,7 +1343,7 @@ class Base_NNTP_Client
     protected function cmd_xover($range = NULL)
     {
         $command = 'XOVER';
-        if (!is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
 
@@ -1376,7 +1376,7 @@ class Base_NNTP_Client
     protected function cmd_xzver($range = NULL)
     {
         $command = 'XZVER';
-        if (!is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
         $response = $this->_send_command($command);
@@ -1411,7 +1411,7 @@ class Base_NNTP_Client
     protected function cmd_fast_xzver($range = NULL)
     {
         $command = 'XZVER';
-        if (!is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
         $response = $this->_send_command($command);
@@ -1438,7 +1438,7 @@ class Base_NNTP_Client
     protected function cmd_fast_xover($range = NULL)
     {
         $command = 'XOVER';
-        if (!is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
 
@@ -1512,7 +1512,7 @@ class Base_NNTP_Client
     protected function cmd_xhdr($field, $range = NULL)
     {
         $command = 'XHDR ' . $field;
-        if (!is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
 
@@ -1591,7 +1591,7 @@ class Base_NNTP_Client
     protected function cmd_xrover($range = NULL)
     {
         $command = 'XROVER';
-        if (is_null($range)) {
+        if ($range !== NULL) {
             $command .= ' ' . $range;
         }
 

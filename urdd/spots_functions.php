@@ -110,7 +110,7 @@ class urd_spots
 
     private static function parse_spot_report(array $lines)
     {
-        $header = $report = array();
+        $header = $report = [];
         foreach ($lines as $line) {
             $hdr = explode(':', $line, 2);
             if (count($hdr) < 2) {
@@ -384,8 +384,8 @@ class urd_spots
         if ($all === TRUE) {
             array_map('unlink', glob($image_dir . '*'));
         } else {
-            $ids = array();
-            $a = glob ($image_dir . '*');
+            $ids = [];
+            $a = glob($image_dir . '*');
             $cnt = count($a);
             if ($cnt > 0) {
                 $ids = array_map('pathinfo', $a, array_fill(0, $cnt, PATHINFO_FILENAME));
@@ -408,10 +408,10 @@ class urd_spots
 
     public static function parse_spot_comment(array $header, array $spot_blacklist)
     {
-        $res = array(
+        $res = [
             'rating' => 0, // default rating is 0
             'user-avatar' => ''
-        );
+        ];
         foreach ($header as $line) {
             $line = explode(':', $line, 2);
             switch (strtolower($line[0])) {
@@ -479,7 +479,7 @@ class urd_spots
     private static function parse_links($data, $spot_url)
     {
         $imdb_link = $moviemeter_link = $default_link = '';
-        $links = array();
+        $links = [];
         $rv = preg_match_all('|(https?:\/\/[-a-z0-9_:./&%!@,#$?^()+=\\;]+)|i', $data, $matches);
         if ($rv > 0) {
             foreach ($matches[1] as $link) {
@@ -523,7 +523,7 @@ class urd_spots
     {
         $link_data = self::parse_links($spot_data['body'], $spot_data['url']);
         //echo_debug("Found links: " . count( $link_data), DEBUG_SERVER);
-        $extset_data = array();
+        $extset_data = [];
         if (($link_data !== FALSE) && ($link_data != $spot_data['url'])) {
             $extset_data['link'] = $link_data;
         }
@@ -596,7 +596,7 @@ class urd_spots
             if (!is_array($res)) {
                 break;
             }
-            $delete_ids = $ids = $msg_ids = array();
+            $delete_ids = $ids = $msg_ids = [];
             foreach ($res as $row) {
                 $msg_ids[] = $row['message_id'];
                 $ids[ $row['message_id'] ] = array('id' => $row['id'], 'spotid' => $row['spotid']);
@@ -607,7 +607,7 @@ class urd_spots
             } catch (exception $e) {
                 write_log($e->getMessage(), LOG_WARNING);
             }
-            $ratings = array();
+            $ratings = [];
             foreach ($headers as $msg_id => $header) {
                 if (!isset($ids[ $msg_id ]) || !is_array($header)) {
                     echo_debug('Message not found' . $msg_id, DEBUG_SERVER);
@@ -714,7 +714,7 @@ class urd_spots
             if (!is_array($res)) {
                 break;
             }
-            $delete_ids = $ids = $msg_ids = array();
+            $delete_ids = $ids = $msg_ids = [];
             foreach ($res as $row) {
                 $msg_ids[] = $row['message_id'];
                 $ids[ $row['message_id'] ] = array('id'=>$row['id'], 'spotid'=>$row['spotid']);
@@ -725,7 +725,7 @@ class urd_spots
             } catch (exception $e) {
                 write_log($e->getMessage(), LOG_WARNING);
             }
-            $ratings = array();
+            $ratings = [];
             foreach ($headers as $msg_id => $header) {
                 $id = $ids[ $msg_id ]['id'];
                 try {
@@ -823,8 +823,7 @@ class urd_spots
             if (!is_array($res)) {
                 break;
             }
-            $ids = array();
-            $msg_ids = array();
+            $ids = $msg_ids = [];
             foreach ($res as $row) {
                 $msg_ids[] = $row['message_id'];
                 $ids[] = $row['id'];

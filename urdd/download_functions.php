@@ -47,7 +47,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
     $cmd = "/bin/sh -c '$yydecode $yydecode_pars ' ";
     $size = $p_cnt = $a_cnt = $e_cnt = $groupid = (int) 0;
 
-    $mime_settings = array('include_bodies' => TRUE, 'decode_bodies' => TRUE, 'decode_headers' => TRUE);
+    $mime_settings = ['include_bodies' => TRUE, 'decode_bodies' => TRUE, 'decode_headers' => TRUE];
     $descriptorspec = array (
             0 => array('pipe', 'r'), // where we will write to
             1 => array('file', '/dev/null', 'w'), // we don't want the output
@@ -178,7 +178,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
                 // Set connected to false so start_download function knows it shouldn't continue
                 $connected = FALSE;
                 // And return because we don't want to continue trying to download stuff from this batch:
-                return array($size, $a_cnt, $e_cnt, $p_cnt);
+                return [$size, $a_cnt, $e_cnt, $p_cnt];
             } elseif ($e->getCode() == ERR_NNTP_AUTH_FAILED) {
                 throw $e;
             } elseif ($e->getCode() == ENCRYPTED_RAR) {
@@ -200,7 +200,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
     }
 
     // Should update download status here, errors/completed/todo/in progress XXX XXX XXX ?????
-    return array($size, $a_cnt, $e_cnt, $p_cnt);
+    return [$size, $a_cnt, $e_cnt, $p_cnt];
 }
 
 
@@ -397,8 +397,7 @@ function start_download(DatabaseConnection $db, action $item)
 
 function update_dlinfo(DatabaseConnection $db, $dlid, $bytes)
 {
-    assert(is_numeric($dlid));
-    assert(is_numeric($bytes));
+    assert(is_numeric($dlid) &&is_numeric($bytes));
     $sql = 'UPDATE downloadinfo SET "done_size" = "done_size" + :bytes WHERE "ID" = :dlid';
     $db->execute_query($sql, array(':dlid'=>$dlid, ':bytes'=>$bytes));
 }
@@ -462,7 +461,7 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
                 }
             }
         } elseif ($status == DOWNLOAD_CANCELLED) {
-            update_dlinfo_status ($db, DOWNLOAD_CANCELLED, $dlid);
+            update_dlinfo_status($db, DOWNLOAD_CANCELLED, $dlid);
             cleanup_download_articles($db, $dlid);
         } else {
             echo_debug("Unhandled status of download = $status", DEBUG_SERVER);
@@ -470,7 +469,7 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
     } elseif ($servers->has_equal_queue($item) && $status == DOWNLOAD_QUEUED) {
         // this is the last running but there are others still, we need to set the download status then back to queued
         $dlid = $item->get_args();
-        update_dlinfo_status ($db, $status, $dlid);
+        update_dlinfo_status($db, $status, $dlid);
     }
 }
 

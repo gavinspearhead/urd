@@ -425,7 +425,7 @@ public function read($size)
 public function write($data, $blocksize = NULL)
 {
     $this->check_connected();
-    if (is_null($blocksize)) {
+    if ($blocksize === NULL) {
         $blocksize = 1024;
     }
 

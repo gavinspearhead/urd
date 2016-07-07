@@ -148,6 +148,7 @@ function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
         urdd_protocol::COMMAND_GETNFO              => 'do_getnfo',
         urdd_protocol::COMMAND_GETSETINFO          => 'do_getsetinfo',
         urdd_protocol::COMMAND_GETSPOTS            => 'do_getspots',
+        urdd_protocol::COMMAND_GET_IMDB_WATCHLIST  => 'do_get_imdb_watchlist',
         urdd_protocol::COMMAND_GETSPOT_COMMENTS    => 'do_getspot_comments',
         urdd_protocol::COMMAND_GETSPOT_IMAGES      => 'do_getspot_images',
         urdd_protocol::COMMAND_GETSPOT_REPORTS     => 'do_getspot_reports',

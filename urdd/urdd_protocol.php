@@ -53,6 +53,7 @@ class urdd_protocol
     const COMMAND_GETBLACKLIST = 68;
     const COMMAND_GETWHITELIST = 71;
     const COMMAND_GETNFO = 62;
+    const COMMAND_GET_IMDB_WATCHLIST = 74;
     const COMMAND_GETSETINFO = 42;
     const COMMAND_GETSPOTS = 63;
     const COMMAND_GETSPOT_REPORTS = 69;
@@ -94,7 +95,7 @@ class urdd_protocol
     const COMMAND_UPDATE = 28;
     const COMMAND_UPDATE_RSS = 49;
     const COMMAND_USER = 36;
-    const COMMAND_WHOAMI = 74; // always keep this the highest number !!
+    const COMMAND_WHOAMI = 75; // always keep this the highest number !!
 
     private static $responses = array (
         // single line responses

@@ -57,7 +57,7 @@ class urd_extsetinfo
 
         // Generic fields:
         $fields = array('name');
-        $addfields = array();
+        $addfields = [];
 
         // What fields do we show? Depends on the type of file. What files are there? Do we put it in the db or hardcode it?
         // Questions, questions! Let's start by hardcoding it for now.
@@ -99,7 +99,7 @@ class urd_extsetinfo
         $ebookformat = array('', 'epub', 'mobi', 'txt', 'lit', 'pdf', 'html', 'audio', 'other');
         $os = array('', 'winall', 'windows', 'windows 64bit', 'windows mobile', 'linux', 'macos', 'bsd', 'symbian', 'iphone', 'android', 'os-independent', 'xbox', 'playstation', 'wii', 'other');
 
-        $display = array();
+        $display = [];
         foreach ($fields as $field) {
             $displaytype = $edittype = $editvalues = '';
 
@@ -212,7 +212,7 @@ class urd_extsetinfo
 
     private static function guess_set_type(DatabaseConnection $db, $setid, $groupname, $originalsetname, $origin_type)
     {
-        $result = array();
+        $result = [];
         $result[self::SETTYPE_MOVIE] = $result[self::SETTYPE_TVSERIES] = $result[self::SETTYPE_ALBUM] = $result[self::SETTYPE_IMAGE] = $result[self::SETTYPE_SOFTWARE] = 0;
         $result[self::SETTYPE_EBOOK] = $result[self::SETTYPE_GAME] = $result[self::SETTYPE_DOCUMENTARY] = $result[self::SETTYPE_TVSHOW] = $result[self::SETTYPE_UNKNOWN] = 0;
 
@@ -259,7 +259,7 @@ class urd_extsetinfo
 
         $bintype = '';
         if ($origin_type != USERSETTYPE_SPOT) {
-            $type = array();
+            $type = [];
             $type[self::SETTYPE_MOVIE] = array('movie', 'hdtv', 'xvid', 'divx', 'multimedia', 'dvd', 'vcd');
             $type[self::SETTYPE_TVSERIES] = array('movie', 'hdtv', 'xvid', 'divx', 'multimedia', 'dvd', 'vcd', 'tvseries', '.tv');
             $type[self::SETTYPE_ALBUM] = array('mp3', 'album', 'music', 'sounds', 'metal', 'rock', 'trance', 'dance', 'jazz');
@@ -282,8 +282,7 @@ class urd_extsetinfo
         // Check the setname for tell-tale signs:
         // And store matches so we can use them for filling in data later on:
         unset($type);
-        $type = array();
-        $match = array();
+        $type = $match = [];
         $type[self::SETTYPE_MOVIE] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p',  '2160p', '4320p', 'bluray', 'blu-ray', 'bd5', 'bd9', 'x264', 'dts', 'ac3', 'vhs', 'mp4');
         $type[self::SETTYPE_TVSERIES] = array('.avi', '.mkv', '.mpg', '.mov', 'xvid', 'divx', '720p', '1080i', '1080p', 'hdtv', 'season', 'dts', 'bd5', 'bd9', 'ac3', 'mp4');
         $type[self::SETTYPE_ALBUM] = array('.mp3', '.m3u', '.flac', '.wma', '.ogg', '.ape', '.wav', '.aac');
@@ -329,7 +328,7 @@ class urd_extsetinfo
             $result[self::SETTYPE_TVSHOW] += 8;
 
             // Trim leading 0's:
-            $cleanprmatch[] = array();
+            $cleanprmatch[] = [];
             foreach ($prmatch as $key => $mitem) {
                 $cleanprmatch[$key] = ((int) $mitem < 10 ? '0' : '') . (int) $mitem;
             }
@@ -338,7 +337,7 @@ class urd_extsetinfo
             $result[self::SETTYPE_TVSHOW] += 8;
 
             // Trim leading 0's:
-            $cleanprmatch[] = array();
+            $cleanprmatch[] = [];
             foreach ($prmatch as $key => $mitem) {
                 $cleanprmatch[$key] = ((int) $mitem < 10 ? '0' : '') . (int) $mitem;
             }
@@ -351,7 +350,7 @@ class urd_extsetinfo
         arsort($result);
         list($key, $val) = each($result);
 
-        return array($key, $val, $match);
+        return [$key, $val, $match];
     }
 
     public static function guess_more_data($val, $key, $newsetname, $groupname, array $match, array &$save, $origin_type)
@@ -644,7 +643,7 @@ class urd_extsetinfo
         if (!urd_user_rights::is_seteditor($db, $userid)) {
             die_html($LN['error_accessdenied']);
         }
-        $save = array();
+        $save = [];
 
         // Get info (original set name and group name) for this setID:
         list($originalsetname, $groupname) = get_set_info($db, $setid, $origin_type);
@@ -673,7 +672,7 @@ class urd_extsetinfo
         // setID is irrelevant, we do everything in the basket.
         // origin_type is irrelevant, depends on the thing in the basket.
 
-        $save = array();
+        $save = [];
 
         // We should have stuff in the basket, just a check:
         if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {

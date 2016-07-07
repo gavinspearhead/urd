@@ -82,6 +82,7 @@ function get_default_prefs()
     $prefArray['saved_spot_searches']   = serialize(array());  // not used in prefs !!!
     $prefArray['basket_type']           = basket_type::LARGE;
     $prefArray['spot_view']             = spot_view::CLASSIC;
+    $prefArray['imdb_userid']            = '';
     return $prefArray;
 }
 

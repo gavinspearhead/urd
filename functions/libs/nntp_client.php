@@ -664,7 +664,7 @@ class NNTP_Client extends Base_NNTP_Client
         // Use field names from overview format as keys?
         if ($_names) {
             // Already cached?
-            if (is_null($this->_overviewFormatCache)) {
+            if ($this->_overviewFormatCache === NULL) {
                 // Fetch overview format
                 $format = $this->get_overview_format($_forceNames, TRUE);
 
@@ -699,7 +699,7 @@ class NNTP_Client extends Base_NNTP_Client
             }
         }
 
-        if (is_null ($range) ||
+        if (($range !== NULL) ||
             is_int($range) ||
             (is_string($range) && ctype_digit($range)) ||
             (is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>')) {
@@ -786,7 +786,7 @@ class NNTP_Client extends Base_NNTP_Client
     public function get_header_field($field, $range = NULL)
     {
         $fields = $this->cmd_xhdr($field, $range);
-        if (is_null($range) ||
+        if (($range === NULL) ||
             is_int($range) ||
             (is_string($range) && ctype_digit($range))||
             (is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>')) {
@@ -879,7 +879,7 @@ class NNTP_Client extends Base_NNTP_Client
             }
         }
 
-        if (is_null($range) ||
+        if (($range === NULL) ||
             is_int($range) ||
             (is_string($range) && ctype_digit($range))||
             (is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>')) {

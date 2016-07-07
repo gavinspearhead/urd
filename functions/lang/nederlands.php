@@ -610,6 +610,9 @@ $LN['pref_use_auto_download_nzb_msg']       = 'Download automatisch als NZB best
 
 $LN['pref_subs_lang_msg']            = 'Talen waarvoor naar ondertitels zal worden gezocht (twee letter codes komma gescheiden, leeg om niet te gebruiken)';
 $LN['pref_subs_lang']                = 'Ondertitel talen';
+$LN['pref_imdb_userid']             = 'IMDB user ID';
+$LN['imdb_watchlist']               = 'Vernieuw IMDB Watchlist';
+$LN['pref_imdb_userid_msg']         = 'If set adds entries from the watch list to the search terms';
 $LN['config_replacement_str']        = 'Download naam vervangingstekst';
 $LN['config_replacement_str_msg']    = 'Tekst waardoor ongeschikte karakters in download naam worden vervangen';
 $LN['pref_spot_view']     = 'Spotsoverzicht stijl';

@@ -214,6 +214,8 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
         case 'poster_email':
         case 'subs_lang':
             return verify_text_opt($value, FALSE, NULL);
+        case 'imdb_userid':
+            return verify_text_opt($value, FALSE, 'ur\d+');
         case 'cancel_crypted_rars':
             return verify_array($value, array_keys(get_encrar_array()));
         case 'search_type':
@@ -653,6 +655,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
         new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_format_dl_dir'], 'format_dl_dir',$LN['pref_format_dl_dir_msg'], $format_dl_dir_msg, $prefArray['format_dl_dir']),
         new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_subs_lang'], 'subs_lang',$LN['pref_subs_lang_msg'], $subs_lang_msg, $prefArray['subs_lang']),
         new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_cancel_crypted_rars'], 'cancel_crypted_rars', $LN['pref_cancel_crypted_rars_msg'], $cancel_crypted_rars_msg, $encrar_array, $prefArray['cancel_crypted_rars']),
+        new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_imdb_userid'], 'imdb_userid',$LN['pref_imdb_userid_msg'], $imdb_userid_msg, $prefArray['imdb_userid']),
         new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_type'], 'search_type', $LN['pref_search_type_msg'], $search_type_msg, $search_type_array, $prefArray['search_type']),
         new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_terms'], 'search_terms', $LN['pref_search_terms_msg'], '', $search_terms, 10, 40),
         new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms', $LN['pref_blocked_terms_msg'], '', $blocked_terms, 10 , 40)

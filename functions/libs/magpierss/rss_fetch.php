@@ -73,12 +73,12 @@ class fetch_rss
     public static function delete_cache_entry($url, $cache_dir)
     {
         assert(is_string($url) && is_string($cache_dir));
-        $cache = new RSSCache($cache_dir, self::MAGPIE_CACHE_AGE );
+        $cache = new RSSCache($cache_dir, self::MAGPIE_CACHE_AGE);
         $cache_key = $url . self::MAGPIE_OUTPUT_ENCODING;
         $cache->remove($cache_key);
     }
 
-    public static function do_fetch_rss($url, $cache_dir, $username='', $password='')
+    public static function do_fetch_rss($url, $cache_dir, $username='', $password='', $cache_age=self::MAGPIE_CACHE_AGE)
     {
         assert(is_string($url) && is_string($cache_dir));
 
@@ -95,9 +95,8 @@ class fetch_rss
         $request_headers = array(); // HTTP headers to send with fetch
         $rss             = 0;       // parsed RSS object
         $errormsg        = 0;       // errors, if any
-
         try {
-            $cache = new RSSCache($cache_dir, self::MAGPIE_CACHE_AGE );
+            $cache = new RSSCache($cache_dir, $cache_age);
             $cache_key = $url . self::MAGPIE_OUTPUT_ENCODING;
             $cache_status = $cache->check_cache($cache_key);
         } catch (exception $e) {
@@ -108,8 +107,8 @@ class fetch_rss
 
         // if object cached, and cache is fresh, return cached obj
         if ($cache_status == 'HIT') {
-            $rss = $cache->get( $cache_key );
-            if ( isset($rss) and $rss ) {
+            $rss = $cache->get($cache_key);
+            if (isset($rss) && $rss) {
                 // should be cache age
                 $rss->from_cache = 1;
 
@@ -122,7 +121,7 @@ class fetch_rss
         // setup headers
         if ($cache_status == 'STALE') {
             $rss = $cache->get($cache_key);
-            if (isset($rss) &&  $rss && isset($rss->eta) && isset($rss->last_modified) && $rss->etag && $rss->last_modified ) {
+            if (isset($rss) && $rss && isset($rss->eta) && isset($rss->last_modified) && $rss->etag && $rss->last_modified) {
                 $request_headers['If-None-Match'] = $rss->etag;
                 $request_headers['If-Last-Modified'] = $rss->last_modified;
             }
@@ -130,7 +129,7 @@ class fetch_rss
 
         $resp = new http_doc();
 
-        $resp->fetch_remote_file($url, $request_headers, $username , $password);
+        $resp->fetch_remote_file($url, $request_headers, $username, $password);
 
         if ($resp->get_status() == '304') {
             // we have the most current copy
@@ -147,7 +146,7 @@ class fetch_rss
             if ($rss) {
                 // add object to cache
                 try {
-                    $cache->set( $cache_key, $rss );
+                    $cache->set( $cache_key, $rss);
                 } catch (exception $e) {
                     write_log('Setting cached item failed: '. $e->getmessage());
                 }
@@ -157,16 +156,16 @@ class fetch_rss
         } else {
             $errormsg = "Failed to fetch $url ";
             if ( $resp->get_status() == '-100' )
-                $errormsg .= '(Request timed out after ' . self::MAGPIE_FETCH_TIME_OUT . ' seconds)';
-            elseif ( $resp->get_error() )
+                $errormsg .= '(Request timed out after '. self::MAGPIE_FETCH_TIME_OUT . ' seconds)';
+            elseif ($resp->get_error())
                 $errormsg .= "(HTTP Error: $http_error)";
             else
-                $errormsg .= '(HTTP Response: ' . $resp->get_response_code() .')';
+                $errormsg .= '(HTTP Response: '. $resp->get_response_code(). ')';
         }
 
         // attempt to return cached object
         if ($rss) {
-            write_log('Returning STALE object for ' . $url, LOG_NOTICE);
+            write_log('Returning STALE object for '. $url, LOG_NOTICE);
 
             return $rss;
         }
@@ -176,7 +175,7 @@ class fetch_rss
 
         return FALSE;// not needed really
 
-    } // end fetch_rss()
+        } // end fetch_rss()
 }
 
 class http_doc
@@ -232,7 +231,7 @@ class http_doc
         if ($output === FALSE) {
             $c_err = curl_error($ch);
             curl_close ($ch);
-            throw new exception('RSS feed could not be retrieved: ' . $c_err  , ERR_MAGPIE_FAILED);
+            throw new exception('RSS feed could not be retrieved: '. $c_err, ERR_MAGPIE_FAILED);
         }
 
         $this->status = curl_getinfo ($ch, CURLINFO_HTTP_CODE);
@@ -278,7 +277,7 @@ class http_doc
         } else {// else construct error message
             $errormsg = 'Failed to parse RSS file.';
             if ($rss)
-                $errormsg .= ' (' . $rss->ERROR . ')';
+                $errormsg .= ' ('. $rss->ERROR. ')';
 
             throw new exception($errormsg, ERR_MAGPIE_FAILED);
 

@@ -2448,3 +2448,47 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
 
     return NO_ERROR;
 }
+
+
+function do_get_imdb_watchlist($db, action $item)
+{
+    $userid = $item->get_userid();
+    $imdb_user = get_pref($db, 'imdb_userid', $userid);
+    if ($imdb_user == '' || preg_match('/ur\d+/', $imdb_user) != 1) {
+        $status = QUEUE_FINISHED;
+        update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No valid IMDB user set');
+
+        return NO_ERROR;
+
+    }
+
+    $url = "http://rss.imdb.com/user/$imdb_user/watchlist?view=compact&sort=created:asc";
+    $cache_dir = get_magpie_cache_dir($db);
+    $cnt1 = $cnt2 = 0;
+    $search_terms = @unserialize(get_pref($db, 'search_terms', $userid));
+    try {
+        $rss = fetch_rss::do_fetch_rss($url, $cache_dir, '', '', 1);
+        foreach ($rss->items as $elem) {
+            if (isset($elem['title'])) {
+                $title = html_entity_decode($elem['title']);
+                $title = preg_replace('/\(\d\d\d\d( (TV Movie)|(Mini Series))?\)/i', '', $title);
+                $title = trim(preg_replace('/[^a-zA-Z0-9 ]/', ' ', $title));
+                $cnt1 ++;
+                if (!in_array($title, $search_terms)) {
+                    $search_terms[] = $title;
+                    $cnt2 ++;
+                }
+            }
+        }
+        set_pref($db, 'search_terms', @serialize($search_terms), $userid);
+        write_log("Read $cnt1 entries on the watchlist. Added $cnt2 entries to the search terms.", LOG_INFO);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Read $cnt1 entries on the watchlist. Added $cnt2 entries to the search terms.");
+        return NO_ERROR;
+    } catch (exception $e) {
+        write_log($e->getMessage(), LOG_INFO);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $e->getMessage());
+        return HTTP_CONNECT_ERROR;
+    }
+
+}
+

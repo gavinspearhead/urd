@@ -158,7 +158,7 @@ function move_file_to_nzb(DatabaseConnection $db, $dlid, $filename, $dlpath, $ba
     if ($rv === FALSE) {
         write_log("Could not move directory $to", LOG_ERR);
     } else {
-        if (!is_null($dlid)) {
+        if ($dlid !== NULL) {
             set_download_destination($db, $dlid, $to);
         }
     }

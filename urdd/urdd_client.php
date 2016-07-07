@@ -498,6 +498,12 @@ class urdd_client
 
         return ($code == 200) ? TRUE : FALSE;
     }
+    public function get_imdb_watchlist()
+    {
+        list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_GET_IMDB_WATCHLIST));
+
+        return ($code == 201) ? TRUE : FALSE;
+    }
     public function check_version()
     {
         list($code, $resp, $data) = $this->send_multi_command(get_command(urdd_protocol::COMMAND_CHECK_VERSION));

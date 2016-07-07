@@ -663,6 +663,9 @@ $LN['config_urdd_gid_msg']  = 'L&#039;ID de groupe qu&#039;utilisera urdd s&#039
 
 $LN['pref_subs_lang_msg']     = 'Langues pour lesquels les sous-titres seront recherch&eacute;s (codes sur deux lettres, separ&eacute;s par des virgules, laisser vide pour d&eacute;sactiver)';
 $LN['pref_subs_lang']         = 'Langues de sous-titres';
+$LN['pref_imdb_userid']             = 'IMDB utilisateur';
+$LN['imdb_watchlist']               = 'Mettre &agrave; jour la liste d\'IMDB';
+$LN['pref_imdb_userid_msg']         = 'If set adds entries from the watch list to the search terms';
 $LN['config_nntp_maxdlthreads'] = 'Max threads par t&eacute;l&eacute;chargement';
 $LN['config_nntp_maxdlthreads_msg'] = 'Nombre maximum de threads par t&eacute;l&eacute;chargement (0 pour pas de limite)';
 

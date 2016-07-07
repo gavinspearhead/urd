@@ -83,7 +83,7 @@ class spotparser
             'key-id' => '',
             'spotid'=>'',
             'url' => '',
-            'subcatlist' => array(),
+            'subcatlist' => [],
             'subcata' => '',
             'subcatb' => '',
             'subcatc' => '',
@@ -106,7 +106,7 @@ class spotparser
         if (substr($url, 0, 7) == 'http://' || substr($url, 0, 8) == 'https://') {
             $tpl_spot['url'] = $url;
         }
-        $tpl_spot['description'] = (string) $xml->Description;
+        $tpl_spot['description'] = trim((string) $xml->Description);
         $tpl_spot['size'] = (string) $xml->Size;
         $tpl_spot['poster'] = trim((string) $xml->Poster);
         $tpl_spot['tag'] = trim((string) $xml->Tag);
@@ -115,20 +115,20 @@ class spotparser
         # Images behandelen we op een speciale manier, in de oude spots
         # was er gewoon een URL, in de nieuwe een hoogte/lengte/messageid
         if (empty($xml->Image->Segment)) {
-            $img = (string) $xml->Image;
+            $img = trim((string) $xml->Image);
             $tpl_spot['image'] = '';
             if (substr($img, 0, 7) == 'http://' || substr($img, 0, 8) == 'https://' || substr($img, 0, 10) == 'data:image') {
                 $tpl_spot['image'] = $img;
             }
         } else {
-            $tpl_spot['image'] = Array(
+            $tpl_spot['image'] = array(
                'height' => (string) $xml->Image['Height'],
                'width'  => (string) $xml->Image['Width']
             );
             foreach ($xml->xpath('/Spotnet/Posting/Image/Segment') as $seg) {
             # Make sure the messageid's are valid so we do not throw an NNTP error
                 if (!self::valid_message_id((string) $seg)) {
-                    $tpl_spot['image']['segment'] = array();
+                    $tpl_spot['image']['segment'] = [];
                     break;
                 } else {
                     $tpl_spot['image']['segment'][] = (string) $seg;
@@ -149,7 +149,7 @@ class spotparser
 
         # Bij oude-style (?) spots wordt er al een gesplitste array van subcategorieen aangeleverd
         # die uiteraard niet compatible is met de nieuwe style van subcategorieen
-        $subcatList = array();
+        $subcatList = [];
 
         # Category subelementen plakken we gewoon aan elkaar, category zelf kennen we toe
         if (!empty($xml->SubCat)) {

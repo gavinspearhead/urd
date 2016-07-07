@@ -455,6 +455,14 @@ function queue_parse_nzb(DatabaseConnection $db, server_data &$servers, array $a
     return $response;
 }
 
+function queue_get_imdb_watchlist(DatabaseConnection $db, server_data &$servers, $userid, $priority)
+{
+    assert(is_numeric($priority) && is_numeric($userid));
+    echo_debug_function(DEBUG_SERVER, __FUNCTION__);
+
+    return queue_generic($db, $servers, $userid, urdd_protocol::COMMAND_GET_IMDB_WATCHLIST, '', $priority);
+}
+
 function queue_check_version(DatabaseConnection $db, server_data &$servers, $userid, $priority)
 {
     assert(is_numeric($priority) && is_numeric($userid));

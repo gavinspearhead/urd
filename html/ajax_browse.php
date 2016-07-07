@@ -31,13 +31,13 @@ $pathidx = realpath(dirname(__FILE__));
 require_once "$pathidx/../functions/ajax_includes.php";
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
-    $_SESSION['setdata'] = array();
+    $_SESSION['setdata'] = [];
 }
 verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid);
 
 class group_viewer
 {
-    private static $sort_orders = array (
+    private static $sort_orders = [
         '',
         'complete',
         'subject',
@@ -45,7 +45,7 @@ class group_viewer
         'size',
         'better_subject',
         'rating'
-    );
+    ];
 
     private $Qsearch = '';
     private $Qsize = '';
@@ -87,7 +87,7 @@ class group_viewer
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
-        $this->input_arr = array();
+        $this->input_arr = [];
         $this->Qnewgroup1 = 'usergroupinfo."groupid" = setdata."groupID"';
         $this->Qnewgroup3 = 'groups."ID" = setdata."groupID"';
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
@@ -122,7 +122,7 @@ class group_viewer
     private function get_sets($interesting_only)
     {
         $sql = ' setdata."ID", "subject", "articlesmax", setdata."groupID", setdata."date", setdata."size", ' .
-            "(100 * \"binaries\" / {$this->GREATEST}(1, \"articlesmax\")) AS \"complete\", ({$this->now} - \"date\") AS \"age\",  " .
+            "(CASE WHEN articlesmax = 0 THEN -1 WHEN ((100 * \"binaries\" / {$this->GREATEST}(1, \"articlesmax\"))) >120 THEN -1 ELSE ((100 * \"binaries\" / {$this->GREATEST}(1, \"articlesmax\"))) END) AS \"complete\", ({$this->now} - \"date\") AS \"age\",  " .
             '(CASE WHEN usersetinfo."statusint" IS NULL OR usersetinfo."statusint" <> 1 THEN 0 ELSE 1 END) AS interesting,' .
             'usersetinfo."statusnzb" AS "nzbcreated", usersetinfo."statusread" AS "alreadyread", extsetdata2."value" AS "bettername", extsetdata1."value" AS "imdblink", ' .
             '(CASE WHEN extsetdata3."value" IS NULL THEN \'0\' ELSE extsetdata3."value" END) AS "rating", ' .
@@ -168,12 +168,12 @@ class group_viewer
         assert(is_numeric($perpage) && is_numeric($offset));
         global $LN;
 
-        $setres = array();
+        $setres = [];
         if ($offset <= $this->int_sets) {
             $sql1 = $this->get_sets(TRUE);
             $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if (!is_array($setres)) {
-                $setres = array();
+                $setres = [];
             }
         }
         $setres_count = count($setres);
@@ -182,22 +182,22 @@ class group_viewer
             $sql2 = $this->get_sets(FALSE);
             $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if (!is_array($setres2)) {
-                $setres2 = array();
+                $setres2 = [];
             }
             $setres = array_merge($setres, $setres2);
         }
 
         // Get the set data
-        $allsets = array();
+        $allsets = [];
         // If no sets exist, create empty array:
         if (!is_array($setres)) {
-            $setres = array();
+            $setres = [];
         }
         $group_lastupdate = get_group_last_updated($this->db, $this->groupID, $this->userID);
         $number = $offset;
         foreach ($setres as $arr) {
             // Show bar around interesting when applicable:
-            $thisset = array();
+            $thisset = [];
             $thisset['interesting'] = $arr['interesting'];
             $thisset['setid'] = $arr['ID'];
             $thisset['added'] = (is_array($_SESSION['setdata']) && in_setdata($arr['ID'], 'group', $_SESSION['setdata'])) ? 1 : 0;
@@ -313,13 +313,13 @@ class group_viewer
 
     public function set_qgroup($groupID)
     {
-        if (isset($groupID[9]) && substr_compare($groupID, 'category_',0, 9) == 0) {
+        if (isset($groupID[9]) && substr_compare($groupID, 'category_', 0, 9) == 0) {
             $this->categoryID = substr($groupID, 9);
             if (!is_numeric($this->categoryID)) {
                 $categoryID = 0;
             }
             $this->groupID = 0;
-        } elseif (isset($groupID[6]) && substr_compare($groupID, 'group_',0, 6) == 0) {
+        } elseif (isset($groupID[6]) && substr_compare($groupID, 'group_', 0, 6) == 0) {
             $this->groupID = substr($groupID, 6);
             if (!is_numeric($this->groupID)) {
                 $this->groupID = 0;
@@ -533,7 +533,7 @@ try {
     $rssurl = $sets_viewer->get_rss_url($perpage);
 
     init_smarty();
-    $smarty->assign(array(
+    $smarty->assign([
         'rssurl'=>		        $rssurl,
         'sort'=>                $sets_viewer->get_sort(),
         'killflag'=>		    $sets_viewer->get_killflag(),
@@ -542,18 +542,18 @@ try {
         'allsets'=>		        $allsets,
         'USERSETTYPE_GROUP'=>  	USERSETTYPE_GROUP,
         'USERSETTYPE_RSS'=>   	USERSETTYPE_RSS,
-        'only_rows'=>           $only_rows));
+        'only_rows'=>           $only_rows]);
     
     if (!$only_rows) {
-        $smarty->assign(array(
+        $smarty->assign([
             'pages'=>		    $pages,
             'lastpage'=>		$totalpages,
-            'currentpage'=>	    $activepage));
+            'currentpage'=>	    $activepage]);
     }
 
     $content = $smarty->fetch('ajax_browse.tpl');
 
-    return_result(array(
+    return_result([
         'content' => $content,
         'minsetsize' => $minsetsize,
         'maxsetsize' => $maxsetsize,
@@ -565,8 +565,8 @@ try {
         'mincomplete' => $mincomplete,
         'maxcomplete' => $maxcomplete,
         'last_line' => $last_line
-    ));
+    ]);
 
 } catch (exception $e) {
-    return_result(array('error' => $e->getMessage()));
+    return_result(['error' => $e->getMessage()]);
 }

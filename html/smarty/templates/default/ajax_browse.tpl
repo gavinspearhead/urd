@@ -138,7 +138,7 @@ $(document).ready(function() {
 {if $set.complete < 120}{$complete="green"}{/if}
 {if $set.complete < 100}{$complete="orange"}{/if}
 {if $set.complete < 90}{$complete="red"}{/if}
-{if $set.complete == -1}{$complete="grey"}{$completion='Completion unknown'}{/if}
+{if $set.complete == -1 || $set.complete > 120}{$complete="grey"}{$completion='Completion unknown'}{/if}
 
 {* Remember this is a copy of formatsetname.tpl; included here for performance reasons (beats 100's of includes) (I think) *}
 {capture assign=setdesc}{$set.name|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
