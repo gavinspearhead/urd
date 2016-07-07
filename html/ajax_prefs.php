@@ -446,6 +446,9 @@ echo_debug_var_file('/tmp/foo', $prefArray);
     $feeds_array = get_feeds_array($db, $userid);
 
     // test if the current settings are correct
+    if (!isset($imdb_userid_msg)) {
+        $imdb_userid_msg = verify_text_opt($prefArray['imdb_userid'], FALSE, 'ur\d+');
+    }
     if (!isset($default_spot_msg)) {
         $default_spot_msg = verify_array($prefArray['default_spot'], array_keys($spot_array));
     }
