@@ -3969,6 +3969,7 @@ function load_spots(options)
             highlight_handler();
             set_scroll_handler('#contentout', load_sets);
             update_widths('browsesubjecttd');
+            close_suggest('suggest_div');
         } else {
             update_message_bar(x.error);
         }
@@ -4656,6 +4657,7 @@ function fold_details(button_id, divid)
 function submit_enter2(e, id)
 {
     if (e.which == 13) {
+        $(':focus').blur();
         $('#' + id).click();
         e.stopPropagation();
         return false;
@@ -4667,6 +4669,7 @@ function submit_enter2(e, id)
 function submit_enter(e, fn, vars)
 {
     if (e.which == 13) {
+        $(':focus').blur();
         fn(vars);
         e.stopPropagation();
         return false;

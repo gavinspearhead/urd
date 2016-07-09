@@ -122,7 +122,7 @@ class urdd_rss
         $expire *= 24 * 3600; // in seconds now
         $now = time();
         $expire_time = $now - $expire;
-        $rss = fetch_rss::do_fetch_rss($url, $this->cache_dir, $username, $password);
+        $rss = fetch_rss::do_fetch_rss($url, $this->cache_dir, $username, $password, 600);
         foreach ($rss->items as $item) {
             if (!isset($item['link'], $item['title'])) {
                 continue;

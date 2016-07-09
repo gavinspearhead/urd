@@ -274,7 +274,7 @@ function do_make_nzb(DatabaseConnection $db, action $item)
     set_permissions($db, $done); // setting permissions must be last otherwise we may not be able to move the file
     set_group($db, $done);
 
-    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED , 0, 100, "Created NZB file $basename$ext");
+    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, "Created NZB file $basename$ext");
     cleanup_download_articles($db, $dlid);
     add_stat_data($db, stat_actions::GETNZB, $size, $userid);
 
@@ -2436,7 +2436,7 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
         foreach ($whitelist as $id => $val) {
             if ($val == 0) {
                 $cnt++;
-                $del[]= $id;
+                $del[] = $id;
             }
         }
         if ($cnt > 0) {
@@ -2459,7 +2459,6 @@ function do_get_imdb_watchlist($db, action $item)
         update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No valid IMDB user set');
 
         return NO_ERROR;
-
     }
 
     $url = "http://rss.imdb.com/user/$imdb_user/watchlist?view=compact&sort=created:asc";
@@ -2473,10 +2472,10 @@ function do_get_imdb_watchlist($db, action $item)
                 $title = html_entity_decode($elem['title']);
                 $title = preg_replace('/\(\d\d\d\d( (TV Movie)|(Mini Series))?\)/i', '', $title);
                 $title = trim(preg_replace('/[^a-zA-Z0-9 ]/', ' ', $title));
-                $cnt1 ++;
-                if (!in_array($title, $search_terms)) {
+                $cnt1++;
+                if (strlen($title) > 4 && !in_array($title, $search_terms)) {
                     $search_terms[] = $title;
-                    $cnt2 ++;
+                    $cnt2++;
                 }
             }
         }
