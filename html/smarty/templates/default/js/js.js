@@ -4654,17 +4654,6 @@ function fold_details(button_id, divid)
     fold_adv_search(button_id, divid);
     $.post( 'ajax_update_session.php', { type: 'control' });
 }
-function submit_enter2(e, id)
-{
-    if (e.which == 13) {
-        $(':focus').blur();
-        $('#' + id).click();
-        e.stopPropagation();
-        return false;
-    } else {
-        return true;
-    }
-}
 
 function submit_enter(e, fn, vars)
 {
@@ -5460,7 +5449,6 @@ function show_logs()
     };
     $.post(url, data).done(function(html) {
         var x = JSON.parse(html);
-        console.log('aouea');
         if (x.error == 0) {
             show_content_div_2(x.contents, 'logdiv');
             update_search_bar_height();
@@ -5687,7 +5675,6 @@ function update_ng_value(type, option, group_id)
     }
     if (type == 'groups') {
         url = 'ajax_groups.php';
-    console.log('aoeua');
         data = {
             cmd: cmd,
             group_id: group_id,
@@ -6085,7 +6072,9 @@ function add_text(text, elem)
     scopeTest.remove();
     return Math.round(multiplier * scopeVal) + suffix;
   };
+
 var sidebar = 0;
+
 function show_sidebar(display)
 {
     var side_bar_width = emRemToPx('22em', 'body', 'px');
@@ -6415,7 +6404,6 @@ function close_suggest(suggest_div)
     $('#' + suggest_div).addClass('hidden');
 }
 
-
 function suggest(type, suggest_div, text_bar, e) 
 { 
     if (text_bar.val() == ''|| e.which == 27) { // don't show suggestions if the textbar is empty or the key pressed is esc
@@ -6454,8 +6442,6 @@ function suggest(type, suggest_div, text_bar, e)
 }
 
 // detect touch screens
-
-
 
 window.Modernizr = (function( window, document, undefined ) {
 
@@ -6674,7 +6660,6 @@ window.Modernizr = (function( window, document, undefined ) {
 
 })(this, this.document);
 ;
-
 
 function load_plot(id, type, extra)
 {
