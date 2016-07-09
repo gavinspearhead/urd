@@ -40,7 +40,7 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
     $perpage = get_maxperpage($db, $userid);
     $search = $o_search = (trim(get_request('search', '')));
     $sort = get_request('sort', 'spotter_id');
-    $sort_dir = get_request('sort_dir', 'asc');
+    $sort_dir = strtolower(get_request('sort_dir', 'asc'));
     $only_rows = get_request('only_rows', 0);
     $show_status = get_request('status', 'all');
     if (!in_array($sort, array('spotter_id', 'source', 'username', 'status'))) {
@@ -123,9 +123,9 @@ function show_spots_list(DatabaseConnection $db, $userid, $which)
             'lastpage' =>	    $lastpage));
     }
     $smarty->assign(array(
-        'offset'=>		    $offset,
-        'list_external'=>	$list_external,
-        'list_internal'=>	$list_internal,
+        'offset'=>		     $offset,
+        'list_external'=> 	 $list_external,
+        'list_internal'=>    $list_internal,
         'sort'=>             $sort,
         'sort_dir'=>         $sort_dir,
         'search'=>           $o_search,
