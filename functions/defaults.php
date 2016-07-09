@@ -275,7 +275,7 @@ function get_default_config()
 ##$prefArray_root['spots_blacklist']          = 'http://jij.haatmij.nl/spotnet/blacklist.txt'; //black list with spotterIds known for spamming etc
 ##    $prefArray_root['spots_whitelist']          = 'http://jij.haatmij.nl/spotnet/whitelist.txt'; //white list with spotterIds known for solid spots
     $prefArray_root['spots_blacklist']          = 'http://jijhaatmij.hopto.me/blacklist.txt'; //black list with spotterIds known for spamming etc
-    $prefArray_root['spots_whitelist']          = 'http://jijhaatmij.hopto.me/whitelist.tx'; //white list with spotterIds known for solid spots
+    $prefArray_root['spots_whitelist']          = 'http://jijhaatmij.hopto.me/whitelist.txt'; //white list with spotterIds known for solid spots
 
     $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_UNKNOWN ]      = '%C %P %n';
     $prefArray_root['settype_' . urd_extsetinfo::SETTYPE_MOVIE ]        = '%C %P %n %(y) %m %a %l %s %[x] %N ';
