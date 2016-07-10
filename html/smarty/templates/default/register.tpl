@@ -55,16 +55,16 @@
 <tr><td colspan="2" class="centered"><input type='button' value="{$LN_register}" id="register_button" class="submitsmall "/></td></tr>
 </tbody>
 <tbody id="pending">
-<tr><td><h3 class="title">{$LN_reg_status}</h3></td></tr>
+<tr><td><h3 class="fronttitle">{$LN_reg_status}</h3></td></tr>
 <tr><td>{$LN_reg_pending}</td></tr>
 <tr><td><a href="login.php">{$LN_login_title}</a></td></tr>
 </tbody>
 <tbody id="activated">
-<tr><td><h3 class="title">{$LN_reg_status}</h3></td></tr>
+<tr><td><h3 class="fronttitle">{$LN_reg_status}</h3></td></tr>
 <tr><td>{$LN_reg_activated} <a href="login.php">{$LN_reg_activated_link}</a>.</td></tr>
 </tbody>
 <tbody id="sent">
-<tr><td><h3 class="title">{$LN_reg_status}</h3></td></tr>
+<tr><td><h3 class="fronttitle">{$LN_reg_status}</h3></td></tr>
 <tr><td>{$LN_reg_codesent}</td></tr>
 <tr><td><a href="login.php">{$LN_login_title}</a></td></tr>
 </tbody>
