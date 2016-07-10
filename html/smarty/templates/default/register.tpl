@@ -31,16 +31,16 @@
 
 <tbody id="form">
 <tr><td colspan="2"><h3 class="fronttitle">{$LN_reg_form}</h3></td></tr>
-<tr><td class="nowrap bold">{$LN_username}:</td><td><input name="username" type="text" class="textbox18m" id="username" placeholder="Username" required/></td></tr>
-<tr><td class="nowrap bold">{$LN_fullname}:</td><td><input name="fullname" type="text" class="textbox18m" id="fullname" placeholder="Full name" required/></td></tr>
-<tr><td class="nowrap bold">{$LN_email}:</td><td><input name="email" type="email" class="textbox18m" id="email" placeholder="Email address" required/></td></tr>
-<tr><td class="nowrap bold" valign="top">{$LN_password}:</td><td><input name="password1" type="password" class="textbox18m" id="pass1" placeholder="Password" required/> &nbsp;&nbsp; 
+<tr><td class="nowrap bold">{$LN_username}:</td><td><input name="username" type="text" class="textbox18m" id="username" placeholder="{$LN_username}" required/></td></tr>
+<tr><td class="nowrap bold">{$LN_fullname}:</td><td><input name="fullname" type="text" class="textbox18m" id="fullname" placeholder="{$LN_fullname}" required/></td></tr>
+<tr><td class="nowrap bold">{$LN_email}:</td><td><input name="email" type="email" class="textbox18m" id="email" placeholder="{$LN_email}" required/></td></tr>
+<tr><td class="nowrap bold" valign="top">{$LN_password}:</td><td><input name="password1" type="password" class="textbox18m" id="pass1" placeholder="{$LN_password}" required/> &nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="pw_button"></div> 
     <span id="pwweak"><br>{$LN_password_weak}</span>
     <span id="pwmedium"><br>{$LN_password_medium}</span>
     <span id="pwstrong"><br>{$LN_password_strong}</span>
 </td></tr>
-<tr><td class="nowrap bold" valign="top">{$LN_password} {$LN_reg_again}:</td><td><input name="password2" type="password" class="textbox18m" id="pass2" placeholder="Password" required/>
+<tr><td class="nowrap bold" valign="top">{$LN_password} {$LN_reg_again}:</td><td><input name="password2" type="password" class="textbox18m" id="pass2" placeholder="{$LN_password}" required/>
     <span id="pwcorrect"><br>{$LN_password_correct}</span>
     <span id="pwincorrect"><br>{$LN_password_incorrect}</span>
 </td></tr>
