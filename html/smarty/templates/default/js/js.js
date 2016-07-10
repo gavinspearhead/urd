@@ -720,11 +720,9 @@ function blacklist_offset(offset)
 
 function show_blacklist(options)
 {
-    console.log(options);
     var url = 'ajax_user_blacklist.php';
     var orderval = get_value_from_id('order', '');
     var orderdirval = get_value_from_id('order_dir', '');
-    console.log(orderdirval);
     var search = get_value_from_id('search', '');
     var offset = get_value_from_id('offset', '0');
     var status_val = $('#status>option:selected').val();
@@ -783,7 +781,6 @@ function show_blacklist(options)
         }
     }
     $.post(url, data).done(function(html) {
-        console.log(data.sort_dir);
         var x = JSON.parse(html);
         if (x.error == 0) {
             if (add_rows == 0) {

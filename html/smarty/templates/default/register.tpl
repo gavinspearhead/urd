@@ -30,12 +30,11 @@
 <table class="logintable down5p">
 
 <tbody id="form">
-<tr><td colspan="2"><h3 class="title">{$LN_reg_form}</h3></td></tr>
+<tr><td colspan="2"><h3 class="fronttitle">{$LN_reg_form}</h3></td></tr>
 <tr><td class="nowrap bold">{$LN_username}:</td><td><input name="username" type="text" class="textbox18m" id="username" placeholder="Username" required/></td></tr>
 <tr><td class="nowrap bold">{$LN_fullname}:</td><td><input name="fullname" type="text" class="textbox18m" id="fullname" placeholder="Full name" required/></td></tr>
 <tr><td class="nowrap bold">{$LN_email}:</td><td><input name="email" type="email" class="textbox18m" id="email" placeholder="Email address" required/></td></tr>
-<tr><td class="nowrap bold" valign="top">{$LN_password}:</td><td><input name="password1" type="password" class="textbox18m" id="pass1" placeholder="Password" required/>
- &nbsp;&nbsp; 
+<tr><td class="nowrap bold" valign="top">{$LN_password}:</td><td><input name="password1" type="password" class="textbox18m" id="pass1" placeholder="Password" required/> &nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="pw_button"></div> 
     <span id="pwweak"><br>{$LN_password_weak}</span>
     <span id="pwmedium"><br>{$LN_password_medium}</span>

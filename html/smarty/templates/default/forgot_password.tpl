@@ -30,7 +30,7 @@
 <tr><td colspan="2" id="error_msg" class="head2"></td></tr>
 </tbody>
 <tbody id="form">
-<tr><td colspan="2"><h3 class="title">{$title}</h3></td></tr>
+<tr><td colspan="2"><h3 class="fronttitle">{$title}</h3></td></tr>
 <tr><td class="nowrap bold">{$LN_username}:</td><td><input type="text" name="username" id="username" class="textbox18m" placeholder="Username" required/></td></tr>
 <tr><td class="nowrap bold">{$LN_email}:</td><td><input type="email" name="email" id="email" class="textbox18m" placeholder="Email address" required/></td></tr>
 <tr><td>&nbsp;</td></tr>

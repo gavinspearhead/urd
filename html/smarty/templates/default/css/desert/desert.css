@@ -45,6 +45,10 @@ body
     font-size: 10pt;
 }
 
+h3.fronttitle
+{   
+    color:#a44300;
+}
 h3.title
 {   
     color:#642300;

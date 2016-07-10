@@ -49,6 +49,10 @@ h3.title
 {   
     color: #003;
 }
+h3.fronttitle
+{   
+    color: #ddd;
+}
 a
 {
     color: white;

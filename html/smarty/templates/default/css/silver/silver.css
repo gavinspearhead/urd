@@ -45,6 +45,10 @@ body
     font-family: Geneva, Arial, Helvetica, Sans-Serif;
     font-size: 10pt;
 }
+h3.fronttitle
+{   
+    color: #DDDDDD;
+}
 h3.title
 {   
     color: #000000;
@@ -1281,7 +1285,7 @@ td.ps_hover
     list-style-type:none; 
 }
 
-.rdlogo2
+.urdlogo2
 {
     width: 175px;
     height: 113px;

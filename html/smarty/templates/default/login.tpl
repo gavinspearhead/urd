@@ -33,7 +33,7 @@
 <input type="hidden" name="curr_language" id="curr_language" value="{$curr_language|escape}"/>
 </div>
 <table class="logintable">
-<tr><td colspan="2"><h3 class="title">{$LN_login_title2} <a href="http://www.urdland.com">URD</a></h3></td></tr>
+<tr><td colspan="2"><h3 class="fronttitle">{$LN_login_title2} <a href="http://www.urdland.com">URD</a></h3></td></tr>
 {if $message != ''}
     <tr><td colspan="2"><span class="warning_highlight">{$message}</span></td></tr>
 {/if}
@@ -61,6 +61,7 @@
 </select>
 </td>
 </tr>
+<tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td><a href="forgot_password.php">{$LN_login_forgot_password}</a></td>
 {if $register == 1}
