@@ -2836,12 +2836,13 @@ function submit_language_login()
 {
     var change = $('#language_change');
     var curr_language = $('#curr_language').val();
+    console.log(curr_language);
     var myform = $('#urd_login_form');
     if (change !== null) {
         var langval = $('#language_select>option:selected').val();
         change.val(1);
         if (curr_language === undefined || curr_language.value != langval) {
-            curr_language.value = langval;
+            $('#curr_language').val(langval)
             myform.submit();
         }
     }
