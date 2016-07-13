@@ -142,7 +142,7 @@ SELECTDB;
     <tr><td class="install2">Encryption key (leave blank to generate one)</td><td class="install3"><input type="password" name="encryption_key" value="">&nbsp;<span onclick="javascript:toggle_show_password('password');">$showpasspic</span></td></tr></td></tr>
     <tr><td class="install2">Reuse existing keystore:</td><td class="install3">
     <input type="checkbox" name="reuse_keystore" $reuse_keystore></td></tr>
-    <tr colspan="3" id="continue_button"><td><a onclick="show_message('Creating database... please wait');LoadPage(4); hide_button('continue_button');">$continuepic</a></td></tr>
+    <tr colspan="3" id="continue_button"><td><a onclick="show_message('Creating database... please wait');LoadPage(4); $('#continue_button').hide();">$continuepic</a></td></tr>
 SELECTDB2;
 
 }

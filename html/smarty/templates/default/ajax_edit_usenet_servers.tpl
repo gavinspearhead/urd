@@ -55,10 +55,12 @@
 </tr>
 <tr id="authuser" class="{if $authentication != 1}hidden{/if}">
 <td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_username_msg|escape }>{$LN_username}:</td>
+{if $only_auth}</tr><tr>{/if}
 <td colspan="3"><input type="text" name="username" value="{$username|escape}" id="username" placeholder="{$LN_username}" class="textbox28m"/></td>
 </tr>
 <tr id="authpass" class="{if $authentication != 1}hidden{/if}">
 <td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_password_msg|escape }>{$LN_password}:</td>
+{if $only_auth}</tr><tr>{/if}
 <td colspan="3"><input type="password" name="password" value="{$password|escape}" id="password" placeholder="{$LN_password}" class="textbox28m"/>&nbsp;&nbsp; 
     <div class="floatright iconsizeplus sadicon buttonlike" id="toggle_password">
 </td>

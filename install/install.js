@@ -30,14 +30,13 @@ function LoadPage(pagenumber)
     pagenr.value = pagenumber;
     installform.submit();
 }
-
 function toggle_show_password(id)
 {
-    var pass = document.getElementById(id);
-    if (pass.type == 'password') {
-        pass.type = 'text';
+    var pass = $('#' + id);
+    if (pass.attr('type') == 'password') {
+        pass.prop('type', 'text');
     } else {
-        pass.type = 'password';
+        pass.prop('type', 'password');
     }
 }
 
@@ -92,12 +91,6 @@ function hide_data_for_sqlite()
     $('#dbmysqlreset').hide();
 }
 
-function hide_button(id)
-{
-    var div = document.getElementById(id);
-    div.style.display = 'none';
-}
-
 function show_message(msg)
 {
     var div = document.getElementById('message');
@@ -148,22 +141,17 @@ function set_random_password(dbpass)
 
 function get_value_from_id(id, def)
 {
-    var val = document.getElementById(id);
-    if (val === null) {
-        if (def === null) {
-            return null;
-        } else {
-            return def;
-        }
+    var val = $('#' + id).val();
+    if (val === undefined) {
+        return def;
     } else {
-        return val.value;
+        return val;
     }
 }
 
 function fill_in_usenet_form()
 {
-    var server_id = document.getElementById('server_id');
-    server_id = server_id.options[server_id.selectedIndex].value;
+    var server_id = $('#server_id>option:selected').val();
     var server_data = get_value_from_id('server_' + server_id, '');
     if (server_data != '') {
         var arr = server_data.split('|');
@@ -172,23 +160,23 @@ function fill_in_usenet_form()
         var port = arr[2];
         var sport = arr[3];
         var conn = arr[4];
-        var host_id = document.getElementById('hostname');
-        var port_id = document.getElementById('port');
-        var conn_id = document.getElementById('connection');
-        var serverid = document.getElementById('serverid');
-        host_id.value = host;
+        var host_id = $('#hostname');
+        var port_id = $('#port');
+        var conn_id = $('#connection');
+        var serverid = #('#serverid');
+        host_id.val(host);
         serverid = server_id;
         if (conn == 'off') {
-            port_id.value = port;
+            port_id.val(port);
         } else {
-            port_id.value = sport;
+            port_id.val(sport);
         }
-        for (var i = 0; i < conn_id.length; i++) {
-            if (conn_id.options[i].value.toLowerCase() == conn.toLowerCase()) {
-                conn_id.selectedIndex = i;
-                continue;
+        $("#conn_id > option").each(function() {
+            if (this.val().toLowerCase() == conn.toLowerCase()) {
+                $('#select_feedid').prop('selectedIndex', i);
+                return false;
             }
-        }
+        });
     }
 }
 

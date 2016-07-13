@@ -335,7 +335,7 @@ try {
         case 'subscribe':
             if ($isadmin) {
                 $feedid = get_request('feedid');
-                $name = get_feed_by_name($feedid);
+                $name = get_feed_by_id($db, $feedid);
                 $period = get_request('period');
                 $time1 = get_request('time1');
                 $time2 = get_request('time2');

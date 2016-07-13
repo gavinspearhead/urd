@@ -194,7 +194,6 @@ th
 }
 .hidden
 {
-   visibility: collapse;
    display: none;
 }
 .buttonlike
@@ -426,6 +425,10 @@ td.user, th.user
 .down6
 {
     margin-top:6px;
+}
+.down1
+{
+    padding-top:1px;
 }
 .down10
 {
@@ -1173,7 +1176,7 @@ table.subcat
 {
     position: relative;
     width: 39.5em;
-    height:18em;
+    height:19em;
     float: left;
     overflow-x: hidden;
     overflow-y: hidden;

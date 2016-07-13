@@ -82,9 +82,9 @@
 <th id="browsesubjecttd" class="head buttonlike">{$LN_browse_subject} {$title_sort}</th>
 <th id="head_stamp" class="fixwidth2a nowrap buttonlike head right">{$LN_browse_age} {$stamp_sort} </th>
 <th id="head_size" class="fixwidth3 nowrap buttonlike head right">{$LN_size} {$size_sort}</th>
-<th id="head_rating" class="fixwidth1 buttonlike head right"><div class="floatleft iconsizeplus followicon buttonlike"></div>
+<th id="head_rating" class="fixwidth1 buttonlike nowrap head right"><div class="floatleft iconsizeplus followicon buttonlike"></div>
 </th>
-<th class="head nowrap fixwidth5 round_right">{$unmark_int_all}</th>
+<th class="nowrap fixwidth4 head round_right">{$unmark_int_all}</th>
 </tr>
 
 {/capture}
@@ -140,7 +140,7 @@ $(document).ready(function() {
 <tr class="content {$interesting} {$read} {$nzb} set_content" id="base_row_{$set.setid}">
     <td class="fixwidth1">{$set.number} <input type="hidden" name="set_ids[]" value="{$set.setid|escape}"/></td>
 	<td class="setbuttons">{$smallbuttons}</td>
-	<td id="td_set_{$set.setid}"> <div class="donotoverflowdamnit">{$setdesc}</div> </td>
+	<td id="td_set_{$set.setid}"><div class="donotoverflowdamnit inline">{$setdesc}</div></td>
 	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
 	<td class="fixwidth3 nowrap">{if $set.size == 0}?{else}{$set.size}{/if}</td>
     <td class="fixwidth1">

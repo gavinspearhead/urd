@@ -109,7 +109,7 @@ $(document).ready(function() {
 {if $set.interesting == 1}{$interesting='interesting'}{/if}
 {if $set.interesting == 1}{$interestingimg='sadicon'}{/if}
 
-{capture assign=spot_icon}
+{capture assign=spot_icon}{strip}
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}
 {elseif $set.extcat == ':_img_image:'}{$btimage}
@@ -124,6 +124,7 @@ $(document).ready(function() {
 {elseif $set.categorynr == 2}{$btgame}
 {elseif $set.categorynr == 3}{$btsoftw}
 {/if}
+{/strip}
 {/capture}
 {$rating=$set.rating * 10}
 {$linkpic="ratingicon_$rating"}
@@ -165,22 +166,21 @@ $(document).ready(function() {
         {$val2.0} {if not $val2@last}; {/if}
     {/foreach}
     </td></tr>
-{/foreach}
+{/foreach}{/strip}
 {/capture}
-
 
 <div class="spotbox" id="td_set_{$set.spotid}">
 <div>
 
 {strip}
-<div class="content {$interesting} {$read} {$nzb} inline set_content" style="overflow-x: hidden; overflow-y: hidden; white-space:nowrap; " {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories" xpos='$(this).offset().left' ypos='$(this).offset().top'}{/if}>
+<div class="content {$interesting} {$read} {$nzb} inline set_content" style="overflow-x: hidden; overflow-y: hidden; white-space:nowrap;" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories" xpos='$(this).offset().left' ypos='$(this).offset().top'}{/if}>
 {capture assign=setdesc}{$set.name|escape:htmlall|replace:':_img_pw:':$btpw|replace:':_img_copyright:':$btcopyright}{/capture}
 {if $set.reports gt 0}{$spamreports=$set.reports}<div {urd_popup type="small" text="$spamreports $LN_spam_reports"} class="highlight_spam center width15 inline floatright">{$set.reports}</div>{/if}
 {if $show_comments > 0}
     {$setcomments=$set.comments}
-    <div class="highlight_comments center width25 inline floatright" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$setcomments}</div>
+    <div class="highlight_comments center width25 inline floatright" style="margin-right:1px;" {urd_popup type="small" text="$setcomments $LN_browse_tag_note"}>{$setcomments}</div>
 {/if}
-<div class="inlineblock floatleft" style="margin-right:0.2em;">{$spot_icon}</div>
+<div class="inlineblock floatleft down1" style="margin-right:0.2em; margin-left:1px">{$spot_icon}</div>
 <div class="inlineblock floatleft width31 nowrap down2">{$set.number} -- {$setdesc}</div>
 <input type="hidden" name="set_ids[]" value="{$set.spotid}"/>
 </div>

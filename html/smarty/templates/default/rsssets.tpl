@@ -125,7 +125,6 @@
 $(document).ready(function() {
    $('#view_size').val($(window).width());
     load_side_bar( function() {
-        update_basket_display();
         load_sets( {
            'offset':'0'
            {if $feed_id != ''}          , 'next':'{$feed_id}'  {/if}
@@ -139,18 +138,19 @@ $(document).ready(function() {
            {if $flag != ''}             , 'flag': '{$flag|escape:javascript}' {/if}
            }
         );
-        $('#searchbar').html($('#searchformdiv').html());
-        $('#searchformdiv').html('');
-        $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
-        $('#next_group').click( function () { select_next("select_feedid",1); } ) ;
-        $('#prev_group').click( function () { select_next("select_feedid",-1); } ) ;
-        $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
-        $('#next_search').click( function () { select_next_search('saved_search',1); } );
-        $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
-        $('#saved_search').change( function () { update_browse_searches(null); } );
-        $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), e) } );
-        $('#search').attr( 'autocomplete', 'off' );
     });
+    update_basket_display();
+    $('#searchbar').html($('#searchformdiv').html());
+    $('#searchformdiv').html('');
+    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
+    $('#next_group').click( function () { select_next("select_feedid",1); } ) ;
+    $('#prev_group').click( function () { select_next("select_feedid",-1); } ) ;
+    $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
+    $('#next_search').click( function () { select_next_search('saved_search',1); } );
+    $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
+    $('#saved_search').change( function () { update_browse_searches(null); } );
+    $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), e) } );
+    $('#search').attr( 'autocomplete', 'off' );
 });
 </script>
 

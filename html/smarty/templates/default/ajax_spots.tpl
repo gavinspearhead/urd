@@ -124,7 +124,7 @@ $(document).ready(function() {
     $('#intimg_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
     $('#wipe_img_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
     $('#link_img_{$set.spotid}').click( function () { jump('{$set.anon_url|escape:javascript}', true); } );
-});
+    });
 </script>
 {/strip}
 {/capture}
@@ -145,39 +145,39 @@ $(document).ready(function() {
 {capture assign=subcats}{strip}
 <table>
 {foreach $set.subcata as $k=>$val1}
-    <tr><td>{$k}:&nbsp;</td><td>
-    {foreach $val1 as $val2}
-        {$val2.0}{if not $val2@last}; {/if}
-    {/foreach}
-    </td></tr>
+<tr><td>{$k}:&nbsp;</td><td>
+{foreach $val1 as $val2}
+{$val2.0}{if not $val2@last}; {/if}
+{/foreach}
+</td></tr>
 {/foreach}
 {foreach $set.subcatb as $k=>$val1}
-    <tr><td>{$k}:&nbsp;</td><td>
-    {foreach $val1 as $val2}
-        {$val2.0}{if not $val2@last}; {/if}
-    {/foreach}
-    </td></tr>
+<tr><td>{$k}:&nbsp;</td><td>
+{foreach $val1 as $val2}
+{$val2.0}{if not $val2@last}; {/if}
+{/foreach}
+</td></tr>
 {/foreach}
 {foreach $set.subcatc as $k=>$val1}
-    <tr><td>{$k}:&nbsp;</td><td>
-    {foreach $val1 as $val2}
-        {$val2.0}{if not $val2@last}; {/if}
-    {/foreach}
-    </td></tr>
+<tr><td>{$k}:&nbsp;</td><td>
+{foreach $val1 as $val2}
+{$val2.0}{if not $val2@last}; {/if}
+{/foreach}
+</td></tr>
 {/foreach}
 {foreach $set.subcatd as $k=>$val1}
-    <tr><td>{$k}:&nbsp;</td><td>
-    {foreach $val1 as $val2}
-        {$val2.0}{if not $val2@last}; {/if}
-    {/foreach}
-    </td></tr>
+<tr><td>{$k}:&nbsp;</td><td>
+{foreach $val1 as $val2}
+{$val2.0}{if not $val2@last}; {/if}
+{/foreach}
+</td></tr>
 {/foreach}
 {foreach $set.subcatz as $k=>$val1}
-    <tr><td>{$k}:&nbsp;</td><td>
-    {foreach $val1 as $val2}
-        {$val2.0} {if not $val2@last}; {/if}
-    {/foreach}
-    </td></tr>
+<tr><td>{$k}:&nbsp;</td><td>
+{foreach $val1 as $val2}
+{$val2.0} {if not $val2@last}; {/if}
+{/foreach}
+</td></tr>
 {/foreach}
 
 </table>
@@ -187,11 +187,11 @@ $(document).ready(function() {
 <tr class="content {$interesting} {$read} {$nzb} set_content" id="base_row_{$set.spotid}">
 <td class="fixwidth1">{$set.number}
 <input type="hidden" name="set_ids[]" value="{$set.spotid}"/>
-    </td>
-	<td class="setbuttons">{$smallbuttons}</td>
+</td>
+<td class="setbuttons">{$smallbuttons}</td>
 
 <td id="td_set_{$set.spotid}" {if $show_subcats}{urd_popup text="$subcats" caption="$LN_spots_subcategories"}{/if}>
-    <div class="donotoverflowdamnit inline">
+<div class="donotoverflowdamnit inline">
 {if $set.extcat == ':_img_movie:'}{$btmovie}
 {elseif $set.extcat == ':_img_album:'}{$btmusic}
 {elseif $set.extcat == ':_img_image:'}{$btimage}
@@ -210,10 +210,10 @@ $(document).ready(function() {
 {$linkpic="ratingicon_$rating"}
 {if $rating == ""}{$linkpic="followicon"}{/if}
 
-    <div class="inline">{$setdesc}</div> 
-    </div>
-    </td>
-    {if $small == 0}
+<div class="inline">{$setdesc}</div> 
+</div>
+</td>
+{if $small == 0}
     <td class="width20">
     {if $set.reports gt 0}{$spamreports=$set.reports}<div {urd_popup type="small" text="$spamreports $LN_spam_reports"} class="highlight_spam inline center width15">{$set.reports}</div>{/if}
     </td>

@@ -2450,7 +2450,7 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
 }
 
 
-function do_get_imdb_watchlist($db, action $item)
+function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
 {
     $userid = $item->get_userid();
     $imdb_user = get_pref($db, 'imdb_userid', $userid);
@@ -2470,8 +2470,9 @@ function do_get_imdb_watchlist($db, action $item)
         foreach ($rss->items as $elem) {
             if (isset($elem['title'])) {
                 $title = html_entity_decode($elem['title']);
-                $title = preg_replace('/\(\d\d\d\d( (TV Movie)|(Mini Series))?\)/i', '', $title);
+                $title = preg_replace('/\(\d\d\d\d(\s+(TV[-\s]+Movie)|(\s+Mini[-\s]+Series))?\)/i', '', $title);
                 $title = trim(preg_replace('/[^a-zA-Z0-9 ]/', ' ', $title));
+                $title = preg_replace('/\s+/', ' ', $title);
                 $cnt1++;
                 if (strlen($title) > 4 && !in_array($title, $search_terms)) {
                     $search_terms[] = $title;
@@ -2488,6 +2489,5 @@ function do_get_imdb_watchlist($db, action $item)
         update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $e->getMessage());
         return HTTP_CONNECT_ERROR;
     }
-
 }
 

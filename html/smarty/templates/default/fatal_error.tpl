@@ -33,11 +33,11 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
-    show_alert("{$msg|escape:javascript}");
-    $('#close_link').click( function() { hide_overlay('{$closelink}');" } );
+    show_alert("{$msg|escape:javascript}", function() { hide_overlay('{$closelink}'); });
 });
 </script>
-{if isset($__message) && is_array($__message) && count($__message) > 0 }
+{* 
+    {if isset($__message) && is_array($__message) && count($__message) > 0 }
 
 <div id="overlay">
 <div id="message">
@@ -47,12 +47,13 @@ $(document).ready(function() {
 
 <div id="messagecontent" class="light">
 {foreach $__message as $m}
-{$m}<br>
+{$m} <br>
 {/foreach}
 </div>
 </div>
 </div>
 {/if}
+    *}
 
 {/block}
 {if $showmenu != 0} 
