@@ -163,7 +163,7 @@ function fill_in_usenet_form()
         var host_id = $('#hostname');
         var port_id = $('#port');
         var conn_id = $('#connection');
-        var serverid = #('#serverid');
+        var serverid = $('#serverid');
         host_id.val(host);
         serverid = server_id;
         if (conn == 'off') {
