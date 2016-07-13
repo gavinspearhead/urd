@@ -69,6 +69,7 @@ require_once "$pathhtmli/checkauth.php";
 
 $db->check_db_version();
 $prefs = load_prefs($db, $userid); // load the prefs
+require_once "$pathhtmli/periods.php";
 
 require_once "$pathhtmli/usenet_functions.php";
 // first include all the php files that only define stuff

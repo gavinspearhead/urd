@@ -169,7 +169,7 @@ if (!$rv_php10) {
 }
 if ($rv_php && $rv_php2 && $rv_php3 && $rv_php4 && $rv_php6 && $rv_php7 && $rv_php7a && $rv_php8c && $rv_php8 && $rv_php9 && $rv_php10 && $rv_phpcurl && $rv_phpgmp && $rv_phpgd) {
     $OUT .= '<tr><td><a onclick="LoadPage(2);">'.$continuepic.'</a>';
-    if (!$rv_php_df || !$rv_php_dc || !$rv_php_obd || !$tz_clii||!$tz_web) {
+    if (!$rv_php_df || !$rv_php_dc || !$rv_php_obd || !$tz_cli||!$tz_web) {
         $OUT .= '<a onclick="LoadPage(1);">'.$refreshpic.'</a>';
     }
     echo '</td>';

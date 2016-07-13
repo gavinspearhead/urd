@@ -50,6 +50,7 @@ require_once $pathca . '/pref_functions.php';
 require_once $pathca . '/module_functions.php';
 require_once $pathca . '/../urdd/urdd_protocol.php';
 require_once $pathca . '/../urdd/urdd_command.php';
+require_once $pathca . /periods.php';
 require_once $pathca . '/db/urd_db_structure.php';
 require_once $pathca . '/search_options.php';
 require_once $pathca . '/usenet_functions.php';
