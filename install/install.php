@@ -106,7 +106,7 @@ $OUT = <<<CT
 <link rel="SHORTCUT ICON" href="../html/favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" href="install.css" type="text/css"/>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-3.0.0.min.js"></script>
 <script type="text/javascript" src="install.js"></script>
 </head>
 <body>
