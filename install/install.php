@@ -73,7 +73,7 @@ echo <<<CT
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="SHORTCUT ICON" href="../html/favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" href="install.css" type="text/css"/>
-<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="../html/smarty/templates/default/js/jquery-3.0.0.min.js"></script>
 <script type="text/javascript" src="install.js"></script>
 </head>
 <body>
