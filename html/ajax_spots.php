@@ -25,15 +25,6 @@ if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 }
 
-function pdo_sql_debug($sql,$placeholders)
-{
-    foreach($placeholders as $k => $v){
-        $sql = preg_replace('/'.$k.'/',"'$v'",$sql);
-    }
-    return $sql;
-}
-
-
 $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
@@ -183,7 +174,6 @@ class spot_viewer
         $setres = array();
         if ($offset <= $this->int_sets) {
             $sql1 = $this->get_spots(TRUE);
-            file_put_contents('/tmp/foo', pdo_sql_debug($sql1, $this->input_arr). "\n", FILE_APPEND);
 
             $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if (!is_array($setres)) {
@@ -194,7 +184,6 @@ class spot_viewer
 
         if ($setres_count < $perpage) {
             $sql2 = $this->get_spots(FALSE);
-            file_put_contents('/tmp/foo', pdo_sql_debug($sql2, $this->input_arr). "\n", FILE_APPEND);
 
             $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if (!is_array($setres2)) {

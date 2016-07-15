@@ -32,7 +32,7 @@ $pathdbc = realpath(dirname(__FILE__));
 require_once "$pathdbc/file_functions.php";
 require_once "$pathdbc/db/urd_db_structure.php";
 
-function pdo_sql_debug($sql,$placeholders)
+function pdo_sql_debug($sql,array $placeholders)
 {
     foreach($placeholders as $k => $v){
         $sql = preg_replace('/'.$k.'/',"'$v'",$sql);
@@ -171,7 +171,6 @@ abstract class DatabaseConnection
     {
         return $this->DB->getAttribute(PDO::ATTR_DRIVER_NAME);
     }
-
     public function disconnect()
     {
         $this->DB = NULL;
@@ -180,7 +179,6 @@ abstract class DatabaseConnection
     {
        return (is_a($this->DB, 'PDO'));
     }
-
     public function set_fetch_mode($mode = PDO::FETCH_ASSOC)
     {
         $rv = $this->DB->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
