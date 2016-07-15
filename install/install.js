@@ -160,21 +160,18 @@ function fill_in_usenet_form()
         var port = arr[2];
         var sport = arr[3];
         var conn = arr[4];
-        var host_id = $('#hostname');
-        var port_id = $('#port');
-        var conn_id = $('#connection');
-        var serverid = $('#serverid');
-        host_id.val(host);
-        serverid = server_id;
+        $('#serverid').val(server_id);
+        $('#hostname').val(host);
         if (conn == 'off') {
-            port_id.val(port);
+            $('#port').val(port);
         } else {
-            port_id.val(sport);
+            $('#port').val(sport);
         }
-        $("#conn_id > option").each(function() {
-            if (this.val().toLowerCase() == conn.toLowerCase()) {
-                $('#select_feedid').prop('selectedIndex', i);
-                return false;
+        $("#connection > option").each(function() {
+            if ($(this).val().toLowerCase() == conn.toLowerCase()) {
+                $(this).attr('selected','selected');
+            } else {
+                $(this).removeAttr('selected');
             }
         });
     }

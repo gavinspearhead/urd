@@ -404,8 +404,7 @@ class nfo_parser
 
     public static function find_info($str, $key, $dont_follow = FALSE)
     {
-        $file_nfo = array();
-        $fn = array();
+        $file_nfo = $fn = [];
         switch ($key) {
         case urd_extsetinfo::SETTYPE_MOVIE:
             $fn[] = array('match_imdb_link', 'link');
@@ -515,7 +514,7 @@ class nfo_parser
 
     public static function get_link_info(array &$file_nfo)
     {
-        if (isset($file_nfo['link']) && preg_match( '/imdb.(com|de|fr|es|it)/i', $file_nfo['link']) !== FALSE) {
+        if (isset($file_nfo['link']) && preg_match('/imdb.(com|de|fr|es|it)/i', $file_nfo['link']) !== FALSE) {
             $rv = nfo_parser::parse_imdb_info($file_nfo['link']);
             if ($rv['name'] !== NULL) {
                 $file_nfo['name'] = $rv['name'];
@@ -556,7 +555,6 @@ class nfo_parser
     public static function parse_nfo_file($filename, $key)
     {
         $contents = file($filename);
-        //$info = find_info($contents, $key, TRUE);
         $info = nfo_parser::find_info($contents, $key, FALSE);
 
         return $info;

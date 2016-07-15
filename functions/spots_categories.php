@@ -498,7 +498,7 @@ class SpotCategories
     public static function Cat2ShortDescs($hcat, $icat)
     {
         $cat_list = explode('|', $icat);
-        $cats = array();
+        $cats = [];
         foreach ($cat_list as $cat) {
             if ($cat == '') {
                 continue;
@@ -527,7 +527,7 @@ class SpotCategories
 
     public static function get_subcats_ids($hcat, $sc)
     {
-        $s = array();
+        $s = [];
         foreach (self::$_categories[$hcat][$sc] as $k=>$v) {
             $s [ $sc . $k] = 0;
         }
@@ -537,7 +537,7 @@ class SpotCategories
 
     public static function get_subcats($hcat, $adult)
     {
-        $cats = array();
+        $cats = [];
         if (!isset(self::$_subcat_descriptions[$hcat])) {
             return $cats;
         }
@@ -564,7 +564,7 @@ class SpotCategories
     }
     public static function get_allsubcats($adult)
     {
-        $hcats = array();
+        $hcats = [];
         foreach (self::$_head_categories as $k => $c) {
             $hcats[$k] = array(
                     'name' => to_ln($c),

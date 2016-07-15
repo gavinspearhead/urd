@@ -32,6 +32,14 @@ $pathdbc = realpath(dirname(__FILE__));
 require_once "$pathdbc/file_functions.php";
 require_once "$pathdbc/db/urd_db_structure.php";
 
+function pdo_sql_debug($sql,$placeholders)
+{
+    foreach($placeholders as $k => $v){
+        $sql = preg_replace('/'.$k.'/',"'$v'",$sql);
+    }
+    return $sql;
+}
+
 function connect_db($check_db=TRUE)
 {
     assert(is_bool($check_db));

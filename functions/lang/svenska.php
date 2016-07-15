@@ -525,7 +525,7 @@ $LN['pref_format_dl_dir_msg']    = 'Format p&aring; text som l&auml;ggs till det
     '%y: &Aring;r (2 siffror)<br/>' .
     '%Y: &Aring;r (4 siffror)<br/>' .
     '%x: X-rated<br/>' .
-    '%z: Dag p&aring; &aring;ret<br/>' ;
+    '%z: Dag p&aring; &aring;ret<br/>';
 $LN['pref_add_setname']         = 'L&auml;gg till setnamn till nedladdningskatalog';
 $LN['pref_add_setname_msg']     = 'L&auml;gg till setets namn till nedladdningskatalogen (ut&ouml;ver den vanliga formatstr&ouml;ngen f&ouml;r nedladdningskataloger)';
 

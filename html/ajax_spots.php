@@ -25,6 +25,15 @@ if (!defined('ORIGINAL_PAGE')) {
     define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 }
 
+function pdo_sql_debug($sql,$placeholders)
+{
+    foreach($placeholders as $k => $v){
+        $sql = preg_replace('/'.$k.'/',"'$v'",$sql);
+    }
+    return $sql;
+}
+
+
 $__auth = 'silent';
 $pathidx = realpath(dirname(__FILE__));
 
@@ -95,7 +104,6 @@ class spot_viewer
         $type = USERSETTYPE_SPOT;
         $basic_browse_query = ' FROM spots ';
         if (!$do_count) { 
-            $basic_browse_query .= ' LEFT JOIN spot_whitelist ON (spots."spotter_id" = spot_whitelist."spotter_id" AND spot_whitelist."userid" IN (:userid, :superuserid) AND spot_whitelist."status" = :wlstatus)';
             if ($this->type == 1) {
                 $basic_browse_query .= ' LEFT JOIN spot_images ON (spots."spotid" = spot_images."spotid") ';
             }
@@ -103,7 +111,8 @@ class spot_viewer
             $this->input_arr[':superuserid'] = user_status::SUPER_USERID;
             $this->input_arr[':wlstatus'] = whitelist::ACTIVE;
         }
-        $basic_browse_query .= ' LEFT JOIN spot_blacklist ON (spots."spotter_id" = spot_blacklist."spotter_id" AND spot_blacklist."userid" IN (:userid1, :superuserid1) AND spot_blacklist."status" = :blstatus)' .
+        $basic_browse_query .= 
+            ' LEFT JOIN spot_blacklist ON (spots."spotter_id" = spot_blacklist."spotter_id" AND spot_blacklist."userid" IN (:userid1, :superuserid1) AND spot_blacklist."status" = :blstatus) ' .
             ' LEFT JOIN usersetinfo ON ((usersetinfo."setID" = spots."spotid") AND (usersetinfo."userID" = :userid2)) AND (usersetinfo."type" = :type1) ' .
             ' LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2."setID" = spots."spotid" AND extsetdata2."name" = \'setname\' AND extsetdata2."type" = :type2) ' .
             ' LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3."setID" = spots."spotid" AND extsetdata3."name" = \'xrated\' AND extsetdata3."type" = :type3) ' .
@@ -124,9 +133,10 @@ class spot_viewer
             $sql .= 'spots."description", "image", "image_file", "reference", spots."spotter_id", ';
         }
 
+        $sql .= ' (SELECT count(spot_whitelist.spotter_id) FROM spot_whitelist WHERE spots."spotter_id" = spot_whitelist."spotter_id" AND spot_whitelist."userid" IN (:userid, :superuserid) AND spot_whitelist."status" = :wlstatus) AS whitelisted, ' ;
         $sql .= '"title", spots."size", spots."spotid", spots."stamp", spots."reports", spots."comments", spots."poster",' .
             '"category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz", spots."url", ' . 
-            'extsetdata2."value" AS "bettername", spots."rating" AS spots_rating, spot_whitelist."spotter_id" AS "whitelisted", ' .
+            'extsetdata2."value" AS "bettername", spots."rating" AS spots_rating, ' .
             '(CASE WHEN usersetinfo."statusread" IS NULL OR usersetinfo."statusread" <> 1 THEN 0 ELSE 1 END) AS "alreadyread", ' .
             '(CASE WHEN usersetinfo."statusnzb" IS NULL OR usersetinfo."statusnzb" <> 1 THEN 0 ELSE 1 END) AS "nzbcreated", ' .
             '(CASE WHEN usersetinfo."statusint" IS NULL OR usersetinfo."statusint" <> 1 THEN 0 ELSE 1 END) AS "interesting", ' .
@@ -138,7 +148,6 @@ class spot_viewer
             $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL)';
         }
         $sql .= " ORDER BY {$this->Qorder}";
-        echo_debug_var_file('/tmp/foo', $sql);
         return $sql;
     }
     private function get_spots_count($interesting_only)
@@ -174,6 +183,8 @@ class spot_viewer
         $setres = array();
         if ($offset <= $this->int_sets) {
             $sql1 = $this->get_spots(TRUE);
+            file_put_contents('/tmp/foo', pdo_sql_debug($sql1, $this->input_arr). "\n", FILE_APPEND);
+
             $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if (!is_array($setres)) {
                 $setres = array();
@@ -183,6 +194,8 @@ class spot_viewer
 
         if ($setres_count < $perpage) {
             $sql2 = $this->get_spots(FALSE);
+            file_put_contents('/tmp/foo', pdo_sql_debug($sql2, $this->input_arr). "\n", FILE_APPEND);
+
             $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if (!is_array($setres2)) {
                 $setres2 = array();

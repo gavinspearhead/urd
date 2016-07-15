@@ -6432,21 +6432,17 @@ window.Modernizr = (function( window, document, undefined ) {
 
     Modernizr = {},
 
-
     docElement = document.documentElement,
 
     mod = 'modernizr',
     modElem = document.createElement(mod),
     mStyle = modElem.style,
 
-    inputElem  ,
-
+    inputElem,
 
     toString = {}.toString,
 
     prefixes = ' -webkit- -moz- -o- -ms- '.split(' '),
-
-
 
     tests = {},
     inputs = {},
@@ -6458,7 +6454,6 @@ window.Modernizr = (function( window, document, undefined ) {
 
     featureName, 
 
-
     injectElementWithStyles = function( rule, callback, nodes, testnames ) {
 
       var style, ret, node, docOverflow,
@@ -6467,7 +6462,7 @@ window.Modernizr = (function( window, document, undefined ) {
                 fakeBody = body || document.createElement('body');
 
       if ( parseInt(nodes, 10) ) {
-                      while ( nodes-- ) {
+          while ( nodes-- ) {
               node = document.createElement('div');
               node.id = testnames ? testnames[nodes] : mod + (nodes + 1);
               div.appendChild(node);
@@ -6528,24 +6523,17 @@ window.Modernizr = (function( window, document, undefined ) {
               F.prototype = target.prototype;
               var self = new F();
 
-              var result = target.apply(
-                  self,
-                  args.concat(slice.call(arguments))
-              );
+              var result = target.apply( self, args.concat(slice.call(arguments)));
               if (Object(result) === result) {
                   return result;
               }
               return self;
 
             } else {
-
-              return target.apply(
-                  that,
-                  args.concat(slice.call(arguments))
+              return target.apply( that, args.concat(slice.call(arguments))
               );
 
             }
-
         };
 
         return bound;
@@ -6573,13 +6561,13 @@ window.Modernizr = (function( window, document, undefined ) {
             var item = obj[props[i]];
             if ( item !== undefined) {
 
-                            if (elem === false) return props[i];
+                if (elem === false) return props[i];
 
-                            if (is(item, 'function')){
-                                return item.bind(elem || obj);
+                if (is(item, 'function')){
+                    return item.bind(elem || obj);
                 }
 
-                            return item;
+                return item;
             }
         }
         return false;
@@ -6599,9 +6587,8 @@ window.Modernizr = (function( window, document, undefined ) {
     };
     for ( var feature in tests ) {
         if ( hasOwnProp(tests, feature) ) {
-                                    featureName  = feature.toLowerCase();
+            featureName  = feature.toLowerCase();
             Modernizr[featureName] = tests[feature]();
-
             classes.push((Modernizr[featureName] ? '' : 'no-') + featureName);
         }
     }
@@ -6734,7 +6721,7 @@ function load_plot(id, type, extra)
                     fillColor: x.fillcolours[c_idx],
                     strokeColor: x.strokecolours[c_idx]
                 };
-                plot_data_sets.push (tmp);
+                plot_data_sets.push(tmp);
             }
             plot_data = {
                labels: x.labels,
@@ -6744,7 +6731,6 @@ function load_plot(id, type, extra)
                 plot_options.scaleXGridLinesStep = 9999;
                 plot_options.maxBarWidth = Math.round(width / 4);
 //                console.log(JSON.stringify(plot_data), JSON.stringify(plot_options));
-
                 my_chart = new Chart(ctx).StackedBar(plot_data, plot_options);
             } else if (x.type == 'horizontalbar') {
                 plot_options.maxBarWidth = Math.round(height / 4);

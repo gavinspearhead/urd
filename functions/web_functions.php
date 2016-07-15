@@ -1389,7 +1389,7 @@ function get_active_stylesheet(DatabaseConnection $db, $userid)
     global $smarty;
     $stylesheet = ($userid > 0) ? get_pref($db, 'stylesheet', $userid, '') : '';
     $template = get_template($db, $userid);
-    list($template_dir) = get_smarty_dirs($template) ;
+    list($template_dir) = get_smarty_dirs($template);
     $template_dir .= '/css';
     $default_stylesheet = get_config($db, 'default_stylesheet', 'light.css');
     if ($stylesheet == '' || !file_exists($template_dir . '/' . $stylesheet . '/' . $stylesheet . '.css') || !is_file($template_dir . '/' . $stylesheet. '/' . $stylesheet . '.css')) {

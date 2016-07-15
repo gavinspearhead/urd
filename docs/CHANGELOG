@@ -9,6 +9,7 @@
 - Fixed install instructions mistake for mcrypt
 - Added searching on spotter id
 - Fixed a bug in ordering sets on completeness
+- Fixed a bug where a set would be shown more than once if the spotter appeared on the whitelist more than once
 - Extensive testing with PHP 7
 - Added option to read IMDB watch list for automatic highlighting
 - Updated spots white/black list URLs 

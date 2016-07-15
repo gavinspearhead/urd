@@ -347,14 +347,14 @@ $uc = new urdd_client($db, $prefs['urdd_host'], $prefs['urdd_port'], $userid);
 
 if ($isadmin) {
     echo "<h3>Global configuration</h3>\n";
-    $prefs = filter_secret_data($prefs) ;
+    $prefs = filter_secret_data($prefs);
     ksort($prefs);
     debug_dump_str_key($prefs);
 }
 
 echo "<h3>User preferences</h3>\n";
 $uprefs = load_prefs($db, $userid);
-$uprefs = filter_secret_data($uprefs) ;
+$uprefs = filter_secret_data($uprefs);
 ksort($uprefs);
 debug_dump_str_key($uprefs);
 

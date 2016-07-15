@@ -32,13 +32,14 @@ require_once "$pathstat/../functions/html_includes.php";
 
 $types = urd_modules::get_stats_enabled_modules($db);
 
-$nametypes = array();
-$nametypes[stat_actions::DOWNLOAD] = 'stats_dl';
-$nametypes[stat_actions::PREVIEW]  = 'stats_pv';
-$nametypes[stat_actions::IMPORTNZB]= 'stats_im';
-$nametypes[stat_actions::GETNZB]   = 'stats_gt';
-$nametypes[stat_actions::WEBVIEW]  = 'stats_wv';
-$nametypes[stat_actions::POST]     = 'stats_ps';
+$nametypes = [
+    stat_actions::DOWNLOAD => 'stats_dl',
+    stat_actions::PREVIEW  => 'stats_pv',
+    stat_actions::IMPORTNZB=> 'stats_im',
+    stat_actions::GETNZB   => 'stats_gt',
+    stat_actions::WEBVIEW  => 'stats_wv',
+    stat_actions::POST     => 'stats_ps'
+];
 
 
 class colour_map
@@ -73,9 +74,9 @@ class colour_map
         $stylesheet = $tpl_dir . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $style . DIRECTORY_SEPARATOR . $style . '.css';
         $lines = file($stylesheet);
         if ($lines === FALSE) {
-            $lines = array();
+            $lines = [];
         }
-        $colours = array();
+        $colours = [];
 
         $colourmap = self::get_colour_map_cache($stylesheet);
         if ($colourmap !== FALSE) {
@@ -90,26 +91,26 @@ class colour_map
             }
         }
 
-        $colourmap = array(
-                'black' => array(0, 0, 0),
-                'white' => array(255, 255, 255),
-                'gray'  => array(190, 190, 190),
-                'red'   => array(255, 0, 0),
-                'blue'  => array(0, 0, 255),
-                'dimgray' => array(55,55,55),
-                // the default colors
-                'color1' => array(140, 60, 0),
-                'color2' => array(180, 150, 60),
-                'color3' => array(200, 200, 0),
-                'color4' => array(140, 210, 220),
-                'color5' => array(0, 200, 0),
-                'color6' => array(0, 200, 100),
-                'color7' => array(0, 200, 200),
-                'color8' => array(0, 100, 200),
-                'color9' => array(0, 0, 200),
-                'color10' => array(0,0,0),
-                'color11' => array(255,255,255),
-                );
+        $colourmap = [
+            'black' => [ 0, 0, 0],
+            'white' => [ 255, 255, 255],
+            'gray'  => [190, 190, 190],
+            'red'   => [255, 0, 0],
+            'blue'  => [0, 0, 255],
+            'dimgray' => [55,55,55],
+            // the default colors
+            'color1' => [140, 60, 0],
+            'color2' => [180, 150, 60],
+            'color3' => [200, 200, 0],
+            'color4' => [ 140, 210, 220],
+            'color5' => [0, 200, 0],
+            'color6' => [0, 200, 100],
+            'color7' => [0, 200, 200],
+            'color8' => [0, 100, 200],
+            'color9' => [0, 0, 200],
+            'color10' => [0,0,0],
+            'color11' => [255,255,255],
+        ];
 
         foreach ($colours as $idx => $col) {
             // override them with the ones we just read
@@ -121,7 +122,7 @@ class colour_map
     }
     public static function get_rgb_codes(DatabaseConnection $db, $userid, $alpha)
     { 
-        $colors = array();
+        $colors = [];
         $cm = self::get_colour_map($db, $userid);
         foreach ($cm as $k=>$c) {
             if (substr($k, 0, 5) == 'color') {
@@ -143,8 +144,8 @@ class colour_map
 
 $isadmin = urd_user_rights::is_admin($db, $userid);
 
-$possibletypes = array('activity', 'spots_details', 'supply', 'blank', 'spots_subcat');
-$possiblesubtypes = array('stats_dl','stats_pv','stats_im','stats_gt','stats_wv','stats_ps', '');
+$possibletypes = ['activity', 'spots_details', 'supply', 'blank', 'spots_subcat'];
+$possiblesubtypes = ['stats_dl','stats_pv','stats_im','stats_gt','stats_wv','stats_ps', ''];
 $type = get_request('type', 'blank');
 $subtype = get_request('subtype', 'stats_dl');
 $period = get_request('period', '');
@@ -167,7 +168,7 @@ function make_graph_data(DatabaseConnection $db, $userid, array $data)
         'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.6),
         'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
         'textcolour'=> colour_map::get_rgb_code($db, $userid, 1),
-        'titles'=> array(),
+        'titles'=> [],
     );
     $new_data = array_merge($new_data, $data);
 
@@ -179,7 +180,7 @@ function create_spot_data(DatabaseConnection $db, $userid, $graphtitle)
     assert(is_numeric($userid));
     global $LN;
     $data = get_spots_stats($db);
-    $stat_data = $labels = array();
+    $stat_data = $labels = [];
     $cats = SpotCategories::get_categories();
 
     foreach ($data as $key => $row) {
@@ -206,22 +207,21 @@ function get_spots_stats_by_dow(DatabaseConnection $db)
     $sql = "count(*) AS cnt, $time_stamp AS dow, \"category\" FROM spots GROUP BY $time_stamp, \"category\" ";
     $res = $db->select_query($sql);
     if ($res === FALSE) {
-        $res = array();
+        $res = [];
     }
-    $stats = array();
-    $titles = array();
+    $stats = $titles = [];
     foreach (range(1, 4) as $i) {
-            $stats[ $i ] = array_fill(0,7,0);
+            $stats[$i] = array_fill(0,7,0);
     }
     foreach (range(1,7) as $i) {
-        $labels [$i -1 ] = $LN['short_day_names'][$i];
+        $labels[$i -1] = $LN['short_day_names'][$i];
     }
-    $cats = SpotCategories::get_categories() ;
+    $cats = SpotCategories::get_categories();
     foreach ($res as $row) {
         $m = $row['dow'];
         $c = $row['category'] + 1;
 
-        $stats[ $c][$m] = $row['cnt'];
+        $stats[$c][$m] = $row['cnt'];
         $titles[$c-1] = $LN[$cats[$c-1]];
     }
 
@@ -240,18 +240,16 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
     $sql = "count(*) AS cnt, $time_extract AS mnth, \"category\" FROM spots GROUP BY $time_extract, \"category\"";
     $res = $db->select_query($sql);
     if ($res === FALSE) {
-        $res = array();
+        $res = [];
     }
-    $stats = array();
-    $labels = array();
-    $titles = array();
+    $stats =  $labels = $titles = [];
     $offset = 0;
     if ($period == 'month') {
         foreach (range(1,4) as $i) {
             $stats[ $i ] = array_fill(0, 11, 0);
         }
         foreach (range(1,12) as $i) {
-            $labels [] = html_entity_decode($LN['short_month_names'][$i]);
+            $labels[] = html_entity_decode($LN['short_month_names'][$i]);
         }   
         $offset = 1;
     } elseif ($period == 'week') {
@@ -260,21 +258,21 @@ function get_spots_stats_by_period(DatabaseConnection $db, $period)
             $max_week = max($max_week, (int) date('W', mktime(0, 0, 0, 12, $r)));
         }
         foreach (range(1,4) as $i) {
-            $stats[ $i ] = array_fill(0, $max_week, 0);
+            $stats[$i] = array_fill(0, $max_week, 0);
         }
         foreach (range(0, $max_week) as $i) {
-            $labels [] = $i + 1;
+            $labels[] = $i + 1;
         }
         $offset = 0;
     } elseif ($period == 'hour') {
         foreach (range(1, 4) as $i) {
-            $stats[ $i ] = array_fill(0, 23, 0);
+            $stats[$i] = array_fill(0, 23, 0);
         }
         foreach (range(0, 23) as $i) {
-            $labels [] = $i;
+            $labels[] = $i;
         } 
     }
-    $cats = SpotCategories::get_categories() ;
+    $cats = SpotCategories::get_categories();
     foreach ($res as $row) {
         $m = $row['mnth'];
         $c = $row['category'] + 1;
@@ -309,13 +307,13 @@ function get_sets_stats_date_day(DatabaseConnection $db, $type, $year, $month, $
     $daystr = $db->get_extract('day', '"timestamp"');
     $qry = "sum(\"value\") AS \"spot_sum\", $daystr AS \"day\" FROM stats WHERE \"action\"=:type AND $ystr=:year AND $monthstr=:month GROUP BY $daystr ORDER BY \"day\" DESC";
     $res = $db->select_query($qry, array(':type'=>$type, ':year'=>$year, ':month'=>$month));
-    $years = array();
+    $years = [];
     if (is_array($res)) {
         foreach ($res as $row) {
             $years[ $row['day'] ] = $row ['spot_sum'];
         }
     } else {
-        $years = array(0 => 0);
+        $years = [0 => 0];
     }
     foreach (range(0,$days_per_month) as $i) {
         if (!isset($years[$i])) { 
@@ -333,14 +331,14 @@ function get_sets_stats_date_month(DatabaseConnection $db, $type, $year)
     $monthstr = $db->get_extract('month', '"timestamp"');
     $qry = "sum(\"value\") AS \"spot_sum\", $monthstr AS \"month\" FROM stats WHERE \"action\"=:type AND $ystr = :year GROUP BY $monthstr ORDER BY \"month\" DESC";
     $res = $db->select_query($qry, array(':type'=>$type, ':year'=>$year));
-    $years = array();
+    $years = [];
 
     if (is_array($res)) {
         foreach ($res as $row) {
             $years[ $row['month'] -1 ] = $row['spot_sum'];
         }
-            } else {
-        $years = array(0 => 0);
+    } else {
+        $years = [0 => 0];
     }
     foreach (range(0,11) as $i) {
         if (!isset($years[$i])) { 
@@ -357,14 +355,14 @@ function get_sets_stats_date(DatabaseConnection $db, $type)
     $ystr = $db->get_extract('year', '"timestamp"');
     $qry = "sum(\"value\") AS \"spot_sum\", $ystr AS \"year\" FROM stats WHERE \"action\"=:type GROUP BY $ystr ORDER BY \"year\" DESC";
     $res = $db->select_query($qry, array(':type'=>$type));
-    $years = array();
+    $years = [];
 
     if (is_array($res)) {
         foreach ($res as $row) {
             $years[ $row['year'] ] = (int)$row['spot_sum'];
         }
     } else {
-        $years = array(0 => 0);
+        $years = [0 => 0];
     }
 
     return $years;
@@ -408,18 +406,18 @@ function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $y
         $labels = array_keys($data1);
 
         foreach($labels as $key => $val) {
-            $data ['labels'][] = $LN['short_month_names'][$val+1];
+            $data['labels'][] = $LN['short_month_names'][$val+1];
         }
-        $data ['data'] = array(array_values($data1), array_values($data2), array_values($data3));
+        $data['data'] = array(array_values($data1), array_values($data2), array_values($data3));
     } else {
         $days_per_month = date('t', mktime(0, 0, 0, $month, 1, $year));
         $data1 = get_sets_stats_date_day($db, stat_actions::SPOT_COUNT, $year, $month, $days_per_month);
         $data2 = get_sets_stats_date_day($db, stat_actions::SET_COUNT, $year, $month, $days_per_month);
         $data3 = get_sets_stats_date_day($db, stat_actions::RSS_COUNT, $year, $month, $days_per_month);
-        $data ['data'] = array(array_values($data1), array_values($data2), array_values($data3));
+        $data['data'] = array(array_values($data1), array_values($data2), array_values($data3));
         foreach(range(1, $days_per_month) as $d) {
             $dow = get_dow($d, $month, $year);
-            $data['labels'] [] = html_entity_decode(get_array($LN['short_day_names'], $dow, date('D', mktime(0, 0, 0, $month, $d, $year)))) ." $d";
+            $data['labels'][] = html_entity_decode(get_array($LN['short_day_names'], $dow, date('D', mktime(0, 0, 0, $month, $d, $year)))) ." $d";
         }
         
     }
@@ -433,9 +431,9 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
     if (!in_array($subcat, array('a', 'b', 'c', 'd', 'z'))) {
         $data = array(
             'type'=> 'empty',
-            'data'=> array(),
-            'colours'=> array(),
-            'labels'=>array(),
+            'data'=> [],
+            'colours'=> [],
+            'labels'=>[],
             'title'=> '');
         return_result($data);
     }
@@ -462,7 +460,7 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
         }
     }
     
-    $s = array();
+    $s = [];
     foreach ($stats as $k => $v) {
         $subcat_ln = trim(to_ln(SpotCategories::Cat2Desc($cat, $k)));
         if ($subcat_ln == '??') {
@@ -486,7 +484,7 @@ function spots_per_subcat(DatabaseConnection $db, $userid, $cat, $subcat)
         'data'=> array($data),
         'labels'=>$labels,
         'title'=> to_ln(SpotCategories::HeadCat2Desc($cat)),
-        'titles'=>array()));
+        'titles'=>[]));
     return_result($data);
 }
 
@@ -496,7 +494,7 @@ function get_stats_by_month(DatabaseConnection $db, $userid, $type, $admin, $yea
     global $LN;
     $ystr = $db->get_extract('year', '"timestamp"');
     $mstr = $db->get_extract('month', '"timestamp"');
-    $input_arr = array( ':type1' => $type);
+    $input_arr = array(':type1' => $type);
     if ($year !== NULL) {
         $input_arr[':year1'] = $year;
         $qyear1 = "$ystr = :year1";
@@ -521,11 +519,9 @@ QRY1;
 
     $res = $db->select_query($qry, $input_arr);
     if (!is_array($res)) {
-        $res = array();
+        $res = [];
     }
-    $data = array();
-    $users = array();
-    $months = array();
+    $data = $users = $months = [];
     $maxval = 0;
 
     foreach($res as $row) {
@@ -554,8 +550,7 @@ QRY1;
     if ($sizeorcount == 'size') {
         list($d, $suffix, $factor) = format_size($maxval, 'h', $LN['byte_short'], 1024, 0);
     } 
-    $new_data = array();
-    $row_template = array();
+    $new_data = $row_template = [];
     foreach (range(1,12) as $month) {
         $row_template[$month] = 0;
     }
@@ -573,7 +568,7 @@ QRY1;
         }
         $new_data[$name] = array_values($tmp_data);
     }
-    $data = array_values($new_data);
+    $data = array_map('array_values', array_values($new_data));
     foreach($users as &$u) {
         if ($u == '__anonymous') {
             $u = $LN['unknown'];
@@ -621,11 +616,9 @@ function get_stats_by_year(DatabaseConnection $db, $userid, $type, $admin, $from
 QRY1;
     $res = $db->select_query($qry, $input_arr);
     if (!is_array($res)) {
-        $res = array();
+        $res = [];
     }
-    $data = array();
-    $users = array();
-    $years = array();
+    $data = $users = $years = [];
     $maxval = 0;
 
     foreach($res as $row) {
@@ -644,7 +637,7 @@ QRY1;
     }
     if ($admin) {
         foreach(get_all_users($db) as $u) {
-            $users[ $u ] = $u;
+            $users[$u] = $u;
         }
     }
     ksort($users);
@@ -653,13 +646,12 @@ QRY1;
     if ($sizeorcount == 'size') {
         list($d, $suffix, $factor) = format_size($maxval, 'h', $LN['byte_short'], 1024, 0);
     } 
-    $new_data = array();
-    $row_template = array();
+    $new_data = $row_template = [];
     foreach ($years as $year) {
         $row_template[$year] = 0;
     }
     foreach ($users as $user) {
-        $new_data [$user] = $row_template;
+        $new_data[$user] = $row_template;
     }
 
     foreach($data as $name => $yv) {
@@ -671,14 +663,14 @@ QRY1;
                 $tmp_data[$year] = $v;
             }
         }
-        $new_data[$name] = array_values($tmp_data);
-    }
+        $new_data[$name] = $tmp_data;
+    } 
     foreach($users as &$u) {
         if ($u == '__anonymous') {
             $u = $LN['unknown'];
         }
     }
-    $data = array_values($new_data);
+    $data = array_map('array_values', array_values($new_data));
     $legend = array_values($users);
     $labels = array_keys($row_template);
     $data = make_graph_data($db, $userid, array(
@@ -711,6 +703,7 @@ function get_stats_by_day(DatabaseConnection $db, $userid, $type, $admin, $year,
     if ($month === NULL) {
         $month = date('m', $now);
     }
+    
     $input_arr = array(':type1'=>$type,  ':year1'=>$year, ':month1'=>$month);
     $timestamp = strtotime("$year/$month/1 00:00");
     $max_month = date('t', $timestamp);
@@ -736,10 +729,9 @@ QRY1;
 
     $res = $db->select_query($qry, $input_arr);
     if (!is_array($res)) {
-        $res = array();
+        $res = [];
     }
-    $data = array();
-    $users = array();
+    $data = $users = [];
     $maxval = 0;
 
     foreach($res as $row) {
@@ -758,7 +750,7 @@ QRY1;
     }
     if ($admin) {
         foreach(get_all_users($db) as $u) {
-            $users[ $u ] = $u;
+            $users[$u] = $u;
         }
     }
     ksort($users);
@@ -766,13 +758,12 @@ QRY1;
     if ($sizeorcount == 'size') {
         list($d, $suffix, $factor) = format_size($maxval, 'h', $LN['byte_short'], 1024, 0);
     } 
-    $new_data = array();
-    $row_template = array();
+    $new_data = $row_template = [];
     foreach (range(1, $max_month) as $day) {
         $row_template[$day] = 0;
     }
     foreach ($users as $user) {
-        $new_data [$user] = $row_template;
+        $new_data[$user] = $row_template;
     }
 
     foreach($data as $name => $dv) {
@@ -791,7 +782,7 @@ QRY1;
             $u = $LN['unknown'];
         }
     }
-    $data = array_values($new_data);
+    $data = array_map('array_values', array_values($new_data));
     $legend = array_values($users);
     $labels = array_keys($row_template);
     $data = make_graph_data($db, $userid, array(
@@ -819,26 +810,26 @@ switch ($type) {
             get_stats_by_year($db, $userid, $atype, $isadmin, 0, $sizeorcount, html_entity_decode( $graphtitle));
         } elseif ($period == 'months') {
             $graphtitle =  $graphtitle . ' - ' . $year;
-            get_stats_by_month($db, $userid, $atype, $isadmin, $year, $sizeorcount,  html_entity_decode($graphtitle));
+            get_stats_by_month($db, $userid, $atype, $isadmin, $year, $sizeorcount, html_entity_decode($graphtitle));
         } elseif ($period == 'days') {
             $graphtitle =  $graphtitle . ' - ' . $LN['month_names'][$month];
-            get_stats_by_day($db, $userid, $atype, $isadmin, $year, $month, $sizeorcount,  html_entity_decode($graphtitle));
+            get_stats_by_day($db, $userid, $atype, $isadmin, $year, $month, $sizeorcount, html_entity_decode($graphtitle));
         }
         break;
 
     case 'spots_details':
         if ($period == 'hour') {
             $graphtitle = $LN['stats_spotsbyhour'];
-            create_spot_graph_period($db, $userid,  html_entity_decode($graphtitle), 'hour');
+            create_spot_graph_period($db, $userid, html_entity_decode($graphtitle), 'hour');
         } elseif ($period == 'dow') {
             $graphtitle = $LN['stats_spotsbydow'];
-            create_spot_graph_period($db, $userid,  html_entity_decode($graphtitle), 'dow');
+            create_spot_graph_period($db, $userid, html_entity_decode($graphtitle), 'dow');
         } elseif ($period == 'week') {
             $graphtitle = $LN['stats_spotsbyweek'];
-            create_spot_graph_period($db, $userid,  html_entity_decode($graphtitle), 'week');
+            create_spot_graph_period($db, $userid, html_entity_decode($graphtitle), 'week');
         } elseif ($period == 'month') {
             $graphtitle = $LN['stats_spotsbymonth'];
-            create_spot_graph_period($db, $userid,  html_entity_decode($graphtitle), 'month');
+            create_spot_graph_period($db, $userid, html_entity_decode($graphtitle), 'month');
         } else {
             $graphtitle = $LN['menuspots'];
             create_spot_data($db, $userid, $graphtitle);
@@ -848,13 +839,13 @@ switch ($type) {
         if ($period == 'day') {
             $month = get_request('month', 1);
             $graphtitle = $LN['menubrowsesets'] . ' ' . $LN['month_names'][$month] . " $year";
-            create_spot_graph_date($db, $userid,  html_entity_decode($graphtitle), $year, $month);
+            create_spot_graph_date($db, $userid, html_entity_decode($graphtitle), $year, $month);
         } elseif ($period == 'month') {
             $graphtitle = $LN['menubrowsesets'] . " $year";
-            create_spot_graph_date($db, $userid,  html_entity_decode($graphtitle), $year);
+            create_spot_graph_date($db, $userid, html_entity_decode($graphtitle), $year);
         } elseif ($period == 'year') {
             $graphtitle = $LN['menubrowsesets'];
-            create_spot_supply_year($db, $userid,  html_entity_decode($graphtitle));
+            create_spot_supply_year($db, $userid, html_entity_decode($graphtitle));
         }
         break;
     case 'spots_subcat':

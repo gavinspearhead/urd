@@ -86,7 +86,7 @@ function get_users_array(DatabaseConnection $db)
 function get_log_levels_array()
 {
     global $log_str;
-    $log_levels = array();
+    $log_levels = [];
 
     foreach ($log_str as $level => $log) {
         $log_levels[$level] = ucwords($log);
@@ -100,7 +100,7 @@ function get_groups_array()
     try {
         $groups_orig = read_system_groups();
     } catch (exception$e) {
-        $groups_orig = array();
+        $groups_orig = [];
     }
 
     sort($groups_orig);
@@ -186,7 +186,7 @@ function show_config(DatabaseConnection $db, $userid)
         $url_msg = verify_url($prefArray_root['baseurl']);
     }
     if (!isset($admin_email_msg)) {
-        $admin_email_msg = verify_email_address($prefArray_root['admin_email']) ;
+        $admin_email_msg = verify_email_address($prefArray_root['admin_email']);
     }
     if (!isset($unrar_path_msg)) {
         $unrar_path_msg = verify_prog($prefArray_root['unrar_path'], TRUE);
@@ -880,11 +880,11 @@ function show_config(DatabaseConnection $db, $userid)
             new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_module_viewfiles'], 'module[' . urd_modules::URD_CLASS_VIEWFILES . ']', $LN['config_module_viewfiles_msg'],
                 $module_msg[urd_modules::URD_CLASS_VIEWFILES], $module_config[urd_modules::URD_CLASS_VIEWFILES]),);
 
-    $format_strings = array();
+    $format_strings = [];
     foreach (urd_extsetinfo::$SETTYPES as $t) {
         $format_strings[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['settype'][$t], "settype_$t", $LN['settype_msg'][$t], $settype_msg[$t], $prefArray_root["settype_$t"]);
     }
-    $custom = array();
+    $custom = [];
     $custom_prefs = get_custom_prefs($db, user_status::SUPER_USERID);
     foreach( $custom_prefs as $key => $value) {
         $custom[] = new pref_custom_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_custom'], $key, $LN['pref_custom_msg'], '', $value);

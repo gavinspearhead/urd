@@ -308,7 +308,7 @@ function create_spot_data($db, array $spot_db_data, $userid, $nzb_segments, $ima
 
     $xml = convert_spot_to_xml($spot, $image_info, $nzb_segments);
 
-    $spot_hdr = $cat . $key . $subcats_str. '.' . $size . '.' . 10 . '.' . time() . '.' . generate_password(5) . '.' . generate_password(3) . '.' ;
+    $spot_hdr = $cat . $key . $subcats_str. '.' . $size . '.' . 10 . '.' . time() . '.' . generate_password(5) . '.' . generate_password(3) . '.';
     if ($tag != '') {
         $subject .=  '|' . $tag;
     }
