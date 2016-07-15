@@ -294,7 +294,7 @@ class nfo_parser
                 } else {
                     $decimals = 0;
                 }
-                $rv['rating'] = $matches[1]. ".$decimals";
+                $rv['rating'] = $matches[1] . ".$decimals";
                 $got_rating = TRUE;
             } elseif (!$got_year && preg_match('/<p>\w+day\s+\w+\s+\d+,\s+([0-9]{4})<\/p>/i', $line, $matches)) {
                 $rv['year'] = $matches[1];

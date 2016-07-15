@@ -6041,21 +6041,21 @@ function add_text(text, elem)
 * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
 * see CC0 Public Domain Dedication <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
-  var emRemToPx = function( value, scope, suffix ) {
+var emRemToPx = function( value, scope, suffix ) {
     if (!scope || value.toLowerCase().indexOf("rem") >= 0) {
-      scope = 'body';
+        scope = 'body';
     }
     if (suffix === true) {
-      suffix = 'px';
+        suffix = 'px';
     } else {
-      suffix = null;
+        suffix = null;
     }
     var multiplier = parseFloat(value);
     var scopeTest = $('<div style="display: none; font-size: 1em; margin: 0; padding:0; height: auto; line-height: 1; border:0;">&nbsp;</div>').appendTo(scope);
     var scopeVal = scopeTest.height();
     scopeTest.remove();
     return Math.round(multiplier * scopeVal) + suffix;
-  };
+};
 
 var sidebar = 0;
 
@@ -6067,9 +6067,9 @@ function show_sidebar(display)
         $('#topcontent').animate({ left: 0 }, 500, function() {} ); 
         $('#contentleft').animate( { 'margin-left' : -1 * (side_bar_width + 1) }, { 'duration': 500 });
         $('#searchbar').animate({ left: 0 }, 500, function() {
+            sidebar = 0;
             $('#topcontent').width('100%');
             $('#contentleft').outerWidth(0);
-            sidebar = 0;
             $('#sidebar_button').text('>>');
             // don't know why we need it ... but...
             update_widths('browsesubjecttd');
@@ -6119,71 +6119,36 @@ function init_rss_sliders()
 function load_side_bar(fn)
 {
     var type = $('#type').val();
-    var url;
+    var url, init_slider_fn;
     $('#sidebar_button').css('display', 'block');
     if (type == 'spots') {
         url = 'ajax_load_spot_sidebar.php';
-        $.post(url).done(function(html) {
-            var r = JSON.parse(html);
-            if (r.error != 0) {
-                update_message_bar(r.error);
-            } else {
-                $('#left_content').html(r.contents);
-                $('#reset_button').click(function() {
-                    clear_form('searchform');
-                    clear_form('sidebar_contents');
-                    clear_all_checkboxes(null);
-                    uncheck_all(null);
-                    init_spot_sliders();
-                });
-                $('#save_search_button').click(function() {
-                    do_command('add_search', '');
-                });
-                show_sidebar(false);
-                fn();
-            }
-        });
+        init_slider_fn = function() { clear_all_checkboxes(null); uncheck_all(null); init_spot_sliders; };
     } else if (type == 'groups') {
         url = 'ajax_load_browse_sidebar.php';
-        $.post(url).done(function(html) {
-            var r = JSON.parse(html);
-            if (r.error != 0) {
-                update_message_bar(r.error);
-            } else {
-                $('#left_content').html(r.contents);
-                $('#reset_button').click(function() {
-                    clear_form('sidebar_contents');
-                    clear_form('searchform');
-                    init_browse_sliders();
-                });
-                $('#save_search_button').click(function() {
-                    do_command('add_search', '');
-                });
-                show_sidebar(false);
-                fn();
-            }
-        });
+        init_slider_fn = init_browse_sliders;
     } else if (type == 'rss') {
         url = 'ajax_load_rss_sidebar.php';
-        $.post(url).done(function(html) {
-            var r = JSON.parse(html);
-            if (r.error != 0) {
-                update_message_bar(r.error);
-            } else {
-                $('#left_content').html(r.contents);
-                $('#reset_button').click(function() {
-                    clear_form('sidebar_contents');
-                    clear_form('searchform');
-                    init_rss_sliders();
-                });
-                $('#save_search_button').click(function() {
-                    do_command('add_search', '');
-                });
-                show_sidebar(false);
-                fn();
-            }
-        });
+        init_slider_fn = init_rss_sliders;
     }
+    $.post(url).done(function(html) {
+        var r = JSON.parse(html);
+        if (r.error != 0) {
+            update_message_bar(r.error);
+        } else {
+            $('#left_content').html(r.contents);
+            $('#reset_button').click(function() {
+                clear_form('sidebar_contents');
+                clear_form('searchform');
+                init_rss_sliders();
+            });
+            $('#save_search_button').click(function() {
+                do_command('add_search', '');
+            });
+            show_sidebar(false);
+            fn();
+        }
+    });
 }
 
 function uncheck_all(cat)
@@ -6384,6 +6349,7 @@ function do_command(command, message)
 
 function close_suggest(suggest_div)
 {
+    $('#' + suggest_div).html('');
     $('#' + suggest_div).hide();
 }
 
@@ -6412,7 +6378,7 @@ function suggest(type, suggest_div, text_bar, e)
             $('div.suggestion').mousedown( function () { 
                 close_suggest(suggest_div);
                 load_sets( { 'offset':'0', 'setid':$("input", this).val()} ); 
-            } );
+            });
             text_bar.blur( function () { close_suggest(suggest_div); return false; } );
             $(document).keydown(function(e) { // close on ESC
                 if (e.which == 27) { close_suggest(suggest_div); return false; } } );
@@ -6429,115 +6395,100 @@ function suggest(type, suggest_div, text_bar, e)
 window.Modernizr = (function( window, document, undefined ) {
 
     var version = '2.8.3',
-
     Modernizr = {},
-
     docElement = document.documentElement,
-
     mod = 'modernizr',
     modElem = document.createElement(mod),
     mStyle = modElem.style,
-
     inputElem,
-
     toString = {}.toString,
-
     prefixes = ' -webkit- -moz- -o- -ms- '.split(' '),
-
     tests = {},
     inputs = {},
     attrs = {},
-
     classes = [],
-
     slice = classes.slice,
-
     featureName, 
-
+    
     injectElementWithStyles = function( rule, callback, nodes, testnames ) {
 
-      var style, ret, node, docOverflow,
-          div = document.createElement('div'),
-                body = document.body,
-                fakeBody = body || document.createElement('body');
+        var style, ret, node, docOverflow,
+        div = document.createElement('div'),
+        body = document.body,
+        fakeBody = body || document.createElement('body');
 
-      if ( parseInt(nodes, 10) ) {
-          while ( nodes-- ) {
-              node = document.createElement('div');
-              node.id = testnames ? testnames[nodes] : mod + (nodes + 1);
-              div.appendChild(node);
-          }
-      }
+        if ( parseInt(nodes, 10) ) {
+            while ( nodes-- ) {
+                node = document.createElement('div');
+                node.id = testnames ? testnames[nodes] : mod + (nodes + 1);
+                div.appendChild(node);
+            }
+        }
 
-                style = ['&#173;','<style id="s', mod, '">', rule, '</style>'].join('');
-      div.id = mod;
-          (body ? div : fakeBody).innerHTML += style;
-      fakeBody.appendChild(div);
-      if ( !body ) {
-          fakeBody.style.background = '';
-          fakeBody.style.overflow = 'hidden';
-          docOverflow = docElement.style.overflow;
-          docElement.style.overflow = 'hidden';
-          docElement.appendChild(fakeBody);
-      }
+        style = ['&#173;','<style id="s', mod, '">', rule, '</style>'].join('');
+        div.id = mod;
+        (body ? div : fakeBody).innerHTML += style;
+        fakeBody.appendChild(div);
+        if ( !body ) {
+            fakeBody.style.background = '';
+            fakeBody.style.overflow = 'hidden';
+            docOverflow = docElement.style.overflow;
+            docElement.style.overflow = 'hidden';
+            docElement.appendChild(fakeBody);
+        }
 
-      ret = callback(div, rule);
-      if ( !body ) {
-          fakeBody.parentNode.removeChild(fakeBody);
-          docElement.style.overflow = docOverflow;
-      } else {
-          div.parentNode.removeChild(div);
-      }
+        ret = callback(div, rule);
+        if ( !body ) {
+            fakeBody.parentNode.removeChild(fakeBody);
+            docElement.style.overflow = docOverflow;
+        } else {
+            div.parentNode.removeChild(div);
+        }
 
-      return !!ret;
+        return !!ret;
 
     },
     _hasOwnProperty = ({}).hasOwnProperty, hasOwnProp;
 
     if ( !is(_hasOwnProperty, 'undefined') && !is(_hasOwnProperty.call, 'undefined') ) {
-      hasOwnProp = function (object, property) {
-        return _hasOwnProperty.call(object, property);
-      };
+        hasOwnProp = function (object, property) {
+            return _hasOwnProperty.call(object, property);
+        };
     }
     else {
-      hasOwnProp = function (object, property) { 
-        return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
-      };
+        hasOwnProp = function (object, property) { 
+            return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
+        };
     }
 
     if (!Function.prototype.bind) {
-      Function.prototype.bind = function bind(that) {
+        Function.prototype.bind = function bind(that) {
 
-        var target = this;
+            var target = this;
 
-        if (typeof target != "function") {
-            throw new TypeError();
-        }
-
-        var args = slice.call(arguments, 1),
-            bound = function () {
-
-            if (this instanceof bound) {
-
-              var F = function(){};
-              F.prototype = target.prototype;
-              var self = new F();
-
-              var result = target.apply( self, args.concat(slice.call(arguments)));
-              if (Object(result) === result) {
-                  return result;
-              }
-              return self;
-
-            } else {
-              return target.apply( that, args.concat(slice.call(arguments))
-              );
-
+            if (typeof target != "function") {
+                throw new TypeError();
             }
-        };
 
-        return bound;
-      };
+            var args = slice.call(arguments, 1), bound = function () {
+                if (this instanceof bound) {
+
+                    var F = function(){};
+                    F.prototype = target.prototype;
+                    var self = new F();
+
+                    var result = target.apply( self, args.concat(slice.call(arguments)));
+                    if (Object(result) === result) {
+                        return result;
+                    }
+                    return self;
+
+                } else {
+                    return target.apply( that, args.concat(slice.call(arguments)));
+                }
+            };
+            return bound;
+        };
     }
 
     function setCss( str ) {
@@ -6576,11 +6527,11 @@ window.Modernizr = (function( window, document, undefined ) {
         var bool;
 
         if(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
-          bool = true;
+            bool = true;
         } else {
-          injectElementWithStyles(['@media (',prefixes.join('touch-enabled),('),mod,')','{#modernizr{top:9px;position:absolute}}'].join(''), function( node ) {
-            bool = node.offsetTop === 9;
-          });
+            injectElementWithStyles(['@media (',prefixes.join('touch-enabled),('),mod,')','{#modernizr{top:9px;position:absolute}}'].join(''), function( node ) {
+                bool = node.offsetTop === 9;
+            });
         }
 
         return bool;
@@ -6593,37 +6544,35 @@ window.Modernizr = (function( window, document, undefined ) {
         }
     }
 
-     Modernizr.addTest = function ( feature, test ) {
-       if ( typeof feature == 'object' ) {
-         for ( var key in feature ) {
-           if ( hasOwnProp( feature, key ) ) {
-             Modernizr.addTest( key, feature[ key ] );
-           }
-         }
-       } else {
+    Modernizr.addTest = function ( feature, test ) {
+        if ( typeof feature == 'object' ) {
+            for ( var key in feature ) {
+                if ( hasOwnProp( feature, key ) ) {
+                    Modernizr.addTest( key, feature[ key ] );
+                }
+            }
+        } else {
+            feature = feature.toLowerCase();
+            if ( Modernizr[feature] !== undefined ) {
+                return Modernizr;
+            }
 
-         feature = feature.toLowerCase();
+            test = typeof test == 'function' ? test() : test;
 
-         if ( Modernizr[feature] !== undefined ) {
-          return Modernizr;
-         }
+            if (typeof enableClasses !== "undefined" && enableClasses) {
+                docElement.className += ' ' + (test ? '' : 'no-') + feature;
+            }
+            Modernizr[feature] = test;
 
-         test = typeof test == 'function' ? test() : test;
+        }
 
-         if (typeof enableClasses !== "undefined" && enableClasses) {
-           docElement.className += ' ' + (test ? '' : 'no-') + feature;
-         }
-         Modernizr[feature] = test;
-
-       }
-
-       return Modernizr; 
-     };
+        return Modernizr; 
+    };
     setCss('');
     modElem = inputElem = null;
-    Modernizr._version      = version;
-    Modernizr._prefixes     = prefixes;
-    Modernizr.testStyles    = injectElementWithStyles;
+    Modernizr._version   = version;
+    Modernizr._prefixes  = prefixes;
+    Modernizr.testStyles = injectElementWithStyles;
     return Modernizr;
 
 })(this, this.document);
@@ -6654,7 +6603,7 @@ function load_plot(id, type, extra)
     $("#" + id).attr({width:width,height:height})
     $.post(url, data).done(function(html) {
         var x = JSON.parse(html);
-        var plot_data = [ ];
+        var plot_data = [];
         var c_idx;
         for (var i = 0; i < x.data.length; i++) {
             c_idx = i % x.fillcolours.length;
@@ -6711,12 +6660,11 @@ function load_plot(id, type, extra)
             }
 
             var plot_data_sets = [];
-            var tmp, tmp1;
+            var tmp;
             for(var i = 0; i < x.data.length; i++) { 
                 c_idx = i % x.fillcolours.length;
-                tmp1 = x.data[i];
                 tmp = {
-                    data: tmp1,
+                    data: x.data[i],
                     title : x.titles[i],
                     fillColor: x.fillcolours[c_idx],
                     strokeColor: x.strokecolours[c_idx]
@@ -6730,7 +6678,6 @@ function load_plot(id, type, extra)
             if (x.type == 'stackedbar') {
                 plot_options.scaleXGridLinesStep = 9999;
                 plot_options.maxBarWidth = Math.round(width / 4);
-//                console.log(JSON.stringify(plot_data), JSON.stringify(plot_options));
                 my_chart = new Chart(ctx).StackedBar(plot_data, plot_options);
             } else if (x.type == 'horizontalbar') {
                 plot_options.maxBarWidth = Math.round(height / 4);
