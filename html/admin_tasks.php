@@ -29,17 +29,16 @@ require_once "$pathadt/../functions/html_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-$add_menu = array (
-    'actions'=>
-    array(
+$add_menu = [
+    'actions'=> [
         new menu_item2 ('continueall', 'admincontinue', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2 ('pauseall', 'adminpause', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2 ('cancelall', 'control_cancelall', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2 ('cleanall', 'admincleandb', urd_modules::URD_CLASS_GENERIC, '', 'command'),
-    )
-);
+    ]
+];
 
-$_allstatus = array (
+$_allstatus = [
     QUEUE_QUEUED,
     QUEUE_FINISHED,
     QUEUE_FAILED,
@@ -48,9 +47,9 @@ $_allstatus = array (
     QUEUE_CANCELLED,
     QUEUE_CRASH,
     QUEUE_REMOVED
-);
+];
 
-$times = array(
+$times = [
     0   => $LN['all'],
     1   => $LN['since'] . ' 1 ' . $LN['day'],
     2   => $LN['since'] . ' 2 ' . $LN['days'],
@@ -59,9 +58,9 @@ $times = array(
     30  => $LN['since'] . ' 1 ' . $LN['month'],
     60  => $LN['since'] . ' 2 ' . $LN['months'],
     365 => $LN['since'] . ' 1 ' . $LN['year']
-);
+];
 
-$allstatus = array(''=>'');
+$allstatus = [''=>''];
 foreach ($_allstatus as $s) {
     $allstatus[$s] = $LN['transfers_status_' . strtolower($s)];
 }
@@ -69,7 +68,7 @@ foreach ($_allstatus as $s) {
 asort($allstatus);
 init_smarty($LN['tasks_title'], 1, $add_menu);
 
-$smarty->assign(array(
+$smarty->assign([
     'allstatus' =>    $allstatus,
-    'alltimes' =>	  $times));
+    'alltimes' =>	  $times]);
 $smarty->display('admin_tasks.tpl');

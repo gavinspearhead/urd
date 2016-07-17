@@ -62,7 +62,6 @@ class feed_viewer
     private $Qnewfeed2 = '';
     private $Qnewfeed3 = '';
     private $Qfeed_id = '';
-
     private $minage = '';
     private $maxage = '';
     private $minsetsize = '';
@@ -70,12 +69,10 @@ class feed_viewer
     private $search = '';
     private $killflag = FALSE;
     private $categoryID;
-
     private $userid;
     private $db;
     private $now;
     private $search_type;
-
     private $totalsets = 0;
     private $int_sets = 0;
 
@@ -84,7 +81,7 @@ class feed_viewer
         $this->db = $db;
         $this->userID = $userid;
         $this->now = time();
-        $this->input_arr = array();
+        $this->input_arr = [];
         $this->Qnewfeed1 = ' userfeedinfo."feedid" = rss_sets."rss_id" ';
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
@@ -162,7 +159,7 @@ class feed_viewer
             $sql1 = $this->get_sets(TRUE);
             $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if ($setres === FALSE) {
-                $setres = array();
+                $setres = [];
             }
         }
 
@@ -171,22 +168,22 @@ class feed_viewer
             $sql2 = $this->get_sets(FALSE);
             $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if ($setres2 === FALSE) {
-                $setres2 = array();
+                $setres2 = [];
             }
             $setres = array_merge($setres, $setres2);
         }
 
         // Get the set data
-        $allsets = array();
+        $allsets = [];
         // If no sets exist, create empty array:
         if (!is_array($setres)) {
-            $setres = array();
+            $setres = [];
         }
         $number = $offset;
 
         foreach ($setres as $arr) {
             // Show bar around interesting when applicable:
-            $thisset = array();
+            $thisset = [];
             $thisset['interesting'] = $arr['interesting'];
             $thisset['setid'] = $arr['setid'];
             $thisset['added'] = (is_array($_SESSION['setdata']) && in_setdata($arr['setid'], 'rss', $_SESSION['setdata'])) ? 1 : 0; // todo
@@ -483,12 +480,12 @@ try {
 
     init_smarty();
     if (!$only_rows) {
-        $smarty->assign(array(
+        $smarty->assign([
             'pages'=>        $pages,
             'lastpage'=>     $totalpages,
-            'currentpage'=>  $activepage));
+            'currentpage'=>  $activepage]);
     }
-    $smarty->assign(array(
+    $smarty->assign([
         'rssurl'=>              $rssurl,
         'sort'=>                $sets_viewer->get_sort(),
         'killflag'=>		    $sets_viewer->get_killflag(),
@@ -498,11 +495,11 @@ try {
         'USERSETTYPE_GROUP'=>   USERSETTYPE_GROUP,
         'USERSETTYPE_RSS'=>     USERSETTYPE_RSS,
         'only_rows'=>           $only_rows,
-        'view_size'=>           $view_size));
+        'view_size'=>           $view_size]);
 
     $content = $smarty->fetch('ajax_rsssets.tpl');
 
-    return_result(array(
+    return_result([
         'content' => $content,
         'minsetsize' => $minsetsize,
         'maxsetsize' => $maxsetsize,
@@ -512,8 +509,8 @@ try {
         'minrating' => $minrating,
         'maxrating' => $maxrating,
         'last_line' => $last_line
-    ));
+    ]);
 
 } catch (exception $e) {
-    return_result(array('error' => $e->getMessage()));
+    return_result(['error' => $e->getMessage()]);
 }

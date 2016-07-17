@@ -395,10 +395,10 @@ try {
             $contents = $smarty->fetch('formatsetname.tpl');
             break;
         case 'setguessesisafe': // Guess extsetinfo stuff (safe: User needs to approve before we send it to urdland)
-            urd_extsetinfo::guess_extsetinfo_safe($db,$subject, $type, $userid);
+            urd_extsetinfo::guess_extsetinfo_safe($db, $subject, $type, $userid);
             break;
         case 'setbasketguessesi': // Guess extsetinfo stuff for everything in the basket (not safe, assume that our analysis is flawless)
-            urd_extsetinfo::basketguess_extsetinfo($db,$subject, $type, $userid);
+            urd_extsetinfo::basketguess_extsetinfo($db, $subject, $type, $userid);
             break;
         case 'setguessesi': // Guess extsetinfo stuff (not safe, assume that our analysis is flawless)
             $newname = urd_extsetinfo::guess_extsetinfo($db,$subject, $type, $userid);

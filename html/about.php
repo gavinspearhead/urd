@@ -29,7 +29,7 @@ $pathab = realpath(dirname(__FILE__));
 require_once "$pathab/../functions/html_includes.php";
 
 init_smarty($LN['about_title'], 1);
-$smarty->assign(array(
+$smarty->assign([
     'copyright'=> urd_version::get_copyright(),
-    'status'=> urd_version::get_status()));
+    'status'=> urd_version::get_status()]);
 $smarty->display('about.tpl');

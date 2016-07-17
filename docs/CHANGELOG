@@ -10,11 +10,12 @@
 - Added searching on spotter id
 - Fixed a bug in ordering sets on completeness
 - Fixed a bug where a set would be shown more than once if the spotter appeared on the whitelist more than once
+- Fixed a bug in selecting the default RSS feed in preferences
 - Extensive testing with PHP 7
 - Added option to read IMDB watch list for automatic highlighting
 - Updated spots white/black list URLs 
 - Updated smarty to 3.1.29
-- Updated to jquery 3.0.0
+- Updated to jquery 3.1.0
 
 
 

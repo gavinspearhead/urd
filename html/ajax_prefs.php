@@ -120,7 +120,7 @@ function get_groups_array(DatabaseConnection $db, $userid)
 function get_feeds_array(DatabaseConnection $db, $userid)
 {
     global $LN;
-    $categories = get_used_categories_group($db, $userid);
+    $categories = get_used_categories_rss($db, $userid);
     $subscribedfeeds = subscribed_feeds_select($db, NULL, NULL, $categories, $userid);
     $feeds_array = array();
     $feeds_array['0'] = $LN['feeds_allgroups'];

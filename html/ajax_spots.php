@@ -62,7 +62,6 @@ class spot_viewer
     private $Qadult = '';
     private $Qrating = '';
     private $Qreference = '';
-
     private $minage = '';
     private $maxage = '';
     private $minsetsize = '';
@@ -70,7 +69,6 @@ class spot_viewer
     private $search = '';
     private $killflag = FALSE;
     private $categoryID;
-
     private $userid = -1;
     private $db = NULL;
     private $now = 0;
@@ -85,7 +83,7 @@ class spot_viewer
         $this->db = &$db;
         $this->userID = $userid;
         $this->now = time();
-        $this->input_arr = array();
+        $this->input_arr = [];
         $this->type = $type;
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     }
@@ -98,9 +96,6 @@ class spot_viewer
             if ($this->type == 1) {
                 $basic_browse_query .= ' LEFT JOIN spot_images ON (spots."spotid" = spot_images."spotid") ';
             }
-            $this->input_arr[':userid'] = $this->userID;
-            $this->input_arr[':superuserid'] = user_status::SUPER_USERID;
-            $this->input_arr[':wlstatus'] = whitelist::ACTIVE;
         }
         $basic_browse_query .= 
             ' LEFT JOIN spot_blacklist ON (spots."spotter_id" = spot_blacklist."spotter_id" AND spot_blacklist."userid" IN (:userid1, :superuserid1) AND spot_blacklist."status" = :blstatus) ' .
@@ -139,6 +134,9 @@ class spot_viewer
             $sql .= ' AND (usersetinfo."statusint" != 1 OR usersetinfo."statusint" IS NULL)';
         }
         $sql .= " ORDER BY {$this->Qorder}";
+        $this->input_arr[':userid'] = $this->userID;
+        $this->input_arr[':superuserid'] = user_status::SUPER_USERID;
+        $this->input_arr[':wlstatus'] = whitelist::ACTIVE;
         return $sql;
     }
     private function get_spots_count($interesting_only)
@@ -193,10 +191,10 @@ class spot_viewer
         }
 
         // Get the set data
-        $allsets = array();
+        $allsets = [];
         // If no sets exist, create empty array:
         if (!is_array($setres)) {
-            $setres = array();
+            $setres = [];
         }
         $number = $offset;
         try {
@@ -207,7 +205,7 @@ class spot_viewer
         }
         foreach ($setres as $arr) {
             // Show bar around interesting when applicable:
-            $thisset = array();
+            $thisset = [];
             $thisset['interesting'] = $arr['interesting'];
             $thisset['spotid'] = $arr['spotid'];
             $thisset['comments'] = is_numeric($arr['comments']) ? $arr['comments'] : 0;
@@ -254,7 +252,7 @@ class spot_viewer
                 $description = trim(db_decompress($arr['description']));
                 $description = link_to_url($this->db, $description, $userid);
                 $ubb = new UbbParse($description);
-                TagHandler::setDeniedTags( array() );
+                TagHandler::setDeniedTags( [] );
                 //TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
                 $thisset['description'] = insert_wbr($ubb->parse());
                 $thisset['first_two_words'] = get_first_two_words($thisset['subject']);
@@ -363,8 +361,8 @@ class spot_viewer
 
     public function set_qsubcat($subcats, $not_subcats)
     {
-        if ($subcats != array() ) {
-            $subcat_subqry = array();
+        if ($subcats != [] ) {
+            $subcat_subqry = [];
             foreach ($subcats as $s) {
                 if ($s[0] == $this->categoryID) {
                     $sc = $s[1];
@@ -382,7 +380,7 @@ class spot_viewer
                 }
             }
         }
-        if ($not_subcats != array() ) {
+        if ($not_subcats != [] ) {
             $this->Qsubcat .= ' AND NOT ( 0 = 1 ';
             foreach ($not_subcats as $s) {
                 if ($s[0] == $this->categoryID) {
@@ -569,10 +567,10 @@ try {
     $show_image = get_pref($db, 'show_image', $userid, FALSE);
     init_smarty();
     $smarty->assign(array(
-        'rssurl' =>	        $rssurl, 
-        'isadmin' =>		$isadmin,
-        'sort' =>           $spots_viewer->get_sort(),
-        'killflag' =>		$spots_viewer->get_killflag() ? 1 : 0)
+        'rssurl' =>	   $rssurl, 
+        'isadmin' =>   $isadmin,
+        'sort' =>      $spots_viewer->get_sort(),
+        'killflag' =>  $spots_viewer->get_killflag() ? 1 : 0)
     );
 
     if (!$only_rows) {
@@ -581,7 +579,7 @@ try {
             'lastpage' =>		$totalpages,
             'currentpage' =>	$activepage)
         );
-   }
+    }
 
     $smarty->assign(array(
         'only_rows' =>          $only_rows,

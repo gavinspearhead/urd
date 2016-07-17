@@ -30,16 +30,15 @@ require_once "$pathvu/../functions/html_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-$add_menu = array (
-    'actions'=>
-    array(
+$add_menu = [
+    'actions'=> [
         new menu_item2('add_server','usenet_addnew',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('import_servers','import_servers',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('export_servers','export_servers',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('autoconfig','autoconfig',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('autoconfig_ext','autoconfig_ext',urd_modules::URD_CLASS_GENERIC, '', 'command'),
-    )
-);
+    ]
+];
 
 init_smarty($LN['usenet_title'], 1, $add_menu);
 

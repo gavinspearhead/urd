@@ -31,14 +31,13 @@ require_once "$pathvb/../functions/html_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-$add_menu = array (
-    'actions'=>
-    array(
+$add_menu = [
+    'actions'=> [
         new menu_item2('add_button', 'usenet_addnew', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('import_buttons', 'import_buttons', urd_modules::URD_CLASS_GENERIC, '','command'),
         new menu_item2('export_buttons', 'export_buttons', urd_modules::URD_CLASS_GENERIC, '','command'),
-    )
-);
+    ]
+];
 
 $title = $LN['buttons_title'];
 init_smarty($title, 1, $add_menu);

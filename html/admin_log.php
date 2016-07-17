@@ -49,7 +49,7 @@ if ($lines < 0) {
     $lines = MAX_LOG_LINES;
 }
 
-if (FALSE === in_array($sort, array ('date', 'time', 'level', 'msg'))) {
+if (FALSE === in_array($sort, ['date', 'time', 'level', 'msg'])) {
     $sort = 'date';
 }
 
@@ -61,18 +61,18 @@ if ($sort == 'date') {
     $internal_sort = $sort;
 }
 
-if (FALSE === in_array($sort_dir, array ('asc', 'desc'))) {
+if (FALSE === in_array($sort_dir, ['asc', 'desc'])) {
     $sort_dir = 'desc';
 }
 
 init_smarty($LN['log_title'], 1);
 
-$smarty->assign(array(
+$smarty->assign([
     'search'=> $search,
     'lines' => $lines,
     'log_str' => $log_str,
     'log_level' => $min_log_level,
     'sort'=> $sort,
-    'sort_dir' => $sort_dir_orig));
+    'sort_dir' => $sort_dir_orig]);
 
 $smarty->display('admin_log.tpl');

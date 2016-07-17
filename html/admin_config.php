@@ -30,14 +30,13 @@ require_once "$pathadc/../functions/html_includes.php";
 
 verify_access($db, NULL, TRUE, '', $userid, FALSE);
 
-$add_menu = array (
-    'actions'=>
-    array(
+$add_menu = [
+    'actions'=> [
         new menu_item2('import_config', 'settings_import', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('export_config', 'settings_export', urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2('reset_config', 'reset', urd_modules::URD_CLASS_GENERIC, $LN['reset'] . ' ' . $LN['config_title'], 'command'),
-    )
-);
+    ]
+];
 
 init_smarty($LN['config_title'], 1, $add_menu);
 $smarty->assign('source', 'config');

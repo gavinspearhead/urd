@@ -119,11 +119,11 @@ $(document).ready(function() {
     {else} 
         $('#divset_{$set.spotid}').addClass('setimgplus'); 
     {/if}
-    $('#divset_{$set.spotid}').click( function (e) { select_set('{$set.spotid}', 'spot', e); return false; } );
-    $('#td_set_{$set.spotid}').mouseup( function (e) { start_quickmenu('browse', '{$set.spotid}', {$USERSETTYPE_SPOT}, e); } );
-    $('#intimg_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
-    $('#wipe_img_{$set.spotid}').click( function () { mark_read('{$set.spotid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
-    $('#link_img_{$set.spotid}').click( function () { jump('{$set.anon_url|escape:javascript}', true); } );
+    $('#divset_{$set.spotid}').click( function(e) { select_set('{$set.spotid}', 'spot', e); return false; } );
+    $('#td_set_{$set.spotid}').mouseup( function(e) { start_quickmenu('browse', '{$set.spotid}', {$USERSETTYPE_SPOT}, e); } );
+    $('#intimg_{$set.spotid}').click( function() { mark_read('{$set.spotid}', 'interesting', {$USERSETTYPE_SPOT} ); } );
+    $('#wipe_img_{$set.spotid}').click( function() { mark_read('{$set.spotid}', 'wipe', {$USERSETTYPE_SPOT} ); } );
+    $('#link_img_{$set.spotid}').click( function() { jump('{$set.anon_url|escape:javascript}', true); } );
     });
 </script>
 {/strip}

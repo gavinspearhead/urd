@@ -133,6 +133,7 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
     $smarty->assign($LN2);
     $smarty->force_compile = true; // debug XXX
     unset($LN2);
+    $smarty->loadFilter('output', 'trimwhitespace');
     $smarty->assign(array(
         'title' => $LN['urdname'] . ' - ' . $title,
         'allow_robots' => get_config($db, 'allow_robots', 0),

@@ -62,7 +62,6 @@ class group_viewer
     private $Qnewgroup3 = '';
     private $Qage = '';
     private $Qcomplete = '';
-
     private $minage = '';
     private $maxage = '';
     private $minsetsize = '';
@@ -71,13 +70,11 @@ class group_viewer
     private $killflag = FALSE;
     private $rss_flag = '';
     private $categoryID = '';
-
     private $userid;
     private $db;
     private $now;
     private $search_type;
     private $greatest;
-
     private $totalsets = 0;
     private $int_sets = 0;
 
