@@ -79,6 +79,7 @@ $flag = get_request('flag', '');
 $userid = get_request('userid', 0, 'is_numeric');
 $type = get_request('type', FALSE);
 $search = html_entity_decode(trim(get_request('search', '')));
+$now = time();
 
 if ($maxage == '') {
     $maxage = 0;
@@ -134,7 +135,7 @@ if ($type == USERSETTYPE_GROUP) {
 }
 
 $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
-$build_date = date ('r', time());
+$build_date = date ('r', $now);
 
 $version = urd_version::get_version();
 
@@ -252,15 +253,16 @@ if ($type == USERSETTYPE_GROUP) {
     }
 }
 
+
 if ($maxage > 0) {
     $maxage = $maxage * 3600 * 24;
     $input_arr [':maxage'] = $maxage;
     if ($type == USERSETTYPE_GROUP) {
-        $Qage = 'AND (('. time() . ' - "date")) <= :maxage ';
+        $Qage = 'AND (('. $now . ' - "date")) <= :maxage ';
     } elseif ($type == USERSETTYPE_RSS) {
-        $Qage = 'AND (('. time() . ' - "timestamp")) <= :maxage ';
+        $Qage = 'AND (('. $now . ' - "timestamp")) <= :maxage ';
     } elseif ($type == USERSETTYPE_SPOT) {
-        $Qage = 'AND (('. time() . ' - "stamp")) <= :maxage ';
+        $Qage = 'AND (('. $now . ' - "stamp")) <= :maxage ';
     }
 }
 
@@ -269,7 +271,6 @@ if ($flag == 'interesting' && $userid != 0) {
     $Qflag = ' AND usersetinfo."statusint" = 1 ';
 }
 
-$now = time();
 
 $input_arr [':userid'] = $userid;
 if ($type == USERSETTYPE_GROUP) {

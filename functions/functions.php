@@ -308,14 +308,14 @@ function insert_queue_status(DatabaseConnection $db, $id, $description, $status,
 function update_queue_norestart(DatabaseConnection $db, $id)
 {
     assert(is_numeric($id));
-    $db->update_query_2('queueinfo', array('restart'=>0, 'lastupdate'=>time()), '"ID"=?', array($id));
+    $db->update_query_2('queueinfo', ['restart'=>0, 'lastupdate'=>time()], '"ID"=?', [$id]);
 }
 
 function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NULL, $progress=NULL, $comments=NULL, $paused=NULL)
 {
     echo_debug("Updating status $status; progress: $progress; ETA $eta; comments: $comments; paused: $paused", DEBUG_MAIN);
     assert(is_numeric($id));
-    $cols = array('lastupdate'=>time());
+    $cols = ['lastupdate'=>time()];
     if ($status !== NULL) {
         $cols['status'] = $status;
     }
@@ -336,7 +336,7 @@ function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NUL
         $cols['paused'] = ($paused?'1':'0');
     }
     try {
-        $db->update_query_2('queueinfo', $cols, '"ID"=?', array($id));
+        $db->update_query_2('queueinfo', $cols, '"ID"=?', [$id]);
     } catch (exception $e) {
         echo_debug($e->getMessage(), DEBUG_MAIN);
         throw $e;
@@ -457,7 +457,7 @@ function create_extset_download_name(DatabaseConnection $db, $setID)
     }
 
     // Initialise and store extsetdata in $value
-    $value = array();
+    $value = [];
 
     foreach ($res as $row) {
         $value[$row['name']] = $row['value'];
@@ -594,7 +594,7 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
         $now = time();
         foreach ($dlthreads as $id) {
             set_start_time($db, $dlid, $now);
-            usleep(500000);
+            usleep(250000);
             $uc->unpause($id);
         }
     }
@@ -856,7 +856,7 @@ function get_rar_files(DatabaseConnection $db, $postid)
         throw new exception('No files to post'); // Xxx make $LN var
     }
 
-    $rarfile_count = array();
+    $rarfile_count = [];
     foreach ($res as $row) {
         $rarfile_count[$row['rarfile']] = $row['rar_count'];
     }
@@ -1335,8 +1335,8 @@ function add_stat_data(DatabaseConnection $db, $action, $value, $userid)
     global $LN;
     if (!is_numeric($userid)) {
         assert(is_string($userid));
-        $rv = $db->select_query('"ID" FROM users WHERE "name"=?', array($userid));
-        if ($rv === FALSE) {
+        $rv = $db->select_query('"ID" FROM users WHERE "name"=:name', array(':name'=>$userid));
+        if (!isset($rv[0]['ID'])) {
             throw new exception ($LN['error_nosuchuser'] . ": $userid");
         }
         $userid = $rv[0]['ID'];
@@ -1430,7 +1430,7 @@ function set_all_spots_whitelist(DatabaseConnection $db, $whitelist, $userid)
 function get_all_spots_blacklist(DatabaseConnection $db, $userid=NULL)
 {
     $sql = '* FROM spot_blacklist';
-    $inputarr = array();
+    $inputarr = [];
     if ($userid !== NULL) {
         assert (is_numeric($userid));
         $sql .= ' WHERE "userid"=:userid ';
@@ -1449,7 +1449,7 @@ function get_all_spots_blacklist(DatabaseConnection $db, $userid=NULL)
 function get_all_spots_whitelist(DatabaseConnection $db, $userid=NULL)
 {
     $sql = '* FROM spot_whitelist';
-    $inputarr = array();
+    $inputarr = [];
     if ($userid !== NULL) {
         assert (is_numeric($userid));
         $inputarr[':userid'] = $userid;
@@ -1765,7 +1765,7 @@ function add_rss_url(DatabaseConnection $db, $name, $url, $subscribed, $expire, 
 function clear_all_spots_blacklist($db, $userid=NULL)
 {
     $where = '';
-    $input_arr = array();
+    $input_arr = [];
     if ($userid !== NULL) {
         assert(is_numeric($userid));
         $where = '"userid"=?';
@@ -2167,24 +2167,32 @@ function insert_group(DatabaseConnection $db, $group_name, $description, $expire
 function strip_filename_bits($dlname)
 {
     // Also, we do not want .001 / .002 in our set name, or r01:
+    $dlname = preg_replace([
     // And remove .part01, .part02 etc too
-    $dlname = preg_replace('/\.part(\d{1,3})\.(rar|r\d{2.3}|\d{3})?/i', '', $dlname);
+            '/\.part(\d{1,3})\.(rar|r\d{2.3}|\d{3})?/i', 
     // also remove the vol12+23 bits for par2 posts
-    $dlname = preg_replace('/\.vol(\d{1,3})\+\d{1,3}\.par2/i', '', $dlname);
+            '/\.vol(\d{1,3})\+\d{1,3}\.par2/i',
     //strip other known extensions
-    $dlname = preg_replace('/\.(sfv|nzb|par2|nfo|jpg|png|gif|rar|vob|arj|lzh|txt|htm|flac|mp3|avi|mkv|cue|log|wav|mp4|wmv|\d{3}|r\d{2,3})/i', '', $dlname);
+            '/\.(sfv|nzb|par2|nfo|jpg|png|gif|rar|vob|arj|lzh|txt|htm|flac|mp3|avi|mkv|cue|log|wav|mp4|wmv|srt|idx|7z|\d{3}|r\d{2,3})/i'
+            ],  '', $dlname);
+    //$dlname = preg_replace('/\.vol(\d{1,3})\+\d{1,3}\.par2/i', '', $dlname);
+    //$dlname = preg_replace('/\.(sfv|nzb|par2|nfo|jpg|png|gif|rar|vob|arj|lzh|txt|htm|flac|mp3|avi|mkv|cue|log|wav|mp4|wmv|\d{3}|r\d{2,3})/i', '', $dlname);
     // strip urls
     return trim($dlname);
 }
 
 function strip_garbage($dlname)
 {
+    $dlname = preg_replace([ 
     // removes spammy content from a post name
-    $dlname = preg_replace('/(http:\/\/([-a-z0-9]+\.)+[-a-z0-9]{1,6})|(www\.([-a-z0-9]+\.)*[-a-z0-9]{1,6})|(yenc)/i', '', $dlname);
+            '/(http:\/\/([-a-z0-9]+\.)+[-a-z0-9]{1,6})|(www\.([-a-z0-9]+\.)*[-a-z0-9]{1,6})|(yenc)/i', 
     // strip newsgroup names
-    $dlname = preg_replace('/((a.b)|(alt.binaries))(\.[-a-z0-9]+)+(@[-a-z0-9]+)?/i', '', $dlname);
+            '/((a.b)|(alt.binaries))(\.[-a-z0-9]+)+(@[-a-z0-9]+)?/i',
     // strip all weird charachters we don't need anyway
-    $dlname = preg_replace('/\-\/;:`\|+?[=~!@#$\\\%^&*,><]+/', '', $dlname);
+            '/\-\/;:`\|+?[=~!@#$\\\%^&*,><]+/'
+            ], '', $dlname);
+    //$dlname = preg_replace('/((a.b)|(alt.binaries))(\.[-a-z0-9]+)+(@[-a-z0-9]+)?/i', '', $dlname);
+    // $dlname = preg_replace('/\-\/;:`\|+?[=~!@#$\\\%^&*,><]+/', '', $dlname);
 
     return trim($dlname);
 }
@@ -2212,7 +2220,6 @@ function simplify_chars($str)
 
 function clean_dlname_for_setid($subject)
 {
-    $subject = trim($subject);
     $subject = simplify_chars($subject);
     $subject = strip_garbage($subject);
 
@@ -2340,7 +2347,6 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
         $xrated = get_extsetdata($db, $setID, 'xrated') ? 'XXX' : '';
     }
     if ($extended_paths) {
-
         $now = time();
         $format_string = get_pref($db, 'format_dl_dir', $userid, '');
         $values['u'] = $username;
@@ -2799,7 +2805,7 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
         $Quserid = ' AND "userid" > :superuser';
     }
 
-    $sql = '"id", "spotter_id", "source" FROM spot_blacklist WHERE 1=1 '. "$Qsource $Qstatus $Quserid";
+    $sql = '"id", "spotter_id", "source" FROM spot_blacklist WHERE 1=1 ' . "$Qsource $Qstatus $Quserid";
     $res = $db->select_query($sql, $input_arr);
     if ($res === FALSE) {
         $res = [];

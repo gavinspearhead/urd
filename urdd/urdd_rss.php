@@ -45,8 +45,8 @@ class urdd_rss
     private function check_link($id, $link)
     {
         // check if a link already exists in the db for that rss feed
-        $qry = '"setid" FROM rss_sets WHERE "nzb_link"=? AND "rss_id"=?';
-        $res = $this->db->select_query($qry, 1, array($link, $id));
+        $qry = '"setid" FROM rss_sets WHERE "nzb_link"=:link AND "rss_id"=:id';
+        $res = $this->db->select_query($qry, 1, [':link'=>$link, ':id'=>$id]);
         if (isset($res[0]['setid'])) {
             return $res[0]['setid'];
         }
@@ -130,7 +130,7 @@ class urdd_rss
 
             $link = $item['link'];
             $title = utf8_encode($item['title']);
-            $timestamp = isset($item['date_timestamp']) ? $item['date_timestamp'] : time();
+            $timestamp = isset($item['date_timestamp']) ? $item['date_timestamp'] : $now;
             $description = utf8_encode(isset ($item['description']) ? $item['description'] : $title);
             $description = str_replace('&nbsp;', ' ', $description);
             $summary = utf8_encode(isset($item['summary'])? $item['summary'] : $title);
@@ -209,7 +209,7 @@ class urdd_rss
         $marking_on = sets_marking::MARKING_ON;
         $prefs = load_config($this->db);
         $keep_int = '';
-        $input_arr = array();
+        $input_arr = [];
         if ($prefs['keep_interesting']) {
             $keep_int = ' AND "setid" NOT IN ( SELECT "setID" FROM usersetinfo WHERE "type" = :type AND "statusint" = :marking) ';
             $input_arr[':type'] = $type;

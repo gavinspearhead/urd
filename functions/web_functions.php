@@ -473,7 +473,7 @@ function get_languages()
 {
     $langdir = realpath(dirname(__FILE__)) . '/lang/';
     $l = glob($langdir . '*.php');
-    $langs = array();
+    $langs = [];
     foreach ($l as $lang) {
         if (strcasecmp(basename($lang), 'index.php') == 0) {
             continue;
@@ -512,7 +512,7 @@ function get_templates()
 {
     global $tpldir;
     $t = glob($tpldir . '*', GLOB_ONLYDIR|GLOB_MARK);
-    $tpls = array();
+    $tpls = [];
     foreach ($t as $tpl) {
         $bn = basename($tpl);
         if ($bn[0] == '.') {
@@ -550,7 +550,7 @@ function select_template(DatabaseConnection $db, $userid)
 function get_search_options(DatabaseConnection $db)
 {
     $res_b = get_all_search_options($db);
-    $searchoptions = array();
+    $searchoptions = [];
     foreach ($res_b as $row) {
         $searchoptions[$row['id']] = $row['name'];
     }
@@ -775,7 +775,7 @@ function create_new_download(DatabaseConnection $db, $userid)
         }
     }
 
-    $_SESSION['setdata'] = array();
+    $_SESSION['setdata'] = [];
     unset($_SESSION['dlsetname']);
 
     return $dlname;
@@ -845,7 +845,7 @@ function create_nzb(DatabaseConnection $db, $userid)
         set_start_time($db, $dlid, $now);
         $uc->unpause($id);
     }
-    $_SESSION['setdata'] = array();
+    $_SESSION['setdata'] = [];
     unset($_SESSION['dlsetname']);
 
     return $dlname;
@@ -856,7 +856,7 @@ function merge_sets(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     global $LN;
     $first_set = NULL;
-    $other_sets = array();
+    $other_sets = [];
     $settype = '';
     foreach ($_SESSION['setdata'] as $set) {
         $setid = $set['setid'];
@@ -915,7 +915,7 @@ function wipe_sets(DatabaseConnection $db, array $setids, $type, $userid)
             return;
         }
 
-        $setids = array();
+        $setids = [];
         foreach ($res as $r) {
             $setids[] = $r['ID'];
         }
@@ -948,9 +948,7 @@ function get_total_spots(DatabaseConnection $db)
 
 function get_minsetsize_feed(DatabaseConnection $db, $feed_id, $userid, $default=0)
 {
-    assert(is_numeric($default));
-    assert(is_numeric($userid));
-    assert(is_numeric($feed_id));
+    assert(is_numeric($default) && is_numeric($userid) && is_numeric($feed_id));
     $qry = "\"minsetsize\" FROM userfeedinfo WHERE \"feedid\"=? AND \"userid\"=? UNION SELECT $default";
     $res = $db->select_query($qry, 1, array($feed_id, $userid));
 
@@ -959,9 +957,7 @@ function get_minsetsize_feed(DatabaseConnection $db, $feed_id, $userid, $default
 
 function get_maxsetsize_feed(DatabaseConnection $db, $feed_id, $userid, $default=0)
 {
-    assert(is_numeric($default));
-    assert(is_numeric($userid));
-    assert(is_numeric($feed_id));
+    assert(is_numeric($default) && is_numeric($userid) && is_numeric($feed_id));
     $qry = "\"maxsetsize\" FROM userfeedinfo WHERE \"feedid\"=? AND \"userid\"=? UNION SELECT $default";
     $res = $db->select_query($qry, 1, array($feed_id, $userid));
 
@@ -970,9 +966,7 @@ function get_maxsetsize_feed(DatabaseConnection $db, $feed_id, $userid, $default
 
 function get_minsetsize_group(DatabaseConnection $db, $group_id, $userid, $default=0)
 {
-    assert(is_numeric($default));
-    assert(is_numeric($userid));
-    assert(is_numeric($group_id));
+    assert(is_numeric($default) && is_numeric($userid) && is_numeric($group_id));
     $qry = "\"minsetsize\" FROM usergroupinfo WHERE \"groupid\"=? AND \"userid\"=? UNION SELECT $default";
     $res = $db->select_query($qry, 1, array($group_id, $userid));
 
@@ -981,9 +975,7 @@ function get_minsetsize_group(DatabaseConnection $db, $group_id, $userid, $defau
 
 function get_maxsetsize_group(DatabaseConnection $db, $group_id, $userid, $default=0)
 {
-    assert(is_numeric($default));
-    assert(is_numeric($userid));
-    assert(is_numeric($group_id));
+    assert(is_numeric($default) && is_numeric($userid) && is_numeric($group_id));
     $qry = "\"maxsetsize\" FROM usergroupinfo WHERE \"groupid\"=? AND \"userid\"=? UNION SELECT $default";
     $res = $db->select_query($qry, 1, array($group_id, $userid));
 
@@ -1001,7 +993,7 @@ function load_language($lang)
     global $LN;
 
     if (isset($LN)) {
-        $LN = array();
+        $LN = [];
     }
 
     $pathsl = realpath(dirname(__FILE__));
@@ -1063,9 +1055,9 @@ function get_categories(DatabaseConnection $db, $userid)
     $sql = '* FROM categories WHERE "userid"=? ORDER BY "name"';
     $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
-    $categories = array();
+    $categories = [];
     foreach ($res as $row) {
         $categories["{$row['id']}"] = array('id'=> $row['id'], 'name'=>$row['name']);
     }
@@ -1102,10 +1094,10 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
         " WHERE \"active\" = :active AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
     $res = $db->select_query($sql, array(':userid'=>$userid, ':active'=> newsgroup_status::NG_SUBSCRIBED));
     if (!is_array($res)) {
-        $res = array();
+        $res = [];
     }
 
-    $subscribedgroups = array();
+    $subscribedgroups = [];
     $c = 0;
     foreach ($res as $arr) {
         list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000, 0);
@@ -1145,7 +1137,7 @@ function get_userfeed_settings(DatabaseConnection $db, $userid)
         'WHERE userfeedinfo."userid"=:userid';
     $res = $db->select_query($sql, array(':userid'=>$userid));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
 
     return $res;
@@ -1159,7 +1151,7 @@ function get_usergroup_settings(DatabaseConnection $db, $userid)
         'WHERE usergroupinfo."userid"=:userid';
     $res = $db->select_query($sql, array(':userid'=>$userid));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
 
     return $res;
@@ -1174,9 +1166,9 @@ function get_used_categories_group(DatabaseConnection $db, $userid)
         . 'WHERE categories."userid"=? AND usergroupinfo."category" > 0 GROUP BY usergroupinfo."category"';
     $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
-    $categories = array();
+    $categories = [];
     foreach ($res as $row) {
         $categories["{$row['category']}"] = array('id'=> $row['category'], 'name'=>$row['name'], 'setcount'=>$row['cnt']);
     }
@@ -1189,9 +1181,9 @@ function get_used_categories_spots(DatabaseConnection $db)
     $sql = 'spots."category", COUNT("id") AS cnt FROM spots GROUP BY spots."category"';
     $res = $db->select_query($sql);
     if (!is_array($res)) {
-        return array();
+        return [];
     }
-    $categories = array();
+    $categories = [];
     foreach ($res as $row) {
         $categories[$row['category']] = array('id'=> $row['category'], 'setcount'=>$row['cnt'], 'name'=>SpotCategories::HeadCat2Desc($row['category']));
     }
@@ -1201,7 +1193,7 @@ function get_used_categories_spots(DatabaseConnection $db)
 
 function subscribed_spots_select($categoryid, array $categories)
 {
-    $subscribedspots = array();
+    $subscribedspots = [];
      foreach ($categories as $row) {
         list($size, $suffix) = format_size($row['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($row['id'] == $categoryid)) { // don't show empty groups anyway
@@ -1221,9 +1213,9 @@ function get_used_categories_rss(DatabaseConnection $db, $userid)
         . 'WHERE categories."userid"=? AND userfeedinfo."category" > 0 GROUP BY userfeedinfo."category"';
     $res = $db->select_query($sql, array($userid));
     if (!is_array($res)) {
-        return array();
+        return [];
     }
-    $categories = array();
+    $categories = [];
     foreach ($res as $row) {
         $categories["{$row['category']}"] = array('id' => $row['category'], 'name' => $row['name'], 'setcount' => $row['cnt']);
     }
@@ -1252,11 +1244,11 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
     $res = $db->select_query($sql, $input_arr);
 
     if (!is_array($res)) {
-        $res = array();
+        $res = [];
     }
 
     $c = 0;
-    $subscribedfeeds = array();
+    $subscribedfeeds = [];
     foreach ($res as $arr) {
         list($size, $suffix) = format_size($arr['feedcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($arr['id'] == $feed_id)) { // don't show empty groups anyway
@@ -1316,7 +1308,7 @@ function get_feed_last_updated(DatabaseConnection $db, $feed_id, $userid)
         $input_arr[] = $feed_id;
     }
     $res = $db->select_query($sql, $input_arr);
-    $feed_lastupdate = array();
+    $feed_lastupdate = [];
     if ($res !== FALSE) {
         foreach ($res as $row) {
             $feed_lastupdate["{$row['feedid']}"] = $row['last_update_seen'];
@@ -1330,7 +1322,7 @@ function get_group_last_updated(DatabaseConnection $db, $groupid, $userid)
 {
     assert(is_numeric($userid));
     // get last update times for groups
-    $input_arr = array($userid);
+    $input_arr = [$userid];
     $sql = '"groupid", "last_update_seen" FROM usergroupinfo WHERE "userid"=?';
     if ($groupid != '') {
         if (!is_numeric($groupid)) {
@@ -1343,7 +1335,7 @@ function get_group_last_updated(DatabaseConnection $db, $groupid, $userid)
     }
 
     $res = $db->select_query($sql, $input_arr);
-    $group_lastupdate = array();
+    $group_lastupdate = [];
     if ($res !== FALSE) {
         foreach ($res as $row) {
             $group_lastupdate["{$row['groupid']}"] = $row['last_update_seen'];
@@ -1374,7 +1366,7 @@ function get_stylesheets(DatabaseConnection $db, $userid)
     $template = get_template($db, $userid);
     list($template_dir) = get_smarty_dirs($template);
     $sheets = glob($template_dir . '/css/*');
-    $stylesheets = array();
+    $stylesheets = [];
     foreach ($sheets as $sheet) {
         $name = basename($sheet);
         if (file_exists($sheet) && is_dir($sheet) && $name[0] != '_') {
@@ -1414,7 +1406,7 @@ function get_subcats($hcat, $scat)
 {
     global $LN;
     $_subcat = SpotCategories::Cat2ShortDescs($hcat, $scat);
-    $subcat = array();
+    $subcat = [];
     foreach ($_subcat as $key => $cat) {
         $key = $LN[$key];
         foreach ($cat as $k=> $c) {
@@ -1448,7 +1440,7 @@ function export_settings(DatabaseConnection $db, $what, $filename, $userid=NULL)
 
 function get_subcats_requests()
 {
-    $subcats = $not_subcats = $off_subcats = array();
+    $subcats = $not_subcats = $off_subcats = [];
     foreach ($_REQUEST as $key => $value) {
         if (strncmp($key, 'subcat_', 7) == 0) {
             $t = explode('_', $key);
@@ -1476,7 +1468,7 @@ function spot_name_cmp(array $a, array $b)
 function get_stats_years(DatabaseConnection $db, $userid, $isadmin)
 {
     $quser = '';
-    $input_arr = array();
+    $input_arr = [];
     if (!$isadmin) {
         assert(is_numeric($userid));
         $input_arr[':userid'] = $userid;
@@ -1486,7 +1478,7 @@ function get_stats_years(DatabaseConnection $db, $userid, $isadmin)
     $ystr = $db->get_extract('year', '"timestamp"');
     $qry = " $ystr AS \"year\" FROM stats WHERE 1=1 $quser GROUP BY $ystr ORDER BY \"year\" DESC";
     $res = $db->select_query($qry, $input_arr);
-    $years = array();
+    $years = [];
 
     if (is_array($res)) {
         foreach ($res as $row) {
@@ -1518,7 +1510,7 @@ function divide_sort($sort)
 {
     $s = explode(' ', $sort, 2);
     if (!isset($s[0])) {
-        return array();
+        return [];
     }
     $o = trim($s[0]);
     if (!isset($s[1])) {
@@ -1585,9 +1577,9 @@ function get_pages($totalsets, $perpage, $offset)
     
     $totalpages = max(1, ceil($totalsets / $perpage));      // Total number of pages.
     $activepage = ceil(($offset + 1) / $perpage);     // This is the page we're on. (+1 because 0/100 = page 1)
-    $pages = array();
+    $pages = []; 
     foreach (range(1, $totalpages) as $i) {
-        $thispage = array();
+        $thispage = [];
         $thispage['number'] = $i;
         $pageoffset = ($i - 1) * $perpage;          // For page 1, offset = 0.
         $thispage['offset'] = $pageoffset;
@@ -1606,7 +1598,7 @@ function get_directories(DatabaseConnection $db, $userid)
 
     $user_dlpath = $dlpath . DONE_PATH . $username . DIRECTORY_SEPARATOR;
     $dir = dir($user_dlpath);
-    $directories = array();
+    $directories = [];
     while ($file = $dir->read()) {
         if (is_dir($user_dlpath . $file) && $file != '.' && $file != '..') {
             $directories[] = $file;
@@ -1624,7 +1616,7 @@ function get_spots_stats(DatabaseConnection $db)
     if ($res === FALSE) {
         $res = array(0, 0, 0, 0);
     }
-    $stats = array();
+    $stats = [];
     foreach ($res as $row) {
         $stats[ $row['category'] ] = $row['cnt'];
     }
@@ -1636,7 +1628,7 @@ function check_tidy($template)
 {
     global $smarty;
     $tidy = new tidy();
-    $tidyconfig = array();
+    $tidyconfig = [];
     $data = $smarty->fetch($template);
     $tidy->parseString($data, $tidyconfig, 'utf8');
     $tidy->diagnose();
@@ -1698,7 +1690,7 @@ function insert_wbr($str, $size = 64)
 
 function split_search_string($search)
 {
-    $keywords = array();
+    $keywords = [];
     $keyword = '';
     $quote = ' ';
     $l = strlen($search);
@@ -1816,7 +1808,7 @@ function get_age_limits_spots(DatabaseConnection $db)
 function get_size_limits_groups(DatabaseConnection $db, $groupID=NULL)
 {
     $sql = 'min("size") AS minsetsize, max("size") AS maxsetsize FROM setdata';
-    $input_arr = array();
+    $input_arr = [];
     if (is_numeric($groupID) && $groupID > 0) {
         $input_arr[] = $groupID;
         $sql .= ' WHERE "groupID"=?';
@@ -1829,7 +1821,7 @@ function get_size_limits_groups(DatabaseConnection $db, $groupID=NULL)
 function get_age_limits_groups(DatabaseConnection $db, $groupID=NULL)
 {
     $now = time();
-    $input_arr = array();
+    $input_arr = [];
     $sql = "min({$now} - \"date\") AS \"minage\", max({$now} - \"date\") AS \"maxage\" FROM setdata";
     if (is_numeric($groupID) && $groupID > 0) {
         $input_arr[] = $groupID;
@@ -1843,7 +1835,7 @@ function get_age_limits_groups(DatabaseConnection $db, $groupID=NULL)
 function get_size_limits_rsssets(DatabaseConnection $db, $rss_id=NULL)
 {
     $sql = 'min("size") AS minsetsize, max("size") AS maxsetsize FROM rss_sets';
-    $input_arr = array();
+    $input_arr = [];
     if (is_numeric($rss_id) && $rss_id > 0) {
         $input_arr[] = $rss_id;
         $sql .= ' WHERE "rss_id"=?';
@@ -1857,7 +1849,7 @@ function get_age_limits_rsssets(DatabaseConnection $db, $rss_id=NULL)
 {
     $now = time();
     $sql = "min({$now} - \"timestamp\") AS \"minage\", max({$now} - \"timestamp\") AS \"maxage\" FROM rss_sets";
-    $input_arr = array();
+    $input_arr = [];
     if (is_numeric($rss_id) && $rss_id > 0) {
         $input_arr[] = $rss_id;
         $sql .= ' WHERE "rss_id"=?';
@@ -1899,7 +1891,7 @@ function get_poster_from_set(DatabaseConnection $db, $setid)
 // parse list of comma separated language tags and sort it by the quality value
 function parse_language_list($language_list)
 {
-    $languages = array();
+    $languages = [];
     $language_ranges = explode(',', trim($language_list));
     $pattern = '/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/';
     foreach ($language_ranges as $language_range) {
@@ -1910,7 +1902,7 @@ function parse_language_list($language_list)
                 $match[2] = (string) floatval($match[2]);
             }
             if (!isset($languages[$match[2]])) {
-                $languages[$match[2]] = array();
+                $languages[$match[2]] = [];
             }
             $languages[$match[2]][] = strtolower($match[1]);
         }
@@ -1923,7 +1915,7 @@ function parse_language_list($language_list)
 // compare two parsed arrays of language tags and find the matches
 function find_language_matches($accepted, $available)
 {
-    $matches = array();
+    $matches = [];
     $any = FALSE;
     foreach ($accepted as $acceptedQuality => $acceptedValues) {
         $acceptedQuality = floatval($acceptedQuality);
@@ -1944,7 +1936,7 @@ function find_language_matches($accepted, $available)
                     if ($matchingGrade > 0) {
                         $q = (string) ($acceptedQuality * $availableQuality * $matchingGrade);
                         if (!isset($matches[$q])) {
-                            $matches[$q] = array();
+                            $matches[$q] = [];
                         }
                         if (!in_array($availableValue, $matches[$q])) {
                             $matches[$q][] = $availableValue;
@@ -2110,7 +2102,7 @@ function generate_hash($prefix, $infix=FALSE)
 
 function get_smileys($dir, $full= FALSE)
 {
-    $smileys = array();
+    $smileys = [];
     $_smileys = glob($dir. DIRECTORY_SEPARATOR . '/smileys/*.gif');
     foreach($_smileys as $smiley) {
         $s = basename($smiley, '.gif');
@@ -2146,7 +2138,7 @@ function link_to_url(DatabaseConnection $db, $description, $userid)
         $d2 = substr($description, $urlposition + $l);
         $new_url = $url;
         if ((strpos(substr($d1, -10), '[url]') === FALSE) && (strpos(substr($d2, 0, 10), '[/url]') === FALSE)) {
-            $new_url = '[url=' .  make_url($db, $url, $userid) . ']' . $url . '[/url]';
+            $new_url = '[url=' . make_url($db, $url, $userid) . ']' . $url . '[/url]';
         }
         $new_l = strlen($new_url);
         $description = $d1 . $new_url . $d2;
@@ -2181,9 +2173,9 @@ function group_exists(DatabaseConnection $db, $groupid)
 function get_search_options_for_user(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $active_search_options = array();
+    $active_search_options = [];
     $max_search_options = get_config($db, 'maxbuttons', search_option::MAX_SEARCH_OPTIONS);
-    $search_options = array();
+    $search_options = [];
     for ($i = 1; $i <= $max_search_options; $i++) {
         $b = get_pref($db, "button$i", $userid, 'none');
           if ($b != 'none') {
@@ -2191,9 +2183,9 @@ function get_search_options_for_user(DatabaseConnection $db, $userid)
         }
     }
     if (count($search_options) == 0) {
-        return array();
+        return [];
     }
-    $ids = array();
+    $ids = [];
     foreach ($search_options as $search_option) {
         $ids[] = $search_option;
     }
@@ -2201,7 +2193,7 @@ function get_search_options_for_user(DatabaseConnection $db, $userid)
         $qry = '* FROM searchbuttons WHERE "id" IN (' . str_repeat('?,', count($ids) - 1) . '?) ORDER BY "name"';
         $res = $db->select_query($qry, $ids);
         if ($res === FALSE) {
-            return array();
+            return [];
         }
         foreach ($res as $row) {
             $row['name'] = htmlentities(utf8_decode($row['name']));
@@ -2254,7 +2246,7 @@ function make_url(DatabaseConnection $db, $url, $userid)
         return '';
     }
     if ($redir != '') {
-        return $redir . ($url);
+        return $redir . $url;
     } else {
         return $url;
     }
@@ -2337,7 +2329,7 @@ function get_dow($day, $month, $year)
 function get_first_two_words($line)
 {
     $tmp = explode(' ', $line);
-    $arr = array();
+    $arr = [];
     foreach($tmp as &$word) {
         $word = preg_trim($word, '[^A-Za-z0-9]');
         if ($word != '' && !is_numeric($word) && strlen($word) > 2) $arr[] = $word;

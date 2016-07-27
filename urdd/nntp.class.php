@@ -285,7 +285,7 @@ class URD_NNTP
             $first_date = strtotime($parsed_msg[ $this->xover_date ]);
             $first_art = $parsed_msg[ $this->xover_number ];
             echo_debug("First is $first_art $first_date", DEBUG_MAIN);
-            if ($first_date > 0 && $first_date < (time() - ($expire * 24 * 3600))) {
+            if ($first_date > 0 && $first_date < ($now - ($expire * 24 * 3600))) {
                 // we need to correct the counter here
                 $cnt1 = gmp_div(gmp_mul($cnt1, ($expire * 24 * 3600)), $now - $first_date);
             }

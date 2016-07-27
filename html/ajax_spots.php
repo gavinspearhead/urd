@@ -31,7 +31,7 @@ $pathidx = realpath(dirname(__FILE__));
 require_once "$pathidx/../functions/ajax_includes.php";
 
 if (!isset($_SESSION['setdata']) || !is_array($_SESSION['setdata'])) {
-    $_SESSION['setdata'] = array();
+    $_SESSION['setdata'] = [];
 }
 
 verify_access($db, urd_modules::URD_CLASS_SPOTS, FALSE, '', $userid, TRUE);
@@ -157,7 +157,7 @@ class spot_viewer
     public function get_page_count($perpage, $offset, $skip_total=FALSE)
     {
         assert(is_numeric($perpage) && is_numeric($offset));
-        if (! $skip_total) {
+        if (!$skip_total) {
             $this->totalsets = $this->get_spots_count(FALSE);
         }
         $this->int_sets = $this->get_spots_count(TRUE);
@@ -175,7 +175,7 @@ class spot_viewer
 
             $setres = $this->db->select_query($sql1, $perpage, $offset, $this->input_arr);
             if (!is_array($setres)) {
-                $setres = array();
+                $setres = [];
             }
         }
         $setres_count = count($setres);
@@ -185,7 +185,7 @@ class spot_viewer
 
             $setres2 = $this->db->select_query($sql2, $perpage - $setres_count, $offset - $this->int_sets, $this->input_arr);
             if (!is_array($setres2)) {
-                $setres2 = array();
+                $setres2 = [];
             }
             $setres = array_merge($setres, $setres2);
         }
@@ -361,7 +361,7 @@ class spot_viewer
 
     public function set_qsubcat($subcats, $not_subcats)
     {
-        if ($subcats != [] ) {
+        if ($subcats != []) {
             $subcat_subqry = [];
             foreach ($subcats as $s) {
                 if ($s[0] == $this->categoryID) {
@@ -380,7 +380,7 @@ class spot_viewer
                 }
             }
         }
-        if ($not_subcats != [] ) {
+        if ($not_subcats != []) {
             $this->Qsubcat .= ' AND NOT ( 0 = 1 ';
             foreach ($not_subcats as $s) {
                 if ($s[0] == $this->categoryID) {

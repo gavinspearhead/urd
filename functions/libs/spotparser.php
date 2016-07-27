@@ -57,8 +57,8 @@ class spotparser
 			 */ 
 			if (substr($xmlStr, $startElem + strlen($elementName) + 2, $cdata_len) !== $cdataStart) {
 				$xmlStr = str_replace(
-					array('<' . $elementName . '>', '</' . $elementName . '>'),
-					array('<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'),
+					['<' . $elementName . '>', '</' . $elementName . '>'],
+					['<' . $elementName . '>' . $cdataStart, $cdataEnd . '</' . $elementName . '>'],
 					$xmlStr);
 			}
 		} 
@@ -70,7 +70,7 @@ class spotparser
     static public function parse_full($xmlStr)
     {
         # Gebruik een spot template zodat we altijd de velden hebben die we willen
-        $tpl_spot = array(
+        $tpl_spot = [
             'category' => '',
             'messageid' => '',
             'description' => '',
@@ -92,11 +92,11 @@ class spotparser
             'subcat_count' => '',
             'imageid' => '',
             'spotter_id'=> '',
-        );
+        ];
         if (strpos($xmlStr, 'spot.net></Segment') !== FALSE) {
-			$xmlStr = str_replace(array('spot.net></Segment>', 'spot.ne</Segment>'), array('spot.net</Segment>', 'spot.net</Segment>'), $xmlStr);
+			$xmlStr = str_replace(['spot.net></Segment>', 'spot.ne</Segment>'], ['spot.net</Segment>', 'spot.net</Segment>'], $xmlStr);
 		} 
-		$xmlStr = self::correct_elm_contents($xmlStr, array('Title', 'Description', 'Image', 'Tag', 'Website'));
+		$xmlStr = self::correct_elm_contents($xmlStr, ['Title', 'Description', 'Image', 'Tag', 'Website']);
         /*  Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net> */
         $xml = @(new SimpleXMLElement($xmlStr, LIBXML_NOERROR | LIBXML_NOWARNING));
         $xml = $xml->Posting;
@@ -111,7 +111,7 @@ class spotparser
         $tpl_spot['poster'] = trim((string) $xml->Poster);
         $tpl_spot['tag'] = trim((string) $xml->Tag);
         $tpl_spot['title'] = trim((string) $xml->Title);
-        $tpl_spot['key-id'] = (string) $xml->{"Key-ID"};
+        $tpl_spot['key-id'] = (string) $xml->{'Key-ID'};
         # Images behandelen we op een speciale manier, in de oude spots
         # was er gewoon een URL, in de nieuwe een hoogte/lengte/messageid
         if (empty($xml->Image->Segment)) {
@@ -186,7 +186,7 @@ class spotparser
     public static function unspecial_string($strInput)
     {
         $strInput = self::fix_padding($strInput);
-        $strInput = str_replace(array('-s', '-p'), array('/', '+'), $strInput);
+        $strInput = str_replace(['-s', '-p'], ['/', '+'], $strInput);
 
         return $strInput;
     }

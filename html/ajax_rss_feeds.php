@@ -216,6 +216,7 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
 
     list ($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
     $number = $offset;
+    $now = time();
     foreach ($res as $row) {
         $this_rss = array();
         $id = $row['rss_id'];
@@ -245,7 +246,7 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
         if ($lastupdated == 0) {
             $lastupdated = '-';
         } else {
-            $lastupdated = time() - $lastupdated;
+            $lastupdated = $time - $lastupdated;
             $lastupdated = readable_time($lastupdated, 'largest_two');
         }
         $this_rss['lastupdated'] = $lastupdated;

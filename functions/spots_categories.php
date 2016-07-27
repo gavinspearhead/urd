@@ -552,11 +552,11 @@ class SpotCategories
                 }
             }
             asort($c);
-            $cats[$k] = array(
+            $cats[$k] = [ 
                     'subcats' => $c,
                     'name' => to_ln($sc),
                     'counter' => 0
-                    );
+                    ];
         }
         uasort($cats, 'subcat_name_cmp');
 

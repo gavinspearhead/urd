@@ -144,7 +144,7 @@ class urdd_group
                 if ($x % self::MAX_INSERT_PARTS == 0) {
                     // Remove the last , before running the query:
                     $this->db->update_query_2("binaries_$groupID ", array('dirty' => self::DIRTY), '"binaryID" IN ( ' . 
-                                str_repeat('?,', count($binarieslist) - 1) . '? )', $binarieslist);
+                        str_repeat('?,', count($binarieslist) - 1) . '? )', $binarieslist);
                     $binarieslist = [];
                     $x = (int) 1;
                 }
@@ -219,7 +219,6 @@ class urdd_group
             // Delete all the binaries, then recreate (because inserting in batches is faster? and easier than updating binaries 1 by 1
             $this->db->delete_query("binaries_$groupID", "\"binaryID\" IN ( $binary_list )", $l);
 
-
             // Step 2: Updating:
             // Max for subject and fromname are needed to ensure we always get the same result, not a random one
             $sql = 'SUM("size") AS totalsize, "binaryID", COUNT(*) AS parttotal, MAX("subject") AS subject, MAX("fromname") AS fromname, MIN("date") AS mindate '
@@ -256,9 +255,9 @@ class urdd_group
                 // This is it:
                 $setID = md5($dlname . $groupname . $poster . $cntFull);
 
-                $vals[] = array($row['binaryID'], $row['subject'], $row['mindate'], $row['totalsize'], $row['parttotal'], $setID, self::SETCHANGED);
+                $vals[] = [$row['binaryID'], $row['subject'], $row['mindate'], $row['totalsize'], $row['parttotal'], $setID, self::SETCHANGED];
                 if ($is_nfo_file) {
-                    $vals_nfo[] = array($setID, $groupID, $row['binaryID']);
+                    $vals_nfo[] = [$setID, $groupID, $row['binaryID']];
                 }
 
                 // Step 3: Saving new information:
@@ -278,11 +277,9 @@ class urdd_group
             // If batch was not complete, make sure we do the remaining ones now:
             if (count($vals) > 0) {
                 $this->db->insert_query('binaries_' . $groupID, $cols, $vals, FALSE);
-                $vals = [];
             }
             if (count($vals_nfo) > 0) {
                 $this->db->insert_query('nfo_files', $cols_nfo, $vals_nfo, FALSE);
-                $vals_nfo = [];
             }
 
             $t_time = microtime(TRUE);
@@ -374,7 +371,7 @@ class urdd_group
         // we only update one set
 
         // First delete everything for this group or only the specific set:
-        $this->db->delete_query('setdata', '"groupID"=? AND "ID"=?', array($groupID, $setID_filter));
+        $this->db->delete_query('setdata', '"groupID"=? AND "ID"=?', [$groupID, $setID_filter]);
 
         // Now re-create it.
         $this->db->escape($groupID, FALSE);
@@ -421,48 +418,26 @@ class urdd_group
         }
     }
 
-    private function quick_expire($groupid)
-    {
-        // not used ???
-        echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
-        $type = USERSETTYPE_GROUP;
-        $keep_int_cfg = get_config($this->db, 'keep_interesting');
-        $time = time();
-        // Expire : from days to seconds
-        $expire = group_expire($this->db, $groupid);
-        $expire *= 24 * 3600;
-        // convert to epochtime:
-        $expire = $time - $expire;
-        $keep_int = '';
-        $input_arr = array($expire);
-        if ($keep_int_cfg) {
-            $keep_int = " AND \"binaryID\" NOT IN (SELECT \"binaryID\" FROM usersetinfo JOIN binaries_$groupid AS bin ON bin.\"setID\" = usersetinfo.\"setID\" "
-                . ' WHERE "type"=? AND "statusint"=?) ';
-            array_push($input_arr, $type, sets_marking::MARKING_ON);
-        }
-        $dw->delete_query("parts_$groupID", "\"date\" < ? $keep_int", $input_arr);
-    }
-
     public function expire_binaries($groupID, $dbid)
     {
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
         assert(is_numeric($groupID) && is_numeric($dbid));
         $type = USERSETTYPE_GROUP;
 
-        $time = time();
         // Expire : from days to seconds
         $expire = group_expire($this->db, $groupID);
         $expire *= 24 * 3600;
         // convert to epochtime:
-        $expire = $time - $expire;
         $do_expire_incomplete = $expire_incomplete = get_config($this->db, 'expire_incomplete');
         $expire_percentage = get_config($this->db, 'expire_percentage');
-        $prefs = load_config($this->db);
+        $input_arr = [$expire];
+        $ki_pref = get_config($this->db, 'keep_interesting');
         $keep_int = '';
-        $input_arr = array($expire);
-        if ($prefs['keep_interesting']) {
+        $time = time();
+        $expire = $time - $expire;
+        if ($ki_pref) {
             $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
-            $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
+            $input_arr = array_merge($input_arr, [$type, sets_marking::MARKING_ON]);
         }
 
         echo_debug('Deleting expired posts', DEBUG_DATABASE);
@@ -477,7 +452,7 @@ class urdd_group
         $GREATEST = $this->db->get_greatest_function();
 
         $keep_int = '';
-        if ($prefs['keep_interesting']) {
+        if ($ki_pref) {
             $keep_int = ' AND "ID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
         }
         // first clean all the sets we want to remove
@@ -487,40 +462,40 @@ class urdd_group
             $expire_incomplete = $time - $expire_incomplete;
             $Qcomplete = "OR (\"articlesmax\" != 0 AND floor((\"binaries\" * 100) / $GREATEST(1, \"articlesmax\")) < '$expire_percentage' AND \"date\" < '$expire_incomplete' )";
         }
-        $res = $this->db->delete_query('setdata', "\"groupID\"=? AND (\"date\"<? $Qcomplete) $keep_int", array_merge(array($groupID), $input_arr));
+        $res = $this->db->delete_query('setdata', "\"groupID\" = ? AND (\"date\" <= ? $Qcomplete) $keep_int", array_merge([$groupID], $input_arr));
         update_queue_status($this->db, $dbid, NULL, 0, 30);
 
-        $res = $this->db->delete_query('usersetinfo', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type"=?', array($type));
+        $res = $this->db->delete_query('usersetinfo', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type" = ?', [$type]);
 
         update_queue_status($this->db, $dbid, NULL, 0, 40);
         // note that this will also remove data about sets that hasn't been received yet, but typically, expire runs after an update, so all data should be in.
-        $res = $this->db->delete_query('extsetdata', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type"=?', array($type));
+        $res = $this->db->delete_query('extsetdata', '"setID" NOT IN (SELECT "ID" FROM setdata) AND "type" = ?', [$type]);
 
         update_queue_status($this->db, $dbid, NULL, 0, 50);
         // see above
-        $res = $this->db->delete_query('merged_sets', '"new_setid" NOT IN (SELECT "ID" FROM setdata) AND "type"=?', array($type));
+        $res = $this->db->delete_query('merged_sets', '"new_setid" NOT IN (SELECT "ID" FROM setdata) AND "type" = ?', [$type]);
 
         update_queue_status($this->db, $dbid, NULL, 0, 60);
 
         $keep_int = '';
-        $input_arr = array($groupID);
-        if ($prefs['keep_interesting']) {
-            $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
-            $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
+        $input_arr = [$groupID, $expire];
+        if ($ki_pref) {
+            $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type" = ? AND "statusint" = ?) ';
+            $input_arr = array_merge($input_arr, [$type, sets_marking::MARKING_ON]);
         }
 
-        $res = $this->db->delete_query("binaries_$groupID", '"setID" NOT IN (SELECT "ID" FROM setdata WHERE "groupID"=?) ' . $keep_int, $input_arr);
+        $res = $this->db->delete_query("binaries_$groupID", '"setID" NOT IN (SELECT "ID" FROM setdata WHERE "groupID" = ?) OR "date" <= ? ' . $keep_int, $input_arr);
 
-        update_queue_status($this->db, $dbid, NULL, 0, 80);
+        update_queue_status($this->db, $dbid, NULL, 0, 70);
 
         $keep_int = '';
-        $input_arr = array($expire);
-        if ($prefs['keep_interesting']) {
+        $input_arr = [$expire];
+        if ($ki_pref) {
             $keep_int = " AND \"binaryID\" NOT IN (SELECT \"binaryID\" FROM usersetinfo JOIN binaries_$groupID AS bin ON bin.\"setID\" = usersetinfo.\"setID\" "
-                . ' WHERE "type"=? AND "statusint"=?) ';
-            $input_arr = array_merge($input_arr, array($type, sets_marking::MARKING_ON));
+                . ' WHERE "type" = ? AND "statusint" = ?) ';
+            $input_arr = array_merge($input_arr, [$type, sets_marking::MARKING_ON]);
         }
-        $res = $this->db->delete_query("parts_$groupID", "\"binaryID\" NOT IN (SELECT \"binaryID\" FROM binaries_$groupID) OR \"date\"<? $keep_int", $input_arr);
+        $res = $this->db->delete_query("parts_$groupID", "\"binaryID\" NOT IN (SELECT \"binaryID\" FROM binaries_$groupID) OR \"date\" <= ? $keep_int", $input_arr);
 
         echo_debug("Deleted {$cnt} binaries", DEBUG_DATABASE);
         update_queue_status($this->db, $dbid, NULL, 0, 95);
@@ -533,8 +508,8 @@ class urdd_group
 
     public function update_postcount($groupid)
     {
-        $sql = "UPDATE groups SET \"postcount\" = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\"=:upd WHERE \"ID\"=:id";
-        $this->db->execute_query($sql, array(':upd'=>'0', ':id'=>$groupid));
+        $sql = "UPDATE groups SET \"postcount\" = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\" = :upd WHERE \"ID\" = :id";
+        $this->db->execute_query($sql, [':upd'=>'0', ':id'=>$groupid]);
     }
 
     public function purge_binaries($groupID)
@@ -545,15 +520,15 @@ class urdd_group
 
         echo_debug('Deleting all posts', DEBUG_DATABASE);
 
-        $res = $this->db->delete_query('usersetinfo', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', array($groupID, USERSETTYPE_GROUP));
-        $res = $this->db->delete_query('extsetdata', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', array($groupID, USERSETTYPE_GROUP));
-        $res = $this->db->delete_query('merged_sets', '"new_setid" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', array($groupID, USERSETTYPE_GROUP));
-        $res = $this->db->delete_query('setdata', '"groupID"=?', array($groupID));
+        $res = $this->db->delete_query('usersetinfo', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', [$groupID, USERSETTYPE_GROUP]);
+        $res = $this->db->delete_query('extsetdata', '"setID" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', [$groupID, USERSETTYPE_GROUP]);
+        $res = $this->db->delete_query('merged_sets', '"new_setid" IN (SELECT "ID" FROM setdata WHERE "groupID"=?) AND "type"=?', [$groupID, USERSETTYPE_GROUP]);
+        $res = $this->db->delete_query('setdata', '"groupID"=?', [$groupID]);
         if ($active === TRUE) {
             $this->db->truncate_table("parts_$groupID");
             $this->db->truncate_table("binaries_$groupID");
         }
-        $res = $this->db->update_query_2('groups', array('last_record'=>0, 'first_record'=>0, 'mid_record'=>0, 'last_updated'=>0, 'postcount'=>0, 'setcount'=>0), '"ID"=?', array($groupID));
+        $res = $this->db->update_query_2('groups', ['last_record'=>0, 'first_record'=>0, 'mid_record'=>0, 'last_updated'=>0, 'postcount'=>0, 'setcount'=>0], '"ID"=?', [$groupID]);
         echo_debug('Purged all binaries', DEBUG_DATABASE);
     }
 

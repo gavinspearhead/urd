@@ -27,13 +27,13 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-function store_article($article, $dir, $msg_id)
+function store_article(&$article, $dir, $msg_id)
 {
     $msg_id = trim($msg_id, '<>');
     file_put_contents($dir . $msg_id . '.txt', $article . "\n\n");
 }
 
-function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$nzb, &$groupid, $userid, &$connected, $check_for_rar_encryption, $download_par_files)
+function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &$nzb, &$groupid, $userid, &$connected, $check_for_rar_encryption, $download_par_files)
 {
     assert(is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -48,16 +48,16 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
     $size = $p_cnt = $a_cnt = $e_cnt = $groupid = (int) 0;
 
     $mime_settings = ['include_bodies' => TRUE, 'decode_bodies' => TRUE, 'decode_headers' => TRUE];
-    $descriptorspec = array (
-            0 => array('pipe', 'r'), // where we will write to
-            1 => array('file', '/dev/null', 'w'), // we don't want the output
-            2 => array('file', '/dev/null', 'w') // or the errors
-            //1 => array('file', '/tmp/out', 'a'), // we do want the output
-            //2 => array('file', '/tmp/err', 'a') // and the errors
-    );
-    $pipes = array();
+    $descriptorspec = [
+            0 => ['pipe', 'r'], // where we will write to
+            1 => ['file', '/dev/null', 'w'], // we don't want the output
+            2 => ['file', '/dev/null', 'w'] // or the errors
+            //1 => ['file', '/tmp/out', 'a'], // we do want the output
+            //2 => ['file', '/tmp/err', 'a'] // and the errors
+    ];
+    $pipes = [];
 
-    $process = proc_open($cmd, $descriptorspec, $pipes, $dir, NULL, array('binary_pipes'));
+    $process = proc_open($cmd, $descriptorspec, $pipes, $dir, NULL, ['binary_pipes']);
     if ($process === FALSE || !is_resource($process)) {
         write_log('Could not create pipe', LOG_WARNING);
         urdd_exit(PIPE_ERROR);
@@ -169,7 +169,7 @@ function download_batch(DatabaseConnection $db, array &$batch, $dir, URD_NNTP &$
         } catch (exception $e) {
             $e_cnt++;
             $batch[$key]['dlstatus'] = DOWNLOAD_FAILED;
-            write_log('Could not download article: ' . $e->getMessage() ."({$e->getCode()})", LOG_INFO);
+            write_log('Could not download article: ' . $e->getMessage() . "({$e->getCode()})", LOG_INFO);
             if ($e->getCode() == NNTP_NOT_CONNECTED_ERROR) {
                 // Articles didn't really fail so set them to be downloaded again:
                 $batch[$key]['dlstatus'] = DOWNLOAD_READY;
@@ -224,7 +224,7 @@ function get_batchsize($preview, $total_ready)
     return $batch_size;
 }
 
-function start_download(DatabaseConnection $db, action $item)
+function start_download(DatabaseConnection& $db, action $item)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $dlid = $item->get_args();
@@ -320,7 +320,7 @@ function start_download(DatabaseConnection $db, action $item)
                     write_log($comment, LOG_DEBUG);
                     $progress = NULL; // not set the progress... other threads may still be running....
                     $error_no = NO_ERROR;
-                    update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED , 0, $progress, $comment);
+                    update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, $progress, $comment);
 
                     return $error_no;
                 }
@@ -337,7 +337,7 @@ function start_download(DatabaseConnection $db, action $item)
             // Download the batch:
             try {
                 list($bytes) = download_batch($db, $res, $dir, $nzb, $groupid, $userid, $connected, $check_for_rar_encryption, $download_par_files);
-            } catch (exception $e) {
+                } catch (exception $e) {
                 if ($e->getCode() == ENCRYPTED_RAR) {
                     $progress = 0;
                     $comment = $e->getMessage();
@@ -395,14 +395,14 @@ function start_download(DatabaseConnection $db, action $item)
     return $error_no;
 }
 
-function update_dlinfo(DatabaseConnection $db, $dlid, $bytes)
+function update_dlinfo(DatabaseConnection &$db, $dlid, $bytes)
 {
     assert(is_numeric($dlid) &&is_numeric($bytes));
     $sql = 'UPDATE downloadinfo SET "done_size" = "done_size" + :bytes WHERE "ID" = :dlid';
     $db->execute_query($sql, array(':dlid'=>$dlid, ':bytes'=>$bytes));
 }
 
-function complete_download(DatabaseConnection $db, server_data &$servers, action $item, $status)
+function complete_download(DatabaseConnection &$db, server_data &$servers, action $item, $status)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     if (!$servers->has_equal($item)) {
@@ -473,7 +473,7 @@ function complete_download(DatabaseConnection $db, server_data &$servers, action
     }
 }
 
-function check_all_dl_done(DatabaseConnection $db, action $item)
+function check_all_dl_done(DatabaseConnection &$db, action $item)
 {
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     $dlid = $item->get_args();
@@ -493,7 +493,7 @@ function check_all_dl_done(DatabaseConnection $db, action $item)
         throw new exception_db('Database error @ done');
     }
     $sql = 'count("ID") AS "counter" FROM downloadarticles WHERE "downloadID"=? AND "status"=?';
-    $par_files = $db->select_query($sql, array($dlid,DOWNLOAD_IS_PAR_FILE ));
+    $par_files = $db->select_query($sql, array($dlid, DOWNLOAD_IS_PAR_FILE ));
     if (!isset($par_files[0]['counter'])) {
         throw new exception_db('Database error @ par_files');
     }
@@ -501,7 +501,7 @@ function check_all_dl_done(DatabaseConnection $db, action $item)
     return array($done[0]['counter'], $queued[0]['counter'], $failed[0]['counter'], $par_files[0]['counter']);
 }
 
-function add_download(DatabaseConnection $db, $userid, $unpar, $unrar, $subdl, $delete_files, $status, $destination, $dl_type, $first_run, $download_par)
+function add_download(DatabaseConnection &$db, $userid, $unpar, $unrar, $subdl, $delete_files, $status, $destination, $dl_type, $first_run, $download_par)
 {
     assert(is_numeric($userid));
     $id = $db->insert_query('downloadinfo',
@@ -512,13 +512,13 @@ function add_download(DatabaseConnection $db, $userid, $unpar, $unrar, $subdl, $
     return $id;
 }
 
-function set_download_dir(DatabaseConnection $db, $id, $destination)
+function set_download_dir(DatabaseConnection &$db, $id, $destination)
 {
     assert(is_numeric($id));
     $db->update_query_2('downloadinfo', array('destination'=>$destination), '"ID"=?', array($id));
 }
 
-function create_download(DatabaseConnection $db, server_data &$servers, $userid, $preview = FALSE, $priority=NULL)
+function create_download(DatabaseConnection &$db, server_data &$servers, $userid, $preview = FALSE, $priority=NULL)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     assert(is_numeric($userid));
@@ -532,7 +532,7 @@ function create_download(DatabaseConnection $db, server_data &$servers, $userid,
     }
 }
 
-function do_create_download(DatabaseConnection $db, server_data &$servers, $userid, $preview = FALSE, $priority=NULL)
+function do_create_download(DatabaseConnection &$db, server_data &$servers, $userid, $preview = FALSE, $priority=NULL)
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     assert(is_numeric($userid));
@@ -587,7 +587,7 @@ function do_create_download(DatabaseConnection $db, server_data &$servers, $user
 }
 
 
-function restart_download(DatabaseConnection $db, server_data &$servers, $userid, $id, $priority=NULL)
+function restart_download(DatabaseConnection &$db, server_data &$servers, $userid, $id, $priority=NULL)
 {
     assert(is_numeric($id) && is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -624,7 +624,7 @@ function restart_download(DatabaseConnection $db, server_data &$servers, $userid
     }
 }
 
-function verify_cksfv(DatabaseConnection $db, $dir, $dlid, pr_list $files, action $item, &$error)
+function verify_cksfv(DatabaseConnection &$db, $dir, $dlid, pr_list $files, action $item, &$error)
 {
     assert(is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
@@ -672,7 +672,7 @@ function verify_cksfv(DatabaseConnection $db, $dir, $dlid, pr_list $files, actio
     return $comment;
 }
 
-function verify_par(DatabaseConnection $db, $dir, $dlid, pr_list $files, action $item, &$error, &$unpar)
+function verify_par(DatabaseConnection &$db, $dir, $dlid, pr_list $files, action $item, &$error, &$unpar)
 {
     assert(is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);

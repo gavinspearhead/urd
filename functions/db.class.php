@@ -113,7 +113,7 @@ abstract class DatabaseConnection
 
     public function __construct ($databasetype, $hostname, $port, $user, $pass, $database, $dbengine='')
     {
-        $this->error_code = 0;
+        $this->error_code = (int) 0;
         $this->databasetype = $databasetype;
         $this->databaseengine = $dbengine;
         $this->databasename = $database;
@@ -128,7 +128,7 @@ abstract class DatabaseConnection
     }
     protected function set_emulate_prepare($emulate)
     {
-        $this->DB->setAttribute(PDO::ATTR_EMULATE_PREPARES,$emulate);
+        $this->DB->setAttribute(PDO::ATTR_EMULATE_PREPARES, $emulate);
     }
     public function __destruct()
     {
@@ -354,7 +354,7 @@ abstract class DatabaseConnection
      */
         assert(is_string($table) && assert(is_bool($get_last_ID)));
 
-        if ($values == [] ) {
+        if ($values == []) {
             return FALSE;
         }
 
@@ -391,7 +391,7 @@ abstract class DatabaseConnection
      */
         assert(is_string($table) && assert(is_bool($get_last_ID)));
 
-        if ($values == [] ) {
+        if ($values == []) {
             return FALSE;
         }
 

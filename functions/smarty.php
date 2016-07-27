@@ -107,7 +107,7 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
         'TPLDIR' => $tpldir . $template,
         'IMGDIR' => $tpldir . $template . '/img',
         'CSSDIR' => $tpldir . $template . '/css',
-        'JSDIR' => $tpldir . $template . '/js',
+        'JSDIR'  => $tpldir . $template . '/js',
         'show_menu' => get_menu_display()));
     $smarty->setTemplateDir($tpl_dir);
     $smarty->setCompileDir($ctpl_dir);
@@ -131,8 +131,8 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
         $LN2['LN_' . $key] = $word;
     }
     $smarty->assign($LN2);
-    $smarty->force_compile = true; // debug XXX
     unset($LN2);
+    $smarty->force_compile = true; // debug XXX
     $smarty->loadFilter('output', 'trimwhitespace');
     $smarty->assign(array(
         'title' => $LN['urdname'] . ' - ' . $title,

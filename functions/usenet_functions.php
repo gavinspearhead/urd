@@ -34,7 +34,7 @@ function get_usenet_server(DatabaseConnection $db, $id, $active = TRUE)
         $prio_sql = ' AND "priority" > 0';
     }
     $sql = "* FROM usenet_servers WHERE \"id\" = ? $prio_sql";
-    $res = $db->select_query($sql, 1, array($id));
+    $res = $db->select_query($sql, 1, [$id]);
     if (!is_array($res)) {
         throw new exception ('No active usenet server selected', ERR_NO_ACTIVE_SERVER);
     }

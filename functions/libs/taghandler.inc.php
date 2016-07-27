@@ -169,7 +169,7 @@ class TagHandler
                 }
             }
 
-        } elseif (strtolower(substr(trim($contents[0]['content'])), 0, 7) == 'http://' || strtolower(substr(trim($contents[0]['content']), 0, 8)) == 'https://') {
+        } elseif (strtolower(substr(trim($contents[0]['content']), 0, 7)) == 'http://' || strtolower(substr(trim($contents[0]['content']), 0, 8)) == 'https://') {
             $url = $contents[0]['content'];
         } 
         if ($url == '') {

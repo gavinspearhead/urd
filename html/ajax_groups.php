@@ -53,7 +53,6 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
     if (!in_array($order_dir, $order_dirs)) {
         $order_dir = '';
     }
-    //$showall = get_request('unsubscribed', '0');
     $unsubscribed = ($group_count == 0 || $search != '') ? TRUE : FALSE;
     $retvals[0] = $unsubscribed;
 
@@ -82,7 +81,6 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
         $input_arr[':adult'] = ADULT_ON;
     }
 
-    //$time = time();
     $query = '*, ' .
         'groups."minsetsize" AS admin_minsetsize, ' .
         'groups."maxsetsize" AS admin_maxsetsize, ' .
@@ -94,7 +92,7 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
 
     $res = $db->select_query($query, $perpage, $offset, $input_arr);
     if ($res === FALSE) {
-        $res = array();
+        $res = [];
     }
 
     return $res;
@@ -114,7 +112,7 @@ function build_newsgroup_query_total(DatabaseConnection $db, $userid)
 
     // Search google style:
     $Qsearch = '';
-    $input_arr = array();
+    $input_arr = [];
     $search = trim(str_replace('*', ' ', $search));
     $keywords = explode(' ', $search);
     $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
@@ -261,9 +259,9 @@ function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
     $def_exp = get_config($db, 'default_expire_time');
     $number = $offset;
     $hidden_groups = SPOTS_GROUPS::get_hidden_groups();
-
+    $now = time();
     foreach ($res as $row) {
-        $thisng = array();
+        $thisng = [];
         $id = $row['ID'];
         $active = $row['active'];
         if (in_array($row['name'], $hidden_groups) && ($search != $row['name'])) {
@@ -304,7 +302,7 @@ function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)
         if ($lastupdated == 0) {
             $lastupdated = '-';
         } else {
-            $lastupdated = time() - $lastupdated;
+            $lastupdated = $now - $lastupdated;
             $lastupdated = readable_time($lastupdated, 'largest_two');
         }
         $thisng['lastupdated'] = $lastupdated;

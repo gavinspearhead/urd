@@ -57,8 +57,8 @@ function my_escapeshellcmd($str, $hide_space=TRUE)
 function my_escapeshellarg($str, $hide_space=TRUE)
 { // you really have to do everything yourself in php...
     // note that this isn't a proper command line escape thingie as it doesn't handle piping and quoting by it self. It just escapes all the naughty characters.
-    $chars = array('\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"');
-    $sub_chars = array('\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"');
+    static $chars = ['\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"'];
+    static $sub_chars = ['\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"'];
     if ($hide_space) {
         $chars[] = ' ';
         $sub_chars[] = '\\ ';
@@ -192,7 +192,7 @@ function rmdirtree($dirname, $age=0, $delete_top_dir = FALSE) // age in seconds 
 function get_all_paths($base, $user='', $with_cache=FALSE)
 {
     static $paths = array(TMP_PATH, DONE_PATH, PREVIEW_PATH, NZB_PATH, SPOOL_PATH, SCRIPTS_PATH, POST_PATH);
-    $path_list = array();
+    $path_list = [];
     foreach ($paths as $p) {
         $path = $base . $p . $user;
         add_dir_separator($path);
@@ -403,7 +403,7 @@ function dirsize($path)
         // Open directory
         //$parent = $i;
         if (is_dir($queue[$i]) && $dir = @dir($queue[$i])) {
-            $subdirs = array();
+            $subdirs = [];
             while (FALSE !== ($entry = $dir->read())) {
                 // Skip pointers
                 if ($entry == '.' || $entry == '..') {
@@ -463,7 +463,7 @@ function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
     /*don't want to get past the start-of-file*/
     $position = - min($bufferlength, $filesize);
     $aliq = '';
-    $lines = array();
+    $lines = [];
 
     while ($maxlines > 0) {
         if (fseek($handle, $position, SEEK_END)) {  /* should not happen but it's better if we check it*/
@@ -493,7 +493,7 @@ function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
         /*drop first line because it may not be complete*/
         $aliq = array_shift($tmp2);
 
-        $tmp = array();
+        $tmp = [];
         $read = 0;
         foreach ($tmp2 as $line) {
             if ($match != '' && stripos($line, $match) === FALSE) {
@@ -524,10 +524,10 @@ function read_last_lines($filename, $maxlines, &$error, $match, $min_log_level)
 
             //get back $aliq which contains the very first line of the file
             if (!is_array($aliq)) {
-                $aliq = array();
+                $aliq = [];
             }
             if (!is_array($tmp)) {
-                $tmp = array();
+                $tmp = [];
             }
             $lines = array_merge($aliq, $tmp, $lines);
 

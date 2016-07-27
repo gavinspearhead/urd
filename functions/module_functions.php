@@ -55,7 +55,7 @@ class urd_modules
     const URD_CLASS_SPOTS =      512;
     const URD_CLASS_ALL =       1023;
 
-    private static $mod_fns = array(
+    private static $mod_fns = [ 
         self::URD_CLASS_GENERIC=> 'validate_generic',
         self::URD_CLASS_GROUPS => 'validate_groups',
         self::URD_CLASS_USENZB => 'validate_usenzb',
@@ -65,9 +65,9 @@ class urd_modules
         self::URD_CLASS_DOWNLOAD => 'validate_download',
         self::URD_CLASS_VIEWFILES => 'validate_viewfiles',
         self::URD_CLASS_POST  => 'validate_post'
-    );
+    ];
 
-    private static $urd_classes = array(
+    private static $urd_classes = [
         self::URD_CLASS_GENERIC,
         self::URD_CLASS_GROUPS,
         self::URD_CLASS_USENZB,
@@ -78,7 +78,7 @@ class urd_modules
         self::URD_CLASS_DOWNLOAD,
         self::URD_CLASS_VIEWFILES,
         self::URD_CLASS_SPOTS
-    );
+    ];
 
     public static function get_urd_classes()
     {
@@ -120,7 +120,7 @@ class urd_modules
     public static function update_urd_modules(DatabaseConnection $db, array $modules, &$module_msg)
     {
         //global $config;
-        $dummy = array();
+        $dummy = [];
 
         if (urd_modules::validate_modules($db, $modules, $module_msg)) {
             return FALSE;
@@ -140,7 +140,7 @@ class urd_modules
 
     public static function get_urd_module_config($bits)
     {
-        $modules = array();
+        $modules = [];
         foreach (self::$urd_classes as $class) {
             if (($bits & $class) != 0) {
                 $modules[$class] = TRUE;
@@ -164,7 +164,7 @@ class urd_modules
 
     public static function get_stats_enabled_modules(DatabaseConnection $db)
     {
-        $types = array();
+        $types = [];
         if (self::check_module_enabled($db, self::URD_CLASS_DOWNLOAD|self::URD_CLASS_USENZB)) {
             $types[] = stat_actions::DOWNLOAD;
         }
@@ -190,7 +190,7 @@ function check_php_modules(test_result_list &$test_results, $modules, &$module_m
 {
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
 
-    $php_modules = array (
+    $php_modules = [
         new module('curl',      FALSE, urd_modules::URD_CLASS_RSS | urd_modules::URD_CLASS_SYNC),
         new module('openssl',   TRUE,  urd_modules::URD_CLASS_GENERIC),
         new module('pcntl',     FALSE, urd_modules::URD_CLASS_GENERIC),
@@ -203,7 +203,7 @@ function check_php_modules(test_result_list &$test_results, $modules, &$module_m
         new module('gmp',       FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('xmlreader', TRUE,  urd_modules::URD_CLASS_GENERIC),
         new module('xmlwriter', TRUE,  urd_modules::URD_CLASS_GENERIC)
-    );
+    ];
 
     $error = 0;
     foreach ($php_modules as $mod) {

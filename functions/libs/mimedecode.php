@@ -206,7 +206,7 @@ class Mail_mimeDecode
     private function _decode($headers, $body, $default_ctype = 'text/plain')
     {
         $return = new stdClass;
-        $return->headers = array();
+        $return->headers = [];
         $headers = $this->_parseHeaders($headers);
 
         foreach ($headers as $value) {
@@ -334,7 +334,7 @@ class Mail_mimeDecode
      */
     private function &getMimeNumbers(&$structure, $no_refs = FALSE, $mime_number = '', $prepend = '')
     {
-        $return = array();
+        $return = [];
         if (!empty($structure->parts)) {
             if ($mime_number != '') {
                 $structure->mime_id = $prepend . $mime_number;
@@ -411,7 +411,7 @@ class Mail_mimeDecode
                 );
             }
         } else {
-            $return = array();
+            $return = [];
         }
 
         return $return;
@@ -443,7 +443,7 @@ class Mail_mimeDecode
                 // the regex is already bordering on incomprehensible
                 $splitRegex = '/([^;\'"]*[\'"]([^\'"]*([^\'"]*)*)[\'"][^;\'"]*|([^;]+))(;|$)/';
                 preg_match_all($splitRegex, $input, $matches);
-                $parameters = array();
+                $parameters = [];
                 for ($i=0; $i<count($matches[0]); $i++) {
                     $param = $matches[0][$i];
                     while (substr($param, -2) == '\;') {
@@ -478,7 +478,7 @@ class Mail_mimeDecode
      */
     private function _boundarySplit($input, $boundary)
     {
-        $parts = array();
+        $parts = [];
 
         $bs_possible = substr($boundary, 2, -2);
         $bs_check = '\"' . $bs_possible . '\"';
