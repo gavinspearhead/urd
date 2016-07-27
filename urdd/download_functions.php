@@ -337,7 +337,7 @@ function start_download(DatabaseConnection& $db, action $item)
             // Download the batch:
             try {
                 list($bytes) = download_batch($db, $res, $dir, $nzb, $groupid, $userid, $connected, $check_for_rar_encryption, $download_par_files);
-                } catch (exception $e) {
+            } catch (exception $e) {
                 if ($e->getCode() == ENCRYPTED_RAR) {
                     $progress = 0;
                     $comment = $e->getMessage();

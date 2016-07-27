@@ -50,20 +50,20 @@ function cleanup_dir($directory, array $files)
 
 function my_escapeshellcmd($str, $hide_space=TRUE)
 { // alias
-
     return my_escapeshellarg($str, $hide_space);
 }
 
 function my_escapeshellarg($str, $hide_space=TRUE)
 { // you really have to do everything yourself in php...
     // note that this isn't a proper command line escape thingie as it doesn't handle piping and quoting by it self. It just escapes all the naughty characters.
-    static $chars = ['\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"'];
-    static $sub_chars = ['\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"'];
-    if ($hide_space) {
+    $chars = ['\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"'];
+    $sub_chars = ['\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"'];
+    if ($hide_space===TRUE) {
         $chars[] = ' ';
         $sub_chars[] = '\\ ';
     }
-    return str_replace($chars, $sub_chars, $str);
+    $rv = str_replace($chars, $sub_chars, $str);
+    return $rv;
 }
 
 function add_dir_separator(&$path)
