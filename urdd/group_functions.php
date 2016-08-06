@@ -429,11 +429,11 @@ class urdd_group
         // convert to epochtime:
         $do_expire_incomplete = $expire_incomplete = get_config($this->db, 'expire_incomplete');
         $expire_percentage = get_config($this->db, 'expire_percentage');
-        $input_arr = [$expire];
         $ki_pref = get_config($this->db, 'keep_interesting');
         $keep_int = '';
         $time = time();
         $expire = $time - $expire;
+        $input_arr = [$expire];
         if ($ki_pref) {
             $keep_int = ' AND "setID" NOT IN (SELECT "setID" FROM usersetinfo WHERE "type"=? AND "statusint"=?) ';
             $input_arr = array_merge($input_arr, [$type, sets_marking::MARKING_ON]);
