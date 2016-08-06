@@ -502,7 +502,7 @@ function start_child(action $item, conn_list $conn_list, $nntp_enabled)
         urdd_exit(INTERNAL_FAILURE); // for safety tho
     } catch (exception $e) {
         $code = $e->getCode();
-        write_log("Child Died? {$e->getMessage()} ({$e->getCode()})" , LOG_WARNING);
+        write_log("Child Died? {$e->getMessage()} ({$e->getCode()})", LOG_WARNING);
         urdd_exit($code <= 0 ? INTERNAL_FAILURE : -$code);
     }
 }
@@ -916,10 +916,10 @@ try {
         $message = $e->getmessage();
         $code = $e->getcode();
         if ($is_child) {
-            write_log ("A Thread terminated prematurely: $message ($code)" , LOG_ERR);
+            write_log ("A Thread terminated prematurely: $message ($code)", LOG_ERR);
             urdd_exit(-$code);
         } else {
-            write_log ("An error occured during startup of URD daemon: $message ($code)" , LOG_CRIT);
+            write_log ("An error occured during startup of URD daemon: $message ($code)", LOG_CRIT);
             write_log ('is there another URD daemon running?', LOG_NOTICE);
             echo_debug_trace($e, DEBUG_SERVER);
             urdd_exit($code <= 0 ? -1 : -$code);

@@ -85,12 +85,11 @@ function smarty_function_urd_skipper($params, &$smarty)
     if (($current_page < $last_page) ) {
         $next_page = find_page($pages, $current_page + 1);
         if ($next_page !== FALSE) {
-            $rv[] = array($class . '_5' , $next_page['offset'], ' &gt; ');
+            $rv[] = array($class . '_5', $next_page['offset'], ' &gt; ');
         }
     }
     
     $first = TRUE;
-   
     $html = "<table class=\"$table_class $extra_class\"><tr>";
 
     foreach($rv as $index => $line) {

@@ -581,12 +581,12 @@ echo_debug_var_file('/tmp/foo', $prefArray);
         }
     }
 
-    $search_terms = @unserialize($prefArray['search_terms']);
+    $search_terms = load_search_terms($db, $userid);
     if ($search_terms === FALSE) { 
         $search_terms = $prefArray['search_terms']; 
     }
 
-    $blocked_terms = @unserialize($prefArray['blocked_terms']);
+    $blocked_terms = load_blocked_terms($db, $userid);
     if ($blocked_terms === FALSE) { 
         $blocked_terms = $prefArray['blocked_terms']; 
     }
@@ -598,12 +598,12 @@ echo_debug_var_file('/tmp/foo', $prefArray);
 
     $login = array(
         new pref_plain(user_levels::CONFIG_LEVEL_BASIC, $LN['username'], $LN['username_msg'], $username, NULL, NULL),
-        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['oldpw'], 'oldpass', $LN['oldpw_msg'] , $password_msg,'' ),
-        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (1)', 'newpass1', $LN['newpw1_msg'] , '', ''),
-        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (2)', 'newpass2', $LN['newpw2_msg'] , '', ''),
+        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['oldpw'], 'oldpass', $LN['oldpw_msg'], $password_msg,'' ),
+        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (1)', 'newpass1', $LN['newpw1_msg'], '', ''),
+        new pref_password(user_levels::CONFIG_LEVEL_BASIC, $LN['newpw'] . ' (2)', 'newpass2', $LN['newpw2_msg'], '', ''),
         new pref_password_submit('oldpass', 'newpass1', 'newpass2', 'user_pass_change', $LN['change_password'], 'pass_change', $username),
         new pref_select(user_levels::CONFIG_LEVEL_BASIC,  $LN['pref_index_page'], 'index_page', $LN['pref_index_page_msg'], $index_page_msg,  $index_page_array, $prefArray['index_page']),
-        new pref_button(user_levels::CONFIG_LEVEL_BASIC, $LN['delete_account'], 'delete_account', $LN['delete_account_msg'] , $delete_account_msg, $LN['delete'],
+        new pref_button(user_levels::CONFIG_LEVEL_BASIC, $LN['delete_account'], 'delete_account', $LN['delete_account_msg'], $delete_account_msg, $LN['delete'],
             'onclick="javascript:confirm_delete_account(\'delete_account\', \'' . $LN['delete_account'] . '?\');"', 'delete_account', NULL),
     );
 
@@ -661,7 +661,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
         new pref_text (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_imdb_userid'], 'imdb_userid',$LN['pref_imdb_userid_msg'], $imdb_userid_msg, $prefArray['imdb_userid']),
         new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_type'], 'search_type', $LN['pref_search_type_msg'], $search_type_msg, $search_type_array, $prefArray['search_type']),
         new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_search_terms'], 'search_terms', $LN['pref_search_terms_msg'], '', $search_terms, 10, 40),
-        new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms', $LN['pref_blocked_terms_msg'], '', $blocked_terms, 10 , 40)
+        new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_blocked_terms'], 'blocked_terms', $LN['pref_blocked_terms_msg'], '', $blocked_terms, 10, 40)
     );
 
     if ($allow_global_scripts != 0) {
@@ -676,7 +676,7 @@ echo_debug_var_file('/tmp/foo', $prefArray);
     $posting = array (
         new pref_email (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_email'], 'poster_email', $LN['pref_poster_email_msg'], $poster_email_msg, $prefArray['poster_email']),
         new pref_text (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_name'], 'poster_name', $LN['pref_poster_name_msg'], $poster_name_msg, $prefArray['poster_name']),
-        new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_default_text'], 'poster_default_text', $LN['pref_poster_default_text_msg'], $poster_default_text_msg, $prefArray['poster_default_text'], 10 , 40),
+        new pref_textarea (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_poster_default_text'], 'poster_default_text', $LN['pref_poster_default_text_msg'], $poster_default_text_msg, $prefArray['poster_default_text'], 10, 40),
         new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_recovery_size'], 'recovery_size',$LN['pref_recovery_size_msg'], $recovery_size_msg, $prefArray['recovery_size']),
         new pref_numeric (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_rarfile_size'], 'rarfile_size',$LN['pref_rarfile_size_msg'], $rarfile_size_msg, $prefArray['rarfile_size']),
     );

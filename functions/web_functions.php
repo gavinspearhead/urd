@@ -2270,7 +2270,7 @@ function find_url_icon($url)
         'imagecurl.com' => 'ImageCurl',
         'imdb.com' => 'IMDB',
         'imgbox.com' => 'Imgbox',
-        'imgur.com' =>'Imgur' ,
+        'imgur.com' =>'Imgur',
         'metal-archives.com' => 'MetalArchives',
         'mijnserie.nl' => 'MijnSerie',
         'moviemeter.nl' => 'Moviemeter',
@@ -2283,8 +2283,8 @@ function find_url_icon($url)
         'tvrage.com' => 'TVrage',
         'wikipedia.org' => 'WIKI',
         'xxx-image.com'=>  'XXX-Image',
-        'xxximages.nl' => 'XXX-Image' ,
-        'xxxhost.nl' => 'XXX-Image' ,
+        'xxximages.nl' => 'XXX-Image',
+        'xxxhost.nl' => 'XXX-Image',
         'youtube.com' => 'YouTube',
     );
 

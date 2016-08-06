@@ -338,7 +338,7 @@ class usenet_server
                             $comp_headers = $conn->test_compressed_headers_nntp($group, $code);
                             $ch_str = $comp_headers ? 'Compressed headers supported' : '';
                             write_log ("Found setting: $hostname port: $p encryption: $e group: $group ($p_str) indexing allowed $ch_str", LOG_NOTICE);
-                            $test_results->add(new test_result("$hostname $p $e group: $group " , TRUE, "port: $p encryption: $e group: $group ($p_str) indexing allowed $ch_str"));
+                            $test_results->add(new test_result("$hostname $p $e group: $group ", TRUE, "port: $p encryption: $e group: $group ($p_str) indexing allowed $ch_str"));
                             break;
                         } else {
                             write_log ("Found setting: $hostname port: $p encryption: $e group: $group (code $code) indexing not allowed", LOG_NOTICE);

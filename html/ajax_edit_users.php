@@ -61,7 +61,7 @@ class users_c
 
         // Turn them into seperate variables for easy smartying:
         $rights = str_split(strtolower($r));
-        $rightsarray = array();
+        $rightsarray = [];
         foreach ($rights as $letter) {
             $rightsarray[$letter] = 1;
         }
@@ -91,7 +91,7 @@ try {
                     $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
                     $users = $xml->read_users($db);
                     $settings = $xml->read_user_settings($db);
-                    if ($users != array()) {
+                    if ($users != []) {
                         $prefs = $prefs_root;
                         stop_urdd($userid);
                         clear_all_users($db);
@@ -172,7 +172,7 @@ try {
                 'allow_erotica'=> $allow_erotica?1:0,
                 'allow_update'=> $allow_update?1:0,
                 'autodownload'=> $autodownload,
-                'isactive'=> $isactive ,
+                'isactive'=> $isactive,
                 'last_active'=> $last_active));
             $contents = $smarty->fetch('ajax_edit_users.tpl');
             return_result(array('contents' => $contents));
@@ -337,7 +337,7 @@ try {
             }
             break;
         case 'reload_users':
-            $users = array();
+            $users = [];
             $search = $o_search = (trim(get_request('search', '')));
             $sort = get_request('sort', 'name');
             $sort_dir = get_request('sort_dir', 'asc');
@@ -351,7 +351,7 @@ try {
                 $sort_dir = 'asc';
             }
             $Qsearch = '';
-            $input_arr = array();
+            $input_arr = [];
             if ($search != '') {
                 $like = $db->get_pattern_search_command('LIKE');
                 $Qsearch = " AND \"name\" $like :search ";
@@ -362,7 +362,7 @@ try {
             $sql = "* FROM users WHERE \"ID\" > 0 $Qsearch ORDER BY \"$sort\" $sort_dir";
             $res = $db->select_query($sql, $input_arr);
             if (!is_array($res)) {
-                $res = array();
+                $res = [];
             }
             foreach ($res as $row) {
                 $password = $row['pass'];

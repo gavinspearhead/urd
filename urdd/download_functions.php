@@ -342,7 +342,7 @@ function start_download(DatabaseConnection& $db, action $item)
                     $progress = 0;
                     $comment = $e->getMessage();
                     write_log('Cancelling download: ' . $e->getmessage(), LOG_NOTICE);
-                    update_queue_status($db, $item->get_dbid(),QUEUE_CANCELLED , 0, $progress, $comment);
+                    update_queue_status($db, $item->get_dbid(),QUEUE_CANCELLED, 0, $progress, $comment);
                     urdd_exit(ENCRYPTED_RAR);
                 } else {
                     throw $e;

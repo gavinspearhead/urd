@@ -60,10 +60,10 @@ class URD_NNTP
     private $xover_xref;
     private $extset_headers;
 
-    const MIN_OLDER_COUNTER = 5000;
-    const MAX_OLDER_COUNTER = 10000;
-    const BINARYID_CACHE_SIZE = 64; // number of binary IDs we keep in memory to minimise the redundant subjects and posters we store
-    const GROUP_FILTER = 'alt.bin*, free.*';
+    const MIN_OLDER_COUNTER     = 5000;
+    const MAX_OLDER_COUNTER     = 10000;
+    const BINARYID_CACHE_SIZE   = 64; // number of binary IDs we keep in memory to minimise the redundant subjects and posters we store
+    const GROUP_FILTER          = 'alt.bin*, free.*';
 
     public function __destruct()
     {
@@ -82,8 +82,8 @@ class URD_NNTP
         //initialize some stuff
         $this->db = $db;
         $this->nntp = NULL;
-        $this->downloadspeedArr = array();
-        $this->downloadspeedArr_b = array();
+        $this->downloadspeedArr = [];
+        $this->downloadspeedArr_b = [];
         $conn = strtolower($connection_type);
         switch ($conn) {
             default:
@@ -123,7 +123,7 @@ class URD_NNTP
     }
     public function reset_extset_headers()
     {
-        $this->extset_headers = array();
+        $this->extset_headers = [];
     }
 
     public function disconnect($silent=FALSE)
@@ -303,7 +303,7 @@ class URD_NNTP
                 . gmp_strval($last2) . ' ' . gmp_strval($total_max) . ' ' . $expire, DEBUG_MAIN);
         $cnt1 = $cnt2 = $cnt = gmp_init(0);
         $first_guess = (gmp_add(gmp_sub($last1, $first1), gmp_sub($last2, $first2)));
-        echo_debug('First guess: ' . gmp_strval($first_guess) , DEBUG_MAIN);
+        echo_debug('First guess: ' . gmp_strval($first_guess), DEBUG_MAIN);
         if (gmp_cmp($last1, 0) > 0 && gmp_cmp($first1, 0) > 0) {
             $cnt1 = $this->estimate_headers($first1, $last1, $expire);
         }
@@ -438,7 +438,7 @@ class URD_NNTP
         // Update group table with update time:
         $o = gmp_strval($orig_stop);
         $now = time();
-        $query = "UPDATE groups SET \"last_updated\" = ? , \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
+        $query = "UPDATE groups SET \"last_updated\" = ?, \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
         $res = $this->db->execute_query($query, array($now, $groupid));
 
         return $total_counter;
@@ -449,7 +449,7 @@ class URD_NNTP
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         $first = $last = gmp_init(0);
         $dbid = $item->get_dbid();
-        $this->extset_articles = array();
+        $this->extset_articles = [];
         $groupid = $groupArr['ID'];
         $continue_old = FALSE;
         $group_name = $groupArr['name'];
@@ -833,8 +833,8 @@ Array
         $ETA = round($articlestodo / $avgdownloadspeed);
 
         // Store:
-        store_ETA($this->db, $ETA, $percentage, $avgdownloadspeed . ' articles/s - ' . "total $totalarticles articles; $avgdownloadspeed_b bytes/s" , $dbid);
-        echo_debug($avgdownloadspeed . ' articles/s - ' . "total $totalarticles articles; $avgdownloadspeed_b bytes/s" , DEBUG_MAIN);
+        store_ETA($this->db, $ETA, $percentage, $avgdownloadspeed . ' articles/s - ' . "total $totalarticles articles; $avgdownloadspeed_b bytes/s", $dbid);
+        echo_debug($avgdownloadspeed . ' articles/s - ' . "total $totalarticles articles; $avgdownloadspeed_b bytes/s", DEBUG_MAIN);
     }
     private function select_group_name($name, &$code)
     {
@@ -916,7 +916,7 @@ Array
 
         // New Function => Cache all known groups in one array
         $res = $this->db->select_query('"ID", "name" FROM groups');
-        $this->grouparray = array();
+        $this->grouparray = [];
         // Filling the Array
         if (is_array($res)) {
             foreach ($res as $dbGroup) {
@@ -942,7 +942,7 @@ Array
             throw new exception_nntp_connect('Could not update group list');
         }
         write_log('Done with grouplist from server. Inserted ' . $this->insert . ', Updated ' . $this->update, LOG_NOTICE);
-        $this->grouparray = array();
+        $this->grouparray = [];
 
         return array($this->update, $this->insert);
     }

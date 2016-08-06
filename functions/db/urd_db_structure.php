@@ -569,7 +569,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('status', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_index(new urd_index('postf_prim', 'PRIMARY', array('id')));
         $t->add_index(new urd_index('idx_post_id', '', array('postid')));
-        $t->add_index(new urd_index('idx_post_status', '' , array('status')));
+        $t->add_index(new urd_index('idx_post_status', '', array('status')));
         $urd_db->add($t);
 
         $t = new urd_table('post_messages', 'id', 'utf8');

@@ -333,7 +333,7 @@ if (!is_array($res)) {
         $setid = $row['ID'];
         $size = $row['size'];
         $date = date ('r', $row['date']);
-        list($_size, $suffix) = format_size($row['size'], 'h' , $LN['byte_short'], 1024, 1);
+        list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
         $size = $_size . ' ' . $suffix;
         $subcata = $subcatb = $subcatc = $subcatd = '';
         if ($type == USERSETTYPE_GROUP) {

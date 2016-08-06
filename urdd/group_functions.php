@@ -372,7 +372,6 @@ class urdd_group
 
         // First delete everything for this group or only the specific set:
         $this->db->delete_query('setdata', '"groupID"=? AND "ID"=?', [$groupID, $setID_filter]);
-
         // Now re-create it.
         $this->db->escape($groupID, FALSE);
         $sql = '"setID", count("binaryID") AS bins, MIN("subject") AS subject, MIN("date") AS date, SUM("bytes") AS totalsize ' .
@@ -690,7 +689,7 @@ class urdd_group
             store_merge_sets_data($this->db, $setid1, $setid2, USERSETTYPE_GROUP, ESI_NOT_COMMITTED);
         }
         unset($setids);
-        $this->add_set_data($this->db, $groupid1, $setid1);
+        $this->add_set_data($groupid1, $setid1);
         $this->db->update_query_2('setdata', array('articlesmax'=>$articlesmax), '"ID"=?', array($setid1));
         $setcount = count_sets_group($this->db, $groupid1);
         update_group_setcount($this->db, $groupid1, $setcount);

@@ -33,7 +33,7 @@ $add_menu = array (
         new menu_item2 ('imdb_watchlist','imdb_watchlist',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2 ('import_prefs','settings_import',urd_modules::URD_CLASS_GENERIC, '', 'command'),
         new menu_item2 ('export_prefs','settings_export',urd_modules::URD_CLASS_GENERIC, '', 'command'),
-        new menu_item2 ('reset_prefs','reset',urd_modules::URD_CLASS_GENERIC, $LN['reset'] . ' ' . strtolower( $LN['pref_title']) , 'command'),
+        new menu_item2 ('reset_prefs','reset',urd_modules::URD_CLASS_GENERIC, $LN['reset'] . ' ' . strtolower( $LN['pref_title']), 'command'),
     )
 );
 

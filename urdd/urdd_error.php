@@ -82,7 +82,7 @@ function sig_handler($signo=0)
 function kill_handler($signo=0)
 {
     pcntl_signal(SIGTERM, SIG_IGN, FALSE);
-    pcntl_signal(SIGINT, SIG_IGN , FALSE);
+    pcntl_signal(SIGINT, SIG_IGN, FALSE);
     echo_debug_function(DEBUG_SIGNAL, __FUNCTION__);
     // shutdown handler will be called now
     urdd_exit(NO_ERROR);
@@ -103,7 +103,7 @@ function status_shutdown_handler()
 function shutdown_handler()
 {
     pcntl_signal(SIGTERM, SIG_IGN, FALSE);
-    pcntl_signal(SIGINT, SIG_IGN , FALSE);
+    pcntl_signal(SIGINT, SIG_IGN, FALSE);
     echo_debug_function(DEBUG_SIGNAL, __FUNCTION__);
     global $servers, $is_child, $db, $config;
     if ($is_child) {

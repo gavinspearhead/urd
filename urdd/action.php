@@ -63,7 +63,7 @@ class action
         if ($cmd === NULL) {
             $this->command_code = NULL;
             $this->command = NULL;
-        } elseif (is_numeric($cmd)) { // we got the code , need to find the string
+        } elseif (is_numeric($cmd)) { // we got the code, need to find the string
             $this->command_code = $cmd;
             $this->command = get_command($cmd);
             if ($this->command === FALSE) {
@@ -91,8 +91,8 @@ class action
         $this->preview = FALSE;
         $this->active_server = (int) 0;
         $this->preferred_server = (int) 0;
-        $this->temp_fail_servers = array();
-        $this->perm_fail_servers = array();
+        $this->temp_fail_servers = [];
+        $this->perm_fail_servers = [];
         $this->db_intensive = (bool) get_command_db_intensive($cmd);
     }
     public function set_command($cmd)
@@ -221,7 +221,7 @@ class action
     }
     public function is_download()
     {
-        return in_array($this->get_command_code(), array(urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA));
+        return in_array($this->get_command_code(), [urdd_protocol::COMMAND_DOWNLOAD_ACTION, urdd_protocol::COMMAND_DOWNLOAD, urdd_protocol::COMMAND_ADDSPOTDATA]);
     }
     public function set_need_nntp($nntp)
     {
@@ -303,12 +303,12 @@ class action
     }
     public function reset_tried_servers()
     {
-        $this->temp_fail_servers = array();
+        $this->temp_fail_servers = [];
     }
     public function clear_tried_servers(array $not_those_servers)
     {
         $srvr = $this->temp_fail_servers;
-        $this->temp_fail_servers = array();
+        $this->temp_fail_servers = [];
         foreach ($srvr as $s) {
             if (!in_array($s, $not_those_servers)) {
                 $this->temp_fail_servers[$s] = $s;

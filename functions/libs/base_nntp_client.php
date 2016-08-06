@@ -611,12 +611,12 @@ class Base_NNTP_Client
                             'last'  => $response_arr[2],
                             'count' => $response_arr[0]);
                 } else {
-                    throw new exception('Invalid response' , $response);
+                    throw new exception('Invalid response', $response);
                 }
 
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP: // 411, RFC977: 'no such news group'
-                throw new exception("No such news group ({$this->_current_status_response()})" , $response);
+                throw new exception("No such news group ({$this->_current_status_response()})", $response);
                 break;
             default:
                 return $this->_handle_unexpected_response($response);

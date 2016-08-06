@@ -188,13 +188,13 @@ function create_spot_data(DatabaseConnection $db, $userid, $graphtitle)
        $labels[] = $LN[$cats[$key]];
 
     }
-    $data = make_graph_data($db, $userid, array(
+    $data = make_graph_data($db, $userid, [
         'type' => 'pie',
         'data' => $stat_data,
         'fillcolours' => colour_map::get_rgb_codes($db, $userid, 0.7),
         'labels' =>$labels,
         'title' => $graphtitle,
-    ));
+    ]);
 
     return_result($data);
 }
@@ -372,7 +372,7 @@ function create_spot_supply_year(DatabaseConnection $db, $userid, $graphtitle)
 {
     global $LN;
     assert(is_numeric($userid));
-    $inputdata = array();
+    $inputdata = [];
     $data1 = (get_sets_stats_date($db, stat_actions::SPOT_COUNT));
     $data2 = (get_sets_stats_date($db, stat_actions::SET_COUNT));
     $data3 = (get_sets_stats_date($db, stat_actions::RSS_COUNT));
@@ -391,7 +391,7 @@ function create_spot_graph_date(DatabaseConnection $db, $userid, $graphtitle, $y
 {
     global $LN;
     assert(is_numeric($userid));
-    $inputdata = array();
+    $inputdata = [];
     $data = make_graph_data($db, $userid, array(
         'type'=> 'stackedbar',
         'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.6),
@@ -608,7 +608,7 @@ function get_stats_by_year(DatabaseConnection $db, $userid, $type, $admin, $from
     }
     $qry = <<<QRY1
          sum("value") AS "total", count("action") AS "counter",
-                (CASE WHEN users."name" IS NULL OR users."name" = '' THEN '__anonymous' ELSE users."name" END) AS "name" ,
+                (CASE WHEN users."name" IS NULL OR users."name" = '' THEN '__anonymous' ELSE users."name" END) AS "name",
                 $ystr AS "year" FROM stats LEFT JOIN users ON users."ID" = stats."userid"
                 WHERE $ystr > :fromyear1
                 AND "action" = :type1 $quser GROUP BY "name", $ystr

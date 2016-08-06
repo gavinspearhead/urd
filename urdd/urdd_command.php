@@ -114,11 +114,11 @@ class command
 
 class commands_list
 {
-    private $commands = array();
-    private $settings = array();
+    private $commands = [];
+    private $settings = [];
     public function __construct(array $settings)
     {
-        $this->settings = array(
+        $this->settings = [
             urd_modules::URD_CLASS_GENERIC => TRUE,
             urd_modules::URD_CLASS_GROUPS => FALSE,
             urd_modules::URD_CLASS_USENZB => FALSE,
@@ -127,7 +127,7 @@ class commands_list
             urd_modules::URD_CLASS_RSS => FALSE,
             urd_modules::URD_CLASS_SYNC => FALSE,
             urd_modules::URD_CLASS_DOWNLOAD => FALSE
-        );
+        ];
         $this->update_settings($settings);
     }
     public function update_settings(array $settings)
@@ -169,7 +169,7 @@ class commands_list
 
     public function get_commands()
     {
-        $commands = array();
+        $commands = [];
         foreach ($this->commands as $k=>$command) {
             if ($command->is_enabled()) {
                 $commands[$k] = $command;
@@ -1022,7 +1022,7 @@ $commands_list->register_command( new command('SET', 'command_set', TRUE, TRUE, 
 $commands_list->register_command( new command('SHOW', 'command_show', TRUE, FALSE, urdd_protocol::COMMAND_SHOW, FALSE, 'SHOW ALL|QUEUE|NEWSGROUPS|SUBSCRIBED|FEEDS|USERS|THREADS|JOBS|CONFIG|VERSION|SERVERS|TESTS|LOAD|MODULES|UPTIME|TIME|STATUS', 'Output all actions on the queue, all newsgroups, all subscribed newsgroups, rss feeds, all logged in users, all running actions, all scheduled jobs, the running configuration or all servers, the results of the performed tests at startup, the system load; ALL outputs the threads, queue, jobs, users, servers, status', '%s', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('SHUTDOWN', 'command_shutdown', TRUE, TRUE, urdd_protocol::COMMAND_SHUTDOWN, FALSE, 'SHUTDOWN', 'Shutdown URDD', '', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('START_POST', 'command_post_action', TRUE, FALSE, urdd_protocol::COMMAND_START_POST, TRUE, 'START_POST', 'No operation (internal use)', '', FALSE, FALSE, TRUE, urd_modules::URD_CLASS_POST, 'P'));
-$commands_list->register_command( new command('STOP', 'command_stop', TRUE, FALSE, urdd_protocol::COMMAND_STOP, FALSE, 'STOP ID|ALL', 'Stop a download with ID, or all download ', '(%n|%s)' , FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
+$commands_list->register_command( new command('STOP', 'command_stop', TRUE, FALSE, urdd_protocol::COMMAND_STOP, FALSE, 'STOP ID|ALL', 'Stop a download with ID, or all download ', '(%n|%s)', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));
 $commands_list->register_command( new command('SUBSCRIBE', 'command_subscribe', TRUE, TRUE, urdd_protocol::COMMAND_SUBSCRIBE, FALSE, 'SUBSCRIBE ID OFF|ON [Expire] ', 'Subscribe or unsubcribe to group ID with optional expire time in day ', '%n %s [%n]', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GROUPS, ''));
 $commands_list->register_command( new command('SUBSCRIBE_RSS', 'command_subscribe_rss',TRUE, TRUE, urdd_protocol::COMMAND_SUBSCRIBE_RSS, FALSE, 'SUBSCRIBE_RSS ID OFF|ON [Expire]', 'Subscribe or unsubcribe to an rss feed with optional expire time in day ', '%n %s [%n]', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_RSS, ''));
 $commands_list->register_command( new command('UNPAR_UNRAR', 'command_unpar_unrar',TRUE, FALSE, urdd_protocol::COMMAND_UNPAR_UNRAR, FALSE, 'UNPAR_UNRAR ID', 'Start to verify the downloaded files, unrar them and delete the rar and par2 file ', '%n', FALSE, FALSE, FALSE, urd_modules::URD_CLASS_GENERIC, ''));

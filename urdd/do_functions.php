@@ -111,10 +111,10 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
     if ($count == 0) {
         $dlcomment = 'error_nzbfailed';
         update_dlinfo_comment($db, $dlid, $dlcomment);
-        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , 0, 100, 'Imported NZB failed: no articles found');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'Imported NZB failed: no articles found');
         $retval = FILE_NOT_FOUND;
     } else {
-        update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED , 0, 100, 'Imported NZB file');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FINISHED, 0, 100, 'Imported NZB file');
         $retval = NO_ERROR;
     }
     $dlpath = get_dlpath($db) . SPOOL_PATH;
@@ -1319,7 +1319,7 @@ function do_optimise(DatabaseConnection $db, action $item)
             if ($perc != 0) {
                 $time_left = ($mtime - $stime) * (($total_rows - $cntr) / $cntr);
             }
-            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, $time_left , $perc, "Optimising {$row[0]}");
+            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, $time_left, $perc, "Optimising {$row[0]}");
             $db->optimise_table($row[0]);
             $mtime = microtime(TRUE);
             $cntr++;
@@ -1368,7 +1368,7 @@ function do_unschedule(DatabaseConnection $db, array $arg_list, server_data &$se
 
 function do_schedule(DatabaseConnection $db, array $arg_list, server_data &$servers, $userid)
 {
-    // arg_list contains an array of Command, @, timestamp , #, recucurrence
+    // arg_list contains an array of Command, @, timestamp, #, recucurrence
     assert (is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     if (!isset($arg_list[0])) {
@@ -1846,7 +1846,7 @@ function do_merge_sets(DatabaseConnection $db, action $item)
     }
 
     if (!urd_user_rights::is_seteditor($db, $userid)) {
-        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , 0, 100, 'User is no set editor');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'User is no set editor');
 
         return NOT_ALLOWED;
     }
@@ -1998,7 +1998,7 @@ function do_post_message(DatabaseConnection $db, action $item)
     } catch (exception $e) {
         write_log($e->getMessage(), LOG_NOTICE);
 
-        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , 0, 100, 'Failed');
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, 0, 100, 'Failed');
         // and now?
     }
     $db->delete_query('post_messages', '"id"=? AND "userid"=?', array($msg_id, $userid));
@@ -2071,7 +2071,7 @@ function do_getnfo(DatabaseConnection $db, action $item)
             if ($perc != 0 && $cnt > 0) {
                 $time_left = ($time_b - $time_a) * (($totalcount - $cnt) / $cnt);
             }
-            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, $time_left , $perc, 'Getting nfo files');
+            update_queue_status($db, $item->get_dbid(), QUEUE_RUNNING, $time_left, $perc, 'Getting nfo files');
             $db->delete_query('nfo_files', '"id" in ( ' . (str_repeat('?,', count($ids) - 1)). '? )', $ids);
         }
         update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, 'Complete. ' . $totalcount . ' articles');
@@ -2362,7 +2362,7 @@ function do_getblacklist(DatabaseConnection $db, action $item)
     }
     $spotter_ids = file($blacklist_url, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
     if ($spotter_ids === FALSE) {
-        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED , NULL, 100, "Connection failed to $blacklist_url");
+        update_queue_status($db, $item->get_dbid(),QUEUE_FAILED, NULL, 100, "Connection failed to $blacklist_url");
 
         return HTTP_CONNECT_ERROR;
     }
@@ -2464,7 +2464,7 @@ function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
     $url = "http://rss.imdb.com/user/$imdb_user/watchlist?view=compact&sort=created:asc";
     $cache_dir = get_magpie_cache_dir($db);
     $cnt1 = $cnt2 = 0;
-    $search_terms = @unserialize(get_pref($db, 'search_terms', $userid));
+    $search_terms = load_search_terms($db, $userid);
     try {
         $rss = fetch_rss::do_fetch_rss($url, $cache_dir, '', '', 1);
         foreach ($rss->items as $elem) {
@@ -2480,7 +2480,7 @@ function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
                 }
             }
         }
-        set_pref($db, 'search_terms', @serialize($search_terms), $userid);
+        store_search_terms($db, $search_terms, $userid);
         write_log("Read $cnt1 entries on the watchlist. Added $cnt2 entries to the search terms.", LOG_INFO);
         update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Read $cnt1 entries on the watchlist. Added $cnt2 entries to the search terms.");
         return NO_ERROR;
@@ -2490,4 +2490,5 @@ function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
         return HTTP_CONNECT_ERROR;
     }
 }
+
 

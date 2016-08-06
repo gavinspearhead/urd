@@ -772,9 +772,9 @@ function set_and_test_pref_path($name, $userid, &$path)
 
 function set_and_test_pref_dlpath($name, $userid, &$path)
 {
+    assert(is_numeric($userid));
     global $db;
 
-    assert(is_numeric($userid));
     if (isset($_POST[$name])) {
         $val = trim($_POST[$name]);
         $rv = verify_dlpath($db, $val);
@@ -793,9 +793,9 @@ function set_and_test_pref_dlpath($name, $userid, &$path)
 
 function set_and_test_pref_numeric($name, $userid, $min=NULL, $max=NULL, $base=1024, $default_mul = NULL)
 {
-    global $db , $LN;
-
     assert(is_numeric($userid));
+    global $db, $LN;
+
     if (isset($_POST[$name])) {
         try {
             $val = trim($_POST[$name]);

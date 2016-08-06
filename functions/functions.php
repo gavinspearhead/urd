@@ -2276,14 +2276,20 @@ function get_nice_value(DatabaseConnection $db)
     return $niceval;
 }
 
-function add_line_to_text_area(DatabaseConnection $db, $option, $line, $userid)
+function add_line_to_text_area(DatabaseConnection $db, $type, $line, $userid)
 {
     assert(is_numeric($userid));
-    $value = get_pref($db, $option, $userid, '');
-    $value = @unserialize($value);
-    $value[] = $line;
-    $value = @serialize($value);
-    set_pref($db, $option, $value, $userid);
+    if ($type == 'search') {
+        $value = load_search_terms($db, $userid);
+        $value[] = $line;
+        store_search_terms($db, $value, $userid);
+    } else if ($type = 'block') {
+        $value = load_blocked_terms($db, $userid);
+        $value[] = $line;
+        store_blocked_terms($db, $value, $userid);
+    } else {
+        throw new exception($LN['error_unknowntype']);
+    }
 }
 
 function get_extsetdata(DatabaseConnection $db, $setid, $name)
@@ -2863,3 +2869,33 @@ function preg_trim($string, $pattern)
     $pattern = array('/^' . $pattern . '*/', '/' . $pattern . '*$/');
     return preg_replace($pattern, '', $string);
 }
+
+
+function load_search_terms(DatabaseConnection &$db, $userid)
+{
+    assert(is_numeric($userid));
+    return @unserialize(get_pref($db, 'search_terms', $userid));
+}
+
+function store_search_terms(DatabaseConnection &$db, array $search_terms, $userid)
+{
+    assert(is_numeric($userid));
+    $search_terms = array_map('trim', $search_terms);
+    $search_terms = array_unique($search_terms);
+    set_pref($db, 'search_terms', @serialize($search_terms), $userid);
+}
+
+function load_blocked_terms(DatabaseConnection &$db, $userid)
+{
+    assert(is_numeric($userid));
+    return @unserialize(get_pref($db, 'blocked_terms', $userid));
+}
+
+function store_blocked_terms(DatabaseConnection &$db, array $search_terms, $userid)
+{
+    assert(is_numeric($userid));
+    $search_terms = array_map('trim', $search_terms);
+    $search_terms = array_unique($search_terms);
+    set_pref($db, 'blocked_terms', @serialize($search_terms), $userid);
+}
+

@@ -299,7 +299,7 @@ function create_spot_data($db, array $spot_db_data, $userid, $nzb_segments, $ima
         'tag'=> $tag,
         'category'=> $cat,
         'subcatlist'=> $subcats,
-        'title'=> $subject ,
+        'title'=> $subject,
         'description'=> $description,
         'website'=> $url,
     );
@@ -343,7 +343,7 @@ function post_message(DatabaseConnection $db, action $item, $poster_headers, $me
     $header = array(
             'From'          => "From: $poster_name <$poster_id>",
             'Newsgroups'    => "Newsgroups: $group_name",
-            'Subject'       => "Subject: $subject" ,
+            'Subject'       => "Subject: $subject",
             'User-Agent'    => "User-Agent: $useragent",
             'x-newsreader'  => "X-Newsreader: $useragent",
             );
@@ -486,7 +486,7 @@ function do_prepare_post(DatabaseConnection $db, action $item)
         $dl_path1 = $row['tmp_dir'];
     }
 
-    update_queue_status($db, $item->get_dbid(), NULL , 0, 1, 'RAR complete');
+    update_queue_status($db, $item->get_dbid(), NULL, 0, 1, 'RAR complete');
 
     if ($post_status < POST_PARRED) {
         $file_list1= create_par_files($db, $item, $postid, $recovery_par, $dl_path1, $userid, $dir, $name);
@@ -494,7 +494,7 @@ function do_prepare_post(DatabaseConnection $db, action $item)
         $dl_path1 = $row['tmp_dir'];
         $file_list1 = glob($dl_path1 . '*');
     }
-    update_queue_status($db, $item->get_dbid(),NULL , 0, 2, 'PAR2 complete');
+    update_queue_status($db, $item->get_dbid(),NULL, 0, 2, 'PAR2 complete');
 
     if ($post_status < POST_YYENCODED) {
         $file_list1 = create_yenc_files($db, $item, $postid, $file_list1, $userid, $dir, $name);
@@ -527,7 +527,7 @@ function get_files_from_db(DatabaseConnection $db, $postid)
             $filenames[] = array('id' => $row['id'], 'filename' => $row['filename'], 'rarfile' => $row['rarfile'], 'rar_idx' => $row['rar_idx'], 'file_idx' => $row['file_idx']);
         }
         if (count($ids) > 0) {
-            $db->update_query_2('post_files', array('status'=>POST_ACTIVE), '"id" IN (' . str_repeat('?,', count($ids) - 1) . '?)' ,  $ids);
+            $db->update_query_2('post_files', array('status'=>POST_ACTIVE), '"id" IN (' . str_repeat('?,', count($ids) - 1) . '?)', $ids);
         }
         $db->unlock();
     } catch (exception $e) {
@@ -578,7 +578,7 @@ function do_post_batch(DatabaseConnection $db, action $item)
         $header_template = array(
             'from'          => "From: $postername <$poster_email>",
             'newsgroups'    => "Newsgroups: $group_name",
-            'subject'       => 'Subject: ' ,
+            'subject'       => 'Subject: ',
             'user-agent'    => "User-Agent: $useragent",
             'content-type'  => 'Content-Type: text/plain; charset=ISO-8859-1',
             'content-transfer-encoding' => 'Content-Transfer-Encoding: 8bit',
@@ -891,7 +891,7 @@ function post_binary_data(DatabaseConnection $db, $postername, $poster_email, $g
     $header_template = array(
         'from'          => "From: $postername <$poster_email>",
         'newsgroups'    => "Newsgroups: $group_name",
-        'subject'       => 'Subject: ' ,
+        'subject'       => 'Subject: ',
         'user-agent'    => "User-Agent: $useragent",
         'content-type'  => 'Content-Type: text/plain; charset=ISO-8859-1',
         'content-transfer-encoding' => 'Content-Transfer-Encoding: 8bit',

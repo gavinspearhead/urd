@@ -34,7 +34,7 @@ class sets_marking
     public static function mark_set(DatabaseConnection $db, $userid, $setid, $element, $type, $value, $alt_value=NULL)
     {
         assert(is_numeric($value) && is_numeric($userid));
-        assert(in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
+        assert(in_array($type, [USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT]));
 
         $sql = "\"$element\" FROM usersetinfo WHERE \"userID\"=? AND \"setID\"=? AND \"type\"=?";
         $res = $db->select_query($sql, 1, array($userid, $setid, $type));
@@ -106,7 +106,7 @@ class sets_marking
         if ($groupid === NULL) {
             $db->update_query('usersetinfo', array($element), array($marking), '"userID"=? AND "type"=? AND "setID" IN ( ' . str_repeat('?,', count($sets) - 1) . '?)', array_merge(array($userid, $type), $sets));
         } elseif (is_numeric($groupid)) {
-            $input_arr = array();
+            $input_arr = [];
             if ($type == USERSETTYPE_GROUP) {
                 $qry = 'setdata."ID" FROM setdata LEFT JOIN usersetinfo AS usi '
                     . ' ON usi."setID" = setdata."ID" WHERE usi."userID" = ? AND setdata."groupID"=? AND "type"=? AND usi."setID" IN ( ' . str_repeat('?,', count($sets) - 1) . '?)';
@@ -136,7 +136,7 @@ class sets_marking
         if ($element != 'statuskill' && $element != 'statusread') {
             $element = 'statusint';
         }
-        $input_arr = array();
+        $input_arr = [];
         if (!is_numeric($userid)) {
             throw new exception ($LN['error_invaliduserid'], ERR_INVALID_USERID);
         }
@@ -233,7 +233,7 @@ class sets_marking
         if (!is_numeric($userid)) {
             throw new exception ($LN['error_invaliduserid'], ERR_INVALID_USERID);
         }
-        $input_arr = array();
+        $input_arr = [];
         if ($type == USERSETTYPE_GROUP) {
             $grp = '';
             if (is_numeric($groupid)) {
@@ -268,11 +268,15 @@ class sets_marking
     private static function get_match_terms(DatabaseConnection $db, $terms, $userid)
     {
         assert(is_numeric($userid));
-        $search_terms = get_pref($db, $terms, $userid, '');
-        if ($search_terms == '') {
+        $terms = FALSE;
+        if ($terms == 'blocked_terms') { 
+            $terms = load_blocked_terms($db, $userid);
+        } else if ($terms = 'search_terms') {
+            $terms = load_search_terms($db, $userid);
+        }
+        if ($terms == FALSE) {
             return FALSE;
         }
-        $terms = unserialize($search_terms);
 
         return $terms;
     }
@@ -319,7 +323,7 @@ class sets_marking
             $like_b .= " OR ($like2)";
         }
 
-        return array($like_a, $like_b);
+        return [$like_a, $like_b];
     }
 
     private static function mark_search_rss(DatabaseConnection $db, $userid, $element = 'statusint', $feed_id=NULL)
@@ -483,15 +487,13 @@ class sets_marking
         }
 
         $search_type = $db->get_pattern_search_command($search_type); // postgres doesn't like regexp, but uses similar .... I just love standards
-        $blocked_terms = 'blocked_terms';
-        $search_terms = 'search_terms';
-        $search_terms = self::get_match_terms($db, $search_terms , $userid, '');
+        $search_terms = self::get_match_terms($db, 'search_terms', $userid, '');
         $like_setdata_true = $like_extsetdata_true = $like_setdata_false = $like_extsetdata_false = '';
         if ($search_terms === FALSE) {
             return NULL;
         }
         list ($like_setdata_true, $like_extsetdata_true) = self::expand_search_terms_as_query($db, $search_terms, $search_type, array('spots'=> 'title', 'extsetdata' => 'value'));
-        $blocked_terms = self::get_match_terms($db, $blocked_terms, $userid, '');
+        $blocked_terms = self::get_match_terms($db, 'blocked_terms', $userid, '');
         if ($blocked_terms !== FALSE) {
             list ($like_setdata_false, $like_extsetdata_false) = self::expand_search_terms_as_query($db, $blocked_terms, $search_type, array('spots'=> 'title', 'extsetdata' => 'value'));
         }
@@ -542,13 +544,13 @@ class sets_marking
         $search_type = $db->get_pattern_search_command($search_type); // postgres doesn't like regexp, but uses similar .... I just love standards
         $blocked_terms = 'blocked_terms';
         $search_terms = 'search_terms';
-        $search_terms = self::get_match_terms($db, $search_terms , $userid, '');
+        $search_terms = self::get_match_terms($db, $search_terms, $userid, '');
         $like_setdata_true = $like_extsetdata_true = $like_setdata_false = $like_extsetdata_false = '';
         if ($search_terms === FALSE) {
             return NULL;
         }
         list ($like_setdata_true, $like_extsetdata_true) = self::expand_search_terms_as_query($db, $search_terms, $search_type, array('rss_sets'=> 'setname', 'extsetdata' => 'value'));
-        $blocked_terms = self::get_match_terms($db, $blocked_terms , $userid, '');
+        $blocked_terms = self::get_match_terms($db, $blocked_terms, $userid, '');
         if ($blocked_terms !== FALSE) {
             list ($like_setdata_false, $like_extsetdata_false) = self::expand_search_terms_as_query($db, $blocked_terms, $search_type, array('rss_sets'=> 'setname', 'extsetdata' => 'value'));
         }
@@ -646,7 +648,7 @@ class sets_marking
             return NULL;
         }
         list ($like_setdata_true, $like_extsetdata_true) = self::expand_search_terms_as_query($db, $search_terms, $search_type, array('setdata' => 'subject', 'extsetdata' => 'value'));
-        $blocked_terms = self::get_match_terms($db, $blocked_terms , $userid, '');
+        $blocked_terms = self::get_match_terms($db, $blocked_terms, $userid, '');
         if ($blocked_terms !== FALSE) {
             list ($like_setdata_false, $like_extsetdata_false) = self::expand_search_terms_as_query($db, $blocked_terms, $search_type, array('setdata' => 'subject', 'extsetdata' => 'value'));
         }

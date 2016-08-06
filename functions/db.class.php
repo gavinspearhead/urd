@@ -138,7 +138,7 @@ abstract class DatabaseConnection
     {
         $ver = get_config($this, 'db_version', '-1');
         if ($ver != DB_VERSION) {
-            echo_debug("DB Version not OK: $ver - should be: " . DB_VERSION , DEBUG_DATABASE);
+            echo_debug("DB Version not OK: $ver - should be: " . DB_VERSION, DEBUG_DATABASE);
             if (php_sapi_name() == 'cli') {
                 throw new exception_db_version('Database outdated run php install/update_db.php');
             } else {

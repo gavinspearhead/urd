@@ -117,7 +117,7 @@ function _debug_dump_str_key(array $var, array $highlights=array())
         } else {
             $line = htmlentities($line);
             foreach ($highlights as $h) {
-                $line = str_ireplace($h[0], '<font color="' . $h[1]. "\">{$h[0]}</font>" , $line);
+                $line = str_ireplace($h[0], '<font color="' . $h[1]. "\">{$h[0]}</font>", $line);
             }
             echo '<tr><td>' . htmlentities($key) . '</td><td>' . $line . "</td>\n";
             echo "</tr>\n";

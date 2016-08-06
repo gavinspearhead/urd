@@ -62,10 +62,10 @@ header('Pragma: no-cache');
 function generate_random($length=6)
 {
     assert (is_numeric($length));
-    $_rand_src = array(
-        array(49, 57), //digits
-        array(65,90) //uppercase chars
-    );
+    $_rand_src = [
+        [49, 57], //digits
+        [65,90] //uppercase chars
+    ];
     mt_srand ();
     $random_string = '';
     for ($i = 0; $i < $length; $i++) {
@@ -80,15 +80,15 @@ function get_image($x, $y)
 {
     $im = imagecreatetruecolor($x, $y);
 
-    for ($i=0 ; $i< $x; $i++) {
-        for ($j=0 ; $j< $y; $j++) {
+    for ($i = 0 ; $i < $x; $i++) {
+        for ($j = 0 ; $j < $y; $j++) {
             $c = mt_rand(140, 200);
-            if (mt_rand(0,1) == 0) {
+            if (mt_rand(0, 1) == 0) {
                 $cl = imagecolorallocate($im, $c, $c, $c);
-            }else {
+            } else {
                 $cl = imagecolorallocate($im, 255, 255, 255);
             }
-                imagesetpixel($im, $i, $j, $cl);
+            imagesetpixel($im, $i, $j, $cl);
         }
     }
     return $im;
@@ -97,9 +97,9 @@ function get_image($x, $y)
 $im = get_image(80,20);
 $rand = generate_random(4);
 $_SESSION['register_captcha'] = $rand;
-ImageString($im, 5, 2, 2, $rand[0]. ' ' . $rand[1] . ' ' . $rand[2] . ' '. $rand[3] . ' '  , ImageColorAllocate($im, 0, 0, 0));
+ImageString($im, 5, 2, 2, $rand[0]. ' ' . $rand[1] . ' ' . $rand[2] . ' '. $rand[3] . ' ', ImageColorAllocate($im, 0, 0, 0));
 $rand = generate_random(4);
-ImageString($im, 5, 2, 2, ' ' . $rand[0] . ' ' . $rand[1] . ' ' . $rand[2] .' ' . $rand[3]  , ImageColorAllocate($im, 200, 0, 00));
+ImageString($im, 5, 2, 2, ' ' . $rand[0] . ' ' . $rand[1] . ' ' . $rand[2] .' ' . $rand[3], ImageColorAllocate($im, 200, 0, 00));
 header('Content-type: image/png'); 
 imagepng($im, NULL, 0);
 ImageDestroy($im);

@@ -76,8 +76,8 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
 {
     global $LN;
     verify_access($db, urd_modules::URD_CLASS_POST | urd_modules::URD_CLASS_USENZB, FALSE, 'P', $userid, TRUE);
-    $infoarray_upload = array();
-    $input_arr = array();
+    $infoarray_upload = [];
+    $input_arr = [];
     $search = get_request('search', '');
     $qsearch = '';
     $like = $db->get_pattern_search_command('LIKE');
@@ -96,7 +96,7 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_POST)) {
         $res_up = $db->select_query($sql_up, $input_arr);
         if ($res_up === FALSE) {
-            $res_up = array();
+            $res_up = [];
         }
         // parse upload-
         foreach ($res_up as $row) {
@@ -209,14 +209,14 @@ function get_upload_status(DatabaseConnection $db, $userid, $isadmin)
 
         }
     }
-    $_infoarray_upload = array();
+    $_infoarray_upload = [];
     foreach($infoarray_upload as $cat => $data) {
         $_infoarray_upload[$cat] = $data;
         $size = 0;
         foreach ($data['items'] as $d) {
             $size += $d->raw_size;
         }
-        list($_size, $_suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);
+        list($_size, $_suffix) = format_size($size, 'h', $LN['byte_short'], 1024, 1);
         $_infoarray_upload[$cat]['size'] = $_size;
         $_infoarray_upload[$cat]['suffix'] = $_suffix;
     }
@@ -247,11 +247,11 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
     // Get download info:
     
 
-    $infoarray_download = array();
+    $infoarray_download = [];
     if (urd_modules::check_module_enabled($db, urd_modules::URD_CLASS_DOWNLOAD)) {
         $res_dl = $db->select_query($sql_dl, $input_arr);
         if ($res_dl === FALSE) {
-            $res_dl = array();
+            $res_dl = [];
         }
         // parse downloads
         foreach ($res_dl as $row) {
@@ -373,7 +373,7 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             }
         }
     }
-    $_infoarray_download = array();
+    $_infoarray_download = [];
     foreach($infoarray_download as $cat => $data) {
         $_infoarray_download[$cat] = $data;
         $size = 0;
@@ -382,10 +382,10 @@ function get_download_status(DatabaseConnection $db, $userid, $isadmin)
             $size += $d->raw_size;
             $done_size += $d->raw_done_size;
         }
-        list($_size, $_suffix) = format_size($size, 'h' , $LN['byte_short'], 1024, 1);
+        list($_size, $_suffix) = format_size($size, 'h', $LN['byte_short'], 1024, 1);
         $_infoarray_download[$cat]['size'] = $_size;
         $_infoarray_download[$cat]['suffix'] = $_suffix;
-        list($_done_size, $_done_suffix) = format_size($done_size, 'h' , $LN['byte_short'], 1024, 1);
+        list($_done_size, $_done_suffix) = format_size($done_size, 'h', $LN['byte_short'], 1024, 1);
         $_infoarray_download[$cat]['done_size'] = $_done_size;
         $_infoarray_download[$cat]['done_suffix'] = $_done_suffix;
     }

@@ -649,16 +649,8 @@ function add_search(DatabaseConnection $db, $userid)
     assert(is_numeric($userid));
     $type = trim(get_post('type', ''));
     $value = trim(get_post('value', ''));
-    if ($type == 'search') {
-        if ($value  != '') {
-            add_line_to_text_area($db, 'search_terms', $value, $userid);
-        }
-    } elseif ($type == 'block') {
-        if ($value  != '') {
-            add_line_to_text_area($db, 'blocked_terms', $value, $userid);
-        }
-    } else {
-        throw new exception($LN['error_unknowntype']);
+    if ($value  != '') {
+        add_line_to_text_area($db, $type, $value, $userid);
     }
     return_result();
 }

@@ -120,7 +120,7 @@ function set_permissions(DatabaseConnection $db, $dir)
             }
         }
     } else {
-        write_log('Cannot set permission; incorrect value "' . $perm . '"' , LOG_NOTICE);
+        write_log('Cannot set permission; incorrect value "' . $perm . '"', LOG_NOTICE);
 
         return;
     }

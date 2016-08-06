@@ -424,7 +424,7 @@ function set_all_users(DatabaseConnection $db, array $users, array $settings)
 {
     foreach ($users as $user) {
         try {
-            add_user($db, $user['username'], $user['fullname'], $user['email'], $user['password'], $user['isadmin'], $user['active'], $user['rights'], FALSE , $user['salt']);
+            add_user($db, $user['username'], $user['fullname'], $user['email'], $user['password'], $user['isadmin'], $user['active'], $user['rights'], FALSE, $user['salt']);
         if (isset($settings[$user['username']])) {
             $userid = get_userid($db, $user['username']);
             reset_pref($db, $userid); // restore the default settings

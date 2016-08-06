@@ -221,7 +221,7 @@ class feed_viewer
             $age = ($now > $arr['timestamp']) ? $now - $arr['timestamp'] : 0;
 
             $thisset['age'] = readable_time($age,'largest');
-            list($_size, $suffix) = format_size($arr['size'],'h' , $LN['byte_short'], 1024, 1);
+            list($_size, $suffix) = format_size($arr['size'],'h', $LN['byte_short'], 1024, 1);
             $thisset['size'] = $_size . ' ' . $suffix;
             $thisset['number'] = ++$number;
             $allsets[] = $thisset;

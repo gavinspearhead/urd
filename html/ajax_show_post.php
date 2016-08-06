@@ -47,7 +47,7 @@ try {
     }
 
     if ($postid === NULL || !is_numeric($postid)) {
-        if ($dirs == array()) {
+        if ($dirs == []) {
             throw new exception($LN['error_nouploaddata'] . ': ' . $dir);
         }
         $poster_email = $prefs['poster_email'];
@@ -81,21 +81,21 @@ try {
         }
     }
 
-    $groups = array();
+    $groups = [];
     try {
         $groupinfo = get_all_active_groups($db);
         foreach ($groupinfo as $gr) {
             $groups[$gr['ID']] = $gr['name'];
         }
     } catch (exception $e) {
-        $groups = array();
+        $groups = [];
     }
     natsort($groups);
 
     $default_nzb_group = get_config($db, 'ftd_group', '');
     $default_nzb_group_id = get_all_group_by_name($db, $default_nzb_group);
     if (! isset($groups [ $default_nzb_group_id ])) {
-        $default_nzb_group = array( 'group_id' => $default_nzb_group_id , 'group_name'=>$default_nzb_group);
+        $default_nzb_group = ['group_id' => $default_nzb_group_id, 'group_name'=>$default_nzb_group];
     } else {
         $default_nzb_group = NULL;
     }
