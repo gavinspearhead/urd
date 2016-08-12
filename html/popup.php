@@ -23,9 +23,9 @@
 define('ORIGINAL_PAGE', $_SERVER['PHP_SELF']);
 $__auth = 'silent';
 
-$pathaet = realpath(dirname(__FILE__));
+$pathaput = realpath(dirname(__FILE__));
 
-require_once "$pathaet/../functions/ajax_includes.php";
+require_once "$pathaput/../functions/ajax_includes.php";
 
 init_smarty();
 echo $smarty->fetch('popup.tpl');
