@@ -55,7 +55,6 @@ class search_option
 function insert_default_search_options(DatabaseConnection $db)
 {
     $default_search_options = array (
-        new search_option('All4Divx',                  'http://www.all4divx.com/subtitles/$q/any/1'),
         new search_option('Answers',                   'http://www.answers.com/$q'),
         new search_option('Baidu',                     'http://www.baidu.com/s?wd=$q&rsv_bp=0&rsv_spt=3'),
         new search_option('Bing',                      'https://www.bing.com/search?q=$q'),
@@ -65,7 +64,7 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('DuckDuckGo',                'https://duckduckgo.com/?q=$q&t=lm'),
         new search_option('Ebay',                      'http://search.ebay.com/$q'),
         new search_option('Facebook',                  'https://www.facebook.com/search/results.php?q=$q&init=quick'),
-        new search_option('Film Totaal',               'http://www.filmtotaal.nl/search.php?q=$q'),
+        new search_option('Film Totaal',               'https://www.filmtotaal.nl/zoeken?q=$q'),
         new search_option('Filmstarts',                'http://www.filmstarts.de/suche/?q=$q'),
         new search_option('FreeDB',                    'http://www.freedb.org/freedb_search.php?words=$q&allfields=NO&fields=artist&fields=title&allcats=YES&grouping=none'),
         new search_option('Google',                    'https://www.google.com/search?q=$q'),
@@ -81,11 +80,10 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('MusicBrainz',               'https://musicbrainz.org/search/textsearch.html?query=$q&type=artist&an=1&as=1'),
         new search_option('NzbIndex',                  'https://www.nzbindex.com/search/?q=$q'),
         new search_option('NzbFriends',                'https://www.nzbindex.com/search/?q=$q'),
-        new search_option('Nzb.cc',                    'http://nzbfriends.com/?q=$q'),
         new search_option('OpenSubs',                  'https://www.google.com/search?btnI&q=site:opensubtitles.org%20%22$q%22'),
         new search_option('RLS',                       'http://www.rlslog.net/?s=$q'),
-        new search_option('Rotten Tomatoes',           'http://www.rottentomatoes.com/search/full_search.php?search=$q'),
-        new search_option('Start Page',                'https://startpage.com/eng/advanced-search.html?&cat=web&query=$q'),
+        new search_option('Rotten Tomatoes',           'https://www.rottentomatoes.com/search/?search=$q'),
+        new search_option('Start Page',                'https://www.startpage.com/do/search?cmd=process_search&cat=web&query=$q'),
         new search_option('TV Maze',                   'https://www.tvmaze.com/search.php?q=$q'),
         new search_option('TV Rage',                   'https://www.tvrage.com/search.php?search=$q'),
         new search_option('Twitter',                   'https://twitter.com/search/$q'),
@@ -95,7 +93,7 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('Wikipedia (Francais)',      'https://fr.wikipedia.org/wiki/Special:Search?search=$q'),
         new search_option('Wikipedia (Svenska)',       'https://sv.wikipedia.org/wiki/Special:Search?search=$q'),
         new search_option('Yahoo',                     'https://search.yahoo.com/search?p=$q'),
-        new search_option('Youtube',                   'https://www.google.com/search?btnI&q=site:youtube.com%20$q'),
+        new search_option('Youtube',                   'https://www.youtube.com/results?search_query=$q'),
     );
 
     foreach ($default_search_options as $b) {

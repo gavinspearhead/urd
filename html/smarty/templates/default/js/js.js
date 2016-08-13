@@ -5466,8 +5466,8 @@ function levenshtein(s1, s2)
         return 0;
     }
 
-    var s1_len = s1.length;
-    var s2_len = s2.length;
+    var s1_len = s1.length,
+        s2_len = s2.length;
     if (s1_len === 0) {
         return s2_len;
     }
@@ -5488,8 +5488,8 @@ function levenshtein(s1, s2)
         s2 = s2.split('');
     }
 
-    var v0 = new Array(s1_len + 1);
-    var v1 = new Array(s1_len + 1);
+    var v0 = new Array(s1_len + 1),
+        v1 = new Array(s1_len + 1);
 
     var s1_idx = 0,
         s2_idx = 0,
@@ -5718,6 +5718,7 @@ function toggle_visibility(type, group_id)
         };
     } else {
         update_message_bar(type + '??');
+        return false;
     }
     $.post(url, data).done(function(html) {
         var x = JSON.parse(html);
@@ -6046,7 +6047,8 @@ function add_text(text, elem)
 
 /**
 * emRemToPx.js | @whatsnewsisyphus 
-* To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+* To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. 
+* This software is distributed without any warranty.
 * see CC0 Public Domain Dedication <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 var emRemToPx = function( value, scope, suffix ) {
@@ -6131,7 +6133,7 @@ function load_side_bar(fn)
     $('#sidebar_button').css('display', 'block');
     if (type == 'spots') {
         url = 'ajax_load_spot_sidebar.php';
-        init_slider_fn = function() { clear_all_checkboxes(null); uncheck_all(null); init_spot_sliders; };
+        init_slider_fn = function() { clear_all_checkboxes(null); uncheck_all(null); init_spot_sliders(); };
     } else if (type == 'groups') {
         url = 'ajax_load_browse_sidebar.php';
         init_slider_fn = init_browse_sliders;
