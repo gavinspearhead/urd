@@ -6148,7 +6148,7 @@ function load_side_bar(fn)
             $('#reset_button').click(function() {
                 clear_form('sidebar_contents');
                 clear_form('searchform');
-                init_rss_sliders();
+                init_slider_fn();
             });
             $('#save_search_button').click(function() {
                 do_command('add_search', '');
