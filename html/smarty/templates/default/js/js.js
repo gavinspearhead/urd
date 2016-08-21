@@ -632,7 +632,6 @@ function _overlayed_content_visible(content)
 
 function overlayed_content_visible()
 {
-    console.log(_overlayed_content_visible('#overlay_content'));
     return _overlayed_content_visible('#overlay_content');
 }
 
@@ -3764,13 +3763,13 @@ function update_spot_searches(name)
         setvalbyid('save_category', '');
         update_search_names(name);
         if (x.error == 0) {
+            clear_form('searchform');
+            clear_form('sidebar_contents');
+            clear_all_checkboxes(null);
+            uncheck_all(null);
             if (x.count > 0) {
-                clear_form('searchform');
-                clear_form('sidebar_contents');
                 var sc = x.options;
                 var cat;
-                clear_all_checkboxes(null);
-                uncheck_all(null);
                 $.each(sc, function(key, val) {
                     if (key == 'minsetsize') { setvalbyid('minsetsize', val); }
                     else if (key == 'maxsetsize') { setvalbyid('maxsetsize', val); }
@@ -3789,11 +3788,8 @@ function update_spot_searches(name)
                         });
                     }
                 });
-                load_sets({'offset': '0', 'setid': '' });
-            } else {
-                clear_form('searchform');
-                load_sets({'offset': '0', 'setid': ''});
             }
+            load_sets({'offset': '0', 'setid': ''});
         } else {
             update_message_bar(x.error);
         }
@@ -5023,7 +5019,6 @@ function toggle_usenet_auth(id, checkbox_id)
 function set_scroll_handler(id, fn)
 {
     $(id).scroll(function() {
-            console.log('aoeua');
         var scrollPosition = $(id).scrollTop() + $(id).innerHeight();
         var divTotalHeight = $(id).get(0).scrollHeight +
             parseInt($(id).css('padding-top'), 10) +
