@@ -389,7 +389,7 @@ class feed_viewer
             $count = 0;
             foreach ($feeds as $feed) {
                 $count++;
-                $this->input_arr[":feed_id_$count" ] = $feedgr;
+                $this->input_arr[":feed_id_$count" ] = $feed;
                 $this->Qfeed_id .= " :feed_id_$count,";
             }
             $this->Qfeed_id = rtrim($this->Qfeed_id, ', ');

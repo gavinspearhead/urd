@@ -62,7 +62,7 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('Dictionary',                'http://dictionary.reference.com/browse/$q'),
         new search_option('Discvr',                    'http://discvr.nl/zoekresultaat/?term=$q'),
         new search_option('DuckDuckGo',                'https://duckduckgo.com/?q=$q&t=lm'),
-        new search_option('Ebay',                      'http://search.ebay.com/$q'),
+        new search_option('Ebay',                      'http://www.ebay.com/sch/i.html?_nkw=$q'),
         new search_option('Facebook',                  'https://www.facebook.com/search/results.php?q=$q&init=quick'),
         new search_option('Film Totaal',               'https://www.filmtotaal.nl/zoeken?q=$q'),
         new search_option('Filmstarts',                'http://www.filmstarts.de/suche/?q=$q'),

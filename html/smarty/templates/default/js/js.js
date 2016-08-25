@@ -410,10 +410,7 @@ function submit_viewfiles_page(offset)
 
 function escape_tags(str)
 {
-    str = str.replace(/&/g, '&amp;');
-    str = str.replace(/</g, '&lt;');
-    str = str.replace(/>/g, '&gt;');
-    return str;
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function submit_viewfiles_action_confirm(fileid, command, msg)
@@ -445,16 +442,21 @@ function submit_viewfiles_action(fileid, command)
             '&filename=' + encodeURIComponent(name) +
             '&challenge=' + encodeURIComponent(challenge);
         var id = 'iframe_' + String(Math.round(Math.random() * 10000));
-        $('<iframe id="' + id + '" name="iframe" style="top:200px;">').appendTo('body');
-        $('#' + id).attr('src', url + '?' + params);
-        $('#' + id).hide();
-        $('#' + id).load(function() {
-            var msg = document.getElementById(id).contentWindow.document.body.innerHTML;
-            $('#' + id).remove();
-            if (msg.substr(0, 7) == ':error:') {
-                set_message('message_bar', msg.substr(7), 5000);
-            }
-        });
+        var ifr = $('<iframe/>', { 
+                id: id,
+                name : "myiframe",
+                src: url + '?' + params,
+                style: "margin-top:500px; display:none;",
+            });
+        $('body').append(ifr);
+        $('#' + id).on('load',function() {
+                var msg = '';
+                    msg = $('#' + id).contents().find("body").html();
+                    var x = JSON.parse(msg);
+                    if (x.error !== undefined) {
+                        set_message('message_bar', x.error, 5000);
+                    }
+            });
     } else {
         $.post(
             url, {
@@ -1278,7 +1280,7 @@ function search_button(url, xname)
         /* Remove common separators: */
         srch = srch.replace(/[\]\[_"+.']/g, ' ');
         srch = srch.replace(/^\s+/, '');
-        url = url.replace(/\$q/, escape(srch));
+        url = url.replace(/\$q/, encodeURICompontent(srch));
         window.open(url, xname + 'window', '');
     }
 }
@@ -3707,9 +3709,9 @@ function update_browse_searches(name)
         var x = JSON.parse(html);
         $('#save_category').val('');
         if (x.error == 0) {
+            clear_form('searchform');
             if (x.count > 0) {
                 update_search_names(name);
-                clear_form('searchform');
                 clear_form('sidebar_contents');
                 var sc = x.options;
                 $.each(sc, function(key, val) {
@@ -3727,11 +3729,8 @@ function update_browse_searches(name)
                     else if (key == 'search') { setvalbyid('search', val);}
                     else if (key == 'category') { setvalbyid('save_category', val); }
                 });
-                load_sets({'offset': '0', 'setid': ''});
-            } else {
-                clear_form('searchform');
-                load_sets({'offset': '0', 'setid': ''});
             }
+            load_sets({'offset': '0', 'setid': ''});
         } else {
             update_message_bar(x.error);
         }
