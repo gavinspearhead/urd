@@ -250,7 +250,7 @@ class spot_viewer
                 $thisset['spotter_id'] = $arr['spotter_id'];
                 $thisset['reference'] = $arr['reference'];
                 $description = trim(db_decompress($arr['description']));
-                $description = link_to_url($this->db, $description, $userid);
+                $description = link_to_url($this->db, $description, $userid, $urls);
                 $ubb = new UbbParse($description);
                 TagHandler::setDeniedTags( [] );
                 //TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));

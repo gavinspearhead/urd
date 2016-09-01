@@ -52,7 +52,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $row = $res[0];
         $urls[] = $row['url'];
         foreach($display as $vals) {
-            if ($vals['display'] == 'url' && $vals['link'] != '') {
+            if (isset($vals['display'], $vals['link']) && $vals['display'] == 'url' && $vals['link'] != '') {
                 $urls[] = $vals['link'];
             }
         }
