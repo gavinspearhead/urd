@@ -95,7 +95,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         }
         $c = db_decompress($comment['comment']);
         $c = htmlentities(strip_tags($c), ENT_IGNORE, 'UTF-8', FALSE);
-        $c = link_to_url($db, $c, $userid, $urls);
+        $c = link_to_url($db, $c, $userid, $dummy_urls);
         $ubb = new UbbParse($c);
         TagHandler::setDeniedTags( array() );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
