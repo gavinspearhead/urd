@@ -133,7 +133,10 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     }
     $_urls = [];
     foreach(array_unique($urls) as $u) {
-        $_urls[] =  pack_url_data($db, $u, $userid);
+        $t = pack_url_data($db, $u, $userid);
+        if ($t != '') {
+            $_urls[] = $t;
+        }
     }
     $smarty->assign(array(
         'comments' =>     $comments,
