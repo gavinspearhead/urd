@@ -2128,7 +2128,7 @@ function return_result(array $vars=array())
     die(json_encode($vars));
 }
 
-function link_to_url(DatabaseConnection $db, $description, $userid)
+function link_to_url(DatabaseConnection $db, $description, $userid, array &$urls)
 {
     $position = 0;
     while (preg_match('|https?:\/\/[-=a-z0-9_:./&%!@#$?^()+\\\\;]+|i', $description, $matches, PREG_OFFSET_CAPTURE, $position)) {
@@ -2143,8 +2143,8 @@ function link_to_url(DatabaseConnection $db, $description, $userid)
         $new_l = strlen($new_url);
         $description = $d1 . $new_url . $d2;
         $position = $urlposition + $new_l;
+        $urls[] = $url;
     }
-
     return $description;
 }
 
@@ -2281,7 +2281,7 @@ function find_url_icon($url)
         'themoviedb.org' => 'TMDB',
         'tvmaze.com' => 'TVmaze',
         'tvrage.com' => 'TVrage',
-        'wikipedia.org' => 'WIKI',
+        'wikipedia.org' => 'Wiki',
         'xxx-image.com'=>  'XXX-Image',
         'xxximages.nl' => 'XXX-Image',
         'xxxhost.nl' => 'XXX-Image',

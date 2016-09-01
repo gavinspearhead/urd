@@ -154,7 +154,7 @@ class TagHandler
     public static function handle_url($params, $contents)
     {
         # are only specific images allowed?
-
+//var_dump($params, $contents);
         $url = '';
         if ($params['originalparams'] != '') {
             if (strtolower(substr(trim($params['originalparams']), 0, 5)) == '[url=') {
@@ -162,21 +162,21 @@ class TagHandler
                 if (strtolower(substr($par, 0, 7)) == 'http://' || strtolower(substr($par, 0, 8)) == 'https://') {
                     $url = $par;
                 }
-            } elseif (strtolower(trim($params['originalparams'][0])) == '=') {
+            } elseif (trim($params['originalparams'][0]) == '=') {
                 $par = substr(trim($params['originalparams']), 1);
                 if (strtolower(substr($par, 0, 7)) == 'http://' || strtolower(substr($par, 0, 8)) == 'https://') {
                     $url = $par;
                 }
             }
 
-        } elseif (strtolower(substr(trim($contents[0]['content']), 0, 7)) == 'http://' || strtolower(substr(trim($contents[0]['content']), 0, 8)) == 'https://') {
+        } 
+        if ($url == '' && (strtolower(substr(trim($contents[0]['content']), 0, 7)) == 'http://' || strtolower(substr(trim($contents[0]['content']), 0, 8)) == 'https://')) {
             $url = $contents[0]['content'];
         } 
         if ($url == '') {
             return TagHandler::handle_empty($params, $contents);
         }
-
-        return array('prepend' => '<span class="buttonlike" onclick="javascript:jump(\'' . $url . '\', true );">',
+        return array('prepend' => '<span class="buttonlike" onclick="javascript:jump(\'' . $url . '\', true);">',
             'content' => $contents,
             'append' => '</span>');
     }

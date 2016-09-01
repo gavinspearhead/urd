@@ -47,14 +47,21 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     $only_rows  = get_request('add_rows', 0);
     $count = get_request('perpage', 10);
     $spotid = $res[0]['spotid'];
+    $urls = [];
     if (!$only_rows) {
         $row = $res[0];
+        $urls[] = $row['url'];
+        foreach($display as $vals) {
+            if ($vals['display'] == 'url' && $vals['link'] != '') {
+                $urls[] = $vals['link'];
+            }
+        }
         $show_image = get_pref($db, 'show_image', $userid, FALSE);
         $description = db_decompress($row['description']);
         $description = strip_tags($description);
         $description = htmlentities($description, ENT_IGNORE, 'UTF-8', FALSE);
         $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
-        $description = link_to_url($db, $description, $userid);
+        $description = link_to_url($db, $description, $userid, $urls);
         $ubb = new UbbParse($description);
         TagHandler::setDeniedTags( array() );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
@@ -88,7 +95,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         }
         $c = db_decompress($comment['comment']);
         $c = htmlentities(strip_tags($c), ENT_IGNORE, 'UTF-8', FALSE);
-        $c = link_to_url($db, $c, $userid);
+        $c = link_to_url($db, $c, $userid, $urls);
         $ubb = new UbbParse($c);
         TagHandler::setDeniedTags( array() );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
@@ -124,6 +131,10 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $age = ($now > $row['stamp']) ? $now - $row['stamp'] : 0;
         $age = readable_time($age, 'largest_two_long');
     }
+    $_urls = [];
+    foreach(array_unique($urls) as $u) {
+        $_urls[] =  pack_url_data($db, $u, $userid);
+    }
     $smarty->assign(array(
         'comments' =>     $comments,
         'offset' =>       $offset,
@@ -131,6 +142,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         'spotid' =>       $spotid,
         'type' =>         $type,
         'srctype' =>      $srctype,
+        'url_list' =>     $_urls,
     ));
     
     if (!$only_rows) {

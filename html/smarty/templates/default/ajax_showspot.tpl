@@ -106,22 +106,13 @@ $(document).ready(function() {
 {capture assign=similar} 
 <span id="similar_button" class="buttonlike highlight_comments">{$LN_spots_similar}</span>
 {/capture}
-{$urls=''}
 
 {capture assign=extsetoverview}
 	{$looped=0}
 	{foreach $display as $vals}
         {if $vals.value != "0" && $vals.value != "" && $vals.value != "name"}
             {$looped="`$looped+1`"}
-            {if $vals.display == 'url'}
-                {capture assign=urls} {$urls}
-                {if $vals.value.icon == ''} 
-                    <span class="buttonlike" onclick="javascript:jump('{$vals.value.link|escape:javascript}',1);">{$vals.value.display|escape} </span>
-                {else}
-                    <span class="buttonlike highlight_comments" onclick="javascript:jump('{$vals.value.link|escape:javascript}',1);" {urd_popup type="small" text="{$vals.value.display|escape:javascript}"}">{$vals.value.icon|escape}</span>        
-                {/if}
-                {/capture}
-            {else}
+            {if $vals.display != 'url'}
                 <tr class="vtop small comment"><td class="nowrap bold">{$vals.name}:</td><td>
                 {if $vals.display == 'text'} {$vals.value|escape}{/if}
                 {if $vals.display == 'number'}<b>{$vals.value|escape}</b>{/if}
@@ -137,14 +128,13 @@ $(document).ready(function() {
 {/if}
     <tr class="comment"><td class="nowrap bold">{$LN_feeds_url}:</td><td>
     {$similar} 
-    {if $url != ''} 
+{foreach $url_list as $url}
         {if $url.icon == ''} 
             <span class="buttonlike" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.display|escape}</span>
         {else}
             <span class="buttonlike highlight_comments" onclick="javascript:jump('{$url.link|escape:javascript}',1);" {urd_popup type="small" text="{$url.display|escape:javascript}"}>{$url.icon|escape}</span>
         {/if}
-    {/if}
-    {$urls}
+    {/foreach}
     </td></tr>
 {if $image != ''}
 <tr class="comment"><td class="nowrap bold">{$LN_bin_image}:</td><td><span class="buttonlike" onclick="javascript:jump('{$image|escape:javascript}',1);">{$image|escape}</span></td></tr>

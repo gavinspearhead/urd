@@ -11,6 +11,8 @@
 - Fixed a bug in ordering sets on completeness
 - Fixed a bug where a set would be shown more than once if the spotter appeared on the whitelist more than once
 - Fixed a bug in selecting the default RSS feed in preferences
+- Fixed minor security issue with opening new windows
+- Fixed bug parsing some URLs in spot descriptions
 - Extensive testing with PHP 7
 - Added option to read IMDB watch list for automatic highlighting
 - Updated many search options
