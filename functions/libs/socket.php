@@ -30,6 +30,9 @@ function _stream_select (&$read, &$write, &$except, $tv_sec, $tv_usec = 0)
     }
     
     stream_select($read, $write, $except, $tv_sec, $tv_usec);
+    if (function_exists('pcntl_signal_dispatch')) {
+        pcntl_signal_dispatch();
+    }
 }
 
 /**

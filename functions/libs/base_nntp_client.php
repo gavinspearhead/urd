@@ -825,6 +825,9 @@ class Base_NNTP_Client
             try { 
                 $line = $this->_get_status_response_line();
                 $values = explode(' ', $line);
+                if (!isset($values[2])) { 
+                    throw new exception('Unknown response', -1);
+                }
                 $response = $values[0];
                 $message_id = substr($values[2], 1, -1); // cut of the < and >
                 switch ($response) {

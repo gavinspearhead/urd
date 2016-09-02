@@ -151,7 +151,7 @@ class config_cache
     }
 }
 
-function reset_custom_config(DatabaseConnection $db)
+function reset_custom_config(DatabaseConnection& $db)
 {
     $val = config_cache::get_matching(user_status::SUPER_USERID, '__custom_');
     if (!is_array($val)) {
@@ -162,7 +162,7 @@ function reset_custom_config(DatabaseConnection $db)
     }
 }
 
-function reset_custom_prefs(DatabaseConnection $db, $userid)
+function reset_custom_prefs(DatabaseConnection& $db, $userid)
 {
     assert(is_numeric($userid));
     $val = get_custom_prefs($db, $userid);
@@ -171,7 +171,7 @@ function reset_custom_prefs(DatabaseConnection $db, $userid)
     }
 }
 
-function get_custom_prefs(DatabaseConnection $db, $userid)
+function get_custom_prefs(DatabaseConnection& $db, $userid)
 {
     $val = config_cache::get_matching($userid, '__custom_');
     if ($val === FALSE) {
@@ -285,7 +285,7 @@ function load_prefs(DatabaseConnection& $db, $userid, $force = FALSE)
     return $prefs;
 }
 
-function set_prefs(DatabaseConnection $db, $userid, array $settings)
+function set_prefs(DatabaseConnection& $db, $userid, array $settings)
 {
     assert(is_numeric($userid));
     foreach ($settings as $n1 => $v1) {
@@ -325,28 +325,28 @@ function set_prefs(DatabaseConnection $db, $userid, array $settings)
     }
 }
 
-function set_configs(DatabaseConnection $db, array $settings)
+function set_configs(DatabaseConnection& $db, array $settings)
 {
     foreach ($settings as $n => $v) {
         set_config($db, $n, $v);
     }
 }
 
-function unset_config(DatabaseConnection $db, $name)
+function unset_config(DatabaseConnection& $db, $name)
 {
     assert($name != '');
     config_cache::clear(user_status::SUPER_USERID);
     $db->delete_query('preferences', '"option"=? AND "userID"=?', array($name, user_status::SUPER_USERID));
 }
 
-function unset_pref(DatabaseConnection $db, $name, $userid)
+function unset_pref(DatabaseConnection& $db, $name, $userid)
 {
     assert($name != '' && is_numeric($userid));
     config_cache::clear($userid);
     $db->delete_query('preferences', '"option"=? AND "userID"=?', array($name, $userid));
 }
 
-function set_pref(DatabaseConnection $db, $name, $value, $userid)
+function set_pref(DatabaseConnection& $db, $name, $value, $userid)
 {
     assert($name != '' && is_numeric($userid));
     if ($userid == '0') { // we're trying to set root prefs... these are the config tho
@@ -363,7 +363,7 @@ function set_pref(DatabaseConnection $db, $name, $value, $userid)
     }
 }
 
-function set_config(DatabaseConnection $db, $name, $value)
+function set_config(DatabaseConnection& $db, $name, $value)
 {
     assert($name !== '');
     config_cache::clear(user_status::SUPER_USERID);
@@ -381,7 +381,7 @@ function clean_config(DatabaseConnection $db)
     $db->delete_query('preferences', '"userID"=?', array(user_status::SUPER_USERID));
 }
 
-function clean_pref(DatabaseConnection $db, $userid)
+function clean_pref(DatabaseConnection& $db, $userid)
 {
     assert(is_numeric($userid));
     if ($userid == user_status::SUPER_USERID) {
@@ -394,7 +394,7 @@ function clean_pref(DatabaseConnection $db, $userid)
     $db->delete_query('preferences', '"userID"=?', array($userid));
 }
 
-function reset_pref(DatabaseConnection $db, $userid)
+function reset_pref(DatabaseConnection& $db, $userid)
 {
     assert(is_numeric($userid));
     if ($userid == user_status::SUPER_USERID) {
@@ -409,7 +409,7 @@ function reset_pref(DatabaseConnection $db, $userid)
     reset_custom_prefs($db, $userid);
 }
 
-function reset_config(DatabaseConnection $db)
+function reset_config(DatabaseConnection& $db)
 {
     $pref_array = get_default_config();
     foreach ($pref_array as $var => $val) {
@@ -418,7 +418,7 @@ function reset_config(DatabaseConnection $db)
     reset_custom_config($db);
 }
 
-function update_settings(DatabaseConnection $db, $userid)
+function update_settings(DatabaseConnection& $db, $userid)
 {
     assert (is_numeric($userid));
     if (get_username($db, $userid) === FALSE) {
@@ -449,7 +449,7 @@ function update_settings(DatabaseConnection $db, $userid)
     return $cnt;
 }
 
-function check_prefs(DatabaseConnection $db, $sendmail=TRUE)
+function check_prefs(DatabaseConnection& $db, $sendmail=TRUE)
 {
     global $LN;
     assert(is_bool($sendmail));

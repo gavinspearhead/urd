@@ -265,7 +265,7 @@ class sets_marking
         }
     }
 
-    private static function get_match_terms(DatabaseConnection $db, $terms, $userid)
+    private static function get_match_terms(DatabaseConnection& $db, $terms, $userid)
     {
         assert(is_numeric($userid));
         $termslist = FALSE;
@@ -281,7 +281,7 @@ class sets_marking
         return $termslist;
     }
 
-    private static function expand_search_terms_as_query(DatabaseConnection $db, array $terms, $search_type, array $fields)
+    private static function expand_search_terms_as_query(DatabaseConnection& $db, array $terms, $search_type, array $fields)
     {
         assert(count($fields) >= 2);
 
