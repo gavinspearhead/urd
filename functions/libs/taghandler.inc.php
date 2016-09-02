@@ -154,7 +154,6 @@ class TagHandler
     public static function handle_url($params, $contents)
     {
         # are only specific images allowed?
-//var_dump($params, $contents);
         $url = '';
         if ($params['originalparams'] != '') {
             if (strtolower(substr(trim($params['originalparams']), 0, 5)) == '[url=') {

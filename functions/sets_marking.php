@@ -268,17 +268,17 @@ class sets_marking
     private static function get_match_terms(DatabaseConnection $db, $terms, $userid)
     {
         assert(is_numeric($userid));
-        $terms = FALSE;
+        $termslist = FALSE;
         if ($terms == 'blocked_terms') { 
-            $terms = load_blocked_terms($db, $userid);
-        } else if ($terms = 'search_terms') {
-            $terms = load_search_terms($db, $userid);
+            $termslist = load_blocked_terms($db, $userid);
+        } else if ($terms == 'search_terms') {
+            $termslist = load_search_terms($db, $userid);
         }
         if ($terms == FALSE) {
             return FALSE;
         }
 
-        return $terms;
+        return $termslist;
     }
 
     private static function expand_search_terms_as_query(DatabaseConnection $db, array $terms, $search_type, array $fields)

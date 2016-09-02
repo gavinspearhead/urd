@@ -59,7 +59,7 @@ class config_cache
         assert(is_numeric($userid));
         if (isset($_SESSION)) {
             // we are a webbased thingie so we can store in session
-            if (!isset($_SESSION['urd_cache']['timeout']) || ($_SESSION['urd_cache']['timeout'] + self::CACHE_TIMEOUT >= time())) {
+            if (!isset($_SESSION['urd_cache']['timestamp']) || ($_SESSION['urd_cache']['timestamp'] + self::CACHE_TIMEOUT < time())) {
                 unset($_SESSION['urd_cache']);
             }
             if (isset($_SESSION['urd_cache'][$userid])) { 
@@ -84,7 +84,7 @@ class config_cache
                 }
             }
 
-            if ($rv !== [] && isset(self::$data[$userid]) && (self::$timestamp + self::CACHE_TIMEOUT >= time())) {
+            if ($rv !== [] && isset(self::$data[$userid]) && (self::$timestamp + self::CACHE_TIMEOUT < time())) {
                     // we don't want to cache for ever, but just be on the save side
                 unset(self::$data[$userid]);
             }
@@ -100,7 +100,7 @@ class config_cache
         assert(is_numeric($userid));
         if (isset($_SESSION)) {
             // we are a webbased thingie so we can store in session
-            if (!isset($_SESSION['urd_cache']['timeout']) || ($_SESSION['urd_cache']['timeout'] + self::CACHE_TIMEOUT >= time())) {
+            if (!isset($_SESSION['urd_cache']['timestamp']) || ($_SESSION['urd_cache']['timestamp'] + self::CACHE_TIMEOUT < time())) {
                 unset($_SESSION['urd_cache']);
             }
             if (isset($_SESSION['urd_cache'][$userid])) {
@@ -119,7 +119,7 @@ class config_cache
             } else {
                 $val = get_from_array(self::$data[$userid], $index, FALSE);
             }
-            if ($val !== FALSE && isset(self::$data[$userid]) && (self::$timestamp + self::CACHE_TIMEOUT >= time())) {
+            if ($val !== FALSE && isset(self::$data[$userid]) && (self::$timestamp + self::CACHE_TIMEOUT < time())) {
                     // we don't want to cache for ever, but just be on the save side
                 self::$data = NULL;
             }
