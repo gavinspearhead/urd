@@ -1252,7 +1252,7 @@ $LN['error_readnzbfailed']      = 'Kan NZB bestand niet lezen';
 $LN['error_nopartsinnzb']       = 'Geen artikelen gevonden in NZB bestand';
 $LN['error_invalidgroup']       = 'Ongeldig groep; groep naam moet bestaan in /etc/group';
 $LN['error_notanumber']         = 'Geen nummer';
-$LN['error_filetoolarge']       = 'Bestand te groot om te downloaden';
+$LN['error_filetoolargetodl']       = 'Bestand te groot om te downloaden';
 //$LN['error_']         = '';
 
 /// Transfers

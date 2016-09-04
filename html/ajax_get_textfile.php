@@ -61,7 +61,9 @@ try {
 
     $filename = substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1);
     $size = filesize($file);
-
+    if ($size > get_config($db, 'maxfilesize') ) {
+        throw new exception($LN['error_filetoolarge'] . htmlentities(": $file", ENT_QUOTES, 'UTF-8'));
+    }
     $ext = strtolower(ltrim(strrchr($filename, '.'), '.'));
     $text = file($file);
     $output = '';
@@ -74,8 +76,8 @@ try {
         $line = htmlentities($line, ENT_QUOTES);
         if (preg_match('|(https?://[\w.+/?\-&;%=]*/?)|', $line, $matches) == 1) {
             $url = trim($matches[1]);
-        $line = str_replace($url, "<a href=\"$url\" target=\"_new\">$url</a>", $line);
-    }
+            $line = str_replace($url, "<a href='$url' target='_blank' rel='noopener noreferrer'>$url</a>", $line);
+        }
     $output .=  $line;
     }
 

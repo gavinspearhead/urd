@@ -73,19 +73,19 @@ if ($dbhost == '') {
 
 $OUT .= '<tr><td colspan="2" class="install1">Database settings</td></tr>' . "\n";
 
-$dbs = array();
+$dbs = [];
    
 if (extension_loaded('pdo_mysql')) {
-    $dbs[] = array ('mysql', 'Mysql');
+    $dbs[] = array('mysql', 'Mysql');
 }
 if (extension_loaded('pdo_pgsql')) {
-    $dbs[] = array ('postgres', 'Postgresql');
+    $dbs[] = array('postgres', 'Postgresql');
 }
 if (extension_loaded('pdo_sqlite')) {
-    $dbs[] = array ('sqlite', 'SQLite');
+    $dbs[] = array('sqlite', 'SQLite');
 }
 
-if ($dbs == array()) {
+if ($dbs == []) {
     $OUT .= '<tr><td class="install2">No database driver installed (try sudo apt-get install php5-mysql)</td>';
 	$OUT .= '<tr colspan="2"><td><a onclick="LoadPage(3);">' . $refreshpic . '</a></td></tr>';
 } else {
@@ -123,7 +123,7 @@ SELECTDB;
     <br></td></tr>
     <tr><td colspan="2"></td></tr>
     <tr><td colspan="2"></td></tr>
-    <tr id="dbmysqlreset"><td></td><td>Instructions to reset password for <a target="_new" href="https://dev.mysql.com/doc/refman/5.0/en/resetting-permissions.html">Mysql</a>.</tr>
+    <tr id="dbmysqlreset"><td></td><td>Instructions to reset password for <a target="_blank" rel='noopener noreferrer' href="https://dev.mysql.com/doc/refman/5.0/en/resetting-permissions.html">Mysql</a>.</tr>
     <tr id="dbroot"><td class="install2">Database administrator (root) username:</td><td class="install3">
     <input type=text name="dbruser" id="dbruser" value="$dbruser"></td></tr>
     <tr id="dbrootpw"><td class="install2">Database administrator (root) password:</td><td class="install3">

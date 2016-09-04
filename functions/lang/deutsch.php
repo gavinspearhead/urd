@@ -16,7 +16,7 @@
 *  along with this program. See the file "COPYING". If it does not
 *  exist, see <http://www.gnu.org/licenses/>.
 *
-* $LastChangedDate: $
+* $LastChangedDate: $error_filetoolarge
 * $Rev: $
 * $Author: $
 * $Id: $
@@ -805,7 +805,7 @@ $LN['error_nameexists']         = 'Ein usenet Server mit diese Name besteht show
 $LN['error_diskfull']           = 'Unzureichendes Speicherplatz erwartet um den download zu komplettieren';
 $LN['error_invalidsetid']       = 'Invalid Set ID given';
 $LN['error_couldnotsendmail']   = 'Could not send message';
-$LN['error_filetoolarge']       = 'Datei zu gross zum download';
+$LN['error_filetoolargetodl']       = 'Datei zu gross zum download';
 $LN['error_preview_size_exceeded'] = 'Datei zu gross, um eine Vorschau';
 $LN['error_post_not_found'] = 'Post nicht gefunden';
 $LN['error_pwresetnomail']  = 'Passwort zur&uuml;ckgesetzt, aber konnte kein E-mail schicken';

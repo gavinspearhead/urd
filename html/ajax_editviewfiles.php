@@ -414,7 +414,7 @@ try {
                 }
                 $fullname = $dirname.$filename;
                 if (filesize($fullname) > ($rprefs['maxfilesize']) && $rprefs['maxfilesize'] != 0) {
-                    throw new exception($LN['error_filetoolarge'] . ': ' .  $filename);
+                    throw new exception($LN['error_filetoolargetodl'] . ': ' .  $filename);
                 }
                 $file_contents = @file_get_contents($fullname);
                 if ($file_contents === FALSE || ($file_contents == '' && filesize($fullname) > 0)) {

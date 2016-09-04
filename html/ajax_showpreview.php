@@ -56,10 +56,10 @@ function get_preview_data(DatabaseConnection $db, $dlid, $binary_id, $group_id, 
     $preview_data = new preview_data();
     $preview_data->size = $dl_info['size'];
     list($size, $suffix) = format_size($preview_data->size, 'h', $LN['byte_short'], 1024);
-    $preview_data->size = $size . $suffix;
+    $preview_data->size = $size . ' ' . $suffix;
     $preview_data->done_size = $dl_info['done_size'];
     list($size, $suffix) = format_size($preview_data->done_size, 'h', $LN['byte_short'], 1024);
-    $preview_data->done_size = $size . $suffix;
+    $preview_data->done_size = $size . ' ' . $suffix;
     if ($status > DOWNLOAD_FINISHED && $status != DOWNLOAD_COMPLETE) {
         $preview_data->filename = $dl_info['name'];
         $preview_data->title_str = $preview_data->filename;
@@ -153,15 +153,15 @@ try {
     init_smarty();
     $smarty->assign(array(
         'do_reload'=>	$preview_data->do_reload,
-        'finished'=>	    $preview_data->finished,
-        'path'=>		    $preview_data->path,
-        'filetype'=>		$preview_data->filetype,
-        'file'=>		    $preview_data->filename,
+        'finished'=>	$preview_data->finished,
+        'path'=>		$preview_data->path,
+        'filetype'=>	$preview_data->filetype,
+        'file'=>		$preview_data->filename,
         'title_str'=>	$preview_data->title_str,
         'dlsize'=>	    $preview_data->size,
-        'done_size'=>    $preview_data->done_size,
+        'done_size'=>   $preview_data->done_size,
         'file_utf8'=>	utf8_encode($preview_data->filename),
-        'progress'=>	    $preview_data->progress,
+        'progress'=>	$preview_data->progress,
         'nroffiles'=>	count($preview_data->files)));
 
     $contents = $smarty->fetch('ajax_preview.tpl');

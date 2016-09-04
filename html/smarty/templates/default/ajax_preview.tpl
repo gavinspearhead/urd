@@ -30,7 +30,7 @@
     <div class="centered inline">
     <span>
     {urd_progressbar width=240 complete=$progress done=progress_done remain=progress_remain colour="green" background="grey"}
-    <span class="progress floatleft">&nbsp;{$progress}%</span><br><span class="progress"> {$done_size} / {$dlsize}</span>
+    <span class="progress floatright">&nbsp;{$progress}%</span><br><span class="progress"> {$done_size} / {$dlsize}</span>
     </span>
     <input type="hidden" id="title_str" value="{$title_str|escape}"/>
     </div>
