@@ -26,10 +26,10 @@
 
 {if $view_size >= $max_mobile_viewsize}
     {$small=0}
-    {$skippersize= 30}
+    {$skippersize=30}
 {else}
     {$small=1}
-    {$skippersize= 18}
+    {$skippersize=18}
 {/if}
 
 {capture assign=topskipper}{strip}
@@ -233,7 +233,6 @@ $(document).ready(function() {
 <td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>
 <td class="fixwidth3 nowrap">{$set.size}</td>
 <td class="fixwidth1">
-    
     {if $set.url != ''}
     <div id="link_img_{$set.spotid}" class="inline iconsize {$linkpic} buttonlike" {urd_popup type="small" text=$set.url|escape:htmlall}></div>
 	{elseif $set.rating != 0}

@@ -131,12 +131,12 @@ class Base_NNTP_Client
     {
         $arr = explode(' ', ltrim($line));
         if (isset($arr[3])) {
-            $group = array(
-                    'group'   => $arr[0],
-                    'last'    => $arr[1],
-                    'first'   => $arr[2],
-                    'posting' => $arr[3]
-                    );
+            $group = [
+                'group'   => $arr[0],
+                'last'    => $arr[1],
+                'first'   => $arr[2],
+                'posting' => $arr[3]
+            ];
 
             return $group;
         } else {
@@ -196,10 +196,10 @@ class Base_NNTP_Client
         // Trim the start of the response in case of misplaced whitespace (should not be needed!!!)
         $response = ltrim($response);
 
-        $this->_current_status_response = array(
+        $this->_current_status_response = [
                 (int) substr($response, 0, 3),
                 (string) substr($response, 4)
-                );
+                ];
 
         return $this->_current_status_response[0];
     }
@@ -212,17 +212,17 @@ class Base_NNTP_Client
         // Trim the start of the response in case of misplaced whitespace (should not be needed!!!)
         $response = ltrim($response);
 
-        $this->_current_status_response = array(
+        $this->_current_status_response = [
                 (int) substr($response, 0, 3),
                 (string) substr($response, 4)
-                );
+                ];
 
         return $response;
     }
 
     protected function _get_text_response()
     {
-        $data = array();
+        $data = [];
         $line = '';
         $fp = $this->_socket->get_fp();
         // Continue until connection is lost
@@ -256,7 +256,7 @@ class Base_NNTP_Client
     }
     public function _getCompressedResponse()
     {
-        $data = array();
+        $data = [];
 
         // We can have two kinds of compressed support:
         //
@@ -338,9 +338,9 @@ class Base_NNTP_Client
      *
      * @return mixed (array) text response on success or (object) pear_error on failure
      */
-    protected function _get_list_response($nzb = NULL)
+    protected function _get_list_response(URD_NNTP $nzb = NULL)
     {
-        $data = array();
+        $data = [];
         $line = '';
         $cnt = 0;
         // Continue until connection is lost
@@ -362,7 +362,7 @@ class Base_NNTP_Client
                 if ($nzb !== NULL) {
                     if ($cnt > 0) {
                         $nzb->db_update_group_list($data);
-                        $data = array();
+                        $data = [];
                     }
 
                     return TRUE;
@@ -379,10 +379,10 @@ class Base_NNTP_Client
             $tmp = $this->split_list_response($line);
             if ($tmp !== FALSE) {
                 $data[] = $tmp;
-                $cnt ++;
+                $cnt++;
                 if ($nzb !== NULL && ($cnt % 1000 == 0)) {
                     $nzb->db_update_group_list($data);
-                    $data = array();
+                    $data = [];
                     $cnt = 0;
                 }
             }
@@ -1230,7 +1230,7 @@ class Base_NNTP_Client
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
      */
 
-    protected function cmd_list_active($db, $wildmat = NULL)
+    protected function cmd_list_active(URD_NNTP $nzb, $wildmat = NULL)
     {
         $command = 'LIST ACTIVE';
         if ($wildmat !== NULL)
@@ -1241,7 +1241,7 @@ class Base_NNTP_Client
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW: // 215, RFC977: 'list of newsgroups follows'
 
-                return $this->_get_list_response($db);
+                return $this->_get_list_response($nzb);
                 break;
             default:
                 return $this->_handle_unexpected_response($response);

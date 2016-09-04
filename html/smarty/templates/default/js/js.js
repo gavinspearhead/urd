@@ -1446,7 +1446,8 @@ function process_whichbutton(buttonval, rightclick)
     });
 }
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstLetter(string) 
+{
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -3694,7 +3695,6 @@ function update_browse_searches(name)
         name = $('#saved_search>option:selected').text();
     }
     var type = get_value_from_id('usersettype', '');
-
     $.post(url, { type: type,
         name: name,
         cmd: 'get',
@@ -3734,7 +3734,7 @@ function update_browse_searches(name)
 function update_spot_searches(name)
 {
     var url = 'ajax_saved_searches.php';
-    if (name == null) {
+    if (name == null || name == '') {
         if ($('#saved_search').prop('selectedIndex') == 0) {
             clear_form('searchform');
             clear_form('sidebar_contents');

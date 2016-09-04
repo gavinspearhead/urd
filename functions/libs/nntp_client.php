@@ -555,7 +555,7 @@ class NNTP_Client extends Base_NNTP_Client
      *  - (array) Nested array with information about every valid group
      *  - (object) Pear_Error on failure
      */
-    public function get_groups($nzb, $wildmat = NULL)
+    public function get_groups(URD_NNTP $nzb, $wildmat = NULL)
     {
         $backup = FALSE;
 
@@ -747,13 +747,14 @@ class NNTP_Client extends Base_NNTP_Client
         // Force name of first seven fields
         if ($_forceNames) {
             array_splice($format, 0, 7);
-            $format = array_merge(array('Subject'    => FALSE,
+            $format = array_merge([
+                'Subject'    => FALSE,
                 'From'       => FALSE,
                 'Date'       => FALSE,
                 'Message-ID' => FALSE,
                 'References' => FALSE,
                 ':bytes'     => FALSE,
-                ':lines'     => FALSE), $format);
+                ':lines'     => FALSE], $format);
         }
 
         if ($_full === TRUE) {

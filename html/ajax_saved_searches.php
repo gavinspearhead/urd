@@ -57,9 +57,9 @@ function get_options()
 }
 
 try {
-    $cmd = get_request('cmd', '');
-    $name = get_request('name', NULL);
-    $type = get_request('type', '');
+    $cmd = trim(get_request('cmd', ''));
+    $name = trim(get_request('name', NULL));
+    $type = trim(get_request('type', ''));
 
     if ($cmd == '' || $type == '') {
         throw new exception($LN['error_missingparameter'] );
@@ -123,7 +123,7 @@ try {
             try {
                 $option = $saved_searches->get_search($name, $type);
             } catch (exception $e) {
-                throw new exception($LN['error_searchnamenotfound']);
+                throw new exception($LN['error_searchnamenotfound']. "$name $type");
             }
             $options = $option['options'];
             $options['subcats'] = $option['subcats'];

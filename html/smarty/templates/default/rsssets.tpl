@@ -57,7 +57,7 @@
 <select id="saved_search">
 <option label="{$LN_all}" value="">{$LN_all}</option>
 {foreach $saved_searches as $saved_search}
-<option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}&nbsp;</option>
+<option value="{$saved_search}" {if $saved_search == $_saved_search}selected="selected"{/if}>{$saved_search|escape}</option>
 {/foreach}
 </select>
 </span>
@@ -148,7 +148,7 @@ $(document).ready(function() {
     $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
     $('#next_search').click( function () { select_next_search('saved_search',1); } );
     $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
-    $('#saved_search').change( function () { update_browse_searches(null); } );
+    $('#saved_search').change( function () { update_browse_searches(); } );
     $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), e) } );
     $('#search').attr( 'autocomplete', 'off' );
 });

@@ -23,7 +23,6 @@
  */
 declare(ticks=1); // we need this for the signals to work properly.... all hail the splendid php documentation :-|
 define('ORIGINAL_PAGE', 'URDD');
-
 $pathu = realpath(dirname(__FILE__));
 
 $process_name = 'urdd'; // needed for syslog and logging

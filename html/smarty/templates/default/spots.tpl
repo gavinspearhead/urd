@@ -134,7 +134,7 @@ $(document).ready(function() {
    $('#search').attr( 'autocomplete', 'off' );
    $('#next_search').click( function () { select_next_search('saved_search', 1); } );
    $('#prev_search').click( function () { select_next_search('saved_search', -1); } );
-   $('#saved_search').change( function () { update_spot_searches(null); } );
+   $('#saved_search').change( function () { update_spot_searches(); } );
 });
 </script>
 

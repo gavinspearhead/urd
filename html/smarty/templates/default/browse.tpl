@@ -146,12 +146,12 @@ $(document).ready(function() {
    $('#searchbar').html( $('#searchformdiv').html());
    $('#searchformdiv').html('');
    $('#search_button').click( function () { load_sets( { 'offset':'0', 'setid':'', 'category':'' } ); return false; } ) ;
-   $('#prev_group').click( function () { select_next("select_groupid",-1); } ) ;
    $('#next_group').click( function () { select_next("select_groupid",1); } ) ;
+   $('#prev_group').click( function () { select_next("select_groupid",-1); } ) ;
    $('#search').keypress( function (e) { return submit_enter(e, load_sets, { 'offset':'0', 'setid':'', 'category':'' } ); } );
    $('#next_search').click( function () { select_next_search('saved_search',1); } );
    $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
-   $('#saved_search').change( function () { update_browse_searches(null); } );
+   $('#saved_search').change( function () { update_browse_searches(); } );
    $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), e) } );
    $('#search').attr('autocomplete', 'off');
 });

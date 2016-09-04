@@ -267,14 +267,22 @@ function process_which_button(DatabaseConnection $db, $userid, $type, $groupID /
     elseif ($whichbutton == 'unmark_kill_all' && isset($_POST['set_ids'])) {
         challenge::verify_challenge($_POST['challenge']);
         $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
-        sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
+        if ($all) {
+            sets_marking::unmark_all($db, $userid, 'statuskill', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
+        } else {
+            sets_marking::unmark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID, $type, sets_marking::MARKING_OFF, TRUE);
+        }
     }
     // mark all sets as deleted on page
     elseif ($whichbutton == 'mark_kill_all' && isset($_POST['set_ids'])) {
         challenge::verify_challenge($_POST['challenge']);
         $_groupID  = ($groupID == 0 || $groupID == '') ? NULL : $groupID;
         $skip_int = (bool) get_pref($db, 'skip_int', $userid, 0);
-        sets_marking::mark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID,  $type, sets_marking::MARKING_ON, TRUE, $skip_int);
+        if ($all) {
+            sets_marking::unmark_all($db, $userid, 'statuskill', $_groupID, $type, sets_marking::MARKING_ON, TRUE);
+        } else {
+            sets_marking::mark_all2($db, $userid, $_POST['set_ids'], 'statuskill', $_groupID,  $type, sets_marking::MARKING_ON, TRUE, $skip_int);
+        }
     }
 
     /* Create NZB */

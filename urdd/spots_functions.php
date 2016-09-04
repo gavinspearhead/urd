@@ -113,7 +113,8 @@ class urd_spots
         foreach ($lines as $line) {
             $hdr = explode(':', $line, 2);
             if (count($hdr) < 2) {
-                echo_debug('Something wrong with the header', DEBUG_SERVER);
+    
+                echo_debug('Something wrong with the header ' . $line, DEBUG_SERVER);
                 continue;
             }
             $header[trim($hdr[0])] = trim($hdr[1]);
@@ -133,7 +134,7 @@ class urd_spots
 
     private static function parse_spot_header(array $header, $message_id, array $spot_blacklist)
     {
-        $spot_data = array(
+        $spot_data = [
             'from' => '',
             'subject' => '',
             'date' => '',
@@ -144,12 +145,12 @@ class urd_spots
             'messageid' => $message_id,
             'user-avatar' => '',
             'verified' => FALSE
-        );
+        ];
         $now = time();
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
-                echo_debug('Something wrong with the header', DEBUG_SERVER);
+                echo_debug('Something wrong with the header ' . $line, DEBUG_SERVER);
                 continue;
             }
 
@@ -412,10 +413,10 @@ class urd_spots
             'rating' => 0, // default rating is 0
             'user-avatar' => ''
         ];
-        foreach ($header as $line) {
-            $line = explode(':', $line, 2);
+        foreach ($header as $oline) {
+            $line = explode(':', $oline, 2);
             if (count($line) < 2) {
-                echo_debug('Something wrong with the header', DEBUG_SERVER);
+                echo_debug('Something wrong with the header ' . $oline, DEBUG_SERVER);
                 continue;
             }
             $line1 = trim($line[1]);
@@ -524,15 +525,12 @@ class urd_spots
     private function parse_spots_for_extset_data(DatabaseConnection $db, array $spot_data, $spotid)
     {
         $link_data = self::parse_links($spot_data['body'], $spot_data['url']);
-        //echo_debug("Found links: " . count( $link_data), DEBUG_SERVER);
         $extset_data = [];
         if (($link_data !== FALSE) && ($link_data != $spot_data['url'])) {
             $extset_data['link'] = $link_data;
         }
         if (count($extset_data) > 0) {
-            //echo_debug("Found link: $link_data", DEBUG_SERVER);
             $reference = find_reference($link_data);
-            //      echo_debug("Found ref: $reference", DEBUG_SERVER);
             urd_extsetinfo::add_ext_setdata($db, $spotid, $extset_data, USERSETTYPE_SPOT, ESI_NOT_COMMITTED, FALSE);
             self::update_spot_reference($db, $spotid, $reference);
         }

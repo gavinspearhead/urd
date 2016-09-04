@@ -28,7 +28,7 @@ function _stream_select (&$read, &$write, &$except, $tv_sec, $tv_usec = 0)
     if (function_exists('pcntl_signal_dispatch')) {
         pcntl_signal_dispatch();
     }
-    
+
     stream_select($read, $write, $except, $tv_sec, $tv_usec);
     if (function_exists('pcntl_signal_dispatch')) {
         pcntl_signal_dispatch();
@@ -74,7 +74,7 @@ class socket
     public function __construct ()
     {
         $this->_init();
-            
+
     }
     private function _init() 
     {
@@ -243,7 +243,6 @@ class socket
     public function check_readable()
     {
         if (!$this->is_readable()) {
-            echo_debug('Read timeout occurred', DEBUG_MAIN);
             $this->force_disconnect();
             throw new exception_nntp_connect('Read timeout occurred');
         }
@@ -252,7 +251,6 @@ class socket
     public function check_writeable()
     {
         if (!$this->is_writeable()) {
-            echo_debug('Write timeout occurred', DEBUG_MAIN);
             $this->force_disconnect();
             throw new exception_nntp_connect('Write timeout occurred');
         }
@@ -334,347 +332,344 @@ class socket
      *
      * @param integer $size The number of bytes to read from the socket.
      *
-     }
 
-/**
+
+    /**
      * Sets the file buffering size on the stream.
      * See php's stream_set_write_buffer for more information.
      *
      * @param  integer $size Write buffer size.
      * @return mixed   on success or an exception thrown object otherwise
      */
-public function set_write_buffer($size)
-{
-    assert(is_numeric($size));
-    $this->check_connected();
+    public function set_write_buffer($size)
+    {
+        assert(is_numeric($size));
+        $this->check_connected();
 
-    $returned = stream_set_write_buffer($this->fp, $size);
-    if ($returned == 0) {
-        return TRUE;
-    }
-    throw new exception('Cannot set write buffer.');
-}
-
-/**
- * Returns information about an existing socket resource.
- * Currently returns four entries in the result array:
- *
- * <p>
- * timed_out (bool) - The socket timed out waiting for data<br>
- * blocked (bool) - The socket was blocked<br>
- * eof (bool) - Indicates EOF event<br>
- * unread_bytes (int) - Number of bytes left in the socket buffer<br>
- * </p>
- *
- * @return mixed Array containing information about existing socket resource or an error object otherwise
- */
-public function get_status()
-{
-    $this->check_connected();
-
-    return stream_get_meta_data($this->fp);
-}
-
-/**
- * Get a specified line of data
- *
- * @return $size bytes of data from the socket, or a exception thrown if
- *         not connected.
- */
-public function gets2()
-{
-#$this->check_connected();
-    $this->check_readable();
-
-    return fgets($this->fp);
-}
-public function gets($size)
-{
-    assert(is_numeric($size));
-#$this->check_connected();
-    $this->check_readable();
-
-    return fgets($this->fp, $size);
-}
-
-/**
- * Read a specified amount of data. This is guaranteed to return,
- * and has the added benefit of getting everything in one fread()
- * chunk; if you know the size of the data you're getting
- * beforehand, this is definitely the way to go.
- *
- * @param integer $size The number of bytes to read from the socket.
- * @return $size bytes of data from the socket, or a exception thrown if
- *         not connected.
- */
-public function read($size)
-{
-    assert(is_numeric($size));
-#    $this->check_connected();
-    $this->check_readable();
-
-    return stream_get_contents($this->fp, $size);
-}
-
-/**
- * Write a specified amount of data.
- *
- * @param string  $data      Data to write.
- * @param integer $blocksize Amount of data to write at once.
- *                            NULL means all at once.
- *
- * @return mixed true on success or an error object otherwise
- */
-public function write($data, $blocksize = NULL)
-{
-    $this->check_connected();
-    if ($blocksize === NULL) {
-        $blocksize = 1024;
+        $returned = stream_set_write_buffer($this->fp, $size);
+        if ($returned == 0) {
+            return TRUE;
+        }
+        throw new exception('Cannot set write buffer.');
     }
 
-    assert(is_numeric($blocksize));
-    $pos = 0;
-    $size = strlen($data);
+    /**
+     * Returns information about an existing socket resource.
+     * Currently returns four entries in the result array:
+     *
+     * <p>
+     * timed_out (bool) - The socket timed out waiting for data<br>
+     * blocked (bool) - The socket was blocked<br>
+     * eof (bool) - Indicates EOF event<br>
+     * unread_bytes (int) - Number of bytes left in the socket buffer<br>
+     * </p>
+     *
+     * @return mixed Array containing information about existing socket resource or an error object otherwise
+     */
+    public function get_status()
+    {
+        $this->check_connected();
 
-    while ($pos < $size) {
+        return stream_get_meta_data($this->fp);
+    }
+
+    /**
+     * Get a specified line of data
+     *
+     * @return $size bytes of data from the socket, or a exception thrown if
+     *         not connected.
+     */
+    public function gets2()
+    {
+        $this->check_readable();
+
+        return fgets($this->fp);
+    }
+    public function gets($size)
+    {
+        assert(is_numeric($size));
+        $this->check_readable();
+
+        return fgets($this->fp, $size);
+    }
+
+    /**
+     * Read a specified amount of data. This is guaranteed to return,
+     * and has the added benefit of getting everything in one fread()
+     * chunk; if you know the size of the data you're getting
+     * beforehand, this is definitely the way to go.
+     *
+     * @param integer $size The number of bytes to read from the socket.
+     * @return $size bytes of data from the socket, or a exception thrown if
+     *         not connected.
+     */
+    public function read($size)
+    {
+        assert(is_numeric($size));
+        $this->check_readable();
+
+        return stream_get_contents($this->fp, $size);
+    }
+
+    /**
+     * Write a specified amount of data.
+     *
+     * @param string  $data      Data to write.
+     * @param integer $blocksize Amount of data to write at once.
+     *                            NULL means all at once.
+     *
+     * @return mixed true on success or an error object otherwise
+     */
+    public function write($data, $blocksize = NULL)
+    {
+        $this->check_connected();
+        if ($blocksize === NULL) {
+            $blocksize = 1024;
+        }
+
+        assert(is_numeric($blocksize));
+        $pos = 0;
+        $size = strlen($data);
+
+        while ($pos < $size) {
+            $this->check_writeable();
+            $written = @fwrite($this->fp, substr($data, $pos, $blocksize));
+            if ($written === FALSE || $this->has_timedout()) {
+                return FALSE;
+            }
+            $pos += $written;
+        }
+
+        return $pos;
+    }
+
+    /**
+     * Write a line of data to the socket, followed by a trailing "\r\n".
+     *
+     * @return mixed fputs result, or an error
+     */
+    public function write_line($data)
+    {
+        $this->check_connected();
+
+        if ($this->timeout !== NULL) {
+            $this->set_timeout($this->timeout);
+        }
         $this->check_writeable();
-        $written = @fwrite($this->fp, substr($data, $pos, $blocksize));
-        if ($written === FALSE || $this->has_timedout()) {
+        $rv = @fwrite($this->fp, $data . "\r\n");
+        if ($this->has_timedout()) {
             return FALSE;
         }
-        $pos += $written;
+
+        return $rv;
     }
 
-    return $pos;
-}
-
-/**
- * Write a line of data to the socket, followed by a trailing "\r\n".
- *
- * @return mixed fputs result, or an error
- */
-public function write_line($data)
-{
-    $this->check_connected();
-
-    if ($this->timeout !== NULL) {
-        $this->set_timeout($this->timeout);
-    }
-    $this->check_writeable();
-    $rv = @fwrite($this->fp, $data . "\r\n");
-    if ($this->has_timedout()) {
-        return FALSE;
+    /**
+     * Tests for end-of-file on a socket descriptor.
+     *
+     * Also returns true if the socket is disconnected.
+     *
+     * @return bool
+     */
+    public function eof()
+    {
+        return (!is_resource($this->fp) || feof($this->fp));
     }
 
-    return $rv;
-}
-
-/**
- * Tests for end-of-file on a socket descriptor.
- *
- * Also returns true if the socket is disconnected.
- *
- * @return bool
- */
-public function eof()
-{
-    return (!is_resource($this->fp) || feof($this->fp));
-}
-
-/**
- * Reads a byte of data
- *
- * @return 1 byte of data from the socket, or a exception thrown if
- *         not connected.
- */
-public function read_byte()
-{
-    $this->check_readable();
-    $buf = @stream_get_contents($this->fp, 1);
-    if ($buf  === FALSE) {
-        return FALSE;
-    }
-
-    return ord($buf);
-}
-
-/**
- * Reads a word of data
- *
- * @return 1 word of data from the socket, or a exception thrown if
- *         not connected.
- */
-public function read_word()
-{
-    $this->check_readable();
-    $buf = @stream_get_contents($this->fp, 2);
-    if ($buf === FALSE) {
-        return FALSE;
-    }
-
-    return (ord($buf[0]) + (ord($buf[1]) << 8));
-}
-
-/**
- * Reads an int of data
- *
- * @return integer 1 int of data from the socket, or a exception thrown if
- *                  not connected.
- */
-public function read_int()
-{
-    $this->check_readable();
-    $buf = @stream_get_contents($this->fp, 4);
-    if ($buf  === FALSE) {
-        return FALSE;
-    }
-
-    return (ord($buf[0]) + (ord($buf[1]) << 8) + (ord($buf[2]) << 16) + (ord($buf[3]) << 24));
-}
-
-/**
- * Reads an IP Address and returns it in a dot formated string
- *
- * @return Dot formated string, or a exception thrown if
- *         not connected.
- */
-public function read_ipaddress()
-{
-    $this->check_readable();
-    $buf = @stream_get_contents($this->fp, 4);
-    if ($buf  === FALSE) {
-        return FALSE;
-    }
-
-    return sprintf('%d.%d.%d.%d', ord($buf[0]), ord($buf[1]), ord($buf[2]), ord($buf[3]));
-}
-
-/**
- * Read until either the end of the socket or a newline, whichever
- * comes first. Strips the trailing newline from the returned data.
- *
- * @return All available data up to a newline, without that
- *         newline, or until the end of the socket, or a exception thrown if
- *         not connected.
- */
-public function read_line()
-{
-    $this->check_connected();
-    if (feof($this->fp)) {
-        return FALSE;
-    }
-
-    $line = '';
-    while (!feof($this->fp)) {
+    /**
+     * Reads a byte of data
+     *
+     * @return 1 byte of data from the socket, or a exception thrown if
+     *         not connected.
+     */
+    public function read_byte()
+    {
         $this->check_readable();
-        $buf = @fgets($this->fp, $this->line_length);
+        $buf = @stream_get_contents($this->fp, 1);
+        if ($buf  === FALSE) {
+            return FALSE;
+        }
+
+        return ord($buf);
+    }
+
+    /**
+     * Reads a word of data
+     *
+     * @return 1 word of data from the socket, or a exception thrown if
+     *         not connected.
+     */
+    public function read_word()
+    {
+        $this->check_readable();
+        $buf = @stream_get_contents($this->fp, 2);
         if ($buf === FALSE) {
             return FALSE;
         }
 
-        $line .= $buf;
-        if (substr_compare($buf, "\n", -1) == 0) {
-            return rtrim($line, "\r\n");
-        }
-        if (($this->timeout !== NULL) && $this->has_timedout()) {
-            return FALSE;
-        }
+        return (ord($buf[0]) + (ord($buf[1]) << 8));
     }
 
-    return FALSE;
-}
-
-/**
- * Read until the socket closes, or until there is no more data in
- * the inner PHP buffer. If the inner buffer is empty, in blocking
- * mode we wait for at least 1 byte of data. Therefore, in
- * blocking mode, if there is no data at all to be read, this
- * function will never exit (unless the socket is closed on the
- * remote end).
- *
- * @return string All data until the socket closes, or a exception thrown if
- *                 not connected.
- */
-public function read_all()
-{
-    $this->check_connected();
-
-    $data = '';
-    while (!feof($this->fp)) {
+    /**
+     * Reads an int of data
+     *
+     * @return integer 1 int of data from the socket, or a exception thrown if
+     *                  not connected.
+     */
+    public function read_int()
+    {
         $this->check_readable();
-        $data .= @stream_get_contents($this->fp, $this->line_length);
-        if ($data === FALSE) {
+        $buf = @stream_get_contents($this->fp, 4);
+        if ($buf  === FALSE) {
             return FALSE;
         }
+
+        return (ord($buf[0]) + (ord($buf[1]) << 8) + (ord($buf[2]) << 16) + (ord($buf[3]) << 24));
     }
 
-    return $data;
-}
+    /**
+     * Reads an IP Address and returns it in a dot formated string
+     *
+     * @return Dot formated string, or a exception thrown if
+     *         not connected.
+     */
+    public function read_ipaddress()
+    {
+        $this->check_readable();
+        $buf = @stream_get_contents($this->fp, 4);
+        if ($buf  === FALSE) {
+            return FALSE;
+        }
 
-/**
- * Runs the equivalent of the select() system call on the socket
- * with a timeout specified by tv_sec and tv_usec.
- *
- * @param integer $state   Which of read/write/error to check for.
- * @param integer $tv_sec  Number of seconds for timeout.
- * @param integer $tv_usec Number of microseconds for timeout.
- *
- * @return False if select fails, integer describing which of read/write/error
- *         are ready, or exception thrown if not connected.
- */
-public function select($state, $tv_sec, $tv_usec = 0)
-{
-    assert(is_numeric($tv_sec) && is_numeric($tv_usec) && is_numeric($state) && $state > 0);
-    $this->check_connected();
+        return sprintf('%d.%d.%d.%d', ord($buf[0]), ord($buf[1]), ord($buf[2]), ord($buf[3]));
+    }
 
-    $read = $write = $except = NULL;
-    if ($state & self::NET_SOCKET_READ) {
-        $read[] = $this->fp;
-    }
-    if ($state & self::NET_SOCKET_WRITE) {
-        $write[] = $this->fp;
-    }
-    if ($state & self::NET_SOCKET_ERROR) {
-        $except[] = $this->fp;
-    }
-    if (FALSE === _stream_select($read, $write, $except, $tv_sec, $tv_usec)) {
+    /**
+     * Read until either the end of the socket or a newline, whichever
+     * comes first. Strips the trailing newline from the returned data.
+     *
+     * @return All available data up to a newline, without that
+     *         newline, or until the end of the socket, or a exception thrown if
+     *         not connected.
+     */
+    public function read_line()
+    {
+        $this->check_connected();
+        if (feof($this->fp)) {
+            return FALSE;
+        }
+
+        $line = '';
+        while (!feof($this->fp)) {
+            $this->check_readable();
+            $buf = @fgets($this->fp, $this->line_length);
+            if ($buf === FALSE) {
+                return FALSE;
+            }
+
+            $line .= $buf;
+            if (substr_compare($buf, "\n", -1) == 0) {
+                return rtrim($line, "\r\n");
+            }
+            if (($this->timeout !== NULL) && $this->has_timedout()) {
+                return FALSE;
+            }
+        }
+
         return FALSE;
     }
 
-    $result = 0;
-    if (count($read)) {
-        $result |= self::NET_SOCKET_READ;
-    }
-    if (count($write)) {
-        $result |= self::NET_SOCKET_WRITE;
-    }
-    if (count($except)) {
-        $result |= self::NET_SOCKET_ERROR;
-    }
-
-    return $result;
-}
-
-/**
- * Turns encryption on/off on a connected socket.
- *
- * @param bool $enabled Set this parameter to true to enable encryption
- *                          and false to disable encryption.
- * @param integer $type Type of encryption. See
- *                          http://se.php.net/manual/en/function.stream-socket-enable-crypto.php for values.
- *
- * @return false on error, true on success and 0 if there isn't enough data and the
- *         user should try again (non-blocking sockets only). A exception thrown object
- *         is returned if the socket is not connected
- */
-public function enable_crypto($enabled, $type)
-{
-    if (extension_loaded('openssl')) {
+    /**
+     * Read until the socket closes, or until there is no more data in
+     * the inner PHP buffer. If the inner buffer is empty, in blocking
+     * mode we wait for at least 1 byte of data. Therefore, in
+     * blocking mode, if there is no data at all to be read, this
+     * function will never exit (unless the socket is closed on the
+     * remote end).
+     *
+     * @return string All data until the socket closes, or a exception thrown if
+     *                 not connected.
+     */
+    public function read_all()
+    {
         $this->check_connected();
 
-        return @stream_socket_enable_crypto($this->fp, $enabled, $type);
-    } else {
-        throw new exception('OpenSSL module required', INVALID_PHP_VERSION);
+        $data = '';
+        while (!feof($this->fp)) {
+            $this->check_readable();
+            $data .= @stream_get_contents($this->fp, $this->line_length);
+            if ($data === FALSE) {
+                return FALSE;
+            }
+        }
+
+        return $data;
     }
-}
+
+    /**
+     * Runs the equivalent of the select() system call on the socket
+     * with a timeout specified by tv_sec and tv_usec.
+     *
+     * @param integer $state   Which of read/write/error to check for.
+     * @param integer $tv_sec  Number of seconds for timeout.
+     * @param integer $tv_usec Number of microseconds for timeout.
+     *
+     * @return False if select fails, integer describing which of read/write/error
+     *         are ready, or exception thrown if not connected.
+     */
+    public function select($state, $tv_sec, $tv_usec = 0)
+    {
+        assert(is_numeric($tv_sec) && is_numeric($tv_usec) && is_numeric($state) && $state > 0);
+        $this->check_connected();
+
+        $read = $write = $except = NULL;
+        if ($state & self::NET_SOCKET_READ) {
+            $read[] = $this->fp;
+        }
+        if ($state & self::NET_SOCKET_WRITE) {
+            $write[] = $this->fp;
+        }
+        if ($state & self::NET_SOCKET_ERROR) {
+            $except[] = $this->fp;
+        }
+        if (FALSE === _stream_select($read, $write, $except, $tv_sec, $tv_usec)) {
+            return FALSE;
+        }
+
+        $result = 0;
+        if (count($read)) {
+            $result |= self::NET_SOCKET_READ;
+        }
+        if (count($write)) {
+            $result |= self::NET_SOCKET_WRITE;
+        }
+        if (count($except)) {
+            $result |= self::NET_SOCKET_ERROR;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Turns encryption on/off on a connected socket.
+     *
+     * @param bool $enabled Set this parameter to true to enable encryption
+     *                          and false to disable encryption.
+     * @param integer $type Type of encryption. See
+     *                          http://se.php.net/manual/en/function.stream-socket-enable-crypto.php for values.
+     *
+     * @return false on error, true on success and 0 if there isn't enough data and the
+     *         user should try again (non-blocking sockets only). A exception thrown object
+     *         is returned if the socket is not connected
+     */
+    public function enable_crypto($enabled, $type)
+    {
+        if (extension_loaded('openssl')) {
+            $this->check_connected();
+
+            return @stream_socket_enable_crypto($this->fp, $enabled, $type);
+        } else {
+            throw new exception('OpenSSL module required', INVALID_PHP_VERSION);
+        }
+    }
 }
