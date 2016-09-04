@@ -563,9 +563,7 @@ function clean_area($text)
         }
     }
     
-    $text = serialize($terms_new);
-
-    return $text;
+    return serialize($terms_new);
 }
 
 function set_and_test_pref_text_area($name, $userid, $clean_area=FALSE)

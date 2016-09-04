@@ -467,11 +467,7 @@ function check_queue(DatabaseConnection& $par_db, conn_list &$conn_list, server_
     } else { // child
         $nntp_enabled = $servers->get_nntp_enabled();
         unset($servers, $db, $command, $pid);
-//        declare(ticks=1) {
-   //         register_tick_function('pcntl_signal_dispatch');
-     //       register_tick_function('var_dump', 1);
-            start_child($item, $conn_list, $nntp_enabled);
- //       }
+        start_child($item, $conn_list, $nntp_enabled);
     }
 
     return FALSE;

@@ -69,7 +69,7 @@ try {
 } 
 
 $OUT .= GenRetVal($rv_un === TRUE, $rv_uv);
-if (!$rv_uv)  {
+if (!$rv_uv) {
     $OUT .= ShowHelp("{$error} Please enter a username ('root' is unacceptable). Only letters, numbers and underscore is accepted, minimally 3 characters");
 }
 

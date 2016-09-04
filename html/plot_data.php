@@ -149,14 +149,14 @@ $possiblesubtypes = ['stats_dl','stats_pv','stats_im','stats_gt','stats_wv','sta
 $type = get_request('type', 'blank');
 $subtype = get_request('subtype', 'stats_dl');
 $period = get_request('period', '');
-$year   = get_request('year', '0');
+$year = get_request('year', '0');
 $month = get_request('month', 1);
 $sizeorcount = get_request('source', 'size');
 if (!in_array($type, $possibletypes)) {
     return_result(array('error'=>'Invalid type specified.' . $type));
 }
 if (!in_array($subtype, $possiblesubtypes)) {
-    return_result(array('error'=>'Invalid type specified.'. $subtype));
+    return_result(array('error'=>'Invalid type specified.' . $subtype));
 }
 if ($sizeorcount != 'size') {
     $sizeorcount = 'count';

@@ -112,11 +112,11 @@ $maxsetsizelimit = nearest($maxsetsizelimit / (1024 * 1024), TRUE);
 $minagelimit = 0;
 $maxagelimit = nearest($maxagelimit / (3600 * 24), TRUE);
 $orisearch  = utf8_decode($search);
-$offset  = get_request('offset', 0);
-$minage  = get_request('minage', $minagelimit, 'is_numeric');
-$maxage  = get_request('maxage', $maxagelimit, 'is_numeric');
-$flag    = get_request('flag', '');
-$order   = $oriorder   = get_request('order', '');
+$offset = get_request('offset', 0);
+$minage = get_request('minage', $minagelimit, 'is_numeric');
+$maxage = get_request('maxage', $maxagelimit, 'is_numeric');
+$flag = get_request('flag', '');
+$order = $oriorder = get_request('order', '');
 
 $minsetsize = get_pref($db, 'minsetsize', $userid, NULL);
 if ($minsetsize !== NULL) {
@@ -136,9 +136,9 @@ if ($minsetsize <= 0) {
 
 $minsetsize = get_request('minsetsize', $minsetsize, 'is_numeric');
 $maxsetsize = get_request('maxsetsize', $maxsetsize, 'is_numeric');
-$maxrating  = get_request('maxrating', 10, 'is_numeric');
-$minrating  = get_request('minrating', 0, 'is_numeric');
-$setid      = get_request('setid', '');
+$maxrating = get_request('maxrating', 10, 'is_numeric');
+$minrating = get_request('minrating', 0, 'is_numeric');
+$setid = get_request('setid', '');
 
 $subscribedfeeds = subscribed_feeds_select($db, $feed_id, $categoryID, $categories, $userid);
 $killflag = FALSE;

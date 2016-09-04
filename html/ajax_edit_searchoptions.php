@@ -29,7 +29,7 @@ $pathaeb = realpath(dirname(__FILE__));
 require_once "$pathaeb/../functions/ajax_includes.php";
 require_once "$pathaeb/../functions/search_options.php";
 
-verify_access($db, NULL, TRUE, '', $userid,  TRUE);
+verify_access($db, NULL, TRUE, '', $userid, TRUE);
 
 class search_options_c
 {

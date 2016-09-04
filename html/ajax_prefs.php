@@ -305,7 +305,7 @@ function set_preferences(DatabaseConnection $db, $userid, $name, $value, $type)
     switch ($type) {
         case 'checkbox':
             if (!in_array($value, array(0,1,2))) {
-                throw new exception($LN['error_invalidvalue'] .  "'<i>$value</i>'");
+                throw new exception($LN['error_invalidvalue'] . "'<i>$value</i>'");
             }
             set_pref($db, $name, $value, $userid);
             break;
@@ -325,7 +325,13 @@ function set_preferences(DatabaseConnection $db, $userid, $name, $value, $type)
             if ($rv != '') {
                 throw new exception($rv['msg'] . " $name => $value");
             }
-            set_pref($db, $name, $value, $userid);
+            if ($name == 'search_terms') {
+                store_search_terms($db, unserialize($value), $userid);
+            } elseif ($name == 'blocked_terms') {
+                store_blocked_terms($db, unserialize($value),  $userid);
+            } else {
+                set_pref($db, $name, $value, $userid);
+            }
             break;
         default:
             throw new exception ($LN['error_invalidvalue']. " $name => $value $type");

@@ -123,7 +123,7 @@
 	<td>{$fromnames|escape:html}</td></tr> 
 {/if}
 <tr class="vtop small left comment"><td class="nowrap bold">{$LN_showsetinfo_size}:</td>
-	<td>{if $binaries gt 0}{$binaries} {$LN_files}{if $articlesmax > 0} ({$LN_showsetinfo_shouldbe} {$articlesmax}){/if} - {/if}{if $totalsize gt 0 }{$totalsize}{else}?{/if}</td></tr>
+	<td>{if $binaries gt 0}{$binaries} {$LN_files}{if $articlesmax > 0} ({$LN_showsetinfo_shouldbe} {$articlesmax}){/if} - {/if}{if $totalsize gt 0}{$totalsize}{else}?{/if}</td></tr>
 {if $par2s != ''}
 	<tr class="vtop small left comment"><td class="nowrap bold">{$LN_showsetinfo_par2}</td>
 	<td>{$par2s}</td></tr>

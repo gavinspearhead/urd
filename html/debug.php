@@ -222,33 +222,21 @@ echo '<meta http-equiv="Content-Language" content="en-us"/>';
 echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>';
 echo '<meta name="resource-type" content="document"/>';
 echo "<style type=\"text/css\" >\n";
-echo 'body';
-echo '{';
-echo '	background-color: black;';
-echo '	color: white;';
-echo '	margin: 0px;';
-echo '  padding: 0px;';
-echo '	font-family: Geneva, Arial, Helvetica, sans-serif;';
-echo '   font-size: small;';
-echo '}';
-
-echo "h1,.h1 { font-family: Verdana; font-size: 14pt; font-weight: bold;  } h2,.h2 { font-family: Verdana; font-size: 12pt; font-weight: bold; } h3,.h3 { font-family: Verdana; font-size: 10pt; font-weight: bold; }";
+echo 'body { background-color: black; color: white; margin: 0px; padding: 0px; font-family: Geneva, Arial, Helvetica, sans-serif; font-size: small; }';
+echo "h1,.h1 { font-family: Verdana; font-size: 14pt; font-weight: bold; } h2,.h2 { font-family: Verdana; font-size: 12pt; font-weight: bold; } h3,.h3 { font-family: Verdana; font-size: 10pt; font-weight: bold; }";
 
 echo "</style></head>\n";
-
 echo "<body>\n";
 echo "<h1>URD - Debug output</h1>\n";
-
 echo "<br/>--------------- copy from here ----------------<br/>\n\n";
-
 echo "<h2>PHP Settings</h2>\n";
 
 $prefs = load_config($db);
 
-$settings = array();
+$settings = [];
 
 $settings['System name'] = implode(' ', posix_uname());
-$settings['PHP_version'] = phpversion() . ' (should be at least 5.1.2)';
+$settings['PHP_version'] = phpversion() . ' (should be at least ' . MIN_PHP_VERSION . ')';
 $settings['Loaded php.ini file'] = php_ini_loaded_file();
 $settings['Browser agent'] = $_SERVER['HTTP_USER_AGENT'];
 $settings['database type'] = $db->get_databasetype();
@@ -260,7 +248,7 @@ $settings['URD Database version'] = $prefs['db_version'];
 $settings['Smarty version'] = Smarty::SMARTY_VERSION;
 
 debug_dump_str_key($settings);
-$settings = array();
+$settings = [];
 $s = get_svn_rev();
 $sl = get_svn_latest_rev();
 if ($s != '') {
@@ -273,36 +261,36 @@ if ($s != '') {
 }
 debug_dump_str_key($settings, $highlight);
 
-$settings = array();
+$settings = [];
 
-$settings['Safe_mode'] =  (ini_get('safe_mode') ? "<font color='red'>on</font>":"off" ). " (should be off)";
-$settings['Magic_quotes_gpc'] =   (get_magic_quotes_gpc() ? "<font color='red'>on</font>":"off" ). " (should be off)\n";
-$settings['Safe_mode_gid'] =  (ini_get('safe_mode_gid') ? "<font color='red'>on</font>":"off" ). " (should be off)\n";
-$settings['Register_globals'] =  (ini_get('register_globals')? "<font color='red'>on</font>":"off") . " (should be off)\n";
+$settings['Safe_mode'] = (ini_get('safe_mode') ? "<font color='red'>on</font>":"off" ). " (should be off)";
+$settings['Magic_quotes_gpc'] = (get_magic_quotes_gpc() ? "<font color='red'>on</font>":"off" ). " (should be off)\n";
+$settings['Safe_mode_gid'] = (ini_get('safe_mode_gid') ? "<font color='red'>on</font>":"off" ). " (should be off)\n";
+$settings['Register_globals'] = (ini_get('register_globals')? "<font color='red'>on</font>":"off") . " (should be off)\n";
 debug_dump_str_key($settings, array(array('on', 'red'), array('off', 'green')));
-$settings = array();
-$settings['File_uploads'] =  (ini_get('file_uploads') ? "on":"off" ). " (should be on)\n";
+$settings = [];
+$settings['File_uploads'] = (ini_get('file_uploads') ? "on":"off" ). " (should be on)\n";
 $settings['Allow_url_fopen'] =  (ini_get('allow_url_fopen') ? "on":"off" ) . " (should be on)\n";
 debug_dump_str_key($settings, array(array('on', 'green'), array('off', 'red')));
-$settings = array();
-$settings['Post_max_size'] =  ini_get('post_max_size') . " (Should be 2M or more)\n";
-$settings['Upload_max_filesize'] =  ini_get('upload_max_filesize') . " (should be 2M or more)\n";
-$settings['Memory_limit'] =  ini_get('memory_limit') . " (should be 128M or more)\n";
+$settings = [];
+$settings['Post_max_size'] = ini_get('post_max_size') . " (Should be 2M or more)\n";
+$settings['Upload_max_filesize'] = ini_get('upload_max_filesize') . " (should be 2M or more)\n";
+$settings['Memory_limit'] = ini_get('memory_limit') . " (should be 128M or more)\n";
 debug_dump_str_key($settings);
-$settings = array();
+$settings = [];
 debug_dump_str_key($settings, array(array('on', 'green'), array('off', 'red')));
 
-$settings = array();
+$settings = [];
 $settings['date.timezone'] =  (ini_get('date.timezone') ) . " (should not be empty)\n";
 debug_dump_str_key($settings, array(array('', 'green'), array('off', 'red')));
-$settings = array();
+$settings = [];
 echo "<p>These settings may cause trouble; empty values should always work tho:</p>\n";
 $settings['Open_basedir'] =  "'" .ini_get('open_basedir') . "'" ." \n";
 $settings['Disable_functions'] = "'" . ini_get('disable_functions') ."'" . "\n";
 $settings['Disable_classes'] = "'" . ini_get('disable_classes') ."'" . "\n";
 
 debug_dump_str_key($settings);
-$settings = array();
+$settings = [];
 echo "<h2>Some basic system settings useful for debugging download directory problems</h2>";
 
 $apache_info = posix_getpwuid(posix_geteuid());
@@ -312,7 +300,6 @@ $a_groupid = $a_gid['name'] . ' (' . $apache_info['gid'] . ')';
 $settings['Apache userid'] = $a_userid;
 $settings['Apache groupid'] = $a_groupid;
 $settings['URD Install path'] = get_urd_path();
-
 $settings['download_dir'] = get_dlpath($db);
 if (trim($settings['download_dir']) == '') {
     echo "<font color='red'>ERROR: DL path should not be empty! Please set in admin/config</font>";
@@ -361,12 +348,12 @@ debug_dump_str_key($uprefs);
 echo "<h3>Users</h3>\n";
 $users = get_all_users_full($db);
 
-$u_data = array();
+$u_data = [];
 foreach ($users as $k => $u) {
-    $u_data[ $k . ':name'   ] = $u['name'];
-    $u_data[ $k . ':active'   ] = $u['active'];
-    $u_data[ $k . ':isadmin'   ] = $u['isadmin'];
-    $u_data[ $k . ':rights'   ] = $u['rights'];
+    $u_data[ $k . ':name' ] = $u['name'];
+    $u_data[ $k . ':active' ] = $u['active'];
+    $u_data[ $k . ':isadmin' ] = $u['isadmin'];
+    $u_data[ $k . ':rights' ] = $u['rights'];
 }
 
 ksort($u_data);
@@ -390,7 +377,7 @@ try {
         echo "<h3>URDD startup test results</h3>\n";
 
         $tests = ($uc->show('tests'));
-        $tests2 = array();
+        $tests2 = [];
         foreach ($tests as $t) {
             $tmp = explode(':  ', $t, 2);
             if (!isset($tmp[0]) || !isset($tmp[1])) {

@@ -202,7 +202,7 @@ function make_search_query_part($search, $type, $search_type)
     return $Qsearch;
 }
 
-$Qsearch =  make_search_query_part($search, $type, $search_type);
+$Qsearch = make_search_query_part($search, $type, $search_type);
 
 if ($type == USERSETTYPE_GROUP) {
     verify_access($db, urd_modules::URD_CLASS_GROUPS, FALSE, '', $userid, FALSE);
@@ -224,9 +224,7 @@ if ($type == USERSETTYPE_GROUP) {
         $feeds = get_feeds_by_category($db, $userid, $categoryID);
         $Qfeed = '';
         if (count($feeds) > 0) { 
-            $Qfeed .= ' AND rss_sets."rss_id" IN (';
-            $Qfeed .= implode(',', $feeds);
-            $Qfeed .= ')';
+            $Qfeed .= ' AND rss_sets."rss_id" IN (' . implode(',', $feeds) .  ')';
         }
     } elseif ($feedid != 0) {
         $Qfeed = ' AND rss_sets."rss_id" = :feedid ';

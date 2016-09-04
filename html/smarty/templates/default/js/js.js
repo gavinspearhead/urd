@@ -2535,7 +2535,9 @@ function show_quick_display(options)
                             'height': inner_height - title_height, 
                             'max-height': inner_height - title_height });
                     }
-                    set_scroll_handler('#td_sets', show_quick_display);
+                    if (type == 2) {
+                        set_scroll_handler('#td_sets', show_quick_display);
+                    }
                 }
                 if (add_rows == 0) {
                     $('#td_extsets').scrollTop(0);

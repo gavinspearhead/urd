@@ -344,7 +344,7 @@ function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NUL
 }
 
 function sanitise_download_name(DatabaseConnection $db, $name, $has_subdirs=FALSE)
-{   
+{
     $name = simplify_chars($name);
     $replacement_str = get_config($db, 'replacement_str');
     $dir_sep = $has_subdirs ? '\\' . DIRECTORY_SEPARATOR : '';
@@ -2882,6 +2882,7 @@ function store_search_terms(DatabaseConnection &$db, array $search_terms, $useri
     assert(is_numeric($userid));
     $search_terms = array_map('trim', $search_terms);
     $search_terms = array_unique($search_terms);
+    sort($search_terms);
     set_pref($db, 'search_terms', @serialize($search_terms), $userid);
 }
 

@@ -30,7 +30,7 @@ if (!defined('ORIGINAL_PAGE')) {
 $hostname = isset($_SESSION['hostname']) ? $_SESSION['hostname'] : '';
 $port = isset($_SESSION['port']) ? $_SESSION['port'] : '119';
 $connection = isset($_SESSION['connection']) ? $_SESSION['connection'] : '';
-$username =isset($_SESSION['username']) ?  $_SESSION['username'] : '';
+$username =isset($_SESSION['username']) ? $_SESSION['username'] : '';
 $password = isset($_SESSION['password']) ? $_SESSION['password'] : '';
 $server_id = isset($_SESSION['server_id']) ? $_SESSION['server_id'] : '';
 

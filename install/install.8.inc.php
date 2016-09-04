@@ -85,13 +85,13 @@ if (!$rv_auth) {
     $OUT .= ShowHelp('Please enter both password and username if authentication is required, otherwise leave both blank.'); 
 }
 
-$authentication = 0;  
+$authentication = 0;
 if ($username != '' && $password != '') { 
     $authentication = 1; 
 }
 if ($connection == 'off') { 
     $secure_port = 0; 
-} else {  
+} else {
     $secure_port = $port; 
     $port = 0; 
 } 
