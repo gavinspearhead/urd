@@ -37,7 +37,7 @@ class queue
     public function __construct($max_size=0)
     {
         assert(is_numeric($max_size));
-        $this->qq = array();
+        $this->qq = [];
         $this->max_size = (int) $max_size;
     }
 
@@ -67,7 +67,7 @@ class queue
 
     public function get_queue()
     {
-        $qq = array();
+        $qq = [];
         foreach ($this->qq as $q) {
             $row['id'] = $q->get_id();
             $row['userid'] = $q->get_userid();
@@ -123,8 +123,8 @@ class queue
         if ($next === NULL) {
             return FALSE;
         }
-        $before = $after = array();
-        $previous = $current = array();
+        $before = $after = [];
+        $previous = $current = [];
         // split the queue
         $found = FALSE;
         foreach ($this->qq as $k=>&$q) {
@@ -181,8 +181,8 @@ class queue
         if ($prev === NULL || $curr === NULL) {
             return FALSE;
         }
-        $before = $after = array();
-        $previous = $current = array();
+        $before = $after = [];
+        $previous = $current = [];
         // split the queue
         $found = FALSE;
         foreach ($this->qq as $k=>&$q) {
@@ -288,7 +288,7 @@ class queue
     public function get_ids_all($userid)
     {
         assert (is_numeric($userid));
-        $keys = array();
+        $keys = [];
         foreach ($this->qq as $k => $q) {
             if ($q->match_userid($userid)) {
                 $keys[] = $k;
@@ -301,7 +301,7 @@ class queue
     public function get_ids_cmd($cmd, $arg, $userid)
     {
         assert (is_numeric($userid));
-        $keys = array();
+        $keys = [];
         foreach ($this->qq as $k => $q) {
             if ($q->is_equal($cmd, $arg) && $q->match_userid($userid)) {
                 $keys[] = $k;
@@ -314,7 +314,7 @@ class queue
     public function get_ids_action($action_id, $userid)
     {
         assert (is_numeric($action_id) && is_numeric($userid));
-        $keys = array();
+        $keys = [];
         foreach ($this->qq as $k => $q) {
             if ($action_id == $q->get_id()) {
                 $keys[] = $k;
@@ -364,7 +364,7 @@ class queue
     {
         echo_debug_function(DEBUG_SERVER, __FUNCTION__);
         assert(is_bool($delete_db) && is_numeric($userid));
-        $kk = array();
+        $kk = [];
         foreach ($this->qq as $k => $q) {
             if ($q->is_equal($cmd, $arg)) {
                 $kk[] = $k;
@@ -592,7 +592,7 @@ class queue
     public function set_priorities(DatabaseConnection $db, array $action_ids, $userid, $priority)
     {
         assert(is_numeric($priority) && is_numeric($userid));
-        $kk = array();
+        $kk = [];
         foreach ($this->qq as $k => $q) {
             if (in_array($q->get_id(), $action_ids)) {
                 $q->set_priority($priority, $userid);
@@ -600,7 +600,7 @@ class queue
                 $kk[] = $k;
             }
         }
-        if ($kk === array()) {
+        if ($kk === []) {
             throw new exception('Item not found', ERR_ITEM_NOT_FOUND);
         }
         usort($this->qq, array('queue', 'prio_sort'));

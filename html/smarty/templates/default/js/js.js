@@ -2093,6 +2093,7 @@ function update_usenet_server()
     var authentication = get_value_from_id('needauthentication');
     var priority = get_value_from_id('priority');
     var connection = get_value_from_id('connection');
+    var ipversion = get_value_from_id('ipversion');
     var compressed_headers = get_value_from_id('compressed_headers');
     var threads = get_value_from_id('threads');
     var posting = get_value_from_id('posting');
@@ -2109,6 +2110,7 @@ function update_usenet_server()
         authentication: authentication,
         priority: priority,
         connection: connection,
+        ipversion: ipversion,
         threads: threads,
         challenge: challenge,
         compressed_headers: compressed_headers,

@@ -467,9 +467,9 @@ class Base_NNTP_Client
      * @return mixed (bool) on success (true when posting allowed, otherwise false)
      *
      */
-    protected function connect($host, $encryption = NULL, $port = NULL, $timeout = socket::DEFAULT_SOCKET_TIMEOUT)
+    protected function connect($host, $encryption = NULL, $port = NULL, $timeout = socket::DEFAULT_SOCKET_TIMEOUT, $ipversion='both')
     {
-        assert(is_numeric($timeout) || is_null($timeout));
+        assert('is_numeric($timeout) || is_null($timeout)');
         if ($this->_is_connected()) {
             throw new exception('Already connected, disconnect first!');
         }
@@ -494,9 +494,9 @@ class Base_NNTP_Client
             default:
                 throw new exception('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
         }
-        assert(is_numeric($port));
+        assert('is_numeric($port)');
         // Open Connection
-        $this->_socket->connect($transport . '://' . $host, $port, FALSE, $timeout);
+        $this->_socket->connect($transport . '://', $host, $port, FALSE, $timeout, NULL, $ipversion);
         // Retrieve the server's initial response.
         $response =  $this->_get_status_response();
         switch ($response) {
@@ -598,19 +598,19 @@ class Base_NNTP_Client
      */
     protected function cmd_group($newsgroup)
     {
-        assert(is_string($newsgroup) && $newsgroup != '');
+        assert('is_string($newsgroup) && $newsgroup != ""');
         $response = $this->_send_command('GROUP ' . $newsgroup);
 
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED: // 211, RFC977: 'n f l s group selected'
                 $response_arr = explode(' ', ltrim($this->_current_status_response()));
                 if (isset($response_arr[0])) {
-                    return array(
-                            'group' => $response_arr[3],
-                            'first' => $response_arr[1],
-                            'last'  => $response_arr[2],
-                            'count' => $response_arr[0]);
-                } else {
+                    return [
+                        'group' => $response_arr[3],
+                        'first' => $response_arr[1],
+                        'last'  => $response_arr[2],
+                        'count' => $response_arr[0]];
+            } else {
                     throw new exception('Invalid response', $response);
                 }
 
@@ -649,20 +649,20 @@ class Base_NNTP_Client
 
                 // If server does not return group summary in status response, return null'ed array
                 if (!is_numeric($response_arr[0]) || !is_numeric($response_arr[1]) || !is_numeric($response_arr[2]) || is_empty($response_arr[3])) {
-                    return array(
-                            'group'    => NULL,
-                            'first'    => NULL,
-                            'last'     => NULL,
-                            'count'    => NULL,
-                            'articles' => $articles);
+                    return [
+                        'group'    => NULL,
+                        'first'    => NULL,
+                        'last'     => NULL,
+                        'count'    => NULL,
+                        'articles' => $articles];
                 }
 
-                return array(
-                        'group'    => $response_arr[3],
-                        'first'    => $response_arr[1],
-                        'last'     => $response_arr[2],
-                        'count'    => $response_arr[0],
-                        'articles' => $articles);
+                return [
+                    'group'    => $response_arr[3],
+                    'first'    => $response_arr[1],
+                    'last'     => $response_arr[2],
+                    'count'    => $response_arr[0],
+                    'articles' => $articles];
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'Not currently in newsgroup'
                 throw new exception("Not currently in newsgroup ({$this->_current_status_response()}) ", $response);
@@ -686,7 +686,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
                 $response_arr = explode(' ', ltrim($this->_current_status_response()));
 
-                return array((int) $response_arr[0], (string) $response_arr[1]);
+                return [(int) $response_arr[0], (string) $response_arr[1]];
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup selected'
                 throw new exception("No newsgroup has been selected ({$this->_current_status_response()}) ", $response);
@@ -713,7 +713,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
                 $response_arr = explode(' ', ltrim($this->_current_status_response()));
 
-                return array((int) $response_arr[0], (string) $response_arr[1]);
+                return [(int) $response_arr[0], (string) $response_arr[1]];
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup selected'
                 throw new exception("No newsgroup has been selected ({$this->_current_status_response()}) ", $response);
@@ -915,7 +915,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n <a> article retrieved - request text separately' (actually not documented, but copied from the ARTICLE command)
                 $response_arr = explode(' ', ltrim($this->_current_status_response()));
 
-                return array((int) $response_arr[0], (string) $response_arr[1]);
+                return [(int) $response_arr[0], (string) $response_arr[1]];
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected' (actually not documented, but copied from the ARTICLE command)
                 throw new exception("No newsgroup has been selected ({$this->_current_status_response()})", $response);
@@ -1111,10 +1111,10 @@ class Base_NNTP_Client
                 foreach ($data as $line) {
                     $arr = explode(' ', ltrim($line));
 
-                    $group = array('group'   => $arr[0],
+                    $group = ['group'   => $arr[0],
                             'last'    => $arr[1],
                             'first'   => $arr[2],
-                            'posting' => $arr[3]);
+                            'posting' => $arr[3]];
 
                     $groups[$group['group']] = $group;
                 }
@@ -1190,17 +1190,17 @@ class Base_NNTP_Client
                 foreach ($data as $line) {
                     $arr = explode(' ', ltrim($line));
                     if (isset($arr[3])) {
-                        $group = array(
-                                'group'   => $arr[0],
-                                'last'    => $arr[1],
-                                'first'   => $arr[2],
-                                'posting' => $arr[3]);
+                        $group = [
+                            'group'   => $arr[0],
+                            'last'    => $arr[1],
+                            'first'   => $arr[2],
+                            'posting' => $arr[3]];
 
                         $groups[$group['group']] = $group;
                         $cnt ++;
                         if ($db !== NULL && ($cnt % 1000 == 0)) {
                             $db->db_update_group_list($groups);
-                            $groups = array();
+                            $groups = [];
                             $cnt = 0;
                         }
                     }
@@ -1208,7 +1208,7 @@ class Base_NNTP_Client
                 if ($db !== NULL) {
                     if (count($groups) > 0) {
                         $db->db_update_group_list($groups);
-                        $groups = array();
+                        $groups = [];
                         $cnt = 0;
                     }
 
@@ -1479,7 +1479,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW: // 215, RFC2980: 'information follows'
                 $data = $this->_get_text_response();
 
-                $format = array();
+                $format = [];
 
                 foreach ($data as $line) {
                     // Check if postfixed by ':full' (case-insensitive)
@@ -1525,7 +1525,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED: // 221, RFC2980: 'Header follows'
                 $data = $this->_get_text_response();
 
-                $return = array();
+                $return = [];
                 foreach ($data as $line) {
                     $line = explode(' ', ltrim($line), 2);
                     $return[$line[0]] = $line[1];
@@ -1566,7 +1566,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_GROUPS_AND_DESC_FOLLOW: // RFC2980: 'list of groups and descriptions follows'
                 $data = $this->_get_text_response();
 
-                $groups = array();
+                $groups = [];
 
                 foreach ($data as $line) {
                     preg_match("/^(.*?)\s(.*?$)/", ltrim($line), $matches);
@@ -1604,7 +1604,7 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
                 $data = $this->_get_text_response();
 
-                $return = array();
+                $return = [];
                 foreach ($data as $line) {
                     $line = explode(' ', ltrim($line), 2);
                     $return[$line[0]] = $line[1];

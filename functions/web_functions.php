@@ -136,8 +136,8 @@ function count_active_ng(DatabaseConnection $db)
 
 function count_active_rss(DatabaseConnection $db)
 {
-    $sql = 'count(*) AS cnt FROM rss_urls WHERE "subscribed"=?';
-    $res = $db->select_query($sql, array(newsgroup_status::NG_SUBSCRIBED));
+    $sql = 'count(*) AS cnt FROM rss_urls WHERE "subscribed"=:sub';
+    $res = $db->select_query($sql, array(':sub' => newsgroup_status::NG_SUBSCRIBED));
 
     return $res[0]['cnt'];
 }
@@ -181,7 +181,7 @@ function command_description(DatabaseConnection $db, $task_)
     global $LN;
     $task_parts = explode (' ', $task_);
     $cmd_code = get_command_code($task_parts[0]);
-    $task = array('', '', 0, '');
+    $task = ['', '', 0, ''];
     try {
         $name = '';
         switch ($cmd_code) {
@@ -192,7 +192,7 @@ function command_description(DatabaseConnection $db, $task_)
                 $task[1] = $LN['taskunknown'];
             } else {
                 $cmd = implode(' ', $task_parts);
-                list ($t, $a) = command_description($db, $cmd);
+                list($t, $a) = command_description($db, $cmd);
                 $task[1] = "$t $a";
                 $task[3] = '';
             }
@@ -204,7 +204,7 @@ function command_description(DatabaseConnection $db, $task_)
             if (is_numeric($task_parts[0])) {
                 $task[1] = $LN['taskunknown'];
             } else {
-                list ($t, $a) = command_description($db, $cmd);
+                list($t, $a) = command_description($db, $cmd);
                 $task[1] = "$t $a";
             }
             $task[3] = '';
@@ -458,7 +458,7 @@ function command_description(DatabaseConnection $db, $task_)
 
         return $task;
     } catch (exception $e) {
-        return array($LN['taskunknown'], '', 0);
+        return [$LN['taskunknown'], '', 0];
     }
 }
 
@@ -1007,7 +1007,7 @@ function load_language($lang)
 
 function set_post_status()
 {
-    $_SESSION['post_hide_status'] = array(
+    $_SESSION['post_hide_status'] = [
         'global' => 0,
         'ready' => 0,
         'finished' => 0,
@@ -1025,12 +1025,12 @@ function set_post_status()
         'par2ed' => 0,
         'yyencoded' => 0,
         'cancelled' => 0
-    );
+    ];
 }
 
 function set_down_status()
 {
-    $_SESSION['transfer_hide_status'] = array(
+    $_SESSION['transfer_hide_status'] = [
         'global' => 0,
         'ready' => 0,
         'finished' => 0,
@@ -1046,7 +1046,7 @@ function set_down_status()
         'queued' => 0,
         'dlfailed' => 0,
         'cancelled' => 0
-    );
+    ];
 }
 
 function get_categories(DatabaseConnection $db, $userid)
@@ -1067,6 +1067,7 @@ function get_categories(DatabaseConnection $db, $userid)
 
 function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID, array $categories, $userid)
 {
+    global $LN;
     assert(is_numeric($userid));
     $Qgroups = '';
     $adult = urd_user_rights::is_adult($db, $userid);
@@ -1117,8 +1118,8 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
         if ($size != 0 || $arr['id'] == $categoryID) { // don't show empty categories either
             $subscribedgroups[$c] = array(
                 'id'            => $arr['id'],
-                'name'          => $arr['name'],
-                'shortname'     => $arr['name'],
+                'name'          => $LN['category'] . ': ' . $arr['name'],
+                'shortname'     => $LN['category'] . ': ' . $arr['name'],
                 'article_count' => $size . $suffix,
                 'type'          => 'category'
             );
@@ -1219,12 +1220,12 @@ function get_used_categories_rss(DatabaseConnection $db, $userid)
     foreach ($res as $row) {
         $categories["{$row['category']}"] = array('id' => $row['category'], 'name' => $row['name'], 'setcount' => $row['cnt']);
     }
-
     return $categories;
 }
 
 function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, array $categories, $userid)
 {
+    global $LN;
     assert(is_numeric($userid));
     $adult = urd_user_rights::is_adult($db, $userid);
     $input_arr = array(':userid'=>$userid, ':status'=>rssfeed_status::RSS_SUBSCRIBED);
@@ -1251,13 +1252,13 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
     $subscribedfeeds = [];
     foreach ($res as $arr) {
         list($size, $suffix) = format_size($arr['feedcount'], 'h', '', 1000, 0);
-        if ($size != 0 || ($arr['id'] == $feed_id)) { // don't show empty groups anyway
-            $subscribedfeeds[$c] = array(
+        if ($size != 0 || ($arr['id'] == $feed_id)) { // don't show empty feeds anyway
+            $subscribedfeeds[$c] = [
                 'id'            => $arr['id'],
                 'name'          => $arr['name'],
                 'type'          => 'feed',
                 'article_count' => $size . $suffix,
-            );
+            ];
             $c++;
         }
     }
@@ -1265,12 +1266,12 @@ function subscribed_feeds_select(DatabaseConnection $db, $feed_id, $categoryID, 
     foreach ($categories as $arr) {
         list($size, $suffix) = format_size($arr['setcount'], 'h', '', 1000, 0);
         if ($size != 0 || ($arr['id'] == $categoryID)) { // don't show empty categories either
-            $subscribedfeeds[$c] = array(
+            $subscribedfeeds[$c] = [
                 'id'            => $arr['id'],
-                'name'          => $arr['name'],
+                'name'          => $LN['category'] . ': ' . $arr['name'],
                 'type'          => 'category',
                 'article_count' => $size . $suffix,
-            );
+            ];
             $c++;
         }
     }
@@ -2117,7 +2118,7 @@ function get_smileys($dir, $full= FALSE)
     return $smileys;
 }
 
-function return_result(array $vars=array()) 
+function return_result(array $vars=[]) 
 {
     if (!isset($vars['error'])) { 
         $vars['error'] = 0;
@@ -2255,18 +2256,22 @@ function make_url(DatabaseConnection $db, $url, $userid)
 function find_url_icon($url)
 {
     global $LN;
-    static $url_icons = array(
+    static $url_icons = [
         'amazon.com' => 'Amazon',
         'amazon.co.uk' => 'Amazon',
         'amazon.de' => 'Amazon',
+        'amazon.nl' => 'Amazon',
         'anonymousxxl.nl' => 'XXX-Image',
+        'bbc.co.uk'=> 'BBC',
         'bol.com' => 'Bol',
         'erocard.info' => 'XXX-Image',
         'erotiekjournaal.nl' => 'XXX-Image',
         'facebook.com' => 'Facebook',
         'filmstarts.de' => 'Filmstarts',
         'filmtotaal.nl' =>'FilmTotaal',
+        'hbo.com' => 'HBO',
         'iafd.com' => 'IAFD',
+        'ign.com' => 'IGN',
         'imagecurl.com' => 'ImageCurl',
         'imdb.com' => 'IMDB',
         'imgbox.com' => 'Imgbox',
@@ -2276,6 +2281,7 @@ function find_url_icon($url)
         'moviemeter.nl' => 'Moviemeter',
         'nzbindex.nl' => 'NZBIndex',
         'ooohmygod.nl' => 'XXX-Image',
+        'sneeuwklitje.nl' => 'XXX-Image',
         'steampowered.com' => 'Steam',
         'themoviedb.com' => 'TMDB',
         'themoviedb.org' => 'TMDB',
@@ -2286,7 +2292,7 @@ function find_url_icon($url)
         'xxximages.nl' => 'XXX-Image',
         'xxxhost.nl' => 'XXX-Image',
         'youtube.com' => 'YouTube',
-    );
+    ];
 
     $url = trim($url);
     if ($url == '') { 

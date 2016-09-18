@@ -246,6 +246,10 @@ $LN['button_reset']		= 'Zur&uuml;cksetzen';
 
 $LN['advanced_search']	= 'Avanciert suchen';
 
+
+$LN['ipversion']      = 'IP Version';
+$LN['ipversion_msg']  = 'Welche IP Version werd benutzt';
+$LN['both']           = 'beide';
 // Stati:
 $LN['statusidling']		= 'Im Leerlauf';
 $LN['statusdiskspace']	= 'Freier Plattenplatz:';

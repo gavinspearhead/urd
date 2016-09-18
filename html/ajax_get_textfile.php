@@ -78,9 +78,9 @@ try {
             $url = trim($matches[1]);
             $line = str_replace($url, "<a href='$url' target='_blank' rel='noopener noreferrer'>$url</a>", $line);
         }
-    $output .=  $line;
+        $output .=  $line;
     }
-
+    unset($text);
     list($size, $suffix) = format_size($size, 'h', 'B', 1024, 0);
     $base_url = get_config($db, 'baseurl');
 

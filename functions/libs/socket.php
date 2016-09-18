@@ -120,25 +120,62 @@ class socket
      *
      * @return boolean True on success
      */
-    public function connect($addr, $port = 0, $persistent = FALSE, $timeout = DEFAULT_SOCKET_TIMEOUT, $options = NULL)
+
+    private function get_ip_addr($host, $ip_version)
     {
-        assert(is_numeric($port) && (is_numeric($timeout) || is_null($timeout)) && is_bool($persistent));
+        //var_dumP($host, $ip_version);
+        if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            return $host;
+        }
+        switch (strtolower($ip_version)) {
+            case 'ipv6': 
+                $flag = DNS_AAAA;
+                break;
+            case 'ipv4': 
+                $flag = DNS_A;
+                break;
+            case 'both': 
+                $flag = DNS_AAAA|DNS_A;
+                break;
+            default:
+                throw new exception('Unknown IP version');
+        }
+        $rv = dns_get_record($host, $flag);
+        if (!isset($rv[0]['type'])) {
+            throw new exception("Unknown host");
+        }
+        foreach ($rv as $rec) {
+            switch (strtoupper($rec['type'])) {
+                case 'AAAA':
+                    return '[' . $rec['ipv6'] . ']';
+                case 'A':
+                    return $rec['ip'];
+            }
+        }
+    }
+
+    public function connect($transport, $addr, $port = 0, $persistent = FALSE, $timeout = DEFAULT_SOCKET_TIMEOUT, $options = NULL, $ipversion = 'both')
+    {
+        echo_debug ("$transport $addr $ipversion $port", DEBUG_HTTP);
+        assert('is_numeric($port) && (is_numeric($timeout) || is_null($timeout)) && is_bool($persistent)');
         $this->force_disconnect();
         if (!$addr) {
             throw new exception('$addr cannot be empty');
         }
 
-        $this->addr = @gethostbyname($addr); // is this needed as fsockopen does this too;
+        $this->addr = $this->get_ip_addr($addr, $ipversion);
         if (!is_numeric($port) || $port > 65535 || $port < 1) {
             throw new exception ('Port must be between 1 and 65535');
         }
+        echo_debug ($this->addr, DEBUG_HTTP);
         $this->port = $port;
         $this->persistent = ($persistent === TRUE);
         $this->timeout = $timeout;
+        $this->transport = trim($transport);
 
         $errno = 0;
         $errstr = '';
-        $url = "{$this->addr}:$port";
+        $url = "{$this->transport}{$this->addr}:$port";
         if ($options !== NULL) {
             if ($this->timeout !== NULL) {
                 $timeout = $this->timeout;
@@ -206,7 +243,7 @@ class socket
      */
     public function set_blocking($mode)
     {
-        assert(is_bool($mode));
+        assert('is_bool($mode)');
         $this->check_connected();
 
         $this->blocking = $mode;
@@ -225,7 +262,7 @@ class socket
      */
     public function set_timeout($seconds, $microseconds=0)
     {
-        assert(is_numeric($seconds) && is_numeric($microseconds));
+        assert('is_numeric($seconds) && is_numeric($microseconds)');
         $this->check_connected();
 
         return stream_set_timeout($this->fp, $seconds, $microseconds);
@@ -343,7 +380,7 @@ class socket
      */
     public function set_write_buffer($size)
     {
-        assert(is_numeric($size));
+        assert('is_numeric($size)');
         $this->check_connected();
 
         $returned = stream_set_write_buffer($this->fp, $size);
@@ -387,7 +424,7 @@ class socket
     }
     public function gets($size)
     {
-        assert(is_numeric($size));
+        assert('is_numeric($size)');
         $this->check_readable();
 
         return fgets($this->fp, $size);
@@ -405,7 +442,7 @@ class socket
      */
     public function read($size)
     {
-        assert(is_numeric($size));
+        assert('is_numeric($size)');
         $this->check_readable();
 
         return stream_get_contents($this->fp, $size);
@@ -427,7 +464,7 @@ class socket
             $blocksize = 1024;
         }
 
-        assert(is_numeric($blocksize));
+        assert('is_numeric($blocksize)');
         $pos = 0;
         $size = strlen($data);
 
@@ -619,7 +656,7 @@ class socket
      */
     public function select($state, $tv_sec, $tv_usec = 0)
     {
-        assert(is_numeric($tv_sec) && is_numeric($tv_usec) && is_numeric($state) && $state > 0);
+        assert('is_numeric($tv_sec) && is_numeric($tv_usec) && is_numeric($state) && $state > 0');
         $this->check_connected();
 
         $read = $write = $except = NULL;

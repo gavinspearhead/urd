@@ -39,7 +39,7 @@
     {foreach $subscribedfeeds as $item}
         {capture name=current assign=current}{$item.type}_{$item.id}{/capture}
 		<option {if $current == $feed_id && $feed_id != ''}selected="selected"{/if} value="{$item.type}_{$item.id}"> 
-            {if $item.type=='category'}{$LN_category}: {/if}{$item.name|escape:htmlall} ({$item.article_count})
+            {$item.name|escape:htmlall} ({$item.article_count})
         </option>
     {/foreach}
 	</select>&thinsp;
@@ -76,7 +76,6 @@
 </div>
 {/capture}
 
-
 {capture assign="basketform"}
 <div id="basketdiv" class="down3"></div>
 
@@ -98,7 +97,6 @@
 {$searchform}
 {$basketform}
 </div>
-
 
 {* Display the content: *}
 <div class="innerwaitingdiv" id="waitingdiv">
@@ -127,15 +125,15 @@ $(document).ready(function() {
     load_side_bar( function() {
         load_sets( {
            'offset':'0'
-           {if $feed_id != ''}          , 'next':'{$feed_id}'  {/if}
-           {if $minsetsize != ''}       , 'minsetsize': '{$minsetsize|escape:javascript}' {/if}
-           {if $maxsetsize != ''}       , 'maxsetsize': '{$maxsetsize|escape:javascript}' {/if}
-           {if $minage != ''}           , 'minage': '{$minage|escape:javascript}' {/if}
-           {if $maxage != ''}           , 'maxage': '{$maxage|escape:javascript}' {/if}
-           {if $minrating != ''}        , 'minrating': '{$minrating|escape:javascript}' {/if}
-           {if $maxrating != ''}        , 'maxrating': '{$maxrating|escape:javascript}' {/if}
-           {if $setid == ''}            , 'setid': '' {/if}
-           {if $flag != ''}             , 'flag': '{$flag|escape:javascript}' {/if}
+           {if $feed_id != ''}      , 'next':'{$feed_id}'  {/if}
+           {if $minsetsize != ''}   , 'minsetsize': '{$minsetsize|escape:javascript}' {/if}
+           {if $maxsetsize != ''}   , 'maxsetsize': '{$maxsetsize|escape:javascript}' {/if}
+           {if $minage != ''}       , 'minage': '{$minage|escape:javascript}' {/if}
+           {if $maxage != ''}       , 'maxage': '{$maxage|escape:javascript}' {/if}
+           {if $minrating != ''}    , 'minrating': '{$minrating|escape:javascript}' {/if}
+           {if $maxrating != ''}    , 'maxrating': '{$maxrating|escape:javascript}' {/if}
+           {if $setid == ''}        , 'setid': '' {/if}
+           {if $flag != ''}         , 'flag': '{$flag|escape:javascript}' {/if}
            }
         );
     });
@@ -150,7 +148,7 @@ $(document).ready(function() {
     $('#prev_search').click( function () { select_next_search('saved_search',-1); } );
     $('#saved_search').change( function () { update_browse_searches(); } );
     $('#search').keyup( function (e) { suggest($('#usersettype').val(), 'suggest_div', $('#search'), e) } );
-    $('#search').attr( 'autocomplete', 'off' );
+    $('#search').attr('autocomplete', 'off');
 });
 </script>
 

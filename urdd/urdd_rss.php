@@ -75,7 +75,7 @@ class urdd_rss
 
     public function update_rss_set($setid, $title, $timestamp, $description, $summary)
     {
-        assert(is_numeric($timestamp) && $title != '');
+        assert('is_numeric($timestamp) && $title != ""');
         $title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
         $description = html_entity_decode($description, ENT_COMPAT, 'UTF-8');
         $summary = html_entity_decode($summary, ENT_COMPAT, 'UTF-8');
@@ -90,7 +90,7 @@ class urdd_rss
 
     public function insert_rss_set($rss_id, $link, $title, $timestamp, $description, $summary)
     {
-        assert(is_numeric($rss_id) && is_numeric($timestamp) && $link != '' && $title != '');
+        assert('is_numeric($rss_id) && is_numeric($timestamp) && $link != "" && $title != ""');
         $title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
         $description = html_entity_decode($description, ENT_COMPAT, 'UTF-8');
         $summary = html_entity_decode($summary, ENT_COMPAT, 'UTF-8');
@@ -131,7 +131,7 @@ class urdd_rss
             $link = $item['link'];
             $title = utf8_encode($item['title']);
             $timestamp = isset($item['date_timestamp']) ? $item['date_timestamp'] : $now;
-            $description = utf8_encode(isset ($item['description']) ? $item['description'] : $title);
+            $description = utf8_encode(isset($item['description']) ? $item['description'] : $title);
             $description = str_replace('&nbsp;', ' ', $description);
             $summary = utf8_encode(isset($item['summary'])? $item['summary'] : $title);
             $summary = str_replace('&nbsp;', ' ', $summary);
@@ -156,7 +156,7 @@ class urdd_rss
     public function purge_rss($rss_id, $dbid=NULL)
     {
         echo_debug_function(DEBUG_MAIN, __FUNCTION__);
-        assert (is_numeric($rss_id));
+        assert(is_numeric($rss_id));
         $rss_info = get_rss_info($this->db, $rss_id);
         $type = USERSETTYPE_RSS;
 

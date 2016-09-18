@@ -34,7 +34,7 @@ require_once "$pathf/libs/magpierss/rss_fetch.php";
 function format_size($value, $format, $suffix='B', $base=1024, $dec=1)
 {
     global $LN;
-    assert(is_numeric($value) && is_numeric($base) && is_numeric($dec));
+    assert('is_numeric($value) && is_numeric($base) && is_numeric($dec)');
     if ($value == 0) {
         return array(0, $suffix, 1);
     }
@@ -65,7 +65,7 @@ function unformat_size($val, $base = 1024, $default_mul='')
      // default_mul is the default multiplier from SI: M=1000^2, K=1000, G=100^3 etc if no multiplier is found like in 100M ==> 100 * 1000^2
     global $LN;
     static $exps = array('y' => 8, 'z'=> 7, 'e'=> 6, 'p'=> 5, 't'=>4, 'g' => 3, 'm'=>2, 'k'=>1);
-    assert(is_numeric($base));
+    assert('is_numeric($base)');
     $val = trim($val);
     if ($val == '') {
         throw new exception($LN['error_notanumber']);
@@ -101,7 +101,7 @@ function one_or_more($val, $one, $more)
 
 function readable_time($timediff, $value='largest')
 {
-    assert(is_numeric($timediff));
+    assert('is_numeric($timediff)');
     global $LN;
     if (!isset($LN)) {
         return 'NOLANGUAGE';
@@ -188,7 +188,7 @@ function readable_time($timediff, $value='largest')
 
 function time_format($time)
 {
-    assert(is_numeric($time));
+    assert('is_numeric($time)');
 
     $dateformat = 'Y-m-d';
     $timeformat = 'H:i:s';
@@ -213,13 +213,13 @@ function time_format($time)
 
 function insert_category(DatabaseConnection $db, $userid, $name)
 {
-    assert(is_numeric($userid));
+    assert('is_numeric($userid)');
     $db->insert_query('categories', array('name', 'userid'), array($name, $userid));
 }
 
 function set_userfeedinfo(DatabaseConnection $db, $userid, $feedid, $minsetsize, $maxsetsize, $visible, $category)
 {
-    assert(is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize));
+    assert('is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize)');
     $sql = '"feedid" FROM userfeedinfo WHERE "feedid" = :feedid AND "userid" = :userid';
     $res = $db->select_query($sql, 1, array(':feedid'=>$feedid, ':userid'=>$userid));
     if ($res === FALSE) {
@@ -232,7 +232,7 @@ function set_userfeedinfo(DatabaseConnection $db, $userid, $feedid, $minsetsize,
 
 function set_userfeedinfo_value(DatabaseConnection $db, $userid, $feedid, $option, $value)
 {
-    assert(is_numeric($userid));
+    assert('is_numeric($userid)');
     if (!in_array($option, array('minsetsize', 'maxsetsize', 'visible', 'category'))) {
         throw new exception($LN['error_invalidvalue']);
     }
@@ -246,7 +246,7 @@ function set_userfeedinfo_value(DatabaseConnection $db, $userid, $feedid, $optio
 
 function set_usergroupinfo(DatabaseConnection $db, $userid, $groupid, $minsetsize, $maxsetsize, $visible, $category)
 {
-    assert(is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize) && is_numeric($groupid));
+    assert('is_numeric($userid) && is_numeric($maxsetsize) && is_numeric($minsetsize) && is_numeric($groupid)');
     $sql = '"groupid" FROM usergroupinfo WHERE "groupid"=:groupid AND "userid"=:userid';
     $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=>$userid));
     if ($res === FALSE) {
@@ -259,7 +259,7 @@ function set_usergroupinfo(DatabaseConnection $db, $userid, $groupid, $minsetsiz
 function set_usergroup_value(DatabaseConnection $db, $userid, $groupid, $option, $value)
 {
     global $LN;
-    assert(is_numeric($userid) && is_numeric($groupid));
+    assert('is_numeric($userid) && is_numeric($groupid)');
     $sql = '"groupid" FROM usergroupinfo WHERE "groupid"=:groupid AND "userid"=:userid';
     $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=>$userid));
     if (!in_array($option, array('minsetsize', 'maxsetsize', 'visible', 'category'))) {
@@ -273,7 +273,7 @@ function set_usergroup_value(DatabaseConnection $db, $userid, $groupid, $option,
 
 function category_by_name(DatabaseConnection $db, $category, $userid)
 {
-    assert(is_numeric($userid));
+    assert('is_numeric($userid)');
     if ($category == '') {
         return 0;
     }
@@ -286,13 +286,13 @@ function category_by_name(DatabaseConnection $db, $category, $userid)
 
 function update_queue_priority(DatabaseConnection $db, $id, $priority)
 {
-    assert(is_numeric($id) && is_numeric($priority));
+    assert('is_numeric($id) && is_numeric($priority)');
     $db->update_query_2('queueinfo', array('priority'=>$priority), '"ID"=?', array($id));
 }
 
 function insert_queue_status(DatabaseConnection $db, $id, $description, $status, $command_id, $userid, $paused, $comments=NULL, $priority=1, $restart = TRUE)
 {
-    assert (is_numeric($id) && is_numeric($priority) && is_bool($restart) && is_numeric($userid));
+    assert('is_numeric($id) && is_numeric($priority) && is_bool($restart) && is_numeric($userid)');
     $restart = ($restart === TRUE) ? 1 : 0;
     $time = time();
     $cols = array ('status', 'description', 'lastupdate', 'starttime', 'paused', 'username', 'userid', 'progress', 'ETA', 'urdd_id', 'comment', 'priority', 'command_id', 'restart');
@@ -307,32 +307,32 @@ function insert_queue_status(DatabaseConnection $db, $id, $description, $status,
 
 function update_queue_norestart(DatabaseConnection $db, $id)
 {
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $db->update_query_2('queueinfo', ['restart'=>0, 'lastupdate'=>time()], '"ID"=?', [$id]);
 }
 
 function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NULL, $progress=NULL, $comments=NULL, $paused=NULL)
 {
     echo_debug("Updating status $status; progress: $progress; ETA $eta; comments: $comments; paused: $paused", DEBUG_MAIN);
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $cols = ['lastupdate'=>time()];
     if ($status !== NULL) {
         $cols['status'] = $status;
     }
     if ($eta !== NULL) {
-        assert(is_numeric($eta));
+        assert('is_numeric($eta)');
         $eta = round($eta);
         $cols['ETA'] = $eta;
     }
     if ($progress !== NULL) {
-        assert(is_numeric($progress));
+        assert('is_numeric($progress)');
         $cols['progress'] = $progress;
     }
     if ($comments !== NULL) {
         $cols['comment'] = $comments;
     }
     if ($paused !== NULL) {
-        assert(is_bool($paused));
+        assert('is_bool($paused)');
         $cols['paused'] = ($paused?'1':'0');
     }
     try {
@@ -358,7 +358,7 @@ function sanitise_download_name(DatabaseConnection $db, $name, $has_subdirs=FALS
 
 function store_ETA(DatabaseConnection $db, $eta, $percentage, $speed, $dbid)
 {
-    assert(is_numeric($eta) && is_numeric($percentage) && is_numeric($dbid));
+    assert('is_numeric($eta) && is_numeric($percentage) && is_numeric($dbid)');
     $eta = max(0, floor($eta));
     $qry = 'UPDATE queueinfo SET "ETA"=((:eta + "ETA") / 2), "progress"=:percentage, "comment"=:speed, "lastupdate"=:time WHERE "ID"=:dbid';
     $db->execute_query($qry, array(':dbid'=>$dbid, ':eta'=>$eta, ':percentage'=>$percentage, ':speed'=>$speed, ':time'=>time()));
@@ -366,18 +366,18 @@ function store_ETA(DatabaseConnection $db, $eta, $percentage, $speed, $dbid)
 
 function add_schedule(DatabaseConnection $db, $cmd, $stime, $repeat, $userid)
 {
-    assert(is_numeric($stime) && is_numeric($userid));
+    assert('is_numeric($stime) && is_numeric($userid)');
     if ($repeat === NULL) {
         $repeat = 0;
     }
-    assert(is_numeric($repeat));
+    assert('is_numeric($repeat)');
 
     return $db->insert_query('schedule', array('command', 'at_time', 'interval', 'userid'), array($cmd, $stime, $repeat, $userid), TRUE);
 }
 
 function set_period_rss(urdd_client $uc, DatabaseConnection $db, $id, $first_update, $period, $time, $periodselect)
 {
-    assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
+    assert('is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id)');
     // $time = update-time that's displayed in the newsgroup page
     $db->update_query_2('rss_urls', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"id"=?', array($id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE_RSS, $id, $first_update, $period * 3600);
@@ -385,7 +385,7 @@ function set_period_rss(urdd_client $uc, DatabaseConnection $db, $id, $first_upd
 
 function set_period(urdd_client $uc, DatabaseConnection $db, $id, $first_update, $period, $time, $periodselect)
 {
-    assert(is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id));
+    assert('is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id)');
     // $time = update-time that's displayed in the newsgroup page
     $db->update_query_2('groups', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=?', array($id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE, $id, $first_update, $period * 3600);
@@ -393,13 +393,13 @@ function set_period(urdd_client $uc, DatabaseConnection $db, $id, $first_update,
 
 function delete_schedule(DatabaseConnection$db, $id)
 {
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $db->delete_query('schedule', '"id" = ?', array($id));
 }
 
 function shorten_newsgroup_name($ng, $maxsize=35)
 {
-    assert(is_numeric($maxsize) && is_string($ng));
+    assert('is_numeric($maxsize) && is_string($ng)');
     $short = str_ireplace(array('alt.','binaries.', 'free.'), array('a.', 'b.', 'f.'), $ng);
     if (strlen($short) > $maxsize && $maxsize > 3) {
         $short = substr($short, 0, $maxsize - 3);
@@ -411,7 +411,7 @@ function shorten_newsgroup_name($ng, $maxsize=35)
 
 function generate_password($length = MIN_PASSWORD_LENGTH)
 {
-    assert(is_numeric($length));
+    assert('is_numeric($length)');
     $password = '';
     $possible = '0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $p_len = strlen($possible) - 1;
@@ -507,7 +507,7 @@ function download_sets(DatabaseConnection $db, array $sets, $userid, $type)
 {
     global $LN;
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
-    assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)) && is_numeric($userid));
+    assert ('in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)) && is_numeric($userid)');
     $rprefs = load_config($db);
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
     check_connected($uc);
@@ -630,25 +630,25 @@ function read_argv()
 
 function update_category(DatabaseConnection $db, $id, $userid, $name)
 {
-    assert(is_numeric($userid) && is_numeric($id));
+    assert('is_numeric($userid) && is_numeric($id)');
     $db->update_query_2('categories', array('name'=>$name), '"userid"=? AND "id"=?', array($userid, $id));
 }
 
 function clean_categories(DatabaseConnection $db, $userid)
 {
-    assert(is_numeric($userid));
+    assert('is_numeric($userid)');
     $db->delete_query('categories', '"userid"=?', array($userid));
 }
 
 function clean_userfeedinfo(DatabaseConnection $db, $userid)
 {
-    assert(is_numeric($userid));
+    assert('is_numeric($userid)');
     $db->delete_query('userfeedinfo', '"userid"=?', array($userid));
 }
 
 function clean_usergroupinfo(DatabaseConnection $db, $userid)
 {
-    assert(is_numeric($userid));
+    assert('is_numeric($userid)');
     $db->delete_query('usergroupinfo', '"userid"=?', array($userid));
 }
 
@@ -708,7 +708,7 @@ function test_url($url)
 function feed_name(DatabaseConnection $db, $id)
 {
     global $LN;
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $res = $db->select_query('"name" FROM rss_urls WHERE "id"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_feednotfound'] . ": $id", ERR_RSS_NOT_FOUND);
@@ -720,7 +720,7 @@ function feed_name(DatabaseConnection $db, $id)
 function group_expire(DatabaseConnection $db, $id)
 {
     global $LN;
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $res = $db->select_query('"expire" FROM groups WHERE "ID"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['expire'])) {
         throw new exception($LN['error_groupnotfound'] . ": $id", ERR_GROUP_NOT_FOUND);
@@ -754,7 +754,7 @@ function get_feed_by_name(DatabaseConnection $db, $name)
 function get_feed_by_id(DatabaseConnection $db, $id)
 {
     global $LN;
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $res = $db->select_query('"name" FROM rss_urls WHERE "id"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_feednotfound'] . " '$id'", ERR_RSS_NOT_FOUND);
@@ -766,7 +766,7 @@ function get_feed_by_id(DatabaseConnection $db, $id)
 function feed_category(DatabaseConnection $db, $feedid, $userid)
 {
     global $LN;
-    assert(is_numeric($feedid) && is_numeric($userid));
+    assert('is_numeric($feedid) && is_numeric($userid)');
     $sql = 'categories."name" AS "name" FROM userfeedinfo LEFT JOIN categories ON userfeedinfo."category" = categories."id" AND userfeedinfo."userid" = categories."userid"' .
         ' WHERE userfeedinfo."feedid"=:feedid AND categories."userid"=:userid';
     $res = $db->select_query($sql, 1, array(':feedid'=>$feedid, ':userid'=>$userid));
@@ -781,7 +781,7 @@ function feed_category(DatabaseConnection $db, $feedid, $userid)
 function group_category(DatabaseConnection $db, $groupid, $userid)
 {
     global $LN;
-    assert(is_numeric($groupid) && is_numeric($userid));
+    assert('is_numeric($groupid) && is_numeric($userid)');
     $sql = 'categories."name" AS "name" FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" AND usergroupinfo."userid" = categories."userid"' .
         ' WHERE usergroupinfo."groupid"=:groupid AND categories."userid" = :userid';
     $res = $db->select_query($sql, 1, array(':groupid'=>$groupid, ':userid'=> $userid));
@@ -795,7 +795,7 @@ function group_category(DatabaseConnection $db, $groupid, $userid)
 function group_name(DatabaseConnection $db, $groupid)
 {
     global $LN;
-    assert(is_numeric($groupid));
+    assert('is_numeric($groupid)');
     $res = $db->select_query('"name" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
@@ -807,7 +807,7 @@ function group_name(DatabaseConnection $db, $groupid)
 function feed_subscribed(DatabaseConnection $db, $id)
 {
     global $LN;
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $res = $db->select_query('"subscribed" FROM rss_urls WHERE "id"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['subscribed'])) {
         throw new exception($LN['error_feednotfound'] . " $id", ERR_RSS_NOT_FOUND);
@@ -819,7 +819,7 @@ function feed_subscribed(DatabaseConnection $db, $id)
 function group_subscribed(DatabaseConnection $db, $id)
 {
     global $LN;
-    assert(is_numeric($id));
+    assert('is_numeric($id)');
     $res = $db->select_query('"active" FROM groups WHERE "ID"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['active'])) {
         throw new exception($LN['error_groupnotfound'] . " $id", ERR_GROUP_NOT_FOUND);
@@ -836,8 +836,8 @@ function update_feed_state(DatabaseConnection $db, $id, $state, $exp)
 
 function update_group_state(DatabaseConnection $db, $id, $state, $exp, $minsetsize, $maxsetsize, $adult=NULL)
 {
-    assert(is_numeric($id) && is_numeric($exp));
-    assert(is_numeric($minsetsize) && is_numeric($maxsetsize));
+    assert('is_numeric($id) && is_numeric($exp)');
+    assert('is_numeric($minsetsize) && is_numeric($maxsetsize)');
     $vals = array($state, $exp, $minsetsize, $maxsetsize);
     $cols = array('active', 'expire', 'minsetsize','maxsetsize');
     if ($adult != NULL) {
@@ -1997,7 +1997,7 @@ function get_post_name(DatabaseConnection $db, $id)
     if (isset($res[0]['subject'])) {
         return $res[0]['subject'];
     } else {
-        throw new exception ($LN['error_post_not_found']);
+        throw new exception($LN['error_post_not_found']);
     }
 }
 
@@ -2052,7 +2052,7 @@ function verify_tool(DatabaseConnection $db, $toolname, $optional=FALSE)
         $rv = TRUE;
     }
     if (!$rv) {
-        throw new exception ("File not found ($toolname) $path. Check admin/config", ERR_CONFIG_ERROR);
+        throw new exception("File not found ($toolname) $path. Check admin/config", ERR_CONFIG_ERROR);
     }
 }
 
@@ -2650,7 +2650,7 @@ function format_setname($format_string, $chars, $value)
 
 function get_post_info(DatabaseConnection $db, $userid, $postid)
 {
-    assert(is_numeric($userid) && is_numeric($postid));
+    assert('is_numeric($userid) && is_numeric($postid)');
     $is_admin = urd_user_rights::is_admin($db, $userid);
     $input_arr = array(':postid' => $postid);
     $sql = '* FROM postinfo WHERE "id"= :postid';
@@ -2669,7 +2669,7 @@ function get_post_info(DatabaseConnection $db, $userid, $postid)
 
 function create_schedule(DatabaseConnection $db, $command, $time1, $time2, $interval, $userid)
 {
-    assert(is_numeric($interval) && is_numeric($time1) && is_numeric($time2) && is_numeric($userid));
+    assert('is_numeric($interval) && is_numeric($time1) && is_numeric($time2) && is_numeric($userid)');
     global $periods;
 
     $period = $periods->get($interval);
@@ -2827,17 +2827,17 @@ function load_blacklist(DatabaseConnection $db, $source = NULL, $status = blackl
 
 function prepare_base64($str)
 {
-    return str_replace(array('/', '+'), array('-s', '-p'), $str);
+    return str_replace(['/', '+'], ['-s', '-p'], $str);
 }
 
 function remove_special_zip_strings($line)
 {
-    return str_replace(array('=C', '=B', '=A', '=D'), array("\n", "\r", "\0", '='), $line);
+    return str_replace(['=C', '=B', '=A', '=D'], ["\n", "\r", "\0", '='], $line);
 }
 
 function special_zip_str($line) 
 {
-    return str_replace(array('=', "\n", "\r", "\0"), array('=D', '=C', '=B', '=A'), $line);
+    return str_replace(['=', "\n", "\r", "\0"], ['=D', '=C', '=B', '=A'], $line);
 } 
 
 function download_exists(DatabaseConnection $db, $dlid)
@@ -2882,7 +2882,7 @@ function store_search_terms(DatabaseConnection &$db, array $search_terms, $useri
     assert(is_numeric($userid));
     $search_terms = array_map('trim', $search_terms);
     $search_terms = array_unique($search_terms);
-    sort($search_terms);
+    sort($search_terms, SORT_FLAG_CASE);
     set_pref($db, 'search_terms', @serialize($search_terms), $userid);
 }
 

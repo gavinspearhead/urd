@@ -164,6 +164,11 @@ $LN['total']        = 'Total';
 $LN['select']       = 'Select one';
 $LN['version']      = 'Version';
 
+
+$LN['ipversion']      = 'IP version';
+$LN['ipversion_msg']  = 'Which IP version is used';
+$LN['both']           = 'both';
+
 $LN['whitelisttag']     = 'W';
 $LN['blacklisttag']     = 'B';
 $LN['spamreporttag']    = 'S';

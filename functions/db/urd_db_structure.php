@@ -439,6 +439,7 @@ class urd_db_structure {
         $t->add_column(new urd_column('compressed_headers', 'UNSIGNED SMALLINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('priority', 'UNSIGNED INTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('connection', 'VARCHAR(20)', 'off', TRUE, 'utf8', '')); // fix quotes
+        $t->add_column(new urd_column('ipversion', 'VARCHAR(20)', 'both', TRUE, 'utf8', '')); // fix quotes
         $t->add_index(new urd_index('srv_prim', 'PRIMARY', array('id')));
         $t->drop_column('retention');
         $t->drop_column('active');

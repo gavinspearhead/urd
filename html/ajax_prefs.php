@@ -34,10 +34,10 @@ verify_access($db, NULL, FALSE, '', $userid, FALSE);
 function get_search_type_array()
 {
     global $LN;
-    $search_type_array = array(
+    $search_type_array = [
         'LIKE' => $LN['search_type_like'],
         'REGEXP' => $LN['search_type_regexp']
-    );
+    ];
 
     return $search_type_array;
 }
@@ -45,10 +45,10 @@ function get_search_type_array()
 function get_basket_type_array()
 {
     global $LN;
-    $basket_type_array = array(
+    $basket_type_array = [
         basket_type::SMALL => $LN['basket_type_small'],
         basket_type::LARGE => $LN['basket_type_large']
-    );
+    ];
 
     return $basket_type_array;
 }
@@ -67,11 +67,11 @@ function get_spotview_array()
 function get_encrar_array()
 {
     global $LN;
-    $encrar_array = array (
+    $encrar_array = [
         encrar::ENCRAR_CONTINUE => $LN['continue'],
         encrar::ENCRAR_CANCEL   => $LN['cancel'],
         encrar::ENCRAR_PAUSE    => $LN['pause']
-    );
+    ];
 
     return $encrar_array;
 }
@@ -102,16 +102,25 @@ function get_spot_array(DatabaseConnection $db, $userid)
 function get_groups_array(DatabaseConnection $db, $userid)
 {
     global $LN;
+    $groups_array = [];
+    $groups_array['0'] = $LN['browse_allgroups'];
+   
     $categories = get_used_categories_group($db, $userid);
     $subscribedgroups = subscribed_groups_select($db, NULL, NULL, $categories, $userid);
-    $groups_array = array();
-    $groups_array['0'] = $LN['browse_allgroups'];
     foreach ($subscribedgroups as $ng) {
         $id = $ng['id'];
         $name = $ng['shortname'];
         $type = $ng['type'];
         $idx = $type . '_' . $id;
         $groups_array[ $idx ] = $name;
+    }
+    $saved_searches = new saved_searches($userid);
+    $saved_searches->load($db);
+    $search_array = $saved_searches->get_all_names(USERSETTYPE_GROUP);
+    foreach ($search_array as $name) {
+        $type = 'search';
+        $idx = $type . '_' . $name;
+        $groups_array[ $idx ] = $LN['search'] . ': ' . $name;
     }
 
     return $groups_array;
@@ -122,7 +131,7 @@ function get_feeds_array(DatabaseConnection $db, $userid)
     global $LN;
     $categories = get_used_categories_rss($db, $userid);
     $subscribedfeeds = subscribed_feeds_select($db, NULL, NULL, $categories, $userid);
-    $feeds_array = array();
+    $feeds_array = [];
     $feeds_array['0'] = $LN['feeds_allgroups'];
     foreach ($subscribedfeeds as $ng) {
         $id = $ng['id'];
@@ -130,6 +139,14 @@ function get_feeds_array(DatabaseConnection $db, $userid)
         $type = $ng['type'];
         $idx = $type . '_' . $id;
         $feeds_array[ $idx ] = $name;
+    }
+    $saved_searches = new saved_searches($userid);
+    $saved_searches->load($db);
+    $search_array = $saved_searches->get_all_names(USERSETTYPE_RSS);
+    foreach ($search_array as $name) {
+        $type = 'search';
+        $idx = $type . '_' . $name;
+        $feeds_array[ $idx ] =  $LN['search'] . ': ' .$name;
     }
 
     return $feeds_array;
@@ -139,14 +156,14 @@ function get_sort_array()
 {
     global $LN;
 
-    $sort_array = array(
+    $sort_array = [
             'better_subject ASC'  => $LN['browse_subject'] . ' - ' . $LN['ascending'],
             'better_subject DESC' => $LN['browse_subject'] . ' - ' . $LN['descending'],
             'Date DESC'           => $LN['browse_age'] . ' - ' . $LN['ascending'], // need to be inverted as we sort on timestamp, not age
             'Date ASC'            => $LN['browse_age'] . ' - ' . $LN['descending'],
             'Size ASC'            => $LN['size'] . ' - ' . $LN['ascending'],
             'Size DESC'           => $LN['size'] . ' - ' . $LN['descending']
-            );
+            ];
 
     return $sort_array;
 }
@@ -628,23 +645,23 @@ echo_debug_var_file('/tmp/foo', $prefArray);
         }
     }
     $display = array (
-        new pref_select (user_levels::CONFIG_LEVEL_ALWAYS, $LN['pref_level'], 'pref_level', $LN['pref_level_msg'], $pref_level_msg, $level_array, $prefArray['pref_level'], 'load_prefs();'),
-        new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_language'], 'language', $LN['pref_language_msg'], $language_msg, $languages, $prefArray['language'], 'reload_prefs();'),
-        new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_stylesheet'], 'stylesheet', $LN['pref_stylesheet_msg'], $stylesheet_msg, $stylesheets, $prefArray['stylesheet'], 'change_stylesheet(\'stylesheet\');'),
-        new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_template'], 'template', $LN['pref_template_msg'], $template_msg, $templates, $prefArray['template']),
-        new pref_select (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_defaultsort'], 'defaultsort', $LN['pref_defaultsort_msg'], $defaultsort_msg, $sort_array, $prefArray['defaultsort']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetname'], 'maxsetname',$LN['pref_maxsetname_msg'], $maxsetname_msg, $prefArray['maxsetname']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setsperpage'], 'setsperpage',$LN['pref_setsperpage_msg'], $setsperpage_msg, $prefArray['setsperpage']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minsetsize'], 'minsetsize',$LN['pref_minsetsize_msg'], $minsetsize_msg, $prefArray['minsetsize']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetsize'], 'maxsetsize',$LN['pref_maxsetsize_msg'], $maxsetsize_msg, $prefArray['maxsetsize']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize']),
-        new pref_numeric (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setcompleteness'], 'setcompleteness', $LN['pref_setcompleteness_msg'], $setcompleteness_msg,  $prefArray['setcompleteness']),
-        new pref_checkbox (user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
-        new pref_checkbox (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),
+        new pref_select(user_levels::CONFIG_LEVEL_ALWAYS, $LN['pref_level'], 'pref_level', $LN['pref_level_msg'], $pref_level_msg, $level_array, $prefArray['pref_level'], 'load_prefs();'),
+        new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_language'], 'language', $LN['pref_language_msg'], $language_msg, $languages, $prefArray['language'], 'reload_prefs();'),
+        new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_stylesheet'], 'stylesheet', $LN['pref_stylesheet_msg'], $stylesheet_msg, $stylesheets, $prefArray['stylesheet'], 'change_stylesheet(\'stylesheet\');'),
+        new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_template'], 'template', $LN['pref_template_msg'], $template_msg, $templates, $prefArray['template']),
+        new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_defaultsort'], 'defaultsort', $LN['pref_defaultsort_msg'], $defaultsort_msg, $sort_array, $prefArray['defaultsort']),
+        new pref_numeric(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetname'], 'maxsetname',$LN['pref_maxsetname_msg'], $maxsetname_msg, $prefArray['maxsetname']),
+        new pref_numeric(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setsperpage'], 'setsperpage',$LN['pref_setsperpage_msg'], $setsperpage_msg, $prefArray['setsperpage']),
+        new pref_numeric(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minsetsize'], 'minsetsize',$LN['pref_minsetsize_msg'], $minsetsize_msg, $prefArray['minsetsize']),
+        new pref_numeric(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_maxsetsize'], 'maxsetsize',$LN['pref_maxsetsize_msg'], $maxsetsize_msg, $prefArray['maxsetsize']),
+        new pref_numeric(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_minngsize'], 'minngsize',$LN['pref_minngsize_msg'], $minngsize_msg, $prefArray['minngsize']),
+        new pref_numeric(user_levels::CONFIG_LEVEL_BASIC, $LN['pref_setcompleteness'], 'setcompleteness', $LN['pref_setcompleteness_msg'], $setcompleteness_msg,  $prefArray['setcompleteness']),
+        new pref_checkbox(user_levels::CONFIG_LEVEL_MASTER, $LN['pref_skip_int'], 'skip_int',$LN['pref_skip_int_msg'], $skip_int_msg, $prefArray['skip_int']),
+        new pref_checkbox(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hiddenfiles'], 'hiddenfiles',$LN['pref_hiddenfiles_msg'], $hiddenfiles_msg, $prefArray['hiddenfiles'], '$(\'#hidfil\').toggleClass(\'hidden\');'),
         new pref_textarea (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_hidden_files_list'], 'hidden_files_list', $LN['pref_hidden_files_list_msg'], $hidden_files_list_msg, $hidden_files_list, 10, 40, NULL, 'hidfil', $prefArray['hiddenfiles']? NULL : 'hidden'),
         new pref_multiselect (user_levels::CONFIG_LEVEL_BASIC, $LN['pref_buttons'], 'buttons', $LN['pref_buttons_msg'], $buttons_msg, $search_options_array, 7),
-        new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_group'], 'default_group', $LN['pref_default_group_msg'], $default_group_msg, $groups_array, $prefArray['default_group']),
-        new pref_select (user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_feed'], 'default_feed', $LN['pref_default_feed_msg'], $default_feed_msg, $feeds_array, $prefArray['default_feed']),
+        new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_group'], 'default_group', $LN['pref_default_group_msg'], $default_group_msg, $groups_array, $prefArray['default_group']),
+        new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_default_feed'], 'default_feed', $LN['pref_default_feed_msg'], $default_feed_msg, $feeds_array, $prefArray['default_feed']),
         new pref_text(user_levels::CONFIG_LEVEL_ADVANCED, $LN['pref_url_redirector'], 'url_redirector', $LN['pref_url_redirector_msg'], $url_redirector_msg, $prefArray['url_redirector']),
     );
 

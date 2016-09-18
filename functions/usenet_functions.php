@@ -50,6 +50,7 @@ function get_usenet_server(DatabaseConnection $db, $id, $active = TRUE)
     $srv['authentication'] = $row['authentication'];
     $srv['priority'] = $row['priority'];
     $srv['posting'] = $row['posting'];
+    $srv['ipversion'] = $row['ipversion'];
     $srv['compressed_headers'] = $row['compressed_headers'];
     if ($srv['authentication'] != 0) {
         $srv['username'] = $row['username'];
@@ -87,6 +88,7 @@ function get_all_usenet_servers(DatabaseConnection $db, $active=TRUE)
         $srv['priority'] = $row['priority'];
         $srv['posting'] = $row['posting'];
         $srv['compressed_headers'] = $row['compressed_headers'];
+        $srv['ipversion'] = $row['ipversion'];
         if ($srv['authentication'] != 0) {
             $srv['username'] = $row['username'];
             $srv['password'] = keystore::decrypt_password($db, $row['password']);
@@ -113,7 +115,7 @@ function create_usenet_servers(DatabaseConnection $db)
     add_usenet_server($db, 'Download 2 Day', 'reader.download2day.nl', 119, 563, 6, 'off', 1, '', '', 0, 0, 0);
     add_usenet_server($db, 'Easynews', 'news.easynews.com', 119, 563, 4, 'off', 1, '', '', 0, 0, 0);
     add_usenet_server($db, 'Ewaka', 'news.eweka.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 0);
-    add_usenet_server($db, 'Ewaka IPv6', 'news.ipv6.eweka.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 0);
+    add_usenet_server($db, 'Ewaka IPv6', 'news.ipv6.eweka.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 0, 'ipv6');
     add_usenet_server($db, 'Extreme Usenet', 'reader.extremeusenet.nl', 119, 563, 8, 'ssl', 0, '', '', 0, 0, 0);
     add_usenet_server($db, 'Flexnewz', 'news.flexnewz.com', 119, 563, 8, 'ssl', 0, '', '', 0, 0, 0);
     add_usenet_server($db, 'Giganews (America)', 'news.giganews.com', 119, 563, 10, 'off', 1, '', '', 0, 0, 1);
@@ -169,18 +171,18 @@ function create_usenet_servers(DatabaseConnection $db)
     add_usenet_server($db, 'XLusenet', 'ssl-news.eu.xlusenet.nl', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS usenet', 'reader.xsusenet.com', 119, 0, 4, 'ssl', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XS usenet Free', 'free.xsusenet.com', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
-    add_usenet_server($db, 'XS4all - Newszilla', 'newszilla.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1);
-    add_usenet_server($db, 'XS4all - Newszilla IPv6', 'newszilla6.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1);
+    add_usenet_server($db, 'XS4all - Newszilla', 'newszilla.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1, 'both');
+    add_usenet_server($db, 'XS4all - Newszilla IPv6', 'newszilla6.xs4all.nl', 119, 0, 8, 'off', 0, '', '', 0, 0, 1, 'ipv6');
     add_usenet_server($db, 'XMS', 'news.xmsnet.nl', 119, 0, 4, 'off', 0, '', '', 0, 0, 1);
     add_usenet_server($db, 'XSnews', 'reader.xsnews.nl', 119, 563, 50, 'ssl', 0, '', '', 0, 0, 0);
-    add_usenet_server($db, 'XSnews (IPv6)', 'reader.ipv6.xsnews.nl', 119, 563, 50, 'off', 0, '', '', 0, 0, 0);
+    add_usenet_server($db, 'XSnews (IPv6)', 'reader.ipv6.xsnews.nl', 119, 563, 50, 'off', 0, '', '', 0, 0, 0, 'ipv6');
     add_usenet_server($db, 'Yabnews', 'news.yabnews.com', 119, 0, 4, 'off', 1, '', '', 0, 0, 0);
     add_usenet_server($db, 'Zeelandnet', 'news.zeelandnet.nl', 119, 0, 4, 'off', 1, '', '', 0, 0, 1);
     add_usenet_server($db, 'Ziggo', 'news.ziggo.nl', 119, 0, 4, 'off', 1, '', '', 0, 0, 1);
 }
 
 function add_usenet_server(DatabaseConnection $db, $name, $hostname, $port, $secure_port, $threads, $connection, $authentication, $username, $password, 
-        $priority=DEFAULT_USENET_SERVER_PRIORITY, $compressed_headers=FALSE, $posting=FALSE)
+        $priority=DEFAULT_USENET_SERVER_PRIORITY, $compressed_headers=FALSE, $posting=FALSE, $ipversion='both')
 {
     assert(is_numeric($priority) && is_numeric($port) && is_numeric($secure_port) && is_numeric($threads));
     $name = trim($name);
@@ -192,8 +194,11 @@ function add_usenet_server(DatabaseConnection $db, $name, $hostname, $port, $sec
     }
     $connection = trim($connection);
 
-    $cols = array('name', 'hostname', 'port', 'secure_port', 'threads', 'connection', 'authentication', 'username', 'password', 'priority', 'compressed_headers', 'posting');
-    $vals = array($name, $hostname, $port, $secure_port, $threads, $connection, ($authentication?1:0), $username, $password, $priority, ($compressed_headers?1:0), ($posting?1:0));
+    if (!in_array(strtolower($ipversion), ['ipv4', 'ipv6', 'both'])) {
+        throw new exception('Invalid IP version');
+    }
+    $cols = array('name', 'hostname', 'port', 'secure_port', 'threads', 'connection', 'authentication', 'username', 'password', 'priority', 'compressed_headers', 'posting', 'ipversion');
+    $vals = array($name, $hostname, $port, $secure_port, $threads, $connection, ($authentication?1:0), $username, $password, $priority, ($compressed_headers?1:0), ($posting?1:0), 'ipversion');
     $last_id = $db->insert_query('usenet_servers', $cols, $vals, TRUE);
 
     $res = $db->select_query('"id" FROM usenet_servers WHERE "name"=?', array($name));
@@ -219,6 +224,13 @@ function smart_update_usenet_server(DatabaseConnection $db, $id, $values)
         $vals[] = trim($values['name']);
     }
 
+    if (isset($values['ipversion'])) {
+        if (!in_array(strtolower($ipversion), ['ipv4', 'ipv6', 'both'])) {
+            throw new exception('Invalid IP version');
+        }
+        $cols[] = 'ipversion';
+        $vals[] = trim($values['ipversion']);
+    }
     if (isset($values['hostname'])) {
         $hostname = trim($values['hostname']);
         $cols[] = 'hostname';
@@ -286,7 +298,7 @@ function smart_update_usenet_server(DatabaseConnection $db, $id, $values)
     return TRUE;
 }
 
-function update_usenet_server(DatabaseConnection $db, $id, $name, $hostname, $port, $secure_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting)
+function update_usenet_server(DatabaseConnection $db, $id, $name, $hostname, $port, $secure_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting, $ipversion)
 {
     assert(is_numeric($priority) && is_numeric($port) && is_numeric($secure_port) && is_numeric($threads) && is_numeric($id));
     $name = trim($name);
@@ -300,9 +312,12 @@ function update_usenet_server(DatabaseConnection $db, $id, $name, $hostname, $po
     $authentication = $authentication ? 1 : 0;
     $compressed_headers = $compressed_headers ? 1 : 0;
 
+    if (!in_array(strtolower($ipversion), ['ipv4', 'ipv6', 'both'])) {
+        throw new exception('Invalid IP version');
+    }
     $posting = ($posting ? 1 : 0);
-    $cols = array('name', 'hostname', 'port', 'secure_port', 'threads', 'connection', 'authentication', 'username', 'password', 'compressed_headers', 'priority', 'posting');
-    $vals = array($name, $hostname, $port, $secure_port, $threads, $connection, $authentication, $username, $password, $compressed_headers, $priority, $posting);
+    $cols = array('name', 'hostname', 'port', 'secure_port', 'threads', 'connection', 'authentication', 'username', 'password', 'compressed_headers', 'priority', 'posting', 'ipversion');
+    $vals = array($name, $hostname, $port, $secure_port, $threads, $connection, $authentication, $username, $password, $compressed_headers, $priority, $posting, $ipversion);
 
     $db->update_query('usenet_servers', $cols, $vals, '"id"=?', array($id));
 
@@ -370,7 +385,7 @@ function set_all_usenet_servers(DatabaseConnection $db, array $settings)
     foreach ($settings as $setting) {
         if (is_array($setting)) {
             $id = add_usenet_server($db, $setting['name'], $setting['hostname'], $setting['port'], $setting['secure_port'], $setting['threads'],
-            $setting['connection'], $setting['authentication'], $setting['username'], $setting['password'], $setting['priority'], $setting['compressed_headers'], $setting['posting']);
+            $setting['connection'], $setting['authentication'], $setting['username'], $setting['password'], $setting['priority'], $setting['compressed_headers'], $setting['posting'], $setting['ipversion']);
             if ($setting['name'] == $pref_server && $pref_server != '') {
                 set_config($db, 'preferred_server', $id);
             }

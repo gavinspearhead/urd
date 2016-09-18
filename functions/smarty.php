@@ -122,7 +122,7 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
     if ($show_menu != 0) {
         $menu = menu::generate_menu($db, $LN, $isadmin, $custom_menu, $userid);
     } else {
-        $menu =	array();
+        $menu =	[];
     }
     $smarty->enableSecurity();
     $smarty->setCompileCheck(isset($config['smarty_compile_check']) ? $config['smarty_compile_check'] : TRUE);
@@ -133,7 +133,7 @@ function init_smarty($title='', $show_menu=0, $custom_menu=NULL, $enable_caching
     $smarty->assign($LN2);
     unset($LN2);
     $smarty->force_compile = true; // debug XXX
-    $smarty->loadFilter('output', 'trimwhitespace');
+//    $smarty->loadFilter('output', 'trimwhitespace');
     $smarty->assign(array(
         'title' => $LN['urdname'] . ' - ' . $title,
         'allow_robots' => get_config($db, 'allow_robots', 0),

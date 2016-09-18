@@ -244,6 +244,10 @@ $LN['menuuserlists']    = 'Liste de spotters';
 
 $LN['advanced_search']  = 'Recherche avanc&eacute;e';
 
+
+$LN['ipversion']      = 'Version d&#39;IP';
+$LN['ipversion_msg']  = 'Quel version d&#39;IP version est utilis&eacute;e';
+$LN['both']           = 'tous les deux';
 // Stati:
 $LN['statusidling']     = 'Inactif';
 $LN['statusrunningtasks']  = 'T&acirc;ches actives';

@@ -244,6 +244,12 @@ $LN['menuuserlists']    = 'Spotter lists';
 $LN['statusidling']         = 'Niksen';
 $LN['statusrunningtasks']   = 'Active taken';
 
+
+$LN['ipversion']      = 'IP versie';
+$LN['ipversion_msg']  = 'Welke IP versie wordt gebruikt';
+$LN['both']           = 'beide';
+
+
 $LN['enableurddfirst']  = 'Zet URDD aan om deze settings te wijzigen';
 // Version:
 $LN['version']          = 'Versie';

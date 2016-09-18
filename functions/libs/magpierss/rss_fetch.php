@@ -21,12 +21,6 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
-// Setup MAGPIE_DIR for use on hosts that don't include
-// the current path in include_path.
-// with thanks to rajiv and smarty
-if (!defined('DIR_SEP')) {
-    define('DIR_SEP', DIRECTORY_SEPARATOR);
-}
 
 $pathrf = realpath(dirname(__FILE__));
 require_once("$pathrf/rss_parse.php");
@@ -66,8 +60,7 @@ class fetch_rss
     const MAGPIE_FETCH_TIME_OUT = 60;
     const MAGPIE_FETCHCONNECT_TIME_OUT = 30;
     const MAGPIE_OUTPUT_ENCODING = 'ISO-8859-1';
-    const MAGPIE_CACHE_AGE = 3600; // one hour
-
+    const MAGPIE_CACHE_AGE = 600; // 10 minutes
     const MAGPIE_USER_AGENT = 'URD-MAGPIE/0.73 (Cached)';
 
     public static function delete_cache_entry($url, $cache_dir)
@@ -92,7 +85,7 @@ class fetch_rss
         // 4. if remote fails, return stale object, or error
 
         $cache_status    = 0;       // response of check_cache
-        $request_headers = array(); // HTTP headers to send with fetch
+        $request_headers = []; // HTTP headers to send with fetch
         $rss             = 0;       // parsed RSS object
         $errormsg        = 0;       // errors, if any
         try {
@@ -180,7 +173,7 @@ class fetch_rss
 
 class http_doc
 {
-    private $headers = array();
+    private $headers = [];
     private $status = 0;
     private $error = '';
     private $results = '';
@@ -206,10 +199,10 @@ class http_doc
         headers to send along with the request (optional)
     Output:     an HTTP response object
 \*=======================================================================*/
-    public function fetch_remote_file ($url, array $headers=array(), $username='', $password='')
+    public function fetch_remote_file($url, array $headers=[], $username='', $password='')
     {
         assert (is_string($url));
-        $hdr = array();
+        $hdr = [];
         foreach ($headers as $key => $val) {
             $hdr[] = "$key: $val\n\r";
         }

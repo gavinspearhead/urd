@@ -65,6 +65,7 @@ function insert_default_search_options(DatabaseConnection $db)
         new search_option('Ebay',                      'http://www.ebay.com/sch/i.html?_nkw=$q'),
         new search_option('Facebook',                  'https://www.facebook.com/search/results.php?q=$q&init=quick'),
         new search_option('Film Totaal',               'https://www.filmtotaal.nl/zoeken?q=$q'),
+        new search_option('Film1',                     'http://www.film1.nl/zoek/?q=$q'),
         new search_option('Filmstarts',                'http://www.filmstarts.de/suche/?q=$q'),
         new search_option('FreeDB',                    'http://www.freedb.org/freedb_search.php?words=$q&allfields=NO&fields=artist&fields=title&allcats=YES&grouping=none'),
         new search_option('Google',                    'https://www.google.com/search?q=$q'),

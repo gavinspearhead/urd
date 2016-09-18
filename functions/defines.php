@@ -24,7 +24,7 @@
 
 // username for the superuser
 
-define ('DB_VERSION',               73);
+define ('DB_VERSION',               74);
 
 define ('URDD_DOWNLOAD_LOCKFILE',   '.urdd_lock');
 define ('URDD_PORT',                11666);
@@ -140,7 +140,7 @@ class file_extensions
     const CAT_EXT = 'cat';
     const UUE_EXT = 'urd_uuencoded_part';
 
-    public static $archives = array (self::RAR_EXT, self::ACE_EXT, self::ZIP_EXT, self::ARJ_EXT, self::ZR7_EXT);
+    public static $archives = [self::RAR_EXT, self::ACE_EXT, self::ZIP_EXT, self::ARJ_EXT, self::ZR7_EXT];
 }
 
 define ('DEFAULT_PER_PAGE', 50);
@@ -227,10 +227,10 @@ define ('MAGPIE_CACHE_PATH', '.cache/magpie/');
 define ('IMAGE_CACHE_PATH',  '.cache/image/');
 define ('FILELIST_CACHE_PATH',  '.cache/filelists/');
 
-$yes = array ('1', 'TRUE', 'ON', 'YES');
-$no  = array ('0', 'FALSE', 'OFF', 'NO');
+$yes = ['1', 'TRUE', 'ON', 'YES'];
+$no  = ['0', 'FALSE', 'OFF', 'NO'];
 
-$log_str = array (
+$log_str = [
     LOG_DEBUG =>    'DEBUG',
     LOG_INFO =>     'INFO',
     LOG_NOTICE =>   'NOTICE',
@@ -239,7 +239,7 @@ $log_str = array (
     LOG_CRIT =>     'CRITICAL',
     LOG_ALERT =>    'ALERT',
     LOG_EMERG =>    'EMERGENCY'
-);
+];
 
 define ('DEFAULT_USENET_SERVER_PRIORITY', 10);
 define ('DISABLED_USENET_SERVER_PRIORITY', 0);

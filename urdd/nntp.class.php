@@ -38,6 +38,7 @@ class URD_NNTP
 {
     private $server;           // server name
     private $port;             // server port
+    private $ipversion;         // ipv4 / ipv6/ both
     private $username;          // username for authenticating to the server
     private $password;          // and the password
     private $auth;              // we need authentication?
@@ -74,9 +75,9 @@ class URD_NNTP
         $this->extset_headers = NULL;
     }
 
-    public function __construct (DatabaseConnection $db, $server, $connection_type=NULL, $port=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
+    public function __construct (DatabaseConnection $db, $server, $connection_type=NULL, $port=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT, $ipversion='both')
     {
-        assert (is_numeric($port) && is_numeric($timeout));
+        assert ('is_numeric($port) && is_numeric($timeout)');
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         //configuration
         //initialize some stuff
@@ -109,6 +110,10 @@ class URD_NNTP
         $this->timeout = $timeout;
         $this->extset_headers = array();
         $this->connection = $conn;
+        if (!in_array(strtolower($ipversion), ['ipv4', 'ipv6', 'both'])) {
+            throw new exception('Invalid IP version specified', ERR_NNTP_CONNECT_FAILED);
+        }
+        $this->ipversion = $ipversion;
         if ($port === NULL || $port == 0 || $port > 65535 || !is_numeric($port)) {
             $this->port = ($conn === FALSE) ? Base_NNTP_Client::NNTP_PROTOCOL_CLIENT_DEFAULT_PORT : Base_NNTP_Client::NNTP_SSL_PROTOCOL_CLIENT_DEFAULT_PORT;
         } else {
@@ -156,7 +161,7 @@ class URD_NNTP
     {// return true if posting is allowed, false if not
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         //connect to server
-        assert(is_bool($auth));
+        assert('is_bool($auth)');
         $this->auth = $auth;
         $this->username = $username;
         $this->password = $password;
@@ -169,7 +174,7 @@ class URD_NNTP
         write_log ("Connecting to NNTP server: $conn{$this->server}:{$this->port}", LOG_INFO);
         try {
             $this->nntp = new NNTP_Client();
-            $posting = $this->nntp->connect($this->server, $this->connection, $this->port, $this->timeout);
+            $posting = $this->nntp->connect($this->server, $this->connection, $this->port, $this->timeout, $this->ipversion);
         } catch (exception $e) {
             $this->nntp->disconnect();
             $this->nntp = NULL;
@@ -331,7 +336,7 @@ class URD_NNTP
     private function get_headers(array $groupArr, $orig_start, $orig_stop, $dbid, $mindate, $total, $done, $update_last_updated, $total_max, $total_counter, $compressed_headers)
     {
         //assert(is_resource($orig_start) && is_resource($orig_stop) && is_numeric($mindate) && is_resource($total) && is_resource($done));
-        assert(is_numeric($mindate) );
+        assert('is_numeric($mindate)');
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
         // Start > stop ?
         if (gmp_cmp($orig_start, $orig_stop) > 0) {
@@ -647,7 +652,7 @@ Array
            [8] => Xref: article.news.xs4all.nl alt.binaries.boneless:1245016480 alt.binaries.dvd:419435634 alt.binaries.ftd:35220227 alt.binaries.movies:51368878
            )
          */
-        assert(is_numeric($mindate));
+        assert('is_numeric($mindate)');
         $spot_ids = $spot_reports = $spot_comments = $allParts = array();
         $cnt = 0;
         if ($mindate < 0) {
@@ -786,7 +791,7 @@ Array
 
     private function store_ETA_info($timeneeded, $nrmessages, $articlesdone, $totalarticles, $bytes, $dbid)
     {
-        assert(is_numeric($timeneeded) && is_numeric($nrmessages) && is_numeric($articlesdone) && is_numeric($totalarticles) && is_numeric($bytes) && is_numeric($dbid));
+        assert('is_numeric($timeneeded) && is_numeric($nrmessages) && is_numeric($articlesdone) && is_numeric($totalarticles) && is_numeric($bytes) && is_numeric($dbid)');
         // Sanity check:
         if ($timeneeded == 0) {
             return;
@@ -857,7 +862,7 @@ Array
     public function select_group($groupid, &$code)
     {
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
-        assert(is_numeric($groupid));
+        assert('is_numeric($groupid)');
         $name = group_name($this->db, $groupid);
         try {
             return $this->select_group_name($name, $code); // we first try as in the db

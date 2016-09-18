@@ -40,6 +40,7 @@ class usenet_server
     private $priority; // number (0 == disabled)
     private $posting; // bool
     private $enabled; // bool
+    private $ipversion; // string: both, ipv4, ipv6
     static $test_groups = array('alt.binaries.test', 'alt.binaries.boneless', 'alt.binaries.tv', 'alt.binaries.mp3', 'alt.binaries.linux');
     static $test_ports_basic = array(119, 563); // these are the normal NNTP and NNTPS ports
     static $test_ports_extended = array(119, 563, 22, 23, 25, 80, 81, 563, 443, 564, 600, 663, 644, 8080, 7000, 8000, 9000); // most of the ports we know off that are used for NNTP
@@ -61,6 +62,7 @@ class usenet_server
         $this->encryption = $encr;
         $this->posting = $posting;
         $this->enabled = TRUE;
+        $this->ipversion = 'both';
     }
     public function __destruct()
     {
@@ -78,7 +80,7 @@ class usenet_server
         echo_debug("{$this->id} ({$this->priority}): {$this->max_threads} {$this->free_threads} {$this->blocked_threads}", LOG_SERVER);
     }
 
-    public function update_server($maxt=NULL, $port=NULL, $hostname=NULL, $encr=NULL, $username=NULL, $pw=NULL, $prio=NULL, $posting= NULL)
+    public function update_server($maxt=NULL, $port=NULL, $hostname=NULL, $encr=NULL, $username=NULL, $pw=NULL, $prio=NULL, $posting= NULL, $ipversion = NULL)
         // a null value means don't update it
     {
         if ($maxt !== NULL) {
@@ -94,6 +96,9 @@ class usenet_server
         }
         if ($hostname !== NULL) {
             $this->hostname = $hostname;
+        }
+        if ($ipversion !== NULL) {
+            $this->ipversion = $ipversion;
         }
         if ($username !== NULL) {
             $this->username = $username;
@@ -241,7 +246,7 @@ class usenet_server
             for ($i = 0; $i < $max_conn; $i++) {
                 try {
                     $auth = ($this->username != '') && ($this->password != '');
-                    $conns[$i] = new URD_NNTP($db, $this->hostname, $this->encryption, $this->port, $timeout);
+                    $conns[$i] = new URD_NNTP($db, $this->hostname, $this->encryption, $this->port, $timeout, $this->ipversion);
                     $conns[$i]->connect($auth, $this->username, $this->password);
                 } catch (exception $e) { // connection failed
                     echo_debug($e->getMessage(), DEBUG_SERVER);
@@ -277,7 +282,7 @@ class usenet_server
         $found = $indexing = FALSE;
         try {
             $auth = ($this->username != '') && ($this->password != '');
-            $conn = new URD_NNTP($db, $this->hostname, $this->encryption, $this->port, $timeout);
+            $conn = new URD_NNTP($db, $this->hostname, $this->encryption, $this->port, $timeout, $this->ipversion);
             $posting = $conn->connect($auth, $this->username, $this->password);
             $found = TRUE;
             foreach (self::$test_groups as $group) {
@@ -307,7 +312,7 @@ class usenet_server
             $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
         }
         $hostname = $this->hostname;
-        $encryption = array ('off', 'ssl', 'tls');
+        $encryption = ['off', 'ssl', 'tls'];
         $port = $code = 0;
         $found_one = FALSE;
         $tp_count = count($test_ports);
@@ -319,7 +324,7 @@ class usenet_server
                 $curr_count++;
                 $auth = ($this->username != '') && ($this->password != '');
                 try {
-                    $conn = new URD_NNTP($db, $hostname, $e, $p, $timeout);
+                    $conn = new URD_NNTP($db, $hostname, $e, $p, $timeout, 'both');
                     $posting = $conn->connect($auth, $this->username, $this->password);
                     reset(self::$test_groups);
                     if ($conn->server_needs_auth(current(self::$test_groups))) {

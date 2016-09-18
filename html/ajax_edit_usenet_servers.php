@@ -48,7 +48,7 @@ class usenet_servers_c
     public $connection_raw;
     public $posting;
     public $priority; // 1 is highest, 100 is lowest; 0 = disabled
-    public function __construct ($edit, $id='', $n='', $h='', $p=119, $sp=563, $a=FALSE, $t=3, $c='off', $cr= 'off', $u='', $pw='', $priority=10, $ch=0, $post=FALSE)
+    public function __construct ($edit, $id='', $n='', $h='', $p=119, $sp=563, $a=FALSE, $t=3, $c='off', $cr= 'off', $u='', $pw='', $priority=10, $ch=0, $post=FALSE, $ipversion='both')
     {
         assert((is_numeric($id)|| $id=='') && is_numeric($p) && is_numeric($sp) && is_bool($a) && is_numeric($priority));
         $this->edit = $edit;
@@ -67,6 +67,7 @@ class usenet_servers_c
         $this->active = $priority > 0;
         $this->priority = $priority;
         $this->posting = $post;
+        $this->ipversion = $ipversion;
     }
 };
 
@@ -92,11 +93,13 @@ try {
     $hostname_pattern   = '[a-zA-Z0-9.\-_:\[\]]';
 
     $prefs_root = load_config($db);
-    $connection_types = array (
+    $connection_types = [
         'off'=>$LN['off'],
         'ssl'=>'SSL',
         'tls'=>'TLS'
-    );
+    ];
+    
+    $ipversions = [ 'both' => $LN['both'], 'ipv4'=> 'IPv4', 'ipv6' => 'IPv6' ];
 
     $cmd = get_request('cmd');
     $id = get_request('id');
@@ -216,6 +219,8 @@ try {
                 $connection = $srv['connection'];
                 $posting = $srv['posting'];
                 $compressed_headers = $srv['compressed_headers'];
+                $ipversion = $srv['ipversion'];
+
             } elseif ($id == 'new') {
                 $name = '';
                 $username = '';
@@ -229,6 +234,7 @@ try {
                 $connection = 'off';
                 $compressed_headers = 0;
                 $posting = 0;
+                $ipversion = 'both';
             } else {
                 throw new exception($LN['error_nosuchserver']);
             }
@@ -242,6 +248,7 @@ try {
                 'name'=> $name,
                 'only_auth'=> $only_auth,
                 'connection_types'=>    $connection_types,
+                'ipversions'=>    $ipversions,
                 'hostname'=> $hostname,
                 'username'=> $username,
                 'password'=> $password,
@@ -254,6 +261,7 @@ try {
                 'sec_port'=> $sec_port,
                 'authentication'=> $authentication,
                 'priority'=> $priority,
+                'ipversion'=> $ipversion,
                 'connection'=> $connection));
             $contents = $smarty->fetch('ajax_edit_usenet_servers.tpl');
             return_result(array('contents' => $contents));
@@ -270,6 +278,7 @@ try {
                 $priority = get_request('priority', 0);
                 $threads = get_request('threads', 0);
                 $connection = get_request('connection', 'off');
+                $ipversion = get_request('ipversion', 'both');
                 $compressed_headers = (get_request('compressed_headers', '0') == '1')? 1 : 0;
                 $posting = (get_request('posting', '0') == '1')? 1 : 0;
 
@@ -299,6 +308,9 @@ try {
                     throw new exception($LN['usenet_threads'] . ': ' . $error['msg']);
                 }
 
+                if (($error = verify_array($ipversion, array_keys($ipversions))) != '') {
+                    throw new exception($LN['ipversions'] . ': ' . $error['msg'] . ' '  . $ipversion);
+                }
                 if (($error = verify_array($connection, array_keys($connection_types))) != '') {
                     throw new exception($LN['usenet_connection'] . ': ' . $error['msg']);
                 }
@@ -326,7 +338,7 @@ try {
                     $res = $db->select_query($query, 1, array($name));
                     if ($res === FALSE) {
                         $pref_server = get_config($db, 'preferred_server', 0);
-                        $id = add_usenet_server($db, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
+                        $id = add_usenet_server($db, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting, $ipversion);
                         $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
                         if ($uc->is_connected()) {
                             $uc->set('server', 'load', $id);
@@ -345,7 +357,7 @@ try {
                     $query = '"name" FROM usenet_servers WHERE "id"=?';
                     $res = $db->select_query($query, 1, array($id));
                     if ($res !== FALSE) {
-                        update_usenet_server($db, $id, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting);
+                        update_usenet_server($db, $id, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting, $ipversion);
 
                         $uc = new urdd_client($db, $prefs_root['urdd_host'], $prefs_root['urdd_port'], $userid);
                         if ($uc->is_connected()) {
@@ -372,7 +384,7 @@ try {
                 $Qsearch = " WHERE \"name\" $like :search ";
                 $input_arr[':search'] = "%$search%";
             }
-            if (!in_array($sort, array('name', 'connection', 'authentication', 'username', 'posting', 'priority', 'threads'))) {
+            if (!in_array($sort, array('name', 'connection', 'authentication', 'username', 'posting', 'priority', 'threads', 'ipversion'))) {
                 $sort = 'name';
             }
             if (!in_array($sort_dir, array('asc', 'desc'))) {
@@ -398,9 +410,10 @@ try {
                 $username = $row['username'];
                 $password = $row['password'];
                 $posting = $row['posting'];
+                $ipversion = $row['ipversion'];
                 $compressed_headers = $row['compressed_headers'];
                 $priority = $row['priority'];
-                $usenet_servers[] = new usenet_servers_c(0, $id, $name, $hostname, $port, $sec_port, (bool) $auth, $threads, $conn, $conn_raw, $username, $password, $priority, $compressed_headers, $posting);
+                $usenet_servers[] = new usenet_servers_c(0, $id, $name, $hostname, $port, $sec_port, (bool) $auth, $threads, $conn, $conn_raw, $username, $password, $priority, $compressed_headers, $posting, $ipversion);
             }
             init_smarty();
             $smarty->assign(array(

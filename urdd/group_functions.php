@@ -163,7 +163,7 @@ class urdd_group
 
     private function update_binary_data($groupID, $id)
     {
-        assert (is_numeric($groupID));
+        assert('is_numeric($groupID)');
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
 
         // Get the group name for use in log messages:
@@ -294,7 +294,7 @@ class urdd_group
 
     private function update_set_data($groupID, $id, $minsetsize, $maxsetsize)
     {
-        assert(is_numeric($groupID) && assert(is_numeric($minsetsize)) && assert(is_numeric($minsetsize)));
+        assert('is_numeric($groupID) && is_numeric($minsetsize) && is_numeric($minsetsize)');
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
         $this->db->escape($groupID, FALSE);
 
@@ -365,7 +365,7 @@ class urdd_group
 
     private function add_set_data($groupID, $setID_filter)
     {
-        assert (is_numeric($groupID));
+        assert ('is_numeric($groupID)');
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
         $stepsize = self::GENSETS_STEPSIZE;
         // we only update one set
@@ -420,7 +420,7 @@ class urdd_group
     public function expire_binaries($groupID, $dbid)
     {
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
-        assert(is_numeric($groupID) && is_numeric($dbid));
+        assert('is_numeric($groupID) && is_numeric($dbid)');
         $type = USERSETTYPE_GROUP;
 
         // Expire : from days to seconds
@@ -513,7 +513,7 @@ class urdd_group
 
     public function purge_binaries($groupID)
     {
-        assert(is_numeric($groupID));
+        assert('is_numeric($groupID)');
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
         $active = group_subscribed($this->db, $groupID);
 
@@ -533,7 +533,7 @@ class urdd_group
 
     public function subscribe($groupid, $expire, $minsetsize=0, $maxsetsize=0)
     {
-        assert(is_numeric($groupid) && is_numeric($expire) && is_numeric($minsetsize) && is_numeric($maxsetsize));
+        assert('is_numeric($groupid) && is_numeric($expire) && is_numeric($minsetsize) && is_numeric($maxsetsize)');
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
         $is_subscribed = group_subscribed($this->db, $groupid);
         if ($is_subscribed !== FALSE) {
@@ -595,7 +595,7 @@ class urdd_group
     
     public function unsubscribe($groupid) // set to inactive an remove the binaries table
     {
-        assert(is_numeric($groupid));
+        assert('is_numeric($groupid)');
         echo_debug_function(DEBUG_DATABASE, __FUNCTION__);
         $is_subscribed = group_subscribed($this->db, $groupid);
         if ($is_subscribed === FALSE) {
@@ -621,7 +621,7 @@ class urdd_group
 
     public function update_binary_info($group_id, $group_name, $do_expire, $expire, action $item, $minsetsize, $maxsetsize)
     {
-        assert(is_numeric($group_id) && is_numeric($expire));
+        assert('is_numeric($group_id) && is_numeric($expire)');
         // Update binary info:
         write_log('Updating binary info for ' . $group_name, LOG_NOTICE);
         $this->update_binary_data($group_id, $item->get_dbid());
@@ -641,7 +641,7 @@ class urdd_group
         $this->db->escape($group_id, FALSE);
         $sql = "merged_sets.\"new_setid\", binaries_$group_id.\"setID\" AS old_setid FROM binaries_$group_id "
             . "JOIN merged_sets ON merged_sets.\"old_setid\" = binaries_$group_id.\"setID\" AND merged_sets.\"type\" = :type";
-        $res = $this->db->select_query($sql, array(':type'=>USERSETTYPE_GROUP));
+        $res = $this->db->select_query($sql, array(':type' => USERSETTYPE_GROUP));
         if ($res === FALSE) {
             return;
         }
@@ -661,7 +661,7 @@ class urdd_group
             return;
         }
         $articlesmax = 0;
-        $r = $this->db->select_query('"articlesmax" FROM setdata WHERE "ID"=:id', array(':id'=>$setid1));
+        $r = $this->db->select_query('"articlesmax" FROM setdata WHERE "ID"=:id', [':id'=>$setid1]);
         if (isset($r[0]['articlesmax'])) {
             $articlesmax = $r[0]['articlesmax'];
         }
@@ -679,18 +679,18 @@ class urdd_group
             if ($groupid1 != $groupid2) {
                 throw new exception('Groups do not match');
             }
-            $this->db->update_query_2("binaries_$groupid1", array('setID'=>$setid1), '"setID"=?', array($setid2));
+            $this->db->update_query_2("binaries_$groupid1", ['setID'=>$setid1], '"setID"=?', [$setid2]);
             $r = $this->db->select_query($sql, array(':id'=>$setid2));
             if (isset($r[0]['articlesmax'])) {
                 $articlesmax += $r[0]['articlesmax'];
             }
 
-            $this->db->delete_query('setdata', '"ID"=:setid', array(':setid'=>$setid2));
+            $this->db->delete_query('setdata', '"ID"=:setid', [':setid'=>$setid2]);
             store_merge_sets_data($this->db, $setid1, $setid2, USERSETTYPE_GROUP, ESI_NOT_COMMITTED);
         }
         unset($setids);
         $this->add_set_data($groupid1, $setid1);
-        $this->db->update_query_2('setdata', array('articlesmax'=>$articlesmax), '"ID"=?', array($setid1));
+        $this->db->update_query_2('setdata', ['articlesmax'=>$articlesmax], '"ID"=?', [$setid1]);
         $setcount = count_sets_group($this->db, $groupid1);
         update_group_setcount($this->db, $groupid1, $setcount);
     }

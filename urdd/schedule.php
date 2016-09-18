@@ -74,7 +74,7 @@ class schedule
 
     public function __construct()
     {
-        $this->jobs = array();
+        $this->jobs = [];
     }
     public function __destruct()
     {
@@ -128,7 +128,7 @@ class schedule
     }
     public function get_jobs()
     {
-        $jobs = array();
+        $jobs = [];
         foreach ($this->jobs as $j) {
             $action = $j->get_action();
             $job['id'] = $action->get_id();
@@ -193,7 +193,7 @@ class schedule
     public function unschedule_cmd(DatabaseConnection $db, $userid, $cmd, $arg)
     {
         assert(is_numeric($userid));
-        $kk = array();
+        $kk = [];
         foreach ($this->jobs as $k => $j) {
             $a = $j->get_action();
             if (strcasecmp($a->get_command(),$cmd) == 0 && (strcasecmp($a->get_args(), $arg) == 0 || strcasecmp($arg, '__all') == 0) && $a->match_userid($userid)) {

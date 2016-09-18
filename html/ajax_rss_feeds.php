@@ -33,8 +33,8 @@ function build_rss_query(DatabaseConnection $db, $userid, $offset, &$retvals = N
 {
     global $LN;
     assert(is_numeric($userid));
-    $order_options = array ('name', 'feedcount', 'subscribed', 'last_updated', 'expire', 'refresh_time', 'refresh_period', 'minsetsize', 'url', 'visible', 'category', 'adult');
-    $order_dirs = array ('desc', 'asc', '');
+    $order_options = ['name', 'feedcount', 'subscribed', 'last_updated', 'expire', 'refresh_time', 'refresh_period', 'minsetsize', 'url', 'visible', 'category', 'adult'];
+    $order_dirs = ['desc', 'asc', ''];
     $cnt = count_active_rss($db);
     $perpage = get_maxperpage($db, $userid);
     $search = trim(utf8_decode(get_request('search', '')));
@@ -52,7 +52,7 @@ function build_rss_query(DatabaseConnection $db, $userid, $offset, &$retvals = N
     $retvals[0] = $unsubscribed;
 
     // Search google style:
-    $input_arr = array();
+    $input_arr = [];
     $Qsearch = '';
     $search = trim(str_replace('*', ' ', $search));
     $keywords = explode(' ', $search);
@@ -75,7 +75,7 @@ function build_rss_query(DatabaseConnection $db, $userid, $offset, &$retvals = N
     $input_arr[':userid'] = $userid;
     $res = $db->select_query($query, $perpage, $offset, $input_arr);
     if ($res === FALSE) {
-        $res = array();
+        $res = [];
     }
 
     return $res;
@@ -92,7 +92,7 @@ function build_rss_query_total(DatabaseConnection $db, $userid)
     $Qsearch = '';
     $search = str_replace('*', ' ', $search);
     $keywords = explode(' ', $search);
-    $inputarr = array();
+    $inputarr = [];
     $search_type = $db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
     foreach ($keywords as $idx => $keyword) {
         $keyword = trim($keyword);
@@ -204,7 +204,7 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
 
     $categories = get_categories($db, $userid);
 
-    $allfeeds = array();
+    $allfeeds = [];
     $res = build_rss_query($db, $userid, $offset, $retvals);
     $unsubscribed = $retvals[0];
     $order = get_post('order', 'name');
@@ -214,11 +214,11 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
     $search = utf8_decode(trim(get_request('search', '')));
     $search_all = get_post('search_all', '');
 
-    list ($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
+    list($pages, $currentpage, $lastpage) = build_rss_skipper($db, $userid, $offset);
     $number = $offset;
     $now = time();
     foreach ($res as $row) {
-        $this_rss = array();
+        $this_rss = [];
         $id = $row['rss_id'];
         $active = $row['subscribed'];
         $this_rss['id'] = $id;
@@ -232,7 +232,6 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
         $this_rss['authentication'] = ($row['password'] != '' && $row['username'] != '') ? 1 : 0;
         $lastupdated = $row['timestamp'];
         $refresh_time = $row['refresh_time'];
-
         $refresh_period = $row['refresh_period'];
 
         if ($refresh_period > 0) {
@@ -246,7 +245,7 @@ function show_feeds(DatabaseConnection $db, $userid, $isadmin)
         if ($lastupdated == 0) {
             $lastupdated = '-';
         } else {
-            $lastupdated = $time - $lastupdated;
+            $lastupdated = $now - $lastupdated;
             $lastupdated = readable_time($lastupdated, 'largest_two');
         }
         $this_rss['lastupdated'] = $lastupdated;
@@ -314,7 +313,7 @@ try {
                 challenge::verify_challenge($_POST['challenge']);
                 $xml = new urd_xml_reader($_FILES['filename']['tmp_name']);
                 $feeds = $xml->read_feeds_settings($db);
-                if ($feeds != array()) {
+                if ($feeds != []) {
                     clear_all_feeds($db, $userid);
                     set_all_feeds($db, $feeds, $userid);
                 } else {

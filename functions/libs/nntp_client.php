@@ -106,9 +106,9 @@ class NNTP_Client extends Base_NNTP_Client
      *  - (bool) TRUE when posting allowed, otherwise FALSE
      *  - (object) Pear_Error on failure
      */
-    public function connect($host, $encryption = NULL, $port = NULL, $timeout = NULL)
+    public function connect($host, $encryption = NULL, $port = NULL, $timeout = NULL, $ipversion='both')
     {
-        return parent::connect($host, $encryption, $port, $timeout);
+        return parent::connect($host, $encryption, $port, $timeout, $ipversion);
     }
 
     /**
@@ -653,7 +653,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_overview($range = NULL, $_names = TRUE, $_forceNames = TRUE)
     {
-        assert(is_bool($_names) && is_bool($_forceNames) && (is_string($range) || is_null($range)));
+        assert('is_bool($_names) && is_bool($_forceNames) && (is_string($range) || is_null($range))');
 
         // Fetch overview from server
         if ($this->_compressed_headers === TRUE) {
@@ -741,7 +741,7 @@ class NNTP_Client extends Base_NNTP_Client
      */
     public function get_overview_format($_forceNames = TRUE, $_full = FALSE)
     {
-        assert(is_bool($_forceNames) && is_bool($_full));
+        assert('is_bool($_forceNames) && is_bool($_full)');
         $format = $this->cmd_list_overview_fmt();
 
         // Force name of first seven fields

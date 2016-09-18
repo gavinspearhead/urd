@@ -39,6 +39,7 @@
 {if $sort == "posting"}{if $sort_dir=='desc'}{$posting_sort=$up}{else}{$posting_sort=$down}{/if}{else}{$posting_sort=""}{/if}
 {if $sort == "threads"}{if $sort_dir=='desc'}{$threads_sort=$up}{else}{$threads_sort=$down}{/if}{else}{$threads_sort=""}{/if}
 {if $sort == "connection"}{if $sort_dir=='desc'}{$connection_sort=$up}{else}{$connection_sort=$down}{/if}{else}{$connection_sort=""}{/if}
+{if $sort == "ipversion"}{if $sort_dir=='desc'}{$ipversion_sort=$up}{else}{$ipversion_sort=$down}{/if}{else}{$ipversion_sort=""}{/if}
 {if $sort == "authentication"}{if $sort_dir=='desc'}{$authentication_sort=$up}{else}{$authentication_sort=$down}{/if}{else}{$authentication_sort=""}{/if}
 {if $sort == "username"}{if $sort_dir=='desc'}{$username_sort=$up}{else}{$username_sort=$down}{/if}{else}{$username_sort=""}{/if}
 {if $sort == "indexing"}{if $sort_dir=='desc'}{$indexing_sort=$up}{else}{$indexing_sort=$down}{/if}{else}{$indexing_sort=""}{/if}
@@ -55,6 +56,7 @@
 
 {if $small == 0}
 <th onclick="javascript:submit_search_usenet_servers('connection', 'asc');" class="buttonlike uwider fixwidth3c head">{$LN_usenet_connection} {$connection_sort}</th>
+<th onclick="javascript:submit_search_usenet_servers('ipversion', 'asc');" class="buttonlike uwider fixwidth3c head">{$LN_ipversion} {$ipversion_sort}</th>
 <th onclick="javascript:submit_search_usenet_servers('authentication', 'asc');" class="buttonlike uwider fixwidth3c head">{$LN_usenet_authentication} {$authentication_sort}</th>
 <th onclick="javascript:submit_search_usenet_servers('username', 'asc');" class="buttonlike uwider head">{$LN_username} {$username_sort}</th>
 {/if}
@@ -86,6 +88,7 @@
 <td class="fixwidth3c">{$usenet_server->threads|escape|truncate:$maxstrlen}</td>
 {if $small == 0}
 <td class="fixwidth3c">{$usenet_server->connection|truncate:$maxstrlen}</td>
+<td class="fixwidth3c">{$usenet_server->ipversion|truncate:$maxstrlen}</td>
 <td class="fixwidth3c" {urd_popup type="small" text=$LN_usenet_needsauthentication }> 
 {urd_checkbox value="{if $usenet_server->authentication == 1}1{else}0{/if}" name="need_auth" id="need_auth_{$usenet_server->id}" post_js="toggle_usenet_auth({$usenet_server->id}, 'need_auth_{$usenet_server->id}')"}
 <td>

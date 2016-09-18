@@ -27,6 +27,8 @@ $pathu = realpath(dirname(__FILE__));
 
 $process_name = 'urdd'; // needed for syslog and logging
 
+
+
 require_once "$pathu/../functions/defines.php";
 require_once "$pathu/../functions/error_codes.php";
 
@@ -97,7 +99,7 @@ function daemonise() // changes cwd to root!
 
 function update_user_last_seen_group(DatabaseConnection $db, $group_id)
 {
-    assert(is_numeric($group_id));
+    assert('is_numeric($group_id)');
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
     $sql = '"last_login", "ID" FROM users';
     $res = $db->select_query($sql);
@@ -117,7 +119,7 @@ function update_user_last_seen_group(DatabaseConnection $db, $group_id)
 function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
 {
     echo_debug_function(DEBUG_WORKER, __FUNCTION__);
-    assert(is_bool($nntp_enabled));
+    assert('is_bool($nntp_enabled)');
     $cmd_code = $item->get_command_code();
     if (get_command($cmd_code) === FALSE) {
         urdd_exit(INTERNAL_FAILURE);
@@ -184,7 +186,7 @@ function handle_queue_item(DatabaseConnection $db, action $item, $nntp_enabled)
 
 function handle_crash(DatabaseConnection $db, server_data &$servers, action $item, $rc)
 {
-    assert(is_numeric($rc));
+    assert('is_numeric($rc)');
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     write_log("Unknown exit status: $rc. Possible crash", LOG_NOTICE);
     if (compare_command($item->get_command(), urdd_protocol::COMMAND_DOWNLOAD_ACTION) && $servers->has_equal($item)) {
@@ -203,7 +205,7 @@ function handle_crash(DatabaseConnection $db, server_data &$servers, action $ite
 
 function get_exit_code($status, $pid)
 {
-    assert(is_numeric($pid));
+    assert('is_numeric($pid)');
     if (pcntl_wifexited($status)) {
         echo_debug('Normal exit', DEBUG_SERVER);
         $rc = pcntl_wexitstatus($status);
@@ -235,7 +237,7 @@ function reap_children(DatabaseConnection $db, server_data &$servers)
         while (($pid = pcntl_waitpid(-1, $proc_status, WNOHANG)) > 0) { // we check if there is a signal
             $rc = get_exit_code($proc_status, $pid);
             $servers->remove_kill_list($pid);
-            list ($item, $server_id, $status) = $servers->delete_thread($db, $pid, TRUE);
+            list($item, $server_id, $status) = $servers->delete_thread($db, $pid, TRUE);
             echo_debug("Thread status $status; server: $server_id", DEBUG_SERVER);
             if ($rc == DB_FAILURE) {
                 echo_debug('DB error received', DEBUG_SERVER); // does this ever happen?
@@ -481,7 +483,7 @@ function child_sig_handler($foo)
 function start_child(action $item, conn_list $conn_list, $nntp_enabled)
 {
     global $is_child;
-    assert(is_bool($nntp_enabled));
+    assert('is_bool($nntp_enabled)');
     try {
         $is_child = TRUE; // for overriding the shutdown function
         pcntl_signal(SIGTERM, 'child_sig_handler');
@@ -600,7 +602,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
 
 function restore_old_queue(DatabaseConnection $db, server_data &$servers, conn_list &$conn_list, $restart)
 {
-    assert(is_bool($restart));
+    assert('is_bool($restart)');
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     try {
         $like = $db->get_pattern_search_command('LIKE');

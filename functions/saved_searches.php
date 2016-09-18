@@ -33,7 +33,7 @@ class saved_searches
     // 'options'=> array ("maxsetsize"=> maxsetsize, "minsetsize"=>minsetsize) etc
     // 'category'=> string
 
-    private $saved_searches = array();
+    private $saved_searches = [];
     private $userid = null;
 
     public function __construct($userid)
@@ -47,7 +47,7 @@ class saved_searches
         if (isset($saved_searches[ $name ]) && ($saved_searches[ $name ]['type'] != $type)) {
             throw new exception("Cannot add $name - already exists");
         }
-        $this->saved_searches[ $name ] = array('subcats' => $subcats, 'type' => $type, 'options' => $options, 'category' => $category);
+        $this->saved_searches[ $name ] = ['subcats' => $subcats, 'type' => $type, 'options' => $options, 'category' => $category];
     }
     public function load(DatabaseConnection $db)
     {
@@ -80,7 +80,7 @@ class saved_searches
     public function save(DatabaseConnection $db)
     {
         if (!is_array($this->saved_searches)) {
-            $this->saved_searches = array();
+            $this->saved_searches = [];
         }
         $saved_searches = serialize($this->saved_searches);
         $saved_searches = set_pref($db, 'saved_spot_searches', $saved_searches, $this->userID);
@@ -107,7 +107,7 @@ class saved_searches
     public function get()
     {
         if (!is_array($this->saved_searches)) {
-            $this->saved_searches = array();
+            $this->saved_searches = [];
         }
 
         return $this->saved_searches;
@@ -122,8 +122,8 @@ class saved_searches
     }
     public function get_names($type)
     {
-        $names = array();
-        if (!is_array($this->saved_searches)) { return array(); }
+        $names = [];
+        if (!is_array($this->saved_searches)) { return []; }
         foreach ($this->saved_searches as $key => $item) {
             if ($item['type'] == $type) {
                 $names[] = $key;
@@ -135,8 +135,8 @@ class saved_searches
     }
     public function get_all_names($type=NULL)
     {
-        $names = array();
-        if (!is_array($this->saved_searches)) { return array(); }
+        $names = [];
+        if (!is_array($this->saved_searches)) { return []; }
         foreach ($this->saved_searches as $key => $item) {
             if ($type === NULL || $item['type'] == $type) {
                 $names[$key] = $key;

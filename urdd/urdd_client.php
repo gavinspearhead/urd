@@ -82,7 +82,7 @@ class urdd_client
         $rv = FALSE;
         try {
             $this->sock = new socket();
-            $this->sock->connect($hostname, $port, FALSE, $timeout);
+            $this->sock->connect('', $hostname, $port, FALSE, $timeout);
             $rv = $this->sock->read_line();
         } catch (exception $e) {
             $this->cleanup();
@@ -119,7 +119,7 @@ class urdd_client
         $this->password = $password;
         $this->timeout = (int) $timeout;
         $this->sock = new socket();
-        $this->sock->connect($hostname, $port, FALSE, $timeout);
+        $this->sock->connect('', $hostname, $port, FALSE, $timeout);
         $rv = $this->sock->read_line();
         if ($rv === FALSE) {
             $this->cleanup();

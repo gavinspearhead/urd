@@ -63,7 +63,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $description = str_replace(array("\r", "\n"), array('', '<br/>'), $description);
         $description = link_to_url($db, $description, $userid, $urls);
         $ubb = new UbbParse($description);
-        TagHandler::setDeniedTags( array() );
+        TagHandler::setDeniedTags( [] );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
         $description = insert_wbr($ubb->parse());
         list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
@@ -83,7 +83,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
     if (is_array($spotres)) {
         $comments = $spotres;
         $blacklist_url = get_config($db, 'spots_blacklist', '');
-        $blacklist = array();
+        $blacklist = [];
         if ($blacklist_url != '') {
             $blacklist = load_blacklist($db);
         }
@@ -95,10 +95,10 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         }
         $c = db_decompress($comment['comment']);
         $c = htmlentities(strip_tags($c), ENT_IGNORE, 'UTF-8', FALSE);
-        $dummy_urls=[];
+        $dummy_urls = [];
         $c = link_to_url($db, $c, $userid, $dummy_urls);
         $ubb = new UbbParse($c);
-        TagHandler::setDeniedTags( array() );
+        TagHandler::setDeniedTags( [] );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
         $c = $ubb->parse();
         $c = str_replace("\n", '<br/>', $c);
@@ -127,8 +127,8 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
             }
         }
 
-        $now = time();
         $spam_reports = is_numeric($row['reports']) ? $row['reports'] : 0;
+        $now = time();
         $age = ($now > $row['stamp']) ? $now - $row['stamp'] : 0;
         $age = readable_time($age, 'largest_two_long');
     }
@@ -191,12 +191,12 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
 {
     global $smarty, $LN;
     assert(is_numeric($userid));
-    assert (in_array($type, array(USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT)));
+    assert(in_array($type, [USERSETTYPE_GROUP, USERSETTYPE_RSS, USERSETTYPE_SPOT]));
     // First the extended info:
     $sql = '* FROM extsetdata WHERE "setID" = :setid AND "type"=:type';
     $res = $db->select_query($sql, array(':setid'=>$setID, ':type'=>$type));
     // Store it in an easy to use array:
-    $extsetinfo = array();
+    $extsetinfo = [];
     $extsetinfo['binarytype'] = 0;
 
     if (is_array($res)) {
@@ -261,7 +261,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         'display' =>        $display));      // All values
     $poster = '';
     $par2s = 0;
-    $files = array();
+    $files = [];
     $totalsize = $size;
 
     if ($type == USERSETTYPE_GROUP) {
@@ -279,7 +279,7 @@ function display_extsetinfo(DatabaseConnection $db, $setID, $type, $userid)
         }
         $totalsize = 0;
         foreach ($res as $arr) {
-            $file = array();
+            $file = [];
 
             //$posters[ $arr['fromname'] ] = 1;
             $size = $arr['bytes'];

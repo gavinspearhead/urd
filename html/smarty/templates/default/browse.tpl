@@ -39,7 +39,7 @@
     {foreach $subscribedgroups as $item}
         {capture name=current assign=current}{$item.type}_{$item.id}{/capture}
 		<option {if $current == $groupID && $groupID != 0 }selected="selected"{/if} value="{$item.type}_{$item.id}">
-            {if $item.type=='category'}{$LN_category}: {/if}{$item.shortname|escape:htmlall} ({$item.article_count})
+            {$item.shortname|escape:htmlall} ({$item.article_count})
         </option>
 	{/foreach}
 	</select>&nbsp;

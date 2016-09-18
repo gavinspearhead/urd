@@ -82,8 +82,13 @@ $title = $LN['browse_download'] . ' ' . $LN['from'] . ' ' . $totbin. ' ' . $LN['
 
 // Get the required values:
 // ori = passed back to the front-end, these are used in the database (backend):
-
-if (isset($feed_id[9]) && substr_compare($feed_id, 'category_',0, 9) == 0) {
+if (isset($feed_id[7]) && substr_compare($feed_id, 'search_', 0, 7) == 0) {
+    if ($saved_search == '') {
+        $saved_search = substr($feed_id, 7);
+    }
+    $feed_id = $categoryID = $origfeed_id = 0;
+    $selected = '';
+} elseif (isset($feed_id[9]) && substr_compare($feed_id, 'category_',0, 9) == 0) {
     $categoryID = substr($feed_id, 9);
     if (!is_numeric($categoryID)) {
         $categoryID = 0;

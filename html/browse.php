@@ -67,7 +67,13 @@ $saved_searches = new saved_searches($userid);
 $saved_searches->load($db);
 $saved_searches = $saved_searches->get_all_names($type);
 
-if (isset($groupID[9]) && substr_compare($groupID, 'category_', 0, 9) == 0) {
+if (isset($groupID[7]) && substr_compare($groupID, 'search_', 0, 7) == 0) {
+    if ($saved_search == '') {
+        $saved_search = substr($groupID, 7);
+    }
+    $selected = '';
+    $groupID = $categoryID = $origroupID = 0;
+} elseif (isset($groupID[9]) && substr_compare($groupID, 'category_', 0, 9) == 0) {
     $categoryID = substr($groupID, 9);
     if (!is_numeric($categoryID)) {
         $categoryID = 0;

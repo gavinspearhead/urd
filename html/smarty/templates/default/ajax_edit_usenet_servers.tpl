@@ -47,6 +47,8 @@
 <tr class="{$auth_class}">
 <td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_connectiontype_msg|escape }>{$LN_usenet_connectiontype}:</td>
 <td>{html_options name="connection" id="connection" options=$connection_types selected=$connection}</td>
+<td class="nowrap bold" {urd_popup type="small" text=$LN_ipversion_msg|escape }>{$LN_ipversion}:</td>
+<td>{html_options name="ipversion" id="ipversion" options=$ipversions selected=$ipversion}</td>
 </tr>
 <tr><td class="nowrap bold" {urd_popup type="small" text=$LN_usenet_needsauthentication_msg|escape }>
 {$LN_usenet_needsauthentication}:</td>

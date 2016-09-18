@@ -242,7 +242,7 @@ $LN['menulogin']        = 'Logga&nbsp;in';
 $LN['menudebug']        = 'Fels&ouml;k';
 $LN['menustats']        = 'Statistik';
 $LN['menuforum']        = 'Forum';
-$LN['menuuserlists']            = 'User lists';
+$LN['menuuserlists']    = 'User lists';
 
 $LN['advanced_search']  = 'Avancerad s&ouml;k';
 
@@ -252,6 +252,12 @@ $LN['statusrunningtasks']  = 'Aktiva jobb';
 
 $LN['enableurddfirst']  = 'Starta URDD f&ouml;r kunna &auml;ndra dessa inst&auml;llningar';
 // Version:
+
+
+$LN['ipversion']      = 'IP version';
+$LN['ipversion_msg']  = 'Vilken IP-version anv&auml;nds';
+$LN['both']           = 'b&aring;da';
+
 $LN['version']          = 'Version';
 $LN['enableurdd']       = 'Klicka f&ouml;r att starta URDD';
 $LN['disableurdd']      = 'Klicka f&ouml;r att stoppa URDD';
@@ -295,8 +301,8 @@ $LN['taskmergesets']    = 'Sammanfogar set';
 $LN['taskfindservers']  = 'Autokonfigurera servrar';
 $LN['taskgetnfo']       = 'H&auml;mtar NFO-data';
 $LN['taskgetspots']     = 'H&auml;mtar spots';
-$LN['taskgetspot_comments']     = 'Getting spots comments';
-$LN['taskgetspot_reports']     = 'Getting spots spam reports';
+$LN['taskgetspot_comments']   = 'Getting spots comments';
+$LN['taskgetspot_reports']    = 'Getting spots spam reports';
 $LN['taskgetspot_images']     = 'Getting spots images';
 $LN['taskexpirespots']  = 'Raderar utg&aring;ngna spots';
 $LN['taskpurgespots']   = 'T&ouml;mmer spots';

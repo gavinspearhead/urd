@@ -46,7 +46,7 @@ function connect_nntp(DatabaseConnection $db, $id)
         $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
     }
     try {
-        $nzb = new URD_NNTP($db, $usenet_config['hostname'], $usenet_config['connection'], $usenet_config['port'], $timeout);
+        $nzb = new URD_NNTP($db, $usenet_config['hostname'], $usenet_config['connection'], $usenet_config['port'], $timeout, $usenet_config['ipversion']);
         $nzb->connect($usenet_config['authentication'] ? TRUE : FALSE, $usenet_config['username'], $usenet_config['password']);
 
         return $nzb;
