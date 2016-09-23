@@ -101,17 +101,17 @@ class URD_NNTP
                     write_log('SSL module not loaded', LOG_ERR);
                     throw new exception('SSL module not loaded', ERR_NNTP_CONNECT_FAILED);
                 }
-                $timeout = NULL; // needed so SSL connections will not cause random timeouts. Seems to be a buggy PHP /SSL issue with stream_select
+                //$timeout = NULL; // needed so SSL connections will not cause random timeouts. Seems to be a buggy PHP /SSL issue with stream_select
                 break;
         }
         $this->auth = FALSE;
         $this->username = $this->password = '';
         $this->server = $server;
         $this->timeout = $timeout;
-        $this->extset_headers = array();
+        $this->extset_headers = [];
         $this->connection = $conn;
         if (!in_array(strtolower($ipversion), ['ipv4', 'ipv6', 'both'])) {
-            throw new exception('Invalid IP version specified', ERR_NNTP_CONNECT_FAILED);
+            throw new exception('Invalid IP version specified ' . $ipversion, ERR_NNTP_CONNECT_FAILED);
         }
         $this->ipversion = $ipversion;
         if ($port === NULL || $port == 0 || $port > 65535 || !is_numeric($port)) {

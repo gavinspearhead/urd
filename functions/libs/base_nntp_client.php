@@ -476,7 +476,7 @@ class Base_NNTP_Client
         if ($host == '') {
             throw new exception('Hostname required');
         }
-
+        $options = NULL;
         // Choose transport based on encryption, and if no port is given, use default for that encryption
         switch ($encryption) {
             case NULL:
@@ -488,6 +488,10 @@ class Base_NNTP_Client
                 break;
             case 'ssl':
             case 'tls':
+                $options['ssl']['peer_name'] = $host;
+//                $options['ssl']['verify_peer_name'] = FALSE;
+//                $options['ssl']['verify_peer'] = FALSE;
+
                 $transport = $encryption;
                 $port = is_null($port) ? self::NNTP_SSL_PROTOCOL_CLIENT_DEFAULT_PORT : $port;
                 break;
@@ -496,9 +500,9 @@ class Base_NNTP_Client
         }
         assert('is_numeric($port)');
         // Open Connection
-        $this->_socket->connect($transport . '://', $host, $port, FALSE, $timeout, NULL, $ipversion);
+        $this->_socket->connect($transport . '://', $host, $port, FALSE, $timeout, $options, $ipversion);
         // Retrieve the server's initial response.
-        $response =  $this->_get_status_response();
+        $response = $this->_get_status_response();
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED: // 200, Posting allowed
 

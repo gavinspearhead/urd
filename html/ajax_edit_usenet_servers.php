@@ -334,8 +334,8 @@ try {
                     $password = '';
                 }
                 if ($id == 'new') {
-                    $query = '"id" FROM usenet_servers WHERE "name"=?';
-                    $res = $db->select_query($query, 1, array($name));
+                    $query = '"id" FROM usenet_servers WHERE "name"=:name';
+                    $res = $db->select_query($query, 1, array(':name'=> $name));
                     if ($res === FALSE) {
                         $pref_server = get_config($db, 'preferred_server', 0);
                         $id = add_usenet_server($db, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting, $ipversion);
@@ -354,8 +354,8 @@ try {
                         throw new exception ($LN['error_usenetserverexists']);
                     }
                 } elseif (is_numeric($id)) {
-                    $query = '"name" FROM usenet_servers WHERE "id"=?';
-                    $res = $db->select_query($query, 1, array($id));
+                    $query = '"name" FROM usenet_servers WHERE "id"=:id';
+                    $res = $db->select_query($query, 1, array(':id'=>$id));
                     if ($res !== FALSE) {
                         update_usenet_server($db, $id, $name, $hostname, $port, $sec_port, $threads, $connection, $authentication, $username, $password, $priority, $compressed_headers, $posting, $ipversion);
 

@@ -198,10 +198,10 @@ function add_usenet_server(DatabaseConnection $db, $name, $hostname, $port, $sec
         throw new exception('Invalid IP version');
     }
     $cols = array('name', 'hostname', 'port', 'secure_port', 'threads', 'connection', 'authentication', 'username', 'password', 'priority', 'compressed_headers', 'posting', 'ipversion');
-    $vals = array($name, $hostname, $port, $secure_port, $threads, $connection, ($authentication?1:0), $username, $password, $priority, ($compressed_headers?1:0), ($posting?1:0), 'ipversion');
+    $vals = array($name, $hostname, $port, $secure_port, $threads, $connection, ($authentication?1:0), $username, $password, $priority, ($compressed_headers?1:0), ($posting?1:0), $ipversion);
     $last_id = $db->insert_query('usenet_servers', $cols, $vals, TRUE);
 
-    $res = $db->select_query('"id" FROM usenet_servers WHERE "name"=?', array($name));
+    $res = $db->select_query('"id" FROM usenet_servers WHERE "name"=:name', array(':name'=>$name));
     if ($res === FALSE) {
         return FALSE;
     }
@@ -218,7 +218,7 @@ function set_posting(DatabaseConnection $db, $id, $posting)
 function smart_update_usenet_server(DatabaseConnection $db, $id, $values)
 {
     assert(is_numeric($id));
-    $cols = $vars = array();
+    $cols = $vars = [];
     if (isset($values['name'])) {
         $cols[] = 'name';
         $vals[] = trim($values['name']);

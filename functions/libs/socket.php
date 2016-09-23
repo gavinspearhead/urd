@@ -51,7 +51,7 @@ class socket
     const NET_SOCKET_WRITE = 2;
     const NET_SOCKET_ERROR = 4;
     /* Socket file pointer.  */
-    private $fp;
+    public $fp;
 
     /* Whether the socket is blocking. Defaults to true.  */
     private $blocking;
@@ -123,7 +123,6 @@ class socket
 
     private function get_ip_addr($host, $ip_version)
     {
-        //var_dumP($host, $ip_version);
         if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             return $host;
         }
@@ -154,7 +153,7 @@ class socket
         }
     }
 
-    public function connect($transport, $addr, $port = 0, $persistent = FALSE, $timeout = DEFAULT_SOCKET_TIMEOUT, $options = NULL, $ipversion = 'both')
+    public function connect($transport, $addr, $port = 0, $persistent = FALSE, $timeout = socket::DEFAULT_SOCKET_TIMEOUT, $options = NULL, $ipversion = 'both')
     {
         echo_debug ("$transport $addr $ipversion $port", DEBUG_HTTP);
         assert('is_numeric($port) && (is_numeric($timeout) || is_null($timeout)) && is_bool($persistent)');
@@ -180,12 +179,11 @@ class socket
             if ($this->timeout !== NULL) {
                 $timeout = $this->timeout;
             } else {
-                $timeout = 0;
+                $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
             }
             $context = stream_context_create($options);
             $fp = stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
         } else {
-            $context = stream_context_create();
             if ($this->timeout !== NULL) {
                 $fp = @stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
             } else {
@@ -595,7 +593,6 @@ class socket
         if (feof($this->fp)) {
             return FALSE;
         }
-
         $line = '';
         while (!feof($this->fp)) {
             $this->check_readable();

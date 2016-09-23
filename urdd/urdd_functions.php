@@ -51,7 +51,9 @@ function connect_nntp(DatabaseConnection $db, $id)
 
         return $nzb;
     } catch (exception $e) {
-        $nzb->disconnect();
+        if (isset($nzb) && is_a ($nzb, 'URD_NNTP')) {
+            $nzb->disconnect();
+        }
         unset($nzb);
         throw $e;
     }
