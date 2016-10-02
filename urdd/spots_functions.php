@@ -521,7 +521,6 @@ class urd_spots
         }
     }
 
-
     private function parse_spots_for_extset_data(DatabaseConnection $db, array $spot_data, $spotid)
     {
         $link_data = self::parse_links($spot_data['body'], $spot_data['url']);

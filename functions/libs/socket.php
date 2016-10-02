@@ -29,10 +29,11 @@ function _stream_select (&$read, &$write, &$except, $tv_sec, $tv_usec = 0)
         pcntl_signal_dispatch();
     }
 
-    stream_select($read, $write, $except, $tv_sec, $tv_usec);
+    $rv = stream_select($read, $write, $except, $tv_sec, $tv_usec);
     if (function_exists('pcntl_signal_dispatch')) {
         pcntl_signal_dispatch();
     }
+    return $rv;
 }
 
 /**
@@ -153,9 +154,9 @@ class socket
         }
     }
 
-    public function connect($transport, $addr, $port = 0, $persistent = FALSE, $timeout = socket::DEFAULT_SOCKET_TIMEOUT, $options = NULL, $ipversion = 'both')
+    public function connect($transport, $addr, $port = 0, $persistent = FALSE, $timeout = socket::DEFAULT_SOCKET_TIMEOUT, $options = NULL, $ipversion = 'both', $blocking=FALSE)
     {
-        echo_debug ("$transport $addr $ipversion $port", DEBUG_HTTP);
+        echo_debug("$transport $addr $ipversion $port $timeout", DEBUG_HTTP);
         assert('is_numeric($port) && (is_numeric($timeout) || is_null($timeout)) && is_bool($persistent)');
         $this->force_disconnect();
         if (!$addr) {
@@ -166,7 +167,7 @@ class socket
         if (!is_numeric($port) || $port > 65535 || $port < 1) {
             throw new exception ('Port must be between 1 and 65535');
         }
-        echo_debug ($this->addr, DEBUG_HTTP);
+        echo_debug($this->addr, DEBUG_HTTP);
         $this->port = $port;
         $this->persistent = ($persistent === TRUE);
         $this->timeout = $timeout;
@@ -175,20 +176,17 @@ class socket
         $errno = 0;
         $errstr = '';
         $url = "{$this->transport}{$this->addr}:$port";
+        if ($this->timeout !== NULL) {
+            $timeout = $this->timeout;
+        } else {
+            $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
+        }
+
         if ($options !== NULL) {
-            if ($this->timeout !== NULL) {
-                $timeout = $this->timeout;
-            } else {
-                $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
-            }
             $context = stream_context_create($options);
             $fp = stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
         } else {
-            if ($this->timeout !== NULL) {
-                $fp = @stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
-            } else {
-                $fp = @stream_socket_client($url, $errno, $errstr);
-            }
+            $fp = @stream_socket_client($url, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
         }
         if ($fp === FALSE) {
             throw new exception_nntp_connect($errstr . ' (' . $errno . ') ');
@@ -197,7 +195,8 @@ class socket
         $this->fp = $fp;
         if ($timeout !== NULL) {
             $this->set_timeout($timeout);
-        }
+        } 
+        $this->blocking = $blocking;
         return $this->set_blocking($this->blocking);
     }
 
@@ -304,9 +303,9 @@ class socket
         }
 
         $null = NULL;
-        $r = array ($this->fp);
+        $r = [$this->fp];
         // do a quick check first, typically this succeeds and we do less expensive time() calls
-        $rv = _stream_select($r, $null, $null, 0, 10);
+        _stream_select($r, $null, $null, 0, 10);
         if (count($r) > 0) {
             return TRUE;
         }
@@ -315,7 +314,7 @@ class socket
         $start_time = time();
         while (1) {
             $null = NULL;
-            $r = array($this->fp);
+            $r = [$this->fp];
             $rv = _stream_select($r, $null, $null, $timeout);
             if ($rv === FALSE) {
                 $timeout = max(0, $timeout - (time() - $start_time));
@@ -339,7 +338,7 @@ class socket
         }
         $null = NULL;
         $w = array($this->fp);
-        $rv = _stream_select($null, $w, $null, 0, 10); // do a quick check first
+        _stream_select($null, $w, $null, 0, 10); // do a quick check first
         if (count($w) > 0) {
             return TRUE;
         }
@@ -418,7 +417,7 @@ class socket
     {
         $this->check_readable();
 
-        return fgets($this->fp);
+        return fgets($this->fp, 8192);
     }
     public function gets($size)
     {
@@ -598,7 +597,10 @@ class socket
             $this->check_readable();
             $buf = @fgets($this->fp, $this->line_length);
             if ($buf === FALSE) {
-                return FALSE;
+                $buf = @fgets($this->fp, $this->line_length);
+                if ($buf === FALSE) {
+                    return FALSE;
+                }
             }
 
             $line .= $buf;

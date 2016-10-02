@@ -101,7 +101,7 @@ class URD_NNTP
                     write_log('SSL module not loaded', LOG_ERR);
                     throw new exception('SSL module not loaded', ERR_NNTP_CONNECT_FAILED);
                 }
-                //$timeout = NULL; // needed so SSL connections will not cause random timeouts. Seems to be a buggy PHP /SSL issue with stream_select
+               // $timeout = NULL; // needed so SSL connections will not cause random timeouts. Seems to be a buggy PHP /SSL issue with stream_select
                 break;
         }
         $this->auth = FALSE;

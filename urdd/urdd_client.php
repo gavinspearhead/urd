@@ -209,13 +209,17 @@ class urdd_client
                 }
 
                 if ($bufferlines[count($bufferlines)-1] == '.') {
-                    unset ($bufferlines[count($bufferlines)-1]); // remove the line with the dot
+                    unset($bufferlines[count($bufferlines)-1]); // remove the line with the dot
                     break;
                 }
             }
         }
-
-        list ($code, $resp, $data) = $this->split_response($bufferlines);
+        try { 
+            list ($code, $resp, $data) = $this->split_response($bufferlines);
+        } catch (exception $e) {
+            $code = -1; 
+            $resp = $data = NULL;
+        }
 
         return array ($code, $resp, $data);
     }
@@ -227,12 +231,12 @@ class urdd_client
         if (preg_match('/^\(([0-9]+)\)/', $string, $res)) {
             $return[] = $res[1];
         } else {
-            $return[] = array();
+            $return[] = [];
         }
         if (preg_match_all('|\[([^[]+)\]|U', $string, $res)) {
             $return[] = $res[1];
         } else {
-            $return[] = array();
+            $return[] = [];
         }
 
         return $return;

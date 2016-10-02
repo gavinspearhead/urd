@@ -434,7 +434,6 @@ function show_preferences(DatabaseConnection $db, $userid)
     $scripts_path = $dlpath . SCRIPTS_PATH;
 
     $prefArray = load_prefs($db, $userid, TRUE);
-echo_debug_var_file('/tmp/foo', $prefArray);
     $module_config = urd_modules::get_urd_module_config(get_config($db, 'modules'));
 
     $global_scripts_array = get_scripts($db, $scripts_path, $userid, TRUE);

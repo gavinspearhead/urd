@@ -179,7 +179,6 @@ class Base_NNTP_Client
         } else {
             throw new exception_nntp_connect('Not connected', ERR_NNTP_CONNECT_FAILED);
         }
-
         return $this->_get_status_response();
     }
 
@@ -192,7 +191,6 @@ class Base_NNTP_Client
     {
         // Retrieve a line (terminated by "\r\n") from the server.
         $response = $this->_socket->read_line();
-
         // Trim the start of the response in case of misplaced whitespace (should not be needed!!!)
         $response = ltrim($response);
 
@@ -200,7 +198,6 @@ class Base_NNTP_Client
                 (int) substr($response, 0, 3),
                 (string) substr($response, 4)
                 ];
-
         return $this->_current_status_response[0];
     }
 
@@ -208,7 +205,6 @@ class Base_NNTP_Client
     {
         // Retrieve a line (terminated by "\r\n") from the server.
         $response = $this->_socket->read_line();
-
         // Trim the start of the response in case of misplaced whitespace (should not be needed!!!)
         $response = ltrim($response);
 
@@ -224,11 +220,13 @@ class Base_NNTP_Client
     {
         $data = [];
         $line = '';
+        $i=0;
         $fp = $this->_socket->get_fp();
         // Continue until connection is lost
         while (!feof($fp)) {
             // Retrieve and append up to 4096 characters from the server.
             $line .= $this->_socket->gets2();
+
             // Continue if the line is not terminated by CRLF
             if (!isset($line[1]) || substr_compare($line, "\r\n", -2) != 0) {
                 continue;
@@ -485,6 +483,7 @@ class Base_NNTP_Client
             case 'off':
                 $transport = 'tcp';
                 $port = is_null($port) ? self::NNTP_PROTOCOL_CLIENT_DEFAULT_PORT : $port;
+                $blocking = FALSE;
                 break;
             case 'ssl':
             case 'tls':
@@ -494,13 +493,14 @@ class Base_NNTP_Client
 
                 $transport = $encryption;
                 $port = is_null($port) ? self::NNTP_SSL_PROTOCOL_CLIENT_DEFAULT_PORT : $port;
+                $blocking = TRUE;
                 break;
             default:
                 throw new exception('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
         }
         assert('is_numeric($port)');
         // Open Connection
-        $this->_socket->connect($transport . '://', $host, $port, FALSE, $timeout, $options, $ipversion);
+        $this->_socket->connect($transport . '://', $host, $port, FALSE, $timeout, $options, $ipversion, $blocking);
         // Retrieve the server's initial response.
         $response = $this->_get_status_response();
         switch ($response) {
@@ -879,7 +879,6 @@ class Base_NNTP_Client
         $response = $this->_send_command($command);
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:     // 222, RFC977: 'n <a> article retrieved - body follows'
-
                 return $this->_get_text_response();
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected'
