@@ -2,6 +2,7 @@
 - Added alternative view for spots
 - Added references to spots to search for similar items
 - Added tvmaze as search option
+- Added processing spot dispose messages
 - Load set comments on demand in showing spot details
 - Made interface better usable for touchscreens
 - Rewrote the statistics to generate plots in javascript

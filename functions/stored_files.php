@@ -266,7 +266,7 @@ class a_file
     {
         global $LN;
         //$this->name = utf8_decode($n);
-        $this->name = utf8_encode($n);
+        $this->name = $n;
         $this->type = $t;
         $this->size = $s;
         if ($s == '') {

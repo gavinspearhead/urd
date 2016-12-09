@@ -100,6 +100,7 @@ class spotparser
         /*  Onderdruk errors bij corrupte messaegeid, bv: <evoCgYpLlLkWe97TQAmnV@spot.net> */
         $xml = @(new SimpleXMLElement($xmlStr, LIBXML_NOERROR | LIBXML_NOWARNING));
         $xml = $xml->Posting;
+        $tpl_spot['title'] = trim((string) $xml->Title);
         $tpl_spot['category'] = (string) $xml->Category;
         $tpl_spot['spotid'] = (string) $xml->ID;
         $url = (string) $xml->Website;
@@ -110,7 +111,6 @@ class spotparser
         $tpl_spot['size'] = (string) $xml->Size;
         $tpl_spot['poster'] = trim((string) $xml->Poster);
         $tpl_spot['tag'] = trim((string) $xml->Tag);
-        $tpl_spot['title'] = trim((string) $xml->Title);
         $tpl_spot['key-id'] = (string) $xml->{'Key-ID'};
         # Images behandelen we op een speciale manier, in de oude spots
         # was er gewoon een URL, in de nieuwe een hoogte/lengte/messageid

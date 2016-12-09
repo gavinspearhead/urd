@@ -1694,8 +1694,9 @@ class Base_NNTP_Client
             case NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_CONTINUE: // RFC2980: 'More authentication information required'
                 throw new exception("Authentication uncompleted ({$this->_current_status_response()})", $response);
                 break;
+            case NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED2: // RFC4643: 'Authentication rejected'
             case NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED: // RFC2980: 'Authentication rejected'
-                throw new exception("Authentication rejected ({$this->_current_status_response()})", $response);
+                throw new exception("Authentication rejected ({$this->_current_status_response()})", NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED);
                 break;
             case NNTP_PROTOCOL_RESPONSECODE_NOT_PERMITTED: // RFC2980: 'No permission'
                 throw new exception("Authentication rejected ({$this->_current_status_response()})", $response);

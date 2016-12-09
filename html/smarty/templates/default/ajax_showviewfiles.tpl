@@ -101,7 +101,7 @@
 <td class="buttonlike" onmouseup="javascript:view_files_follow_link(event, '{$file->get_type()}', 'file{$counter}', '{$file->get_index()}');return false;" onmousedown="set_mouse_click();">
 <div class="donotoverflowdamnit">
 <input type="hidden" name="file{$counter}" id="file{$counter}" value="{$name|escape:htmlall}"/>
-{$name|escape:htmlall} </div>
+{$name|escape:htmlall:'UTF-8'} </div>
 </td>
 <td>{$icon_ln}</td>
 <td class="right">{$size|escape} {$size_ext|escape}</td>

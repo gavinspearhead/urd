@@ -120,19 +120,19 @@ class urd_spots
             $header[trim($hdr[0])] = trim($hdr[1]);
         }
 
-        $reportId = trim($header['Message-ID'], '<>');
+        $report_id = trim($header['Message-ID'], '<>');
 
         $tmp = explode(' ', $header['Subject'], 3);
         if (count($tmp) > 2) {
             $report['date'] = strtotime($header['Date']);
-            $report['message_id'] = $reportId;
+            $report['message_id'] = $report_id;
             $report['keyword'] = $tmp[0];
             $report['reference'] = substr($tmp[1], 1, -1); // remove the < and >
         }
         return $report;
     }
 
-    private static function parse_spot_header(array $header, $message_id, array $spot_blacklist)
+    private function parse_spot_header(array $header, $message_id, array $spot_blacklist)
     {
         $spot_data = [
             'from' => '',
@@ -147,6 +147,8 @@ class urd_spots
             'verified' => FALSE
         ];
         $now = time();
+        $dispose = FALSE;
+        $dispose_id = $orig_date = NULL;
         foreach ($header as $line) {
             $parts = explode(':', $line, 2);
             if (!isset($parts[1])) {
@@ -156,6 +158,14 @@ class urd_spots
 
             $part1 = trim($parts[1]);
             switch (strtolower(trim($parts[0]))) {
+                case 'subject': 
+                    $commandAr = explode(' ', trim($parts[1]));
+                    $validCommands = array('delete', 'dispose', 'remove');
+                    if (in_array(strtolower($commandAr[0]), $validCommands)) {
+                        $dispose = TRUE;
+                        $dispose_id = $commandAr[1];
+                    }
+                    break;
                 case 'from':
                     $spot_data['from'] .= $part1;
                     $from = $part1;
@@ -168,6 +178,7 @@ class urd_spots
                     $spot_data['spotter_id'] = $spotter_id;
                     break;
                 case 'date':
+                    $orig_date = $part1;
                     $spot_data['date'] .= strtotime($part1);
                     if ($spot_data['date'] > ($now + 3600)) {
                         //correct dates that are in the future to avoid those pesky spots that stick at the top
@@ -196,6 +207,11 @@ class urd_spots
                     break;
             }
         }
+
+        if ($dispose === TRUE) {
+            $this->dispose_spot($dispose_id, $spot_data['spotter_id'], $orig_date);
+        }
+
         if ($spot_data['xml-signature'] == '' || $spot_data['xml'] == '' || $spot_data['user-key'] == '' || $spot_data['user-signature'] == '') {
             echo_debug('No valid signature', DEBUG_SERVER);
             return FALSE;
@@ -209,6 +225,21 @@ class urd_spots
         }
 
         return $spot_data;
+    }
+    private function delete_spot($spot_id)
+    {
+        $this->db->delete_query('spots', '"spotid" = ?', [$spot_id]);
+    }
+    private function dispose_spot($dispose_id, $spotter_id, $date)
+    {
+        try {
+            $spot = $this->get_spotdata_by_messageid($dispose_id);
+            if ($spot['spotter_id'] == $spotter_id && ($date - $spot['stamp'] < 432000)) {
+                $this->delete_spot($spot['spotid']);
+            }
+        } catch (exception $e) {
+        }
+
     }
 
     private static function verify_spot(array &$spot_data)
@@ -548,6 +579,17 @@ class urd_spots
 
         return $spotterid;
     }
+    public function get_spotdata_by_messageid($message_id)
+    {
+        $sql = '* FROM spots WHERE "messageid" = :msg_id';
+        $res = $this->db->select_query($sql, 1, array(':msg_id' => $message_id));
+        if (!isset($res[0]['spotid'])) {
+            throw new exception ('Spot not found ' . $message_id, ERR_SPOT_NOT_FOUND);
+        }
+
+        return $res[0];
+    }
+
 
     public function get_spot_by_messageid($message_id)
     {
@@ -638,6 +680,7 @@ class urd_spots
                         $spotid = '1'; // we set it to 1 and after we finish set it to 0 so that comments we may have missed are updated the next run
                         $from = $body = $userid = ''; 
                         $date = 0;
+                    
                     }
                     if ($spotid != '1') { // don't need to get the comment yet, as we haven't the spot 
                         $body = $nzb->get_article($msg_id);
@@ -839,7 +882,7 @@ class urd_spots
                     if ($header == '') { 
                         continue; 
                     }
-                    $spot_data = self::parse_spot_header($header, $msg_id, $spots_blacklist);
+                    $spot_data = $this->parse_spot_header($header, $msg_id, $spots_blacklist);
                     if (($spot_data !== FALSE) && ($spot_data['date'] > $expire_time)) {
                         $spot_data['body'] = $nzb->get_article($msg_id);
                         self::parse_spot_data($spot_data);
