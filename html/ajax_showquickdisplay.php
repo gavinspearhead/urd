@@ -28,6 +28,19 @@ $pathqd = realpath(dirname(__FILE__));
 
 require_once "$pathqd/../functions/ajax_includes.php";
 
+
+function url_sort($a, $b)
+{
+    global $LN;
+    if ($a['icon'] == $b['icon']) return 0;
+    elseif ($a['icon'] == 'IMDB') return -1;
+    elseif ($a['icon'] == 'Moviemeter' and $b['icon'] != 'IMDB')  return -1;
+    elseif ($a['icon'] == $LN['bin_other']) return 1;
+    else return $a['icon'] < $b['icon'] ? -1 : 1;
+}
+
+
+
 function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binarytype, $binarytypes)
 {
     $type = get_request('type');
@@ -109,7 +122,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         }
     }
     if (!$only_rows) {
-        $url = (strip_tags($row['url']));
+        $url = strip_tags($row['url']);
         $url = pack_url_data($db, $url, $userid);
         /// too quick and dirty --- clean up XXX
         $image_file = $image = '';
@@ -139,6 +152,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
             $_urls[] = $t;
         }
     }
+    usort($_urls, 'url_sort');
     $smarty->assign(array(
         'comments' =>     $comments,
         'offset' =>       $offset,
