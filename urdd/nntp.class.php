@@ -221,7 +221,7 @@ class URD_NNTP
         } else {
             $first = $groupArr['last_record'] + 1;
         }
-
+        // echo_debug(" $first to $last ", DEBUG_MAIN);
         //calculate total number op parts
         $total = gmp_div($last, $first);
 
@@ -503,6 +503,7 @@ class URD_NNTP
             $m1 = gmp_init($groupArr['first_record']);
             $m2 = gmp_init($groupArr['mid_record']);
             $m3 = gmp_init($groupArr['last_record']);
+//            echo_debug("*** {$data['first']} {$data['last']} {$groupArr['first_record']} {$groupArr['mid_record']} {$groupArr['last_record']}", DEBUG_SERVER);
 
             $first = gmp_init($data['first']);
             $last = gmp_add(gmp_init($data['last']), 1);

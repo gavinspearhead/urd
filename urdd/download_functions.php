@@ -769,7 +769,7 @@ function decompress(DatabaseConnection $db, $type, $dir, pr_list $files, $passwo
                 } else {
                     $pw_opt = $archive_types[$type][3];
                 }
-                $cmd_line = "nice -$niceval $cmd $options $pw_opt ./$filename >>$log_file 2>&1";
+                $cmd_line = "LANG=en_US.UTF-8 nice -$niceval $cmd $options $pw_opt ./$filename >>$log_file 2>&1";
                 exec($cmd_line, $output, $rv);
                 if ($rv == 0 || $rv == 1) {
                     $succ++;

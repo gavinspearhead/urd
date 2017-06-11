@@ -604,7 +604,6 @@ class Base_NNTP_Client
     {
         assert('is_string($newsgroup) && $newsgroup != ""');
         $response = $this->_send_command('GROUP ' . $newsgroup);
-
         switch ($response) {
             case NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED: // 211, RFC977: 'n f l s group selected'
                 $response_arr = explode(' ', ltrim($this->_current_status_response()));
