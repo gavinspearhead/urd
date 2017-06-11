@@ -297,7 +297,9 @@ function select_set(setID, type, theevent)
     // Remember this set for when the shift key is pressed, so we can toggle everything in between.
     // First see if shift was used and we need to toggle a bunch, before we overwrite the last_clicked_setid.
     // We also need to check if there is a valid last_clicked_setid to prevent bogus stuff.
+    get_selected_text();
     close_browse_divs();
+
     if (theevent.shiftKey && last_clicked_setid !== false) {
         toggle_group_of_sets(last_clicked_setid, setID, type);
         last_clicked_setid = false;

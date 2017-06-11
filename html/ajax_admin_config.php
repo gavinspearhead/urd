@@ -121,7 +121,7 @@ function show_config(DatabaseConnection $db, $userid)
     $sendmail_msg = $webdownload_msg = $auto_download_msg = $check_nntp_connections_msg = $user_scripts_msg = $global_scripts_msg = $download_spots_comments_msg = $download_spots_reports_msg = '';
     $parse_nfo_msg = $keep_int_msg = $compress_nzb_msg = $webeditfile_msg = $config_viewfiles_msg = $auto_getnfo_msg = $allow_robots_msg = $clickjack_msg = $download_spots_images_msg = '';
     $config_groups_msg = $config_makenzb_msg = $config_usenzb_msg = $config_post_msg = $config_rss_msg = $config_sync_msg = $config_download_msg = $need_challenge_msg = $use_encrypted_passwords_msg =
-    $config_download_comment_avatar_msg = '';
+    $config_download_comment_avatar_msg = $drop_random_msg = '';
 
     $module_msg = array(
         urd_modules::URD_CLASS_GENERIC      => '',
@@ -830,6 +830,7 @@ function show_config(DatabaseConnection $db, $userid)
             $extset_group_msg, $prefArray_root['extset_group']);
 
     $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_auto_expire'], 'auto_expire', $LN['config_auto_expire_msg'], $auto_expire_msg, $prefArray_root['auto_expire']);
+    $set_updating[] = new pref_checkbox(user_levels::CONFIG_LEVEL_BASIC, $LN['config_drop_random'], 'drop_random', $LN['config_drop_random_msg'], $drop_random_msg, $prefArray_root['drop_random']);
     if ($module_config[urd_modules::URD_CLASS_GROUPS] || $module_config[urd_modules::URD_CLASS_RSS]) {
         $set_updating[] = new pref_text(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxexpire'], 'maxexpire', $LN['config_maxexpire_msg'], $maxexpire_msg, $prefArray_root['maxexpire']);
     }
