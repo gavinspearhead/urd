@@ -353,6 +353,7 @@ class URD_NNTP
         // Download headers, to update local info
         $blacklist_counter = gmp_init(0);
         $poster_blacklist = get_config($this->db, 'poster_blacklist');
+        $drop_random = get_config($this->db, 'drop_random', 0);
         $poster_blacklist = unserialize($poster_blacklist);
         if (!is_array($poster_blacklist)) {
             $poster_blacklist = array();
@@ -404,7 +405,7 @@ class URD_NNTP
                 write_log('Skipping:', LOG_INFO);
             } else {
                 // check mindate otherwise return
-                $rv = $this->parse_messages($msgs, $mindate, $older_counter, $blacklist_counter, $get_extsetdata, $parse_spots, $parse_spots_comments, $parse_spots_reports, $poster_blacklist);
+                $rv = $this->parse_messages($msgs, $mindate, $older_counter, $blacklist_counter, $get_extsetdata, $parse_spots, $parse_spots_comments, $parse_spots_reports, $poster_blacklist, $drop_random);
                 $total_counter = gmp_add($total_counter, count($msgs));
                 if (gmp_cmp($older_counter, $older_top) > 0) {
                     echo_debug('too old', DEBUG_MAIN);
@@ -629,8 +630,40 @@ Array
         $this->xover_lines  	= 7;
         $this->xover_xref   	= 8;
     }
+    private static function count_capitals($s) {
+        return strlen(preg_replace('![^A-Z]+!', '', $s));
+    }
+    private static function count_lower($s) {
+        return strlen(preg_replace('![^a-z]+!', '', $s));
+    }
 
-    private function parse_messages(array $msgs, $mindate, &$older_counter, &$blacklist_counter, $get_extset_data=FALSE, $parse_spots, $parse_spots_comments, $parse_spots_reports, array $poster_blacklist)
+    private static function filter_random_names($name)
+    {
+        $p1 = strpos($name, '"') + 1;
+        $p2 = strpos($name, '"', $p1);
+
+        $p3 = $p2 - $p1;
+        if ($p1 >= 0  && $p2 >= 0)
+            $name = substr($name, $p1, $p3);
+        $p = strrpos($name, '.');
+        if ($p > 0) {
+            $name = substr($name, 0, $p);
+        }
+        $a = strlen($name);
+        if ($a < 10) { 
+            return FALSE;
+        }
+        $b = count(preg_split("/[-\s,.]/", $name));
+        $cc = self::count_capitals($name) + 1;
+        $cl = self::count_lower($name) + 1;
+        if ((($a / $b) >= 10) && (($cc / $cl) >= 0.5)) { 
+            return TRUE; 
+        } else {
+            return FALSE;
+        }
+    }
+
+    private function parse_messages(array $msgs, $mindate, &$older_counter, &$blacklist_counter, $get_extset_data=FALSE, $parse_spots, $parse_spots_comments, $parse_spots_reports, array $poster_blacklist, $drop_random)
     {
         // Parse messages received from a newsgroup and store it in the database
 
@@ -660,6 +693,7 @@ Array
         }
         $binary_id = array();
         $_blacklist_counter = 0;
+        $_filter_counter = 0;
         $total_counter_1 = count($msgs);
         foreach($msgs as $msgtxt) {
             // Split the bunch:
@@ -729,6 +763,11 @@ Array
                         continue 2;
                     }
                 }
+                if ($drop_random && self::filter_random_names($subject)) {
+                    #echo_debug("Dropping $subject", DEBUG_SERVER);
+                    $_filter_counter++;
+                    continue;
+                }
                 // Create binaryID / add to store of tables:
                 $table = new TableParts;
                 $table->binaryID	= create_binary_id($subject, $from);
@@ -781,6 +820,7 @@ Array
             $older_counter += $cnt;
         }
         echo_debug("$_blacklist_counter of " . $total_counter_1 . ' articles matched the blacklist', DEBUG_NNTP);
+        echo_debug("$_filter_counter of " . $total_counter_1 . ' articles considered random strings', DEBUG_NNTP);
         $blacklist_counter = gmp_add($blacklist_counter, $_blacklist_counter);
         unset($spot_comments, $spot_reports, $spot_ids);
         $ug = new urdd_group($this->db);

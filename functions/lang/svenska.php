@@ -948,6 +948,8 @@ $LN['config_spots_expire_time_msg'] = 'Expire time for spots (in days); note thi
 $LN['config_default_expire_time']   = 'F&ouml;rvald giltighetstid (i dagar)';
 $LN['config_expire_incomplete']     = 'Giltighetstid f&ouml;r inkompletta set (i dagar, 0 = anv&auml;nd inte)';
 $LN['config_expire_percentage']     = 'Gr&auml;nsen f&ouml;r inkompletta set att radera (procent)';
+$LN['config_drop_random_msg']           = 'Drop newsgroup messages that have random looking names';
+$LN['config_drop_random']           = 'Drop sets with random names on update';
 $LN['config_auto_expire']           = 'Rensa utg&aring;ngna artiklar efter uppdatering';
 $LN['config_auto_getnfo']	        = 'Auto-download of nfo files';
 $LN['config_auto_getnfo_msg']       = 'Automatically download and parse nfo files after updating a newsgroup';
