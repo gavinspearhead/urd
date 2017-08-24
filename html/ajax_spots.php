@@ -151,7 +151,6 @@ class spot_viewer
         if (!isset($res[0]['cnt'])) {
             throw new exception($LN['error_setsnumberunknown']);
         }
-
         return $res[0]['cnt'];
     }
     public function get_page_count($perpage, $offset, $skip_total=FALSE)
@@ -179,7 +178,6 @@ class spot_viewer
             }
         }
         $setres_count = count($setres);
-
         if ($setres_count < $perpage) {
             $sql2 = $this->get_spots(FALSE);
 
@@ -599,7 +597,6 @@ try {
     } else {
         $content = $smarty->fetch('ajax_spots.tpl');
     }
-
     return_result(array(
         'content' => $content,
         'minsetsize' => $minsetsize,

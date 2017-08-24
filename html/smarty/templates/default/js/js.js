@@ -3931,6 +3931,7 @@ function load_spots(options)
     data.flag = flag;
     data.order = order;
     $.post(url, data).done(function(html) {
+            console.log(html);
         var x = JSON.parse(html);
         if (x.error == 0) {
             $('#minage').val(x.minage);
