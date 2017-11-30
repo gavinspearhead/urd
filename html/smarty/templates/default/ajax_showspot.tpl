@@ -22,7 +22,7 @@
  * $Id: browse.tpl 2027 2011-01-15 00:03:01Z gavinspearhead $
  *}
 {extends file="popup.tpl"}
-{block name=title}{$title|escape}{/block}
+{block name=title}{$title|escape|urd_wbr}{/block}
 
 {block name=contents}
 
@@ -36,7 +36,7 @@
     <div class="inline iconsizeplus deleteicon buttonlike" onclick="javascript:add_blacklist('{$comment.userid|escape:javascript}', 'spotterid');" {urd_popup type="small" text=$LN_quickmenu_addblacklist }></div>
     </td></tr>
     <tr class="comment"><td colspan="2">
-    {$comment.comment}
+    {$comment.comment|urd_wbr}
     </td></tr>
     <tr class="comment"><td colspan="2"><br/></td></tr>
     {/foreach}
@@ -151,7 +151,7 @@ $(document).ready(function() {
 {/if}
 
 <tr class="comment"><td colspan="2"><br/></td></tr>
-<tr class="comment"><td colspan="2">{$description}</td></tr>
+<tr class="comment"><td colspan="2">{$description|urd_wbr}</td></tr>
 <tr class="comment"><td colspan="2"><br/></td></tr>
 
 <tr class="comment"><td colspan="2" class='righted'>

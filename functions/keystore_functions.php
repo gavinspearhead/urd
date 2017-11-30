@@ -29,6 +29,7 @@ if (!defined('ORIGINAL_PAGE')) {
 class keystore
 {
     const keystore_file = '.keystore.php';
+    const cipher = "BF-CBC";
 
     private static function get_keystore_path(DatabaseConnection $db)
     {
@@ -37,7 +38,7 @@ class keystore
             add_dir_separator($default_keystore_path);
             $keystore_path = get_config($db, 'keystore_path', $default_keystore_path);
             add_dir_separator($keystore_path);
-
+///            var_dump($keystore_path);
             return $keystore_path;
     }
 
@@ -64,11 +65,14 @@ class keystore
             $iv = base64_decode(substr($password, 0, strpos($password, ':')));
 
             $enc_pw = base64_decode(substr($password, strpos($password, ':') + 1));
-            $dec_pw = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, $enc_pw, MCRYPT_MODE_CBC, $iv);
+            #$dec_pw = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, $enc_pw, MCRYPT_MODE_CBC, $iv);
+            $dec_pw = openssl_decrypt($enc_pw, self::cipher, $encryption_key, OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, $iv);
+            if ($dec_pw === FALSE) {
+                throw new exception('decryption of password failed');
+            }
             $encryption_key = '';
             unset($encryption_key);
             $dec_pw = rtrim($dec_pw, "\0");
-
             return $dec_pw;
         } else {
             return $password;
@@ -89,9 +93,19 @@ class keystore
             throw new exception('No valid encryption key found');
         }
 
-        $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-        $enc_pw = mcrypt_encrypt(MCRYPT_BLOWFISH, $encryption_key, $password, MCRYPT_MODE_CBC, $iv);
+#       $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
+        $iv_size = openssl_cipher_iv_length(self::cipher);
+#$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+        $iv = openssl_random_pseudo_bytes($iv_size);
+        if ($m = strlen($password)% $iv_size) {
+            $password .= str_repeat("\x00",  $iv_size - $m);
+        }
+#        $enc_pw = mcrypt_encrypt(MCRYPT_BLOWFISH, $encryption_key, $password, MCRYPT_MODE_CBC, $iv);
+        $enc_pw = openssl_encrypt($password, self::cipher, $encryption_key,OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, $iv);
+        //var_dump($enc_pw, $password);
+        if ($enc_pw === FALSE) {
+            throw new exception('encryption of password failed ' . openssl_error_string ());
+        }
         $encryption_key = '';
         unset($encryption_key);
 

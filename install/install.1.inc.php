@@ -53,7 +53,7 @@ if (!$rv_php2) {
 $OUT .= '<tr><td class="install2">PHP command line interface installed</td>';
 $OUT .= GenRetVal($php_cli, $rv_php2b);
 if (!$rv_php2b) {
-    $OUT .= ShowHelp("Please install the PHP command line interface, e.g. try 'apt-get install php5-cli' as root.");
+    $OUT .= ShowHelp("Please install the PHP command line interface, e.g. try 'apt-get install php-cli' as root.");
 }
 
 $OUT .= '<tr><td class="install2">PHP has Safe Mode disabled</td>';
@@ -71,7 +71,7 @@ if (!$rv_php4) {
 $OUT .= '<tr><td class="install2">PHP module pcntl available</td>';
 $OUT .= GenRetVal(CheckPHPpcntl($_SESSION['php_path']), $rv_php6);
 if (!$rv_php6) {
-    $OUT .= ShowHelp("The pcntl module is required by the URD daemon. Note that there currently is no Windows pcntl support. This and the other PHP modules should automatically be installed when you 'apt-get install php5-cli' as root.");
+    $OUT .= ShowHelp("The pcntl module is required by the URD daemon. Note that there currently is no Windows pcntl support. This and the other PHP modules should automatically be installed when you 'apt-get install php-cli' as root.");
 }
 
 $OUT .= '<tr><td class="install2">PHP date.timezone set</td>';
@@ -109,16 +109,16 @@ if (!$rv_php8b) {
     $OUT .= ShowHelp('The openssl module is optional, needed for secure (TLS/SSL) connections to news servers.');
 }
 
-$OUT .= '<tr><td class="install2">PHP module mcrypt available</td>';
-$OUT .= GenRetVal(CheckPHPmcrypt($_SESSION['php_path']), $rv_php8c);
-if (!$rv_php8c) {
-    $OUT .= ShowHelp('The mcrypt module is required by URD. Try: \'apt-get install php5-mcrypt; php5enmod mcrypt\' as root');
-}
+#$OUT .= '<tr><td class="install2">PHP module mcrypt available</td>';
+#$OUT .= GenRetVal(CheckPHPmcrypt($_SESSION['php_path']), $rv_php8c);
+#if (!$rv_php8c) {
+#    $OUT .= ShowHelp('The mcrypt module is required by URD. Try: \'apt-get install php-mcrypt; php mcrypt\' as root');
+#}
 
 $OUT .= '<tr><td class="install2">PHP module GD available</td>';
 $OUT .= GenRetVal(CheckPHPgd(), $rv_phpgd);
 if (!$rv_phpgd) {
-    $OUT .= ShowHelp('The gd module is required, needed for captchas in the registration form and statistics. Please make sure you restart the webserver after installing it. Try: \'apt-get install php5-gd\' as root');
+    $OUT .= ShowHelp('The gd module is required, needed for captchas in the registration form and statistics. Please make sure you restart the webserver after installing it. Try: \'apt-get install php-gd\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module XMLreader/writer available</td>';
@@ -131,13 +131,13 @@ if (!$rv_phpxmlrw) {
 $OUT .= '<tr><td class="install2">PHP module CURL available</td>';
 $OUT .= GenRetVal(CheckPHPCURL(), $rv_phpcurl);
 if (!$rv_phpcurl) {
-    $OUT .= ShowHelp('The CURL module is required by the URD daemon. Try: \'apt-get install php5-curl\' as root');
+    $OUT .= ShowHelp('The CURL module is required by the URD daemon. Try: \'apt-get install php-curl\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module GMP available</td>';
 $OUT .= GenRetVal(CheckPHPGMP(), $rv_phpgmp);
 if (!$rv_phpgmp) {
-    $OUT .= ShowHelp('The GMP module is required by the URD daemon. Try: \'apt-get install php5-gmp\' as root');
+    $OUT .= ShowHelp('The GMP module is required by the URD daemon. Try: \'apt-get install php-gmp\' as root');
 }
 
 $OUT .= '<tr><td class="install2">PHP module SPL available</td>';

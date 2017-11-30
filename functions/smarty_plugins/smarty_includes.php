@@ -27,6 +27,7 @@ require_once "$pathsr/function_popup.inc.php";
 require_once "$pathsr/function_flush.inc.php";
 require_once "$pathsr/function_skipper.inc.php";
 require_once "$pathsr/modifier_capitalise.inc.php";
+require_once "$pathsr/modifier_wbr.inc.php";
 require_once "$pathsr/function_progress.inc.php";
 require_once "$pathsr/function_checkbox.inc.php";
 
@@ -38,4 +39,5 @@ function register_smarty_extensions(&$smarty)
     $smarty->registerPlugin('function', 'urd_flush', 'smarty_function_urd_flush');
     $smarty->registerPlugin('function', 'urd_progressbar', 'smarty_function_urd_progress');
     $smarty->registerPlugin('modifier', 'urd_capitalise', 'smarty_modifier_capitalise');
+    $smarty->registerPlugin('modifier', 'urd_wbr', 'smarty_modifier_wbr');
 }

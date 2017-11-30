@@ -78,7 +78,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         $ubb = new UbbParse($description);
         TagHandler::setDeniedTags( [] );
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
-        $description = insert_wbr($ubb->parse());
+        $description = $ubb->parse();
         list($_size, $suffix) = format_size($row['size'], 'h', $LN['byte_short'], 1024, 1);
         $filesize = $_size . ' ' . $suffix;
         $category = $LN[SpotCategories::HeadCat2Desc($row['category'])];
@@ -115,7 +115,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
         TagHandler::setadditionalinfo('img', 'allowedimgs', get_smileys($smarty->getTemplateVars('IMGDIR'), TRUE));
         $c = $ubb->parse();
         $c = str_replace("\n", '<br/>', $c);
-        $comment['comment'] = insert_wbr($c);
+        $comment['comment'] = $c;
         $comment['stamp'] = date($LN['dateformat2'] . ' ' . $LN['timeformat2'], $comment['stamp']);
         if ($comment['user_avatar'] != '') {
             $comment['user_avatar'] = 'data:image/png;base64,' . $comment['user_avatar'];
@@ -185,7 +185,7 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
             'whitelisted' =>  $whitelisted,
             'spotter_id' =>   $row['spotterid'],
             'spam_reports' => $spam_reports,
-            'title' =>        insert_wbr(html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8')),
+            'title' =>        html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8'),
             'tag' =>          $row['tag'],
             'age' =>          $age,
             'filesize' =>     $filesize,
@@ -193,7 +193,6 @@ function show_spotinfo(DatabaseConnection $db, $setID, $userid, $display, $binar
             'binarytype' =>   $binarytype, // Binarytype
             'binarytypes' =>  $binarytypes,  // All
             'display' =>      $display));      // All values
-
         return $smarty->fetch('ajax_showspot.tpl');
     } else {
         return $smarty->fetch('ajax_showspotcomments.tpl');
