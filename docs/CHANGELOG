@@ -20,7 +20,7 @@
 - Moved from mcrypt to openssl
 - Updated many search options
 - Updated spots white/black list URLs 
-- Updated smarty to 3.1.30
+- Updated smarty to 3.1.31
 - Updated to jquery 3.1.1
 
 
