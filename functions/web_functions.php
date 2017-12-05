@@ -2272,6 +2272,7 @@ function find_url_icon($url)
         'hbo.com' => 'HBO',
         'iafd.com' => 'IAFD',
         'ign.com' => 'IGN',
+        'imagechili.net' => 'ImgChili',
         'imagecurl.com' => 'ImageCurl',
         'imagetwist.com' => 'ImageTwist',
         'imdb.com' => 'IMDB',
