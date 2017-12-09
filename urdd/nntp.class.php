@@ -61,6 +61,67 @@ class URD_NNTP
     private $xover_xref;
     private $extset_headers;
 
+    private static $letter_freq = [
+        'yy'=> -0.2,
+        'zx'=> -0.5,
+        'zc'=> -0.5,
+        'xz'=> -0.5,
+        'qg'=> -0.5,
+        'qq'=> -0.5,
+        'jj'=> -0.5,
+        'kk'=> -0.2,
+        'hh'=> -0.2,
+        'ww'=> -0.2,
+        'ii'=> -0.2,
+        'th' => 1.52,
+        'en' => 0.55,
+        'ng' => 0.18,
+        'he' => 1.28,
+        'ed' => 0.53,
+        'of' => 0.16,
+        'in' => 0.94 ,
+        'to' => 0.52 ,
+        'al' => 0.09,
+        'er' => 0.94 ,
+        'it' => 0.50 ,
+        'de' => 0.09,
+        'an' => 0.82 ,
+        'ou' => 0.50 ,
+        'se' => 0.08,
+        're' => 0.68 ,
+        'ea' => 0.47 ,
+        'le' => 0.08,
+        'nd' => 0.63  ,
+        'hi' => 0.46  ,
+        'sa' => 0.06,
+        'at' => 0.59  ,
+        'is' => 0.46  ,
+        'si' => 0.05,
+        'on' => 0.57  ,
+        'or' => 0.43  ,
+        'ar' => 0.04,
+        'nt' => 0.56  ,
+        'ti' => 0.34  ,
+        've' => 0.04,
+        'ha' => 0.56  ,
+        'as' => 0.33  ,
+        'ra' => 0.04,
+        'es' => 0.56  ,
+        'te' => 0.27 ,
+        'ld' => 0.02,
+        'st' => 0.55  ,
+        'et' => 0.19  ,
+        'ur' => 0.02,
+        'nu' => 0.01,
+        'ma' => 0.01,
+        'ag' => 0.01,
+        'ne' => 0.01,
+        'be' => 0.01,
+        'sn' => 0.01,
+        'da' => 0.01,
+        ];
+
+
     const MIN_OLDER_COUNTER     = 5000;
     const MAX_OLDER_COUNTER     = 10000;
     const BINARYID_CACHE_SIZE   = 64; // number of binary IDs we keep in memory to minimise the redundant subjects and posters we store
@@ -637,8 +698,66 @@ Array
     private static function count_lower($s) {
         return strlen(preg_replace('![^a-z]+!', '', $s));
     }
+    private static function count_digrams($name)
+    {
+        $c = 0;
+        $name = strtolower($name);
+        $len = strlen($name);
+        foreach (range(0, $len - 2) as $i) {
+            if ($name[$i] == ' ' || $name[$i+1] == ' ') {
+                $c += 0.3;
+            } elseif (!ctype_alpha($name[$i]) || !ctype_alpha($name[$i+1])) { 
+                $c -= 0.1;
+            } else {
+                $t = ($name[$i] . $name[$i + 1]);
+                if (isset(self::$letter_freq[$t])) {
+                    $c += (self::$letter_freq[$t]);
+                }
+            }
+        }
+        return $c / $len;
+    }
 
     private static function filter_random_names($name)
+    {
+        $p1 = strpos($name, '"') + 1;
+        $p2 = strpos($name, '"', $p1);
+
+        if ($p1 >= 0  && $p2 >= 0) {
+            $name = substr($name, $p1, $p2-$p1);
+        }
+        $name = preg_replace('/part\d+\.rar/i', '', $name);
+        $name = preg_replace('/S\d+E\d+/i', '', $name);
+        $name = preg_replace('/\.vol\d+\+\d+\.par2/i', '', $name);
+        $name = str_replace('.', ' ', $name);
+        $name = str_ireplace('.par2', '', $name);
+
+        $cd = self::count_digrams($name);
+        $p = strrpos($name, '.');
+        if ($p > 0) {
+            $name = substr($name, 0, $p);
+        }
+        $a = strlen($name);
+        if ($a < 10) { 
+            return FALSE;
+        }
+        $b = count(preg_split("/[-\s,.]/", $name));
+        $cc = self::count_capitals($name) + 1;
+        $cl = self::count_lower($name) + 1;
+        /*if ($cd >= 0.005) {
+            print("++++ " .  $name . ' ' . "$cd\n");
+        } else
+            print("---- " .  $name . ' ' . "$cd\n");*/
+        if ((($a / $b) >= 10) && (($cc / $cl) >= 0.5)||  $cd < 0.005) { 
+            return TRUE; 
+        } else {
+            return FALSE;
+        }
+    }
+
+        
+   /*     
+        function filter_random_names($name)
     {
         $p1 = strpos($name, '"') + 1;
         $p2 = strpos($name, '"', $p1);
@@ -662,7 +781,7 @@ Array
         } else {
             return FALSE;
         }
-    }
+    }*/
 
     private function parse_messages(array $msgs, $mindate, &$older_counter, &$blacklist_counter, $get_extset_data=FALSE, $parse_spots, $parse_spots_comments, $parse_spots_reports, array $poster_blacklist, $drop_random)
     {
