@@ -167,7 +167,7 @@ function make_graph_data(DatabaseConnection $db, $userid, array $data)
     $new_data = array(
         'fillcolours'=> colour_map::get_rgb_codes($db, $userid, 0.6),
         'strokecolours'=> colour_map::get_rgb_codes($db, $userid, 1),
-        'textcolour'=> colour_map::get_rgb_code($db, $userid, 1),
+        'textcolour'=> colour_map::get_rgb_codes($db, $userid, 1),
         'titles'=> [],
     );
     $new_data = array_merge($new_data, $data);

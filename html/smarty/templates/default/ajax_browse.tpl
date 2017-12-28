@@ -166,7 +166,11 @@ $(document).ready(function() {
     <td id="td_set_{$set.setid}">
     <div class="donotoverflowdamnit inline">{$bintype} {$setdesc}</div>
     </td>
+{if $set.rating == ""}
+{$rating=""}
+{else}
 {$rating=$set.rating * 10}
+{/if}
 {$imdbpic="ratingicon_$rating"}
 {if $rating == ""}{$imdbpic="followicon"}{/if}
 	<td class="fixwidth2a nowrap {if $set.new_set != 0}newset{/if}">{$set.age}</td>

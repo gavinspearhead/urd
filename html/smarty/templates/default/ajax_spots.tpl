@@ -206,7 +206,12 @@ $(document).ready(function() {
 {elseif $set.categorynr == 2}{$btgame}
 {elseif $set.categorynr == 3}{$btsoftw}
 {/if}
+
+{if $set.rating == ""} 
+{$rating=""}
+{else}
 {$rating=$set.rating * 10}
+{/if}
 {$linkpic="ratingicon_$rating"}
 {if $rating == ""}{$linkpic="followicon"}{/if}
 
