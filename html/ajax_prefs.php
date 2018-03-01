@@ -605,7 +605,7 @@ function show_preferences(DatabaseConnection $db, $userid)
 
     $search_terms = load_search_terms($db, $userid);
     if ($search_terms === FALSE) { 
-        $search_terms = $prefArray['search_terms']; 
+        $search_terms =  $prefArray['search_terms']; 
     }
 
     $blocked_terms = load_blocked_terms($db, $userid);
