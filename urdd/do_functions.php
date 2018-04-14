@@ -26,6 +26,8 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
+
+
 function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
     assert(is_numeric($dlid));
@@ -53,7 +55,7 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
             $part_number = (int)($segment_attr['number']);
             $total_size += $size;
 
-            $vals = array($dlid, $groupid, $part_number, $cleansubject,DOWNLOAD_READY, $messageID, $binaryID, $size);
+            $vals = array($dlid, $groupid, $part_number, $cleansubject, DOWNLOAD_READY, $messageID, $binaryID, $size);
             $db->insert_query('downloadarticles', $cols, $vals);
             if ($count == 0 && get_download_name($db, $dlid) == '') {
                 $dlname = find_name($db, $name);

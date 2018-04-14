@@ -53,12 +53,25 @@ function my_escapeshellcmd($str, $hide_space=TRUE)
     return my_escapeshellarg($str, $hide_space);
 }
 
+function my_escapeshell_quoted($str, $hide_space=TRUE)
+{
+    $chars = ['\\', '`',  '$', '"'];
+    $sub_chars = ['\\\\', '\\`',  '\\$', '\\"' ];
+    if ($hide_space === TRUE) {
+        $chars[] = ' ';
+        $sub_chars[] = '\\ ';
+    }
+    $rv = str_replace($chars, $sub_chars, $str);
+    return $rv;
+} 
+
+
 function my_escapeshellarg($str, $hide_space=TRUE)
 { // you really have to do everything yourself in php...
     // note that this isn't a proper command line escape thingie as it doesn't handle piping and quoting by it self. It just escapes all the naughty characters.
     $chars = ['\\', '#', '&', ';', '`', '|', '*', '?', '~', '<', '>', '^', '(', ')', '[', ']', '{', '}', '$', '\x0A', '\xFF', '\'', '"'];
     $sub_chars = ['\\\\', '\\#', '\\&', '\\;', '\\`', '\\|', '\\*', '\\?', '\\~', '\\<', '\\>', '\\^', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\$', '\\\x0A', '\\\xFF', '\\\'', '\\"'];
-    if ($hide_space===TRUE) {
+    if ($hide_space === TRUE) {
         $chars[] = ' ';
         $sub_chars[] = '\\ ';
     }

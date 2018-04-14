@@ -78,7 +78,7 @@ class spotparser
             'size' => '',
             'poster' => '',
             'tag' => '',
-            'nzb' => '',
+            'nzb' => [],
             'title' => '',
             'key-id' => '',
             'spotid'=>'',

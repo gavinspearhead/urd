@@ -33,7 +33,7 @@ class pr_file
     public $base; // basename
     public $files; // file set
 
-    public function __construct ($ext, $base, $filename)
+    public function __construct($ext, $base, $filename)
     {
         assert ($ext != '' && $filename != '');
         $this->ext = $ext;
@@ -53,7 +53,7 @@ class pr_list
         $this->dir = $dir;
     }
 
-    public function add ($ext, $base, $filename)
+    public function add($ext, $base, $filename)
     {
         assert ($ext != '' && $filename != '');
         foreach ($this->file_list as $f) {

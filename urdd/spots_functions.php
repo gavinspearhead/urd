@@ -140,7 +140,7 @@ class urd_spots
             'date' => '',
             'xml-signature' => '',
             'user-signature' => '',
-            'user-key'=> '',
+            'user-key'=> [],
             'xml' =>'',
             'messageid' => $message_id,
             'user-avatar' => '',
@@ -234,6 +234,7 @@ class urd_spots
     {
         try {
             $spot = $this->get_spotdata_by_messageid($dispose_id);
+            if ($spot === NULL) return;
             if ($spot['spotter_id'] == $spotter_id && ($date - $spot['stamp'] < 432000)) {
                 $this->delete_spot($spot['spotid']);
             }

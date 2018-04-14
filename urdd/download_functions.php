@@ -33,6 +33,21 @@ function store_article(&$article, $dir, $msg_id)
     file_put_contents($dir . $msg_id . '.txt', $article . "\n\n");
 }
 
+
+function parse_filename_from_subject($subject)
+{
+    $s = html_entity_decode($subject);
+    if (preg_match('|"(.*)"|', $subject, $matches) === 1) {
+        $name = $matches[1];
+    } else if (preg_match('|(.*) yenc|i', $subject, $matches) === 1) {
+        $name = $matches[1];
+    } else {
+        $name = $subject;
+    }
+    $name = str_replace('"', '', $name);
+    return $name;
+}
+
 function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &$nzb, &$groupid, $userid, &$connected, $check_for_rar_encryption, $download_par_files)
 {
     assert(is_numeric($userid));
@@ -44,7 +59,7 @@ function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &
         throw new exception('yydecode not found', ERR_CONFIG_ERROR);
     }
 
-    $cmd = "/bin/sh -c '$yydecode $yydecode_pars ' ";
+    $cmd = "/bin/sh -c '$yydecode $yydecode_pars  ";
     $size = $p_cnt = $a_cnt = $e_cnt = $groupid = (int) 0;
 
     $mime_settings = ['include_bodies' => TRUE, 'decode_bodies' => TRUE, 'decode_headers' => TRUE];
@@ -56,14 +71,9 @@ function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &
             //2 => ['file', '/tmp/err', 'a'] // and the errors
     ];
     $pipes = [];
-
-    $process = proc_open($cmd, $descriptorspec, $pipes, $dir, NULL, ['binary_pipes']);
-    if ($process === FALSE || !is_resource($process)) {
-        write_log('Could not create pipe', LOG_WARNING);
-        urdd_exit(PIPE_ERROR);
-    }
-
-    $p = $pipes[0];
+    $p = NULL;
+    
+    $last_filename = '';
     add_dir_separator($dir);
     // $batch is the result of the select query on ready-articles:
     // First reset them all to DOWNLOAD_READY, because if we throw an error we don't want to have orphaned ACTIVE's
@@ -78,6 +88,20 @@ function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &
             if ($article['groupID'] != $groupid) {
                 $groupid = $article['groupID'];
                 $nzb->select_group($groupid, $code);
+            }
+
+            $name = parse_filename_from_subject($article['name']);
+            if ($name != $last_filename) {
+                if ($p !== NULL) pclose($p);
+                $last_filename = $name;
+                $name = my_escapeshell_quoted($name, FALSE);
+              //  var_dump ($cmd . " -o \"$name\" '");
+                $process = proc_open($cmd . " -o \"$name\" '", $descriptorspec, $pipes, $dir, NULL, ['binary_pipes']);
+                if ($process === FALSE || !is_resource($process)) {
+                    write_log('Could not create pipe', LOG_WARNING);
+                    urdd_exit(PIPE_ERROR);
+                }
+                $p = $pipes[0];
             }
 
             $msg_id = $article['messageID'];
