@@ -129,7 +129,11 @@ $(document).ready(function() {
 {if $set.interesting == 1}{$interestingimg="sadicon"}{/if}
 {if $show_makenzb != 0 && $set.nzb == 1}{$nzb='markednzb'}{/if}
 
+{if $set.rating == ""}
+{$rating=""}
+{else}
 {$rating=$set.rating*10}
+{/if}
 {$imdbpic="ratingicon_$rating"}
 {if $rating == ""}{$imdbpic="followicon"}{/if}
 

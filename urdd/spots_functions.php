@@ -191,9 +191,10 @@ class urd_spots
                     break;
                 case 'x-user-key':
                     $xml = simplexml_load_string($part1);
-                    if ($xml !== FALSE) {
-                        $spot_data['user-key']['exponent'] = (string) $xml->Exponent;
-                        $spot_data['user-key']['modulo'] = (string) $xml->Modulus;
+                        if ($xml !== FALSE) {
+                                $spot_data['user-key']= [];
+                                $spot_data['user-key']['exponent'] = (string) $xml->Exponent;
+                                $spot_data['user-key']['modulo'] = (string) $xml->Modulus;
                     }
                     break;
                 case 'x-user-signature':
