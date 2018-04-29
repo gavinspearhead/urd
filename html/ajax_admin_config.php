@@ -611,6 +611,7 @@ function show_config(DatabaseConnection $db, $userid)
 
     $download_settsings = array();
     $download_settings[] = new pref_text(user_levels::CONFIG_LEVEL_BASIC, $LN['config_dlpath'], 'dlpath', $LN['config_dlpath_msg'], $dlpath_msg, $prefArray_root['dlpath']);
+    $download_settings[] = new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_group'], 'group', $LN['config_group_msg'], $group_msg, $groups, $prefArray_root['group']);
     $download_settings[] = new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_permissions'], 'permissions', $LN['config_permissions_msg'],
             $permissions_msg, $permissions, $prefArray_root['permissions']);
     if ($module_config[urd_modules::URD_CLASS_DOWNLOAD] || $module_config[urd_modules::URD_CLASS_MAKENZB] || $module_config[urd_modules::URD_CLASS_USENZB]) {
@@ -720,8 +721,6 @@ function show_config(DatabaseConnection $db, $userid)
     $global_settings[] = new pref_select(user_levels::CONFIG_LEVEL_BASIC, $LN['config_index_page_root'], 'index_page_root', $LN['config_index_page_root_msg'],
             $index_page_msg, $index_page_array, $prefArray_root['index_page_root']);
 
-    $global_settings[] = new pref_select(user_levels::CONFIG_LEVEL_ADVANCED, $LN['config_group'], 'group', $LN['config_group_msg'],
-            $group_msg, $groups, $prefArray_root['group']);
     $global_settings[] = new pref_numeric_noformat(user_levels::CONFIG_LEVEL_MASTER, $LN['config_maxbuttons'], 'maxbuttons', $LN['config_maxbuttons_msg'],
             $maxbuttons_msg, $prefArray_root['maxbuttons']);
 
