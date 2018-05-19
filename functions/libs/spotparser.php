@@ -138,7 +138,6 @@ class spotparser
         }
 
         # NZB segmenten plakken we gewoon aan elkaar
-        $tpl_spot['nzb'] = [];
         foreach ($xml->xpath('/Spotnet/Posting/NZB/Segment') as $seg) {
             $tpl_spot['nzb'][] = (string) $seg;
         }
