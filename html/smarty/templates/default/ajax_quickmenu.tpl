@@ -25,7 +25,7 @@
 <div id="quickmenuinner">
 {foreach $items as $link=>$item name="qm"}
 {strip}
-<div id="quickmenuitem_{$item@iteration}" class="quickmenuitem">
+<div id="quickmenuitem_{$smarty.foreach.qm.iteration}" class="quickmenuitem">
 {* Action? *}
 {if $item->type == 'quickmenu'}
 <button class="quickmenubutton" onclick="javascript:show_quickmenu('{$item->id}','{$subject}', '{$srctype}', event); return false;">

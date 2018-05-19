@@ -22,7 +22,7 @@
  * $Id: show_functions.php 2567 2012-07-08 11:46:01Z gavinspearhead $
  */
 
-function smarty_function_urd_popup($params, &$smarty)
+function smarty_function_urd_popup($params, $smarty)
 {
     global $LN;
     $text = $params['text'];

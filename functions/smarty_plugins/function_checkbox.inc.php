@@ -22,7 +22,7 @@
  * $Id: ajax_admincontrol.php 2567 2012-07-08 11:46:01Z gavinspearhead $
  */
 
-function smarty_function_urd_checkbox($params, &$smarty)
+function smarty_function_urd_checkbox($params, $smarty)
 {
     $value = isset($params['value']) ? $params['value'] : '';
     $classes = isset($params['classes']) ? $params['classes'] : '';

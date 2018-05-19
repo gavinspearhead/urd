@@ -22,7 +22,7 @@
  * $Id: show_functions.php 2567 2012-07-08 11:46:01Z gavinspearhead $
  */
 
-function smarty_function_urd_progress($params, &$smarty)
+function smarty_function_urd_progress($params, $smarty)
 {
     $width = isset($params['width']) ? $params['width'] : 100;
     $colour = isset($params['colour']) ? $params['colour'] : 'grey';

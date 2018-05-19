@@ -33,7 +33,7 @@ function find_page($pages, $number)
     return FALSE;
 }
 
-function smarty_function_urd_skipper($params, &$smarty)
+function smarty_function_urd_skipper($params, $smarty)
 {
     $rv = array();
     $current_page = isset($params['current']) ? $params['current'] : 0;
