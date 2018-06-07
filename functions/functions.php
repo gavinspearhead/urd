@@ -1519,9 +1519,9 @@ function validate_url($url, $strict=TRUE)
 {
     assert(is_string($url));
     if ($strict) {
-        $res = preg_match ('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/~%&;\[\]]*)?/$|i', $url);
+        $res = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/~%&;\[\]]*)?/$|i', $url);
     } else {
-        $res = preg_match ('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/?~%&;\[\]]*)?$|i', $url);
+        $res = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/?~%&;\[\]]*)?$|i', $url);
     }
 
     return $res == 1;

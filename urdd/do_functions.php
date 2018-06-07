@@ -27,7 +27,6 @@ if (!defined('ORIGINAL_PAGE')) {
 }
 
 
-
 function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
     assert(is_numeric($dlid));
@@ -2451,8 +2450,8 @@ function do_getwhitelist(DatabaseConnection $db, action $item)
     return NO_ERROR;
 }
 
-
-function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
+/*
+function do_get_imdb_watchlist_old(DatabaseConnection $db, action $item)
 {
     $userid = $item->get_userid();
     $imdb_user = get_pref($db, 'imdb_userid', $userid);
@@ -2491,6 +2490,46 @@ function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
         update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $e->getMessage());
         return HTTP_CONNECT_ERROR;
     }
+}*/
+
+function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
+{
+    $userid = $item->get_userid();
+    $url = get_pref($db, 'imdb_userid', $userid);
+    $res = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/[a-z0-9.@\-_:/?~%&;\[\]]*)?$|i', $url);
+    if ($res != 1) {
+          $status = QUEUE_FINISHED;
+          update_queue_status($db, $item->get_dbid(), $status, 0, 100, 'No valid IMDB watchlist set');
+
+          return NO_ERROR;
+    }
+
+    $list = file($url);
+    $csv = array_map('str_getcsv', ($list));
+
+    $cnt1 = $cnt2 = 0;
+    $search_terms = load_search_terms($db, $userid);
+    try {
+        foreach ($csv as $entry) {
+            if (!is_numeric($entry[0])) { 
+                continue;
+            }
+            $title = utf8_encode($entry[5]);
+            $year = $entry[10];
+            $title_year = "$title ($year)";
+            $cnt1++;
+            if (strlen($title) > 4 && !in_array($title_year, $search_terms)) {
+                $search_terms[] = $title_year;
+                $cnt2++;
+            }
+        }
+        store_search_terms($db, $search_terms, $userid);
+        write_log("Read $cnt1 entries on the watchlist. Added $cnt2 entries to the search terms.", LOG_INFO);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FINISHED, 0, 100, "Read $cnt1 entries on the watchlist. Added $cnt2 entries to the search terms.");
+        return NO_ERROR;
+    } catch (exception $e) {
+        write_log($e->getMessage(), LOG_INFO);
+        update_queue_status($db, $item->get_dbid(), QUEUE_FAILED, 0, 100, $e->getMessage());
+        return HTTP_CONNECT_ERROR;
+    }
 }
-
-

@@ -657,7 +657,7 @@ $LN['pref_subs_lang_msg']           = 'Languages for which subtitles will be sou
 $LN['pref_subs_lang']               = 'Subtitle languages';
 $LN['config_keystore_path']         = 'Location of the key store';
 $LN['config_keystore_path_msg']     = 'The directory where the key store will be placed';
-$LN['pref_imdb_userid']             = 'IMDB user ID';
+$LN['pref_imdb_userid']             = 'IMDB watchlist URL';
 $LN['pref_imdb_userid_msg']         = 'If set adds entries from the watch list to the search terms';
 $LN['imdb_watchlist']               = 'Update IMDB Watchlist';
 

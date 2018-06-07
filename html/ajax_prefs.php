@@ -232,7 +232,7 @@ function verify_text_field(DatabaseConnection $db, $userid, $name, &$value)
         case 'subs_lang':
             return verify_text_opt($value, FALSE, NULL);
         case 'imdb_userid':
-            return verify_text_opt($value, FALSE, 'ur\d+');
+            return verify_url($value, FALSE, TRUE);
         case 'cancel_crypted_rars':
             return verify_array($value, array_keys(get_encrar_array()));
         case 'search_type':
@@ -469,7 +469,7 @@ function show_preferences(DatabaseConnection $db, $userid)
 
     // test if the current settings are correct
     if (!isset($imdb_userid_msg)) {
-        $imdb_userid_msg = verify_text_opt($prefArray['imdb_userid'], FALSE, 'ur\d+');
+        $imdb_userid_msg = verify_url($prefArray['imdb_userid'], FALSE, TRUE);
     }
     if (!isset($default_spot_msg)) {
         $default_spot_msg = verify_array($prefArray['default_spot'], array_keys($spot_array));
