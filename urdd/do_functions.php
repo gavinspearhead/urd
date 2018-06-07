@@ -2515,11 +2515,9 @@ function do_get_imdb_watchlist(DatabaseConnection $db, action $item)
                 continue;
             }
             $title = utf8_encode($entry[5]);
-            $year = $entry[10];
-            $title_year = "$title ($year)";
             $cnt1++;
-            if (strlen($title) > 4 && !in_array($title_year, $search_terms)) {
-                $search_terms[] = $title_year;
+            if (strlen($title) > 4 && !in_array($title, $search_terms)) {
+                $search_terms[] = $title;
                 $cnt2++;
             }
         }
