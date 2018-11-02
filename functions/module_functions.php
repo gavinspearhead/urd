@@ -198,7 +198,7 @@ function check_php_modules(test_result_list &$test_results, $modules, &$module_m
         new module('posix',     FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('sockets',   FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('SPL',       FALSE, urd_modules::URD_CLASS_GENERIC),
-        new module('mcrypt',    FALSE, urd_modules::URD_CLASS_GENERIC),
+#        new module('mcrypt',    FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('json',      FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('gmp',       FALSE, urd_modules::URD_CLASS_GENERIC),
         new module('xmlreader', TRUE,  urd_modules::URD_CLASS_GENERIC),
