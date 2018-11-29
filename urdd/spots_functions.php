@@ -773,6 +773,7 @@ class urd_spots
             foreach ($headers as $msg_id => $header) {
                 $id = $ids[ $msg_id ]['id'];
                 try {
+                    if (!is_array($header)) { continue; }
                     $report = self::parse_spot_report($header);
                     if (!isset($report['reference'], $report['date'])) {
                         throw new exception('Invalid spot report');
@@ -784,7 +785,7 @@ class urd_spots
                         if ($ids[ $msg_id ]['spotid'] == '0') {
                             throw $e;
                         }
-                        echo_debug(DEBUG_SERVER, 'Spot not found');
+                        echo_debug( 'Spot not found',DEBUG_SERVER);
                         $spotid = 1; // we set it to 1 and after we finish set it to 0 so that reports we may have missed are updated the next run
                     }
 

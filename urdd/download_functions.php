@@ -37,7 +37,9 @@ function store_article(&$article, $dir, $msg_id)
 function parse_filename_from_subject($subject)
 {
     $s = html_entity_decode($subject);
-    if (preg_match('|"(.*)"|', $subject, $matches) === 1) {
+    if (preg_match('|yenc.*"(.*)" yenc|i', $subject, $matches) === 1) {
+        $name = $matches[1];
+    } else if (preg_match('|"(.*)"|', $subject, $matches) === 1) {
         $name = $matches[1];
     } else if (preg_match('|(.*) yenc|i', $subject, $matches) === 1) {
         $name = $matches[1];
@@ -45,6 +47,8 @@ function parse_filename_from_subject($subject)
         $name = $subject;
     }
     $name = str_replace('"', '', $name);
+
+#    echo_debug('Filename ' . $name . " || " . $subject, DEBUG_SERVER);
     return $name;
 }
 
