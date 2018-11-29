@@ -994,10 +994,9 @@ function do_addspotdata(DatabaseConnection $db, action $item)
         }
 
         $nzbs = get_spot_nzb($db, $spotid);
-        $count = $totalsize = $fs = 0;
+        $segment_count = $count = $totalsize = $fs = 0;
         $groupid = group_by_name($db, get_config($db, 'ftd_group', 'alt.binaries.ftd'));
         $nzb_data = '';
-        $segment_count = 0;
         $segments = count($nzbs);
         $nntp = connect_nntp($db, $server_id);
         $nntp->select_group($groupid, $code);
@@ -1029,7 +1028,7 @@ function do_addspotdata(DatabaseConnection $db, action $item)
                 throw new exception($msg);
             }
             list($count, $totalsize) = parse_nzb($db, $nzb_file, $dlid);
-            $fs = count($nzb_file->asXML());
+            $fs = strlen($nzb_file->asXML());
         } catch (exception $e) {
             write_log('Could not parse NZB: ' . $e->getMessage());
             $count = 0;
