@@ -55,8 +55,8 @@ function my_escapeshellcmd($str, $hide_space=TRUE)
 
 function my_escapeshell_quoted($str, $hide_space=TRUE)
 {
-    $chars = ['\\', '`',  '$', '"'];
-    $sub_chars = ['\\\\', '\\`',  '\\$', '\\"' ];
+    $chars = ['\\', '`',  '$', '"', "'"];
+    $sub_chars = ['\\\\', '\\`',  '\\$', '\\"', "" ];
     if ($hide_space === TRUE) {
         $chars[] = ' ';
         $sub_chars[] = '\\ ';

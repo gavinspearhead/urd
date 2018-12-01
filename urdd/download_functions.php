@@ -48,12 +48,25 @@ function parse_filename_from_subject($subject)
     }
     $name = str_replace('"', '', $name);
 
-#    echo_debug('Filename ' . $name . " || " . $subject, DEBUG_SERVER);
+    echo_debug('Filename ' . $name . " || " . $subject, DEBUG_SERVER);
     return $name;
 }
 
+
+function str_find($haystack, array $needle)
+{
+    foreach($needle as $n) {
+        $diff = strlen($haystack) - strlen($n);
+        if ($diff >= 0 && strpos($haystack, $n, $diff) !== FALSE) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+} 
+
 function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &$nzb, &$groupid, $userid, &$connected, $check_for_rar_encryption, $download_par_files)
 {
+    static $extensions = [ 'par2', '.rar', '.par', '.nzb', '.tgz', '.txt', '.csv', '.mkv', '.mp3', '.avi', '.wmv', '.nfo', '.mp4', '.jpg', '.png', '.arj', '.ace', '.zip' ]; 
     assert(is_numeric($userid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $download_text_file = get_pref($db, 'download_text_file', $userid);
@@ -63,7 +76,7 @@ function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &
         throw new exception('yydecode not found', ERR_CONFIG_ERROR);
     }
 
-    $cmd = "/bin/sh -c '$yydecode $yydecode_pars  ";
+    $cmd = "/bin/sh -c '$yydecode $yydecode_pars ";
     $size = $p_cnt = $a_cnt = $e_cnt = $groupid = (int) 0;
 
     $mime_settings = ['include_bodies' => TRUE, 'decode_bodies' => TRUE, 'decode_headers' => TRUE];
@@ -96,11 +109,16 @@ function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &
 
             $name = parse_filename_from_subject($article['name']);
             if ($name != $last_filename) {
-                if ($p !== NULL) pclose($p);
+                if ($p !== NULL) { 
+                    pclose($p);
+                } 
                 $last_filename = $name;
-                $name = my_escapeshell_quoted($name, FALSE);
-              //  var_dump ($cmd . " -o \"$name\" '");
-                $process = proc_open($cmd . " -o \"$name\" '", $descriptorspec, $pipes, $dir, NULL, ['binary_pipes']);
+                if (str_find($name, $extensions)) {
+                    $name = my_escapeshell_quoted($name, FALSE);
+                    $process = proc_open($cmd . " -o \"$name\" '", $descriptorspec, $pipes, $dir, NULL, ['binary_pipes'=> TRUE]);
+                } else {
+                    $process = proc_open($cmd . "'", $descriptorspec, $pipes, $dir, NULL, ['binary_pipes'=> TRUE]);
+                }
                 if ($process === FALSE || !is_resource($process)) {
                     write_log('Could not create pipe', LOG_WARNING);
                     urdd_exit(PIPE_ERROR);
@@ -155,7 +173,7 @@ function download_batch(DatabaseConnection& $db, array &$batch, $dir, URD_NNTP &
                 $a_cnt++;
             } elseif ($type == download_type::TYPE_XXENCODED) {
                 write_log('Can not handle XX encoded files yet... post at the forum if you run in to this error', LOG_ERR);
-            //	throw new exception('Unrecognized encoding found', ERR_UNKNOWN_ENCODING);
+                //	throw new exception('Unrecognized encoding found', ERR_UNKNOWN_ENCODING);
             } elseif ($type == download_type::TYPE_MIMEENCODED || download_type::TYPE_UNKNOWN) {
                 $head = $nzb->get_header($msg_id);
                 $mime = new Mail_mimeDecode($head, $art);
