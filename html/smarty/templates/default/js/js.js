@@ -3951,6 +3951,7 @@ function load_spots(options)
                 set_checkbox('checkbox_cat_' + cat_id, 1);
                 uncheck_all(cat_id);
                 update_rss_url();
+                $('#contentout').scrollTop(0)
             } else {
                 $('#spots_table>tbody tr').eq(-2).after(x.content); // for old spots view
                 $('#sets_list').append(x.content); // for old spots view
@@ -4088,6 +4089,7 @@ function load_groupsets(options)
                 $('#group_id').val(group_id);
                 update_rss_url();
                 setvalbyid('select_groupid', group_id);
+                $('#contentout').scrollTop(0)
             } else {
                 $('#sets_table>tbody tr').eq(-2).after(x.content);
             }
@@ -4277,6 +4279,7 @@ function load_rsssets(options)
             update_widths('browsesubjecttd');
             highlight_handler();
             set_scroll_handler('#contentout', load_sets);
+            $('#contentout').scrollTop(0)
         } else {
             update_message_bar(x.error);
         }
