@@ -83,10 +83,8 @@
     <td width="25px">
 <div class="closebutton buttonlike noborder" id="change_basket"></div></td>
     </tr>
-	{$totalsize='0'}
 	{foreach $addedsets as $q name=loopies}
 	<tr><td class="basketleft" colspan="2">{$q.subject|truncate:$maxstrlen:"..."|escape:htmlall}</td><td class="basketright nowrap">{if $q.size == 0}?{else}{$q.size|escape}{/if}</td></tr>
-	{$totalsize=$totalsize+$q.size}
 	{/foreach}
 	</table>
 	</div>
