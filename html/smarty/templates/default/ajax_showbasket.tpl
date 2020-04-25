@@ -33,6 +33,8 @@
 <div class="down5p inline">
 {urd_checkbox value="$add_setname" name="add_setname" id="add_setname" before="1" data="$LN_browse_add_setname:&nbsp;" post_js="update_basket_display(1);"} 
 </div>
+<div class="inline">{$LN_password}:&nbsp;</div><input name="dlpassword" id="dlpassword" type="text" value="{$dlpassword|escape}"/></div>
+
 <div class="inline">{$LN_browse_download_dir}:&nbsp;</div>
 <span id="dl_dir_span">
     <div class="inline"><input name="dl_dir" id="dl_dir" type="text" value="{$dl_dir|escape:htmlall}" class="width20em"/>&nbsp;</div>

@@ -38,6 +38,7 @@
 <input name="dl_dir" id="dl_dir" type="hidden" value="{$dl_dir|escape:htmlall}"/>
 <input name="add_setname" id="add_setname" type="hidden" value="{$add_setname|escape:htmlall}"/>
 <input name="dlsetname" id="dlsetname" type="hidden" value="{$dlsetname|escape:htmlall}"/>
+<input name="dlpassword" id="dlpassword" type="hidden" value="{$dlpassword|escape:htmlall}"/>
 </div>
 {/if}
 {/strip}

@@ -78,7 +78,7 @@ function del_from_basket($setID)
 function clear_basket()
 {
     $_SESSION['setdata'] = array();
-    unset($_SESSION['download_delay'], $_SESSION['dl_dir'], $_SESSION['add_setname'], $_SESSION['dlsetname']);
+    unset($_SESSION['download_delay'], $_SESSION['dl_dir'], $_SESSION['add_setname'], $_SESSION['dlsetname'], $_SESSION['dlpassword']);
 }
 
 function get_setid()
@@ -91,12 +91,60 @@ function get_setid()
     return $_REQUEST['setID'];
 }
 
+function extract_password($description)
+{
+    $lines = explode("\n", $description);
+    $password = "";
+    $nextline = False;
+    foreach($lines as $line) {
+        $line = trim($line);
+        if ($line == "") continue;
+        if ($nextline && preg_match("/[[:alnum:]]+$/", $line)) {
+#    syslog(LOG_INFO, "BB $line");
+            $password = $line;
+            $nextline = False;
+            break;
+        } else {
+#    syslog(LOG_INFO, "CC $line");
+            $nextline = False;
+        }
+        if ((strcasecmp(substr($line, 0, 8), "password") == 0) ||
+            (strcasecmp(substr($line, 0, 10), "wachtwoord") == 0) ||
+                (strcasecmp(substr($line, 0, 2), "ww") == 0) ||
+                (strcasecmp(substr($line, 0, 2), "pw") == 0)) {
+            $words = preg_split("/[\s:=]/", $line, -1,  PREG_SPLIT_NO_EMPTY);
+            if (isset($words[1])) {
+                if (!isset($words[2])) {
+#        syslog(LOG_INFO, "ZZ $line");
+                    $password = $words[1];
+                    break;
+                }
+            } else {
+#                syslog(LOG_INFO, "AA $line");
+                $nextline = True;
+            }
+        }
+        if (preg_match("/(?:(?:password)|(?:wachtwoord))[\s=:]+([[:alnum:]]+)[\s=:]?$/i", $line, $matches)) {
+#           syslog(LOG_INFO, "YY $line");
+            $password = $matches[1];
+#           syslog(LOG_INFO, "YY $password");
+            break;
+        }
+        else {
+#           syslog(LOG_INFO, "XX $line");
+        }
+    }
+    return $password;
+}
+
+
+
 function display_basket(DatabaseConnection $db, $userid)
 {
     global $smarty, $LN;
     $addedsets = array();
     $totalsize = $cnt = $add_setname = $feedid = $groupid = 0;
-    $dlsetname = $bettersetname = $download_delay = $dl_dir = '';
+    $dlsetname = $bettersetname = $download_delay = $dl_dir = $dlpassword = '';
     $spot_cat = -1;
     $dltype = NULL; // we'll take the first one in the basket.
     $show_merge = TRUE;
@@ -110,6 +158,11 @@ function display_basket(DatabaseConnection $db, $userid)
         $add_setname = get_request('add_setname', '');
         if ($add_setname == '') {
             $add_setname = get_session('add_setname', get_pref($db, 'add_setname', $userid) ? 1 : 0);
+        }
+        $dlpassword = get_request('dlpassword', '');
+
+        if ($dlpassword == '') {
+            $dlpassword = get_session('dlpassword', '');
         }
         $dl_dir = get_request('dl_dir', '');
         if ($dl_dir == '') {
@@ -158,7 +211,7 @@ function display_basket(DatabaseConnection $db, $userid)
                 }
                 $show_merge = FALSE;
             } elseif ($type == 'spot') {
-                $res = $db->select_query('"title", "size", extsetdata."value", "spotid", "category" FROM spots LEFT JOIN extsetdata ON ' .
+                $res = $db->select_query('"title", "size", extsetdata."value", "spotid", "category", "description" FROM spots LEFT JOIN extsetdata ON ' .
                     'spots."spotid" = extsetdata."setID" AND extsetdata."name"=? AND extsetdata."type"=? WHERE spots."spotid"=?', 1, array('setname', USERSETTYPE_SPOT, $setID));
                 if (!isset($res[0])) {
                     continue;
@@ -171,6 +224,11 @@ function display_basket(DatabaseConnection $db, $userid)
                     $dltype = USERSETTYPE_SPOT;
                 }
                 $show_merge = FALSE;
+                if ($dlpassword == '') {
+                    $description = db_decompress($res[0]['description']);
+                    $dlpassword = extract_password($description);
+                }
+
             } else {
                 throw new exception($LN['error_unknowntype'] . ': ' . $type);
             }
@@ -212,6 +270,7 @@ function display_basket(DatabaseConnection $db, $userid)
         $_SESSION['dl_dir'] = $dl_dir;
         $_SESSION['add_setname'] = $add_setname;
         $_SESSION['dlsetname'] = $dlsetname;
+        $_SESSION['dlpassword'] = $dlpassword;
     }
     list($size, $suffix) = format_size($totalsize, 'h', $LN['byte_short'], 1024, 1);
     $totalsize = $size . $suffix;
@@ -228,6 +287,7 @@ function display_basket(DatabaseConnection $db, $userid)
         'nrofsets'=>         $nrofsets,
         'show_merge'=>       $show_merge,
         'download_delay'=>   $download_delay,
+        'dlpassword' =>      $dlpassword,
         'dl_dir'=>           $dl_dir,
         'add_setname'=>      $add_setname,
         'addedsets'=>        $addedsets,

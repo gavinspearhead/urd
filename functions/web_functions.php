@@ -740,6 +740,7 @@ function create_new_download(DatabaseConnection $db, $userid)
     $rprefs = load_config($db);
     $dl_dir = trim(get_post('dl_dir', ''));
     $add_setname = get_post('add_setname', '');
+    $dlpassword = get_post('dlpassword', '');
     $uc = new urdd_client($db, $rprefs['urdd_host'], $rprefs['urdd_port'], $userid);
     check_connected($uc);
 
@@ -761,6 +762,9 @@ function create_new_download(DatabaseConnection $db, $userid)
     set_download_name($db, $dlid, $dlname);
     set_dl_dir($db, $dlid, $dl_dir, $add_setname);
     add_set_data($db, $uc, $userid, $dlid, 'download');
+    if ($dlpassword != "") {
+        set_download_password($db, $dlid, $dlpassword);
+    }
 
     list($timestamp, $time_int) = get_timestamp();
     $stat_id = add_stat_data($db, stat_actions::DOWNLOAD, 0, $userid); // fix stats

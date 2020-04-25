@@ -219,6 +219,7 @@ function update_basket_display(basket_type)
     var save_category = get_value_from_id('save_category', '');
     var timestamp = get_value_from_id('timestamp', '');
     var dl_dir = get_value_from_id('dl_dir', '');
+    var dlpassword = get_value_from_id('dlpassword', '');
     if (dlsetname === '' && selected_text != '') {
         dlsetname = selected_text;
     }
@@ -230,6 +231,7 @@ function update_basket_display(basket_type)
         download_delay: timestamp,
         add_setname: add_setname,
         save_category: save_category,
+        dlpassword: dlpassword,
         dl_dir: dl_dir,
         challenge: challenge
     }).done(function(html) {
@@ -1406,6 +1408,7 @@ function process_whichbutton(buttonval, rightclick)
     var timestamp = get_value_from_id('timestamp');
     var dlname = get_value_from_id('dlsetname');
     var dl_dir = get_value_from_id('dl_dir');
+    var dlpassword = get_value_from_id('dlpassword');
     var add_setname = get_value_from_id('add_setname');
     var url = 'ajax_processbasket.php';
     var data = {
@@ -1415,6 +1418,7 @@ function process_whichbutton(buttonval, rightclick)
         all: (rightclick ? 1 : 0),
         type: type,
         timestamp: timestamp,
+        dlpassword: dlpassword,
         dlsetname: dlname,
         dl_dir: dl_dir,
         add_setname: add_setname,
@@ -4283,7 +4287,6 @@ function load_rsssets(options)
         } else {
             update_message_bar(x.error);
         }
-
     });
 }
 
