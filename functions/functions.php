@@ -345,14 +345,15 @@ function update_queue_status(DatabaseConnection $db, $id, $status=NULL, $eta=NUL
 
 function sanitise_download_name(DatabaseConnection $db, $name, $has_subdirs=FALSE)
 {
+    $repost_str = [ "/^\\[repost\\]/i", '/^repost/i', '/^\\(repost\\)/i' ];
     $name = simplify_chars($name);
+    $name = preg_replace($repost_str, ['', ''], $name);
     $replacement_str = get_config($db, 'replacement_str');
     $dir_sep = $has_subdirs ? '\\' . DIRECTORY_SEPARATOR : '';
     $pattern = "/[^A-Za-z0-9_\-.();[\]$dir_sep ]/";
     $pattern2 = "/[^A-Za-z0-9_\-.();[\]$dir_sep]/";
     $replacement_str = preg_replace($pattern, '', $replacement_str);
     $res = trim(preg_replace($pattern2, $replacement_str, $name), "_\n\t \r\x00\x0B-;.");
-
     return $res;
 }
 
