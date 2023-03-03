@@ -4283,7 +4283,7 @@ function load_rsssets(options)
             update_widths('browsesubjecttd');
             highlight_handler();
             set_scroll_handler('#contentout', load_sets);
-            $('#contentout').scrollTop(0)
+            //$('#contentout').scrollTop(0)
         } else {
             update_message_bar(x.error);
         }

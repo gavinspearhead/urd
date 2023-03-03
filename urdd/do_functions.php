@@ -32,6 +32,12 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
     assert(is_numeric($dlid));
     $cols = array('downloadID', 'groupID', 'partnumber', 'name', 'status', 'messageID', 'binaryID', 'size');
     $total_size = $count = 0;
+    foreach ($xml->head->meta as $k => $v) {
+        if (strtolower($v['type']) == 'password')
+            $password = $v->__toString();
+            set_download_password($db, $dlid, $password);
+    }
+
     foreach ($xml as $section) {
         $group = (string) $section->groups->group[0];
         try {

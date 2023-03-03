@@ -265,7 +265,6 @@ class Base_NNTP_Client
 
         $fp = $this->_socket->get_fp();
         $line = @fread($fp, 512);
-
         if (substr($line, 0, 7) == '=ybegin') {
             $data = $this->_get_text_response();
             $data = $line . "\r\n" . implode('', $data);
