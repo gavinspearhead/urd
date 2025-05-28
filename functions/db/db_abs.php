@@ -239,15 +239,15 @@ abstract class db_update_abs
         if (count($q) != count($colList)) {
             return FALSE;
         }
-        # we loopen vervolgens door elke index kolom heen, en vergelijken
+        # we lopen vervolgens door elke index kolom heen, en vergelijken
         # dan of ze in dezelfde volgorde staan en dezelfde eigenschappen hebben
         for ($i = 0; $i < count($colList); $i++) {
             $same = TRUE;
-
             if ($colList[$i] != $q[$i]['column_name']) {
                 $same = FALSE;
             }
 
+            syslog(LOG_ALERT, "$idxname, $type, $tablename, $colList");
             if ($same) {
                 switch (strtolower($type)) {
                 case 'primary'      : $same = ($q[$i]['primary'] == TRUE); break;

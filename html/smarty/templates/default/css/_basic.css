@@ -25,6 +25,7 @@ body, html
 {
     border: none;
     overflow: hidden;
+    text-size-adjust: none;
 }
 
 h1,.h1

@@ -215,8 +215,10 @@ function get_default_config()
     $prefArray_root['webeditfile']                  = 0;		// allow editting files in the web interface
     $prefArray_root['maxfilesize']                  = 0;		// the max size getinfo allows to access (in kB)
     $prefArray_root['maxpreviewsize']               = MAX_PREVIEW_SIZE;		// the max size allowed to preview (in kB)
-    $prefArray_root['socket_timeout']               = socket::DEFAULT_SOCKET_TIMEOUT;		// the max size getinfo allows to access (in kB)
-    $prefArray_root['urdd_connection_timeout']      = socket::DEFAULT_SOCKET_TIMEOUT;		// the max size getinfo allows to access (in kB)
+    $prefArray_root['socket_timeout']               = urd_socket::DEFAULT_SOCKET_TIMEOUT;		// the max size getinfo allows to access (in kB)
+    $prefArray_root['urdd_connection_timeout']      = urd_socket::DEFAULT_SOCKET_TIMEOUT;		// the max size getinfo allows to access (in kB)
+    #$prefArray_root['socket_timeout']               = 60;		// the max size getinfo allows to access (in kB)
+    #$prefArray_root['urdd_connection_timeout']      = 60;		// the max size getinfo allows to access (in kB)
     $prefArray_root['nntp_maxthreads']              = MAX_NNTP_THREADS;
     $prefArray_root['db_intensive_maxthreads']      = MAX_DB_INTENSIVE_THREADS;
     $prefArray_root['auto_download']            = 0;
@@ -244,7 +246,8 @@ function get_default_config()
     $prefArray_root['auto_login']               = '';
     $prefArray_root['compress_nzb']             = 0;
     $prefArray_root['connection_timeout']       = SERVER_CONNECTION_TIMEOUT;
-    $prefArray_root['socket_timeout']           = socket::DEFAULT_SOCKET_TIMEOUT;
+    $prefArray_root['socket_timeout']           = 60;
+#    $prefArray_root['socket_timeout']           = socket::DEFAULT_SOCKET_TIMEOUT;
     $prefArray_root['nice_value']               = 0;
     $prefArray_root['maxheaders']               = MAX_HEADERS; // total amount of headers gotten in one update batch
     $prefArray_root['replacement_str']          = '_';

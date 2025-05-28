@@ -35,7 +35,7 @@ function showeditgroup(DatabaseConnection $db, $id)
     global $LN, $smarty, $periods;
     // Get download info:
     if (is_numeric($id)) {
-        $sql = '* FROM groups WHERE "ID"=?';
+        $sql = '* FROM grouplist WHERE "ID"=?';
         $res = $db->select_query($sql, array($id));
         if (!isset($res[0])) {
             throw new exception($LN['error_invalidgroupid']);

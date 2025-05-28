@@ -75,7 +75,8 @@ class db_update_mysql extends db_update_abs
     /* controleert of een column bestaat */
     public function columnExists($tablename, $colname)
     {
-        $q = $this->db->execute_query('SHOW COLUMNS FROM ' . $tablename . " WHERE Field = '$colname'");
+        $this->db->escape($tablename);
+        $q = $this->db->execute_query('SHOW COLUMNS FROM `' . $tablename . "` WHERE Field = '$colname'");
 
         return !empty($q);
     } # columnExists
@@ -105,15 +106,15 @@ class db_update_mysql extends db_update_abs
         $cols = $this->create_indexlist($colList);
         if (!$this->indexExists($idxname, $tablename)) {
             if ($idxType == 'UNIQUE') {
-                $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols );");
+                $this->db->execute_query('ALTER TABLE `' . $tablename . '` ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols );");
             } elseif ($idxType == 'PRIMARY') {
                 if ($this->indexExists('PRIMARY', $tablename)) {
-                    $this->db->execute_query('ALTER TABLE ' . $tablename . " DROP PRIMARY KEY, ADD PRIMARY KEY ( $cols );");
+                    $this->db->execute_query('ALTER TABLE `' . $tablename . "` DROP PRIMARY KEY, ADD PRIMARY KEY ( $cols );");
                 } else {
-                    $this->db->execute_query('ALTER TABLE ' . $tablename . " ADD PRIMARY KEY ($cols);");
+                    $this->db->execute_query('ALTER TABLE `' . $tablename . "` ADD PRIMARY KEY ($cols);");
                 }
             } else {
-                $this->db->execute_query('ALTER TABLE ' . $tablename . ' ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols);");
+                $this->db->execute_query('ALTER TABLE `' . $tablename . '` ADD ' . $idxType . ' INDEX ' . $idxname . "( $cols);");
             } 
         }
     } 

@@ -1335,7 +1335,7 @@ function verify_text_field(DatabaseConnection $db, urdd_client $uc, $name, &$val
 
 function set_period_configs(DatabaseConnection $db, urdd_client $uc, $name, $value, $time1, $time2, $extra)
 {
-    global $LN;
+    global $LN, $userid;
     $post_fix = str_replace('period_', '', $name);
     $t1 = 'time1_' . $post_fix;
     $t2 = 'time2_' . $post_fix;

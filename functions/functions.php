@@ -388,7 +388,7 @@ function set_period(urdd_client $uc, DatabaseConnection $db, $id, $first_update,
 {
     assert('is_numeric($time) && is_numeric($periodselect) && is_numeric($period) && is_numeric($id)');
     // $time = update-time that's displayed in the newsgroup page
-    $db->update_query_2('groups', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=?', array($id));
+    $db->update_query_2('grouplist', array('refresh_time'=>$time, 'refresh_period'=>$periodselect), '"ID"=?', array($id));
     $uc->schedule(urdd_protocol::COMMAND_UPDATE, $id, $first_update, $period * 3600);
 }
 
@@ -722,7 +722,7 @@ function group_expire(DatabaseConnection $db, $id)
 {
     global $LN;
     assert('is_numeric($id)');
-    $res = $db->select_query('"expire" FROM groups WHERE "ID"=:id', 1, array(':id'=>$id));
+    $res = $db->select_query('"expire" FROM grouplist WHERE "ID"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['expire'])) {
         throw new exception($LN['error_groupnotfound'] . ": $id", ERR_GROUP_NOT_FOUND);
     }
@@ -733,7 +733,7 @@ function group_expire(DatabaseConnection $db, $id)
 function group_by_name(DatabaseConnection $db, $name)
 {
     global $LN;
-    $res = $db->select_query('"ID" FROM groups WHERE "name"=:name', 1, array(':name'=>$name));
+    $res = $db->select_query('"ID" FROM grouplist WHERE "name"=:name', 1, array(':name'=>$name));
     if (!isset($res[0]['ID'])) {
         throw new exception($LN['error_groupnotfound'] . " '$name'", ERR_GROUP_NOT_FOUND);
     }
@@ -797,7 +797,7 @@ function group_name(DatabaseConnection $db, $groupid)
 {
     global $LN;
     assert('is_numeric($groupid)');
-    $res = $db->select_query('"name" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
+    $res = $db->select_query('"name" FROM grouplist WHERE "ID"=:id', 1, array(':id'=>$groupid));
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
     }
@@ -821,7 +821,7 @@ function group_subscribed(DatabaseConnection $db, $id)
 {
     global $LN;
     assert('is_numeric($id)');
-    $res = $db->select_query('"active" FROM groups WHERE "ID"=:id', 1, array(':id'=>$id));
+    $res = $db->select_query('"active" FROM grouplist WHERE "ID"=:id', 1, array(':id'=>$id));
     if (!isset($res[0]['active'])) {
         throw new exception($LN['error_groupnotfound'] . " $id", ERR_GROUP_NOT_FOUND);
     }
@@ -845,7 +845,7 @@ function update_group_state(DatabaseConnection $db, $id, $state, $exp, $minsetsi
         $vals[] = $adult;
         $cols[] = 'adult';
     }
-    $db->update_query('groups', $cols, $vals, '"ID"=?', array($id));
+    $db->update_query('grouplist', $cols, $vals, '"ID"=?', array($id));
 }
 
 function get_rar_files(DatabaseConnection $db, $postid)
@@ -1186,7 +1186,7 @@ function update_dlarticle_status(DatabaseConnection $db, $id, $status, $oldstatu
 
 function get_active_groups(DatabaseConnection $db)
 {
-    $res = $db->select_query('"ID" FROM groups WHERE "active"=?', array(newsgroup_status::NG_SUBSCRIBED));
+    $res = $db->select_query('"ID" FROM grouplist WHERE "active"=?', array(newsgroup_status::NG_SUBSCRIBED));
     if (!isset($res[0])) {
         return FALSE;
     }
@@ -1216,7 +1216,7 @@ function get_all_group_by_id(DatabaseConnection $db, $groupid)
 {
     global $LN;
     assert(is_numeric($groupid));
-    $res = $db->select_query('"name" FROM groups WHERE "ID"=?', 1, array($groupid));
+    $res = $db->select_query('"name" FROM grouplist WHERE "ID"=?', 1, array($groupid));
 
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
@@ -1229,7 +1229,7 @@ function get_group_by_id(DatabaseConnection $db, $groupid)
 {
     global $LN;
     assert(is_numeric($groupid));
-    $res = $db->select_query('"name" FROM groups WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
+    $res = $db->select_query('"name" FROM grouplist WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
 
     if (!isset($res[0]['name'])) {
         throw new exception($LN['error_groupnotfound'] . ": $groupid", ERR_GROUP_NOT_FOUND);
@@ -1244,7 +1244,7 @@ function get_all_group_by_name(DatabaseConnection $db, $name)
     assert(is_string($name));
 
     $search_type = $db->get_pattern_search_command('LIKE');
-    $res = $db->select_query("\"ID\" FROM groups WHERE \"name\" $search_type ?", 1, array($name));
+    $res = $db->select_query("\"ID\" FROM grouplist WHERE \"name\" $search_type ?", 1, array($name));
 
     if (!isset($res[0]['ID'])) {
         throw new exception($LN['error_groupnotfound']. ": $name", ERR_GROUP_NOT_FOUND);
@@ -1259,7 +1259,7 @@ function get_group_by_name(DatabaseConnection $db, $name)
     assert(is_string($name));
 
     $search_type = $db->get_pattern_search_command('LIKE');
-    $res = $db->select_query("\"ID\" FROM groups WHERE \"active\"=? AND \"name\" $search_type ?", 1, array(newsgroup_status::NG_SUBSCRIBED, $name));
+    $res = $db->select_query("\"ID\" FROM grouplist WHERE \"active\"=? AND \"name\" $search_type ?", 1, array(newsgroup_status::NG_SUBSCRIBED, $name));
 
     if (!isset($res[0]['ID'])) {
         throw new exception($LN['error_groupnotfound']. ": $name", ERR_GROUP_NOT_FOUND);
@@ -1272,7 +1272,7 @@ function get_group_info(DatabaseConnection $db, $groupid)
 {
     global $LN;
     assert(is_numeric($groupid));
-    $res = $db->select_query('* FROM groups WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
+    $res = $db->select_query('* FROM grouplist WHERE "active"=? AND "ID"=?', 1, array(newsgroup_status::NG_SUBSCRIBED, $groupid));
 
     if (!isset($res[0])) {
         throw new exception($LN['error_groupnotfound']. ": $groupid", ERR_GROUP_NOT_FOUND);
@@ -1290,19 +1290,19 @@ function set_feed_expire(DatabaseConnection $db, $id, $exp)
 function set_group_maxsetsize(DatabaseConnection $db, $id, $maxsetsize)
 {
     assert(is_numeric($id) && is_numeric($maxsetsize));
-    $db->update_query_2('groups', array('maxsetsize'=>$maxsetsize), '"ID"=?', array($id));
+    $db->update_query_2('grouplist', array('maxsetsize'=>$maxsetsize), '"ID"=?', array($id));
 }
 
 function set_group_minsetsize(DatabaseConnection $db, $id, $minsetsize)
 {
     assert(is_numeric($id) && is_numeric($minsetsize));
-    $db->update_query_2('groups', array('minsetsize'=>$minsetsize), '"ID"=?', array($id));
+    $db->update_query_2('grouplist', array('minsetsize'=>$minsetsize), '"ID"=?', array($id));
 }
 
 function set_group_adult(DatabaseConnection $db, $id, $adult)
 {
     assert(is_numeric($id) && is_numeric($adult));
-    $db->update_query_2('groups', array('adult'=>$adult), '"ID"=?', array($id));
+    $db->update_query_2('grouplist', array('adult'=>$adult), '"ID"=?', array($id));
 }
 
 function set_spots_expire(DatabaseConnection $db, $exp)
@@ -1328,7 +1328,7 @@ function set_spots_expire(DatabaseConnection $db, $exp)
 function set_group_expire(DatabaseConnection $db, $id, $exp)
 {
     assert(is_numeric($id) && is_numeric($exp));
-    $db->update_query_2('groups', array('expire'=>$exp), '"ID"=?', array($id));
+    $db->update_query_2('grouplist', array('expire'=>$exp), '"ID"=?', array($id));
 }
 
 function add_stat_data(DatabaseConnection $db, $action, $value, $userid)
@@ -1676,7 +1676,7 @@ function get_all_feeds(DatabaseConnection $db)
 function get_all_active_groups(DatabaseConnection $db)
 {
     global $LN;
-    $rv = $db->select_query('* FROM groups WHERE "active"=?', array(newsgroup_status::NG_SUBSCRIBED));
+    $rv = $db->select_query('* FROM grouplist WHERE "active"=?', array(newsgroup_status::NG_SUBSCRIBED));
     if ($rv === FALSE) {
         throw new exception($LN['error_nofeedsfound']);
     }
@@ -2152,8 +2152,8 @@ function validate_post(DatabaseConnection $db)
 function update_group(DatabaseConnection $db, $ID, $desc, $msg_count, $adult)
 {
     assert(is_numeric($ID) && is_numeric($msg_count));
-    $db->update_query_2('groups', array('description'=>$desc, 'postcount'=>$msg_count), '"ID"=?', array($ID));
-    $db->update_query_2('groups', array('adult'=>($adult ? ADULT_ON : ADULT_OFF)), '"ID"=? AND "adult"=?', array($ID, ADULT_DEFAULT));
+    $db->update_query_2('grouplist', array('description'=>$desc, 'postcount'=>$msg_count), '"ID"=?', array($ID));
+    $db->update_query_2('grouplist', array('adult'=>($adult ? ADULT_ON : ADULT_OFF)), '"ID"=? AND "adult"=?', array($ID, ADULT_DEFAULT));
 }
 
 function insert_group(DatabaseConnection $db, $group_name, $description, $expire_time, $msg_count, $adult)
@@ -2162,7 +2162,7 @@ function insert_group(DatabaseConnection $db, $group_name, $description, $expire
     $rows = array('name', 'description', 'active', 'expire', 'postcount', 'adult');
     $vals = array(strtolower($group_name), $description, 0, $expire_time, $msg_count, $adult ? ADULT_ON : ADULT_OFF);
 
-    return $db->insert_query('groups', $rows, $vals, TRUE);
+    return $db->insert_query('grouplist', $rows, $vals, TRUE);
 }
 
 function strip_filename_bits($dlname)
@@ -2406,13 +2406,13 @@ function get_user_dlpath(DatabaseConnection $db, $preview, $groupid, $dltype, $u
 function update_group_setcount(DatabaseConnection $db, $groupid, $setcount)
 {
     assert(is_numeric($groupid) && is_numeric($setcount));
-    $db->update_query_2('groups', array('setcount'=>$setcount), '"ID"=?', array($groupid));
+    $db->update_query_2('grouplist', array('setcount'=>$setcount), '"ID"=?', array($groupid));
 }
 
 function get_sets_count_group(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
-    $sql = '"setcount" AS "cnt" FROM groups WHERE "ID"=:groupid';
+    $sql = '"setcount" AS "cnt" FROM grouplist WHERE "ID"=:groupid';
     $res = $db->select_query($sql, array(':groupid'=> $groupid));
 
     return (!isset($res[0]['cnt'])) ? FALSE : $res[0]['cnt'];

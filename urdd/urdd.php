@@ -534,7 +534,7 @@ function server(urdd_sockets $listen_sockets, DatabaseConnection $db, server_dat
 {
     echo_debug_function(DEBUG_MAIN, __FUNCTION__);
     global $config;
-    $conn_list = new conn_list(get_config($db, 'urdd_timeout', socket::DEFAULT_SOCKET_TIMEOUT));
+    $conn_list = new conn_list(get_config($db, 'urdd_timeout', urd_socket::DEFAULT_SOCKET_TIMEOUT));
     $restart = $config['urdd_restart'];
     reset_download_status($db);
 
@@ -820,13 +820,14 @@ try {
         require($pathu . '/../install/update_db.php');
     }
     $db = connect_db(TRUE);
-    check_deprecated_db($db);
+    //check_deprecated_db($db);
 
     $config['urdd_pidfile'] = get_config($db, 'pidpath', '');
     if (!isset($config['urdd_daemonise'])) {
         $config['urdd_daemonise'] = get_config($db, 'urdd_daemonise', FALSE) ? TRUE : FALSE;
     }
     if (isset($config['keystore'])) {
+	    //var_dump("keystor");
         keystore::create_keystore($db, $config['keystore']);
         unset($config['keystore']);
         urdd_exit(NO_ERROR);
@@ -871,11 +872,15 @@ try {
     load_config($db, TRUE);
     $commands_list->update_settings(urd_modules::get_urd_module_config(get_config($db, 'modules', urd_modules::URD_CLASS_ALL)));
     $config['find_servers'] = (isset($config['find_servers']) && $config['find_servers'] === TRUE) ? TRUE: FALSE; // force value to be set
+	    //var_dump($config['find_servers']);
     $servers = get_server_data($db);
     $servers->enable_check_nntp_connections($config['check_nntp_connections']);
+	    //var_dump($config['check_nntp_connections']);
     try {
         $servers->load_servers($db, $test_results, FALSE);
+    //var_dump($servers);
     } catch (exception $e) {
+//    var_dump($e);
         if ($e->getcode() == ERR_NO_ACTIVE_SERVER) {
             write_log($e->getmessage(), LOG_ERR);
         }

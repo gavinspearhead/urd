@@ -181,8 +181,8 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
     $use_newsgroup = FALSE;
 
     // Prepare querys for stuff to be sent:
-    $sql[1]  = 'groups."name" AS groupname, extsetdata."setID", extsetdata."name", extsetdata."value", extsetdata."type" FROM extsetdata ';
-    $sql[1] .= 'LEFT JOIN setdata ON extsetdata."setID" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql[1]  = 'grouplist."name" AS groupname, extsetdata."setID", extsetdata."name", extsetdata."value", extsetdata."type" FROM extsetdata ';
+    $sql[1] .= 'LEFT JOIN setdata ON extsetdata."setID" = setdata."ID" LEFT JOIN grouplist ON setdata."groupID" = grouplist."ID" ';
     $sql[1] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
     $input_arr[1] = array(ESI_NOT_COMMITTED, 'setname', USERSETTYPE_GROUP);
 
@@ -196,13 +196,13 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
     $sql[3] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
     $input_arr[3] = array(ESI_NOT_COMMITTED, 'setname', USERSETTYPE_SPOT);
 
-    $sql[4]  = 'groups."name" AS groupname, merged_sets."old_setid" AS "setID", \'MERGE_SET\' AS "name", merged_sets."new_setid" AS value, merged_sets."type" FROM merged_sets ';
-    $sql[4] .= 'LEFT JOIN setdata ON merged_sets."new_setid" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql[4]  = 'grouplist."name" AS groupname, merged_sets."old_setid" AS "setID", \'MERGE_SET\' AS "name", merged_sets."new_setid" AS value, merged_sets."type" FROM merged_sets ';
+    $sql[4] .= 'LEFT JOIN setdata ON merged_sets."new_setid" = setdata."ID" LEFT JOIN grouplist ON setdata."groupID" = grouplist."ID" ';
     $sql[4] .= 'WHERE merged_sets."committed" = ? AND merged_sets."type" = ?';
     $input_arr[4] = array(ESI_NOT_COMMITTED, USERSETTYPE_GROUP);
 
     $sql_cnt[1]  = 'COUNT(*) AS "counter" FROM extsetdata ';
-    $sql_cnt[1] .= 'LEFT JOIN setdata ON extsetdata."setID" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql_cnt[1] .= 'LEFT JOIN setdata ON extsetdata."setID" = setdata."ID" LEFT JOIN grouplist ON setdata."groupID" = grouplist."ID" ';
     $sql_cnt[1] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
 
     $sql_cnt[2]  = 'COUNT(*) AS "counter" FROM extsetdata ';
@@ -214,7 +214,7 @@ function do_sendsetinfo(DatabaseConnection $db, action $item)
     $sql_cnt[3] .= 'WHERE extsetdata."committed" = ? AND extsetdata."name" != ? AND extsetdata."type" = ?';
 
     $sql_cnt[4]  = 'COUNT(*) AS "counter" FROM merged_sets ';
-    $sql_cnt[4] .= 'LEFT JOIN setdata ON merged_sets."new_setid" = setdata."ID" LEFT JOIN groups ON setdata."groupID" = groups."ID" ';
+    $sql_cnt[4] .= 'LEFT JOIN setdata ON merged_sets."new_setid" = setdata."ID" LEFT JOIN grouplist ON setdata."groupID" = grouplist."ID" ';
     $sql_cnt[4] .= 'WHERE merged_sets."committed" = ? AND merged_sets."type" = ?';
 
     $res1 = $db->select_query($sql_cnt[1], $input_arr[1]);

@@ -52,6 +52,7 @@ function smarty_function_urd_checkbox($params, $smarty)
     if ($data != '' && $before) {
         $rv .= "<div class=\"floatleft buttonlike\">$data</div>";
     }
+    $cb_class = 'checkbox_off';
     if ($value == 0) {
         $cb_class = 'checkbox_off';
     } elseif ($value == 1) {

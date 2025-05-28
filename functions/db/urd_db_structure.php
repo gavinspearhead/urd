@@ -228,7 +228,7 @@ class urd_db_structure {
     {
         $urd_db = new urd_database($engine);
 
-        $t = new urd_table('groups', 'ID', 'utf8');
+        $t = new urd_table('grouplist', 'ID', 'utf8');
         $t->add_column(new urd_column('ID', 'BIGSERIAL', '', TRUE, '', ''));
         $t->add_column(new urd_column('server_ID', 'UNSIGNED BIGINTEGER', '0', TRUE, '', ''));
         $t->add_column(new urd_column('name', 'VARCHAR(255)', '', TRUE, 'utf8', '' ));

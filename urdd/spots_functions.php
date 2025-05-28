@@ -120,6 +120,7 @@ class urd_spots
             $header[trim($hdr[0])] = trim($hdr[1]);
         }
 
+        if (!isset($header['Message-ID'])) return;
         $report_id = trim($header['Message-ID'], '<>');
 
         $tmp = explode(' ', $header['Subject'], 3);
@@ -237,7 +238,7 @@ class urd_spots
             $spot = $this->get_spotdata_by_messageid($dispose_id);
             if ($spot === NULL) return;
             if (!is_numeric($spot['stamp'])) return;
-            if ($spot['spotter_id'] == $spotter_id && ($date - $spot['stamp'] < 432000)) {
+            if ($spot['spotter_id'] == $spotter_id && ((intval($date) - intval($spot['stamp'])) < 432000)) {
                 $this->delete_spot($spot['spotid']);
             }
         } catch (exception $e) {
@@ -653,12 +654,13 @@ class urd_spots
             }
             $ratings = [];
             foreach ($headers as $msg_id => $header) {
-                if (!isset($ids[ $msg_id ]) || !is_array($header)) {
-                    echo_debug('Message not found' . $msg_id, DEBUG_SERVER);
-                    continue;
-                }
-                $this_id = $ids[ $msg_id ]['id'];
                 try {
+                    if (!isset($ids[ $msg_id ]) || !is_array($header)) {
+                        echo_debug('Message not found ' . $msg_id, DEBUG_SERVER);
+                        $this->db->delete_query('spot_comments', '"message_id" = :m' , [":m" => $msg_id] );
+                        continue;
+                    }
+                    $this_id = $ids[ $msg_id ]['id'];
                     $cnt++;
                     $comment = self::parse_spot_comment($header, $spots_blacklist);
                     if (!isset($comment['references'], $comment['from'], $comment['date'], $comment['user-key'], $comment['lines'])) {
@@ -749,7 +751,7 @@ class urd_spots
         }
         $totalcount = $res[0]['cnt'];
         write_log("Getting $totalcount spot reports", LOG_NOTICE);
-        $cnt = 0;
+        $cnt = $cnt1 = 0;
         $limit = 100;
         $sql = '"id", "message_id", "spotid" FROM spot_reports WHERE "reference"=:ref OR "spotid"=:spotid';
         $expire_timestamp = time() - ($expire * 24 * 3600);
@@ -772,9 +774,13 @@ class urd_spots
             }
             $ratings = [];
             foreach ($headers as $msg_id => $header) {
+                $cnt++;
                 $id = $ids[ $msg_id ]['id'];
                 try {
-                    if (!is_array($header)) { continue; }
+                    if (!is_array($header)) { 
+                        $this->db->delete_query('spot_reports', '"message_id" = :m', [ ':m' => $msg_id]);
+                        continue; 
+                    }
                     $report = self::parse_spot_report($header);
                     if (!isset($report['reference'], $report['date'])) {
                         throw new exception('Invalid spot report');
@@ -786,7 +792,7 @@ class urd_spots
                         if ($ids[ $msg_id ]['spotid'] == '0') {
                             throw $e;
                         }
-                        echo_debug( 'Spot not found',DEBUG_SERVER);
+                        echo_debug('Spot not found',DEBUG_SERVER);
                         $spotid = 1; // we set it to 1 and after we finish set it to 0 so that reports we may have missed are updated the next run
                     }
 
@@ -795,7 +801,7 @@ class urd_spots
                         throw new exception('Report too old for spot ' . $id);
                     }
                     $this->db->update_query_2('spot_reports', ['reference'=>$ref_msg_id, 'spotid'=> $spotid, 'stamp'=>$date], '"id"=?', [$id]);
-                    $cnt++;
+                    $cnt1++;
                 } catch (exception $e) {
                     $delete_ids[] = $id;
                     write_log($e->getMessage(), LOG_INFO);
@@ -818,7 +824,7 @@ class urd_spots
 
         $this->db->update_query_2('spot_reports', ['reference'=>'0'], '"spotid"=?', ['1']);
         $this->update_spots_report_count();
-        return $cnt;
+        return $cnt1;
     }
 
     private function update_spots_comment_count()

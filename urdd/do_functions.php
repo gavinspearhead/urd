@@ -26,21 +26,35 @@ if (!defined('ORIGINAL_PAGE')) {
     die('This file cannot be accessed directly.');
 }
 
+function get_url_contents($url)
+{
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_USERAGENT, "URD/1.0 (foot@gmail.com)");
+	$response = curl_exec($ch);
+	curl_close($ch);
+	return $response;
+}
+
 
 function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
 {
     assert(is_numeric($dlid));
     $cols = array('downloadID', 'groupID', 'partnumber', 'name', 'status', 'messageID', 'binaryID', 'size');
     $total_size = $count = 0;
-    foreach ($xml->head->meta as $k => $v) {
-        if (strtolower($v['type']) == 'password')
-            $password = $v->__toString();
-            set_download_password($db, $dlid, $password);
+    if (!is_null($xml->head->meta)) { 
+        foreach ($xml->head->meta as $k => $v) {
+            if (strtolower($v['type']) == 'password') {
+                $password = $v->__toString();
+                set_download_password($db, $dlid, $password);
+            }
+        }
     }
+    $db->start_transaction();
 
     foreach ($xml as $section) {
-        $group = (string) $section->groups->group[0];
         try {
+            $group = (string) $section->groups->group[0];
             $groupid = group_by_name($db, $group);
         } catch (exception $e) {
             $groupid = 0;
@@ -53,6 +67,8 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
             echo_debug('No proper NZB segment found', DEBUG_SERVER);
             continue;
         }
+        $vals = [];
+        $ts = microtime(true);
         foreach ($section->segments->segment as $segment) {
             $messageID = (string) $segment;
             $segment_attr = $segment->attributes();
@@ -60,16 +76,21 @@ function parse_nzb(DatabaseConnection $db, SimpleXMLElement $xml, $dlid)
             $part_number = (int)($segment_attr['number']);
             $total_size += $size;
 
-            $vals = array($dlid, $groupid, $part_number, $cleansubject, DOWNLOAD_READY, $messageID, $binaryID, $size);
-            $db->insert_query('downloadarticles', $cols, $vals);
+            $vals[] = array($dlid, $groupid, $part_number, $cleansubject, DOWNLOAD_READY, $messageID, $binaryID, $size);
             if ($count == 0 && get_download_name($db, $dlid) == '') {
                 $dlname = find_name($db, $name);
                 set_download_name($db, $dlid, $dlname);
             }
             ++$count;
         }
+        //var_dump(1, microtime(true) - $ts);
+        //$ts = microtime(true);
+        $db->insert_query('downloadarticles', $cols, $vals);
+        //var_dump(2, microtime(true) - $ts);
+        //var_dump(count($vals));
     }
 
+    $db->commit_transaction();
     return array($count, $total_size);
 }
 
@@ -100,8 +121,10 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
 
     $count = $totalsize = $fs = 0;
     try {
-        libxml_use_internal_errors(TRUE);
-        $nzb_file = @(new SimpleXMLElement($url, LIBXML_PARSEHUGE, TRUE));
+	    libxml_use_internal_errors(TRUE);
+	    $contents = get_url_contents($url);
+	    $nzb_file = new SimpleXMLElement($contents, LIBXML_PARSEHUGE, FALSE);
+	 //	$nzb_file = @(new SimpleXMLElement($url, LIBXML_PARSEHUGE, TRUE));
         if ($nzb_file === NULL) {
             $msg = implode("\n", libxml_get_errors());
             throw new exception($msg);
@@ -109,7 +132,7 @@ function do_parse_nzb(DatabaseConnection $db, action $item)
         list($count, $totalsize) = parse_nzb($db, $nzb_file, $dlid);
         $fs = strlen($nzb_file->asXML());
     } catch (exception $e) {
-        write_log('Could not parse NZB: ' . $e->getMessage());
+        write_log('Could not parse NZB 1: ' . $e->getMessage());
         $count = 0;
     }
 
@@ -142,7 +165,7 @@ function write_binary(DatabaseConnection $db, $binaryid, $groupid, $total_parts,
 {
     assert(is_resource($file) && is_numeric($groupid) && is_numeric($dlid));
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
-    $res = $db->select_query('"active" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
+    $res = $db->select_query('"active" FROM grouplist WHERE "ID"=:id', 1, array(':id'=>$groupid));
     if ($res === FALSE || $res[0]['active'] != newsgroup_status::NG_SUBSCRIBED) {
         $res = FALSE;
     } else {
@@ -382,7 +405,7 @@ function update_group_timestamp(DatabaseConnection $db, $name, $timestamp)
 {
     assert(is_numeric($timestamp));
     $like = $db->get_pattern_search_command('LIKE');
-    $db->update_query_2('groups', array('extset_update' => $timestamp), "\"name\" $like ?", array($name));
+    $db->update_query_2('grouplist', array('extset_update' => $timestamp), "\"name\" $like ?", array($name));
 }
 
 function update_feed_timestamp(DatabaseConnection $db, $name, $timestamp)
@@ -1028,7 +1051,8 @@ function do_addspotdata(DatabaseConnection $db, action $item)
                 throw new exception('Error inflating NZB article');
             }
             libxml_use_internal_errors(TRUE);
-            $nzb_file = @(new SimpleXMLElement($nzb_data, LIBXML_PARSEHUGE, FALSE));
+	    $nzb_file = @(new SimpleXMLElement($nzb_data, LIBXML_PARSEHUGE, FALSE));
+	    //var_dump($nzb_file);
             if ($nzb_file === NULL) {
                 $msg = implode("\n", libxml_get_errors());
                 throw new exception($msg);
@@ -1036,7 +1060,7 @@ function do_addspotdata(DatabaseConnection $db, action $item)
             list($count, $totalsize) = parse_nzb($db, $nzb_file, $dlid);
             $fs = strlen($nzb_file->asXML());
         } catch (exception $e) {
-            write_log('Could not parse NZB: ' . $e->getMessage());
+            write_log('Could not parse NZB 2 : ' . $e->getMessage());
             $count = 0;
         }
 
@@ -1139,6 +1163,7 @@ function do_adddata(DatabaseConnection $db, action $item)
             $sql = 'INSERT INTO downloadarticles ("downloadID", "groupID", "status", "partnumber", "name", "messageID", "binaryID", "size") '
                  . "SELECT '$dlid', '$groupid', '$status', \"partnumber\", bin.\"subject\", \"messageID\", '$binid', par.\"size\" FROM $parts AS par "
                  . "LEFT JOIN $binaries AS bin ON (bin.\"binaryID\" = par.\"binaryID\") WHERE bin.\"binaryID\" = :binid";
+            $time_start = microtime(true); 
             $res2 = $db->execute_query($sql, array(':binid'=>$binid));
 
             dec_dl_lock($db, $dlid);

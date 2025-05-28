@@ -507,7 +507,7 @@ class urdd_group
 
     public function update_postcount($groupid)
     {
-        $sql = "UPDATE groups SET \"postcount\" = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\" = :upd WHERE \"ID\" = :id";
+        $sql = "UPDATE grouplist SET \"postcount\" = (SELECT COUNT(*) FROM parts_{$groupid}), \"extset_update\" = :upd WHERE \"ID\" = :id";
         $this->db->execute_query($sql, [':upd'=>'0', ':id'=>$groupid]);
     }
 
@@ -527,7 +527,7 @@ class urdd_group
             $this->db->truncate_table("parts_$groupID");
             $this->db->truncate_table("binaries_$groupID");
         }
-        $res = $this->db->update_query_2('groups', ['last_record'=>0, 'first_record'=>0, 'mid_record'=>0, 'last_updated'=>0, 'postcount'=>0, 'setcount'=>0], '"ID"=?', [$groupID]);
+        $res = $this->db->update_query_2('grouplist', ['last_record'=>0, 'first_record'=>0, 'mid_record'=>0, 'last_updated'=>0, 'postcount'=>0, 'setcount'=>0], '"ID"=?', [$groupID]);
         echo_debug('Purged all binaries', DEBUG_DATABASE);
     }
 
@@ -615,7 +615,7 @@ class urdd_group
             throw new exception('Cannot drop table: ' . $this->db->ErrorMsg() . '(' . $this->db->ErrorNo() . ')', DB_FAILURE);
         }
         // Also mark as 'clean' in group table, otherwise re-subscribe uses bad last_record info.
-        $this->db->update_query_2('groups', array('last_record'=>0, 'last_updated'=>0, 'setcount'=>0), '"ID" = ?', array($groupid)); 
+        $this->db->update_query_2('grouplist', array('last_record'=>0, 'last_updated'=>0, 'setcount'=>0), '"ID" = ?', array($groupid)); 
         return TRUE;
     }
 

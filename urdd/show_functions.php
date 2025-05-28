@@ -238,7 +238,7 @@ function do_show_newsgroups(DatabaseConnection $db, $subscribed, $output_type)
     echo_debug_function(DEBUG_SERVER, __FUNCTION__);
     $like = ($subscribed) ? ' AND "active"=\'' . newsgroup_status::NG_SUBSCRIBED . "'" : '';
 
-    $query = "* FROM groups WHERE 1=1 $like ORDER BY \"name\"";
+    $query = "* FROM grouplist WHERE 1=1 $like ORDER BY \"name\"";
     $res = $db->select_query($query);
     if ($res === FALSE) {
         return FALSE;

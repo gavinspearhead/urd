@@ -129,7 +129,7 @@ function count_active_ng(DatabaseConnection $db)
         $q_hidden = ' AND "name" NOT IN (' . str_repeat('?,', count($hidden_groups)-1) . '?)';
         $input_arr = array_merge($input_arr, $hidden_groups);
     }
-    $sql = 'count(*) AS cnt FROM groups WHERE "active"=? ' . $q_hidden;
+    $sql = 'count(*) AS cnt FROM grouplist WHERE "active"=? ' . $q_hidden;
     $res = $db->select_query($sql, $input_arr);
     return $res[0]['cnt'];
 }
@@ -152,7 +152,7 @@ function remove_rss_schedule(DatabaseConnection $db, urdd_client $uc, $id, $cmd)
 function remove_schedule(DatabaseConnection $db, urdd_client $uc, $id, $cmd)
 {
     assert(is_numeric($id));
-    $db->update_query_2('groups', array('refresh_time'=>0, 'refresh_period'=>0), '"ID"=?', array($id));
+    $db->update_query_2('grouplist', array('refresh_time'=>0, 'refresh_period'=>0), '"ID"=?', array($id));
     $uc->unschedule(get_command($cmd), $id);
 }
 
@@ -1077,7 +1077,7 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
     $adult = urd_user_rights::is_adult($db, $userid);
     $Qadult = '';
     if (!$adult) {
-        $Qadult = ' AND groups."adult" != ' . ADULT_ON . ' ';
+        $Qadult = ' AND grouplist."adult" != ' . ADULT_ON . ' ';
     }
     if (is_numeric($groupID) && $groupID != 0 && $groupID != '') {
         $Qgroups .= " OR \"groupid\" = '$groupID'";
@@ -1095,7 +1095,7 @@ function subscribed_groups_select(DatabaseConnection $db, $groupID, $categoryID,
             $Qgroups = '';
         }
     }
-    $sql = 'groups."ID", groups."name", groups."setcount" FROM groups LEFT JOIN usergroupinfo ON groups."ID" = "groupid" AND "userid" = :userid ' .
+    $sql = 'grouplist."ID", grouplist."name", grouplist."setcount" FROM grouplist LEFT JOIN usergroupinfo ON grouplist."ID" = "groupid" AND "userid" = :userid ' .
         " WHERE \"active\" = :active AND (\"visible\" > 0 OR \"visible\" IS NULL $Qgroups) $Qadult ORDER BY \"name\"";
     $res = $db->select_query($sql, array(':userid'=>$userid, ':active'=> newsgroup_status::NG_SUBSCRIBED));
     if (!is_array($res)) {
@@ -1151,8 +1151,8 @@ function get_userfeed_settings(DatabaseConnection $db, $userid)
 function get_usergroup_settings(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
-    $sql = 'categories."name" AS c_name, groups."name" AS g_name, usergroupinfo."minsetsize", usergroupinfo."maxsetsize", usergroupinfo."visible" ' .
-        'FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" LEFT JOIN groups ON usergroupinfo."groupid" = groups."ID" ' .
+    $sql = 'categories."name" AS c_name, grouplist."name" AS g_name, usergroupinfo."minsetsize", usergroupinfo."maxsetsize", usergroupinfo."visible" ' .
+        'FROM usergroupinfo LEFT JOIN categories ON usergroupinfo."category" = categories."id" LEFT JOIN grouplist ON usergroupinfo."groupid" = grouplist."ID" ' .
         'WHERE usergroupinfo."userid"=:userid';
     $res = $db->select_query($sql, array(':userid'=>$userid));
     if (!is_array($res)) {
@@ -1166,7 +1166,7 @@ function get_used_categories_group(DatabaseConnection $db, $userid)
 {
     assert(is_numeric($userid));
     $sql = 'SUM("setcount") AS cnt, usergroupinfo."category", MAX(categories."name") AS "name" FROM usergroupinfo '
-        . 'JOIN groups ON "groupid" = groups."ID" '
+        . 'JOIN grouplist ON "groupid" = grouplist."ID" '
         . 'JOIN categories ON usergroupinfo."category" = categories."id" '
         . 'WHERE categories."userid"=? AND usergroupinfo."category" > 0 GROUP BY usergroupinfo."category"';
     $res = $db->select_query($sql, array($userid));
@@ -1501,7 +1501,7 @@ function toggle_adult(DatabaseConnection $db, $type, $groupid, $value)
         throw new exception($LN['error_invalidvalue']);
     }
     if ($type == 'group') {
-        $table = 'groups';
+        $table = 'grouplist';
     } elseif ($type == 'rss') {
         $table = 'rss_urls';
     } else {
@@ -2171,7 +2171,7 @@ function urdd_connected(DatabaseConnection $db, $userid)
 function group_exists(DatabaseConnection $db, $groupid)
 {
     assert(is_numeric($groupid));
-    $res = $db->select_query('"ID" FROM groups WHERE "ID"=:id', 1, array(':id'=>$groupid));
+    $res = $db->select_query('"ID" FROM grouplist WHERE "ID"=:id', 1, array(':id'=>$groupid));
     return isset($res[0]['ID']);
 }
 

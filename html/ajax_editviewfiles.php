@@ -576,7 +576,6 @@ try {
             die;
             break;
         case 'show_files':
-                syslog(LOG_ERR, "aua");
             $view_size  = get_request('view_size', 1024);
             $files = new file_list;
             $files->read_dir($currentdir, $db, $is_admin || $is_fileeditor, $search);

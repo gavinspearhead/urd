@@ -230,7 +230,7 @@ class http_doc
         $this->status = curl_getinfo ($ch, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $this->headers = explode("\n", substr($output, 0, $header_size));
-        $this->results = substr( $output, $header_size );
+	$this->results = substr( $output, $header_size );
         foreach ($this->headers as &$h) {
             $h = trim($h, "\n\r \t");
         }

@@ -182,7 +182,7 @@ function verify_email($email)
 function clean_fullname($fullname)
 {
     $fullname = strip_tags($fullname);
-    $fullname = preg_replace('/[^\w- .()\']/', ' ', $fullname);
+//    $fullname = preg_replace('/[^\w- .()\']/', ' ', $fullname);
 
     return $fullname;
 }

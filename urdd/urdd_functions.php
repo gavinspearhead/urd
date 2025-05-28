@@ -43,7 +43,7 @@ function connect_nntp(DatabaseConnection $db, $id)
     $timeout = get_config($db, 'socket_timeout', -1);
     if ($timeout <= 0) {
         write_log('Invalid socket timeout set; using defaults', LOG_WARNING);
-        $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
+        $timeout = urd_socket::DEFAULT_SOCKET_TIMEOUT;
     }
     try {
         $nzb = new URD_NNTP($db, $usenet_config['hostname'], $usenet_config['connection'], $usenet_config['port'], $timeout, $usenet_config['ipversion']);

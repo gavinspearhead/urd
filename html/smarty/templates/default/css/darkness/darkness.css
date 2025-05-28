@@ -296,7 +296,7 @@ div.setinfo
     overflow-y: scroll;
     height: 240px;
     width: auto;
-    font-size: small;
+    font-size: 10px;
     font-family: verdana, Arial, Helvetica, Sans-Serif;
 }
 .transferstatus
@@ -1347,7 +1347,7 @@ div.bottom {
 .content 
 {
     font-family: Geneva, Arial, Helvetica, sans-serif;
-    font-size: small;
+    font-size: 10pt;
     vertical-align: top;
     top: 140px;
     width: 100%;

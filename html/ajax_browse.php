@@ -86,7 +86,7 @@ class group_viewer
         $this->now = time();
         $this->input_arr = [];
         $this->Qnewgroup1 = 'usergroupinfo."groupid" = setdata."groupID"';
-        $this->Qnewgroup3 = 'groups."ID" = setdata."groupID"';
+        $this->Qnewgroup3 = 'grouplist."ID" = setdata."groupID"';
         $this->search_type = $this->db->get_pattern_search_command('LIKE'); // get the operator we need for the DB LIKE for mysql or ~~* for postgres
         $this->GREATEST = $this->db->get_greatest_function();
     }
@@ -97,7 +97,7 @@ class group_viewer
         $basic_browse_query =
             ' FROM setdata ' .
             " LEFT JOIN usergroupinfo ON ({$this->Qnewgroup1} AND (usergroupinfo.\"userid\" = :userid1)) " .
-            " LEFT JOIN groups ON ({$this->Qnewgroup3}) " .
+            " LEFT JOIN grouplist ON ({$this->Qnewgroup3}) " .
             ' LEFT JOIN usersetinfo ON ((usersetinfo."setID" = setdata."ID") AND (usersetinfo."userID" = :userid2)) AND (usersetinfo."type" = :type1) ' .
             ' LEFT JOIN extsetdata AS extsetdata2 ON (extsetdata2."setID" = setdata."ID" AND extsetdata2."name" = \'setname\' AND extsetdata2."type" = :type2) ' .
             ' LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1."setID" = setdata."ID" AND extsetdata1."name" = \'link\' AND extsetdata1."type" = :type3) ' .

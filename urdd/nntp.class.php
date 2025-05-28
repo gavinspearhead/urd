@@ -136,7 +136,7 @@ class URD_NNTP
         $this->extset_headers = NULL;
     }
 
-    public function __construct (DatabaseConnection $db, $server, $connection_type=NULL, $port=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT, $ipversion='both')
+    public function __construct (DatabaseConnection $db, $server, $connection_type=NULL, $port=0, $timeout=urd_socket::DEFAULT_SOCKET_TIMEOUT, $ipversion='both')
     {
         assert ('is_numeric($port) && is_numeric($timeout)');
         echo_debug_function(DEBUG_NNTP, __FUNCTION__);
@@ -479,10 +479,10 @@ class URD_NNTP
             $s = gmp_strval($start);
 
             if ($update_last_updated === TRUE) {
-                $query = "UPDATE groups SET \"last_record\" = $GREATEST('$ostop', \"last_record\"), \"first_record\" = '$s', \"mid_record\"= '$ostart' WHERE \"ID\"=?"; // /lazy last_record need only the first time
+                $query = "UPDATE grouplist SET \"last_record\" = $GREATEST('$ostop', \"last_record\"), \"first_record\" = '$s', \"mid_record\"= '$ostart' WHERE \"ID\"=?"; // /lazy last_record need only the first time
                 $res = $this->db->execute_query($query, array($groupid));
             } else {
-                $res = $this->db->update_query_2('groups', array('first_record' => $s, 'mid_record' => 0), '"ID"=?', array($groupid));
+                $res = $this->db->update_query_2('grouplist', array('first_record' => $s, 'mid_record' => 0), '"ID"=?', array($groupid));
             }
 
             // Determine download speed & ETA
@@ -505,7 +505,7 @@ class URD_NNTP
         // Update group table with update time:
         $o = gmp_strval($orig_stop);
         $now = time();
-        $query = "UPDATE groups SET \"last_updated\" = ?, \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
+        $query = "UPDATE grouplist SET \"last_updated\" = ?, \"last_record\" = $GREATEST('$o', \"last_record\") WHERE \"ID\"=?";
         $res = $this->db->execute_query($query, array($now, $groupid));
 
         return $total_counter;
@@ -620,7 +620,7 @@ class URD_NNTP
             $f1 = gmp_strval($first);
             $l1 = gmp_strval($last);
             if ($continue_old === FALSE) {
-                $this->db->update_query('groups', array('last_updated', 'mid_record', 'first_record', 'last_record'), array(time(), $f1, $f1, $l1), '"ID"=?', array($groupid));
+                $this->db->update_query('grouplist', array('last_updated', 'mid_record', 'first_record', 'last_record'), array(time(), $f1, $f1, $l1), '"ID"=?', array($groupid));
             }
 
             return NO_ERROR;
@@ -1080,7 +1080,7 @@ Array
         $this->update = $this->insert = 0;
 
         // New Function => Cache all known groups in one array
-        $res = $this->db->select_query('"ID", "name" FROM groups');
+        $res = $this->db->select_query('"ID", "name" FROM grouplist');
         $this->grouparray = [];
         // Filling the Array
         if (is_array($res)) {

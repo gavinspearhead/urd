@@ -101,8 +101,7 @@ class MagpieRSS
     public function __construct ($source, $output_encoding='ISO-8859-1', $input_encoding=NULL, $detect_encoding=TRUE)
     {
         $source = $this->create_parser($source, $output_encoding, $input_encoding, $detect_encoding);
-
-        if (!is_resource($this->parser)) {
+        if ($this->parser === false) {
             throw new exception('Failed to create an instance of the XML parser.', ERR_MAGPIE_FAILED );
         }
 
@@ -131,7 +130,7 @@ class MagpieRSS
         $this->normalize();
     }
 
-    public function feed_start_element($p, $element, array &$attrs)
+    public function feed_start_element($p, $element, array $attrs)
     {
         $el = $element = strtolower($element);
         $attrs = array_change_key_case($attrs, CASE_LOWER);
@@ -385,7 +384,7 @@ class MagpieRSS
             $this->parser = xml_parser_create($in_enc);
         } else {
             $this->parser = xml_parser_create('');
-        }
+	}
         if ($out_enc) {
             $this->encoding = $out_enc;
             xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, $out_enc);

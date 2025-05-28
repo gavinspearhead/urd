@@ -69,14 +69,14 @@ function set_assert($on)
         assert_options(ASSERT_ACTIVE, 1);
         assert_options(ASSERT_WARNING, 0);
         assert_options(ASSERT_BAIL, 0);
-        assert_options(ASSERT_QUIET_EVAL, 1);
+#        assert_options(ASSERT_QUIET_EVAL, 1);
         assert_options(ASSERT_CALLBACK, 'my_assert_handler');
     } else {
         // disable assert and make it quiet
         assert_options(ASSERT_ACTIVE, 0);
         assert_options(ASSERT_WARNING, 0);
         assert_options(ASSERT_BAIL, 0);
-        assert_options(ASSERT_QUIET_EVAL, 1);
+#        assert_options(ASSERT_QUIET_EVAL, 1);
         assert_options(ASSERT_CALLBACK, NULL);
     }
 }
@@ -231,7 +231,7 @@ class logfile
                 switch ($opt) {
                 case 'file' :
                     if (!isset($config['log_file'])) {
-                        continue;
+                        continue 2;
                     }
                     if (!is_resource($this->log_file) ) {
                         $this->open_log_file($config['log_file'], $this->process_name);

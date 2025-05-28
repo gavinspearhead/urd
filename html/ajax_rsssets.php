@@ -97,7 +97,7 @@ class feed_viewer
             " LEFT JOIN extsetdata AS extsetdata1 ON (extsetdata1.\"setID\" = rss_sets.\"setid\" AND extsetdata1.\"name\" = 'link' AND extsetdata1.\"type\" = :type3) " .
             " LEFT JOIN extsetdata AS extsetdata3 ON (extsetdata3.\"setID\" = rss_sets.\"setid\" AND extsetdata3.\"name\" = 'score' AND extsetdata3.\"type\" = :type4) " .
             " LEFT JOIN extsetdata AS extsetdata4 ON (extsetdata4.\"setID\" = rss_sets.\"setid\" AND extsetdata4.\"name\" = 'xrated' AND extsetdata4.\"type\" = :type5) ";
-        $basic_browse_query .= " WHERE (1=1 {$this->Qnewfeed2} {$this->Qfeed_id} {$this->Qsetid}  {$this->Qsearch} {$this->Qflag} {$this->Qsize} {$this->Qkill} {$this->Qrating} ) AND (1=1 {$this->Qage} {$this->Qadult}) ";
+        $basic_browse_query .= " WHERE (1=1 {$this->Qnewfeed2} {$this->Qfeed_id} {$this->Qsetid} {$this->Qsearch} {$this->Qflag} {$this->Qsize} {$this->Qkill} {$this->Qrating} ) AND (1=1 {$this->Qage} {$this->Qadult}) ";
         $this->input_arr[':userid1'] = $this->userID;
         $this->input_arr[':userid2'] = $this->userID;
         $this->input_arr[':type1'] = $type;

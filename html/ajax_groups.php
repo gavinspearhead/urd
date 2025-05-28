@@ -82,10 +82,10 @@ function build_newsgroup_query(DatabaseConnection $db, $userid, $offset, &$retva
     }
 
     $query = '*, ' .
-        'groups."minsetsize" AS admin_minsetsize, ' .
-        'groups."maxsetsize" AS admin_maxsetsize, ' .
+        'grouplist."minsetsize" AS admin_minsetsize, ' .
+        'grouplist."maxsetsize" AS admin_maxsetsize, ' .
         '"last_updated" AS timestamp ' .
-        'FROM groups LEFT JOIN usergroupinfo ON groups."ID" = "groupid" AND "userid" = :userid ' .
+        'FROM grouplist LEFT JOIN usergroupinfo ON grouplist."ID" = "groupid" AND "userid" = :userid ' .
         "WHERE 1=1 $Qsearch " .
         "ORDER BY $order $order_dir";
     $input_arr[':userid'] = $userid;
@@ -135,7 +135,7 @@ function build_newsgroup_query_total(DatabaseConnection $db, $userid)
         $input_arr[':adult'] = ADULT_ON;
     }
 
-    $query = "COUNT(\"name\") AS cnt FROM groups WHERE 1=1 $Qsearch";
+    $query = "COUNT(\"name\") AS cnt FROM grouplist WHERE 1=1 $Qsearch";
     $res = $db->select_query($query, $input_arr);
     if ($res === FALSE || !isset($res[0]['cnt'])) {
         return FALSE;
@@ -231,7 +231,7 @@ function set_ng_value(DatabaseConnection $db, $group_id, $option, $value)
     if (!in_array($option, array('minsetsize', 'maxsetsize', 'expire'))) {
         throw new exception($LN['error_invalidvalue']);
     }
-    $db->update_query_2('groups', array($option=>$value), '"ID"=?', array($group_id));
+    $db->update_query_2('grouplist', array($option=>$value), '"ID"=?', array($group_id));
 }
 
 function show_groups(DatabaseConnection $db, urdd_client $uc, $userid, $isadmin)

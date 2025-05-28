@@ -212,7 +212,7 @@ class urd_cli_options
                 break;
             case 'U':
             case '--updatedb':
-                $config['updatedb'] = TRUE;
+                //$config['updatedb'] = TRUE;
                 break;
             }
         }

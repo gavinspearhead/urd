@@ -32,9 +32,9 @@ class urd_magic_crap
     public static function fix_magic_crap()
     {
         // Fuck off with your crap magic quotes:
-        if (get_magic_quotes_gpc() == 0 || urd_magic_crap::$crap_fixed) {	// Only do it once:
-            return;
-        }
+//        if (get_magic_quotes_gpc() == 0 || urd_magic_crap::$crap_fixed) {	// Only do it once:
+  //          return;
+    //    }
         urd_magic_crap::$crap_fixed = TRUE;
 
         // It's set, remove it from all variables:

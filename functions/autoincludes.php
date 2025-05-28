@@ -46,7 +46,7 @@ function urd_autoload($class)
     case 'search_option': $file = 'search_options.php'; break;
     case 'search_option_c': $file = '../html/ajax_exd_searchoptions.php'; break;
     case 'get_opt': $file = 'libs/getopt.php'; break;
-    case 'socket': $file = 'libs/socket.php'; break;
+    case 'urd_socket': $file = 'libs/socket.php'; break;
     case 'Base_NNTP_Client': $file = 'libs/base_nntp_client.php'; break;
     case 'NNTP_Client' : $file = 'libs/nntp_client.php'; break;
     case 'action': $file = '../urdd/action.php'; break;

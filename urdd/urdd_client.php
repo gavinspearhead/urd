@@ -55,7 +55,7 @@ class urdd_client
         return array($res[0]['name'], $res[0]['pass']);
     }
 
-    public function __construct(DatabaseConnection $db, $hostname, $port, $userid=0, $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
+    public function __construct(DatabaseConnection $db, $hostname, $port, $userid=0, $timeout=urd_socket::DEFAULT_SOCKET_TIMEOUT)
     {
         echo_debug ("$hostname $port $userid", DEBUG_HTTP);
         assert(is_numeric($port) && is_numeric($userid) && is_numeric($timeout));
@@ -81,7 +81,7 @@ class urdd_client
         assert(is_numeric($port) && is_numeric($timeout));
         $rv = FALSE;
         try {
-            $this->sock = new socket();
+            $this->sock = new urd_socket();
             $this->sock->connect('', $hostname, $port, FALSE, $timeout);
             $rv = $this->sock->read_line();
         } catch (exception $e) {
@@ -110,7 +110,7 @@ class urdd_client
     {
         return $this->connected;
     }
-    public function connect($hostname, $port=URDD_PORT, $username='', $password='', $timeout=socket::DEFAULT_SOCKET_TIMEOUT)
+    public function connect($hostname, $port=URDD_PORT, $username='', $password='', $timeout=urd_socket::DEFAULT_SOCKET_TIMEOUT)
     {
         assert(is_numeric($port) && is_numeric($timeout));
         $this->hostname = $hostname;
@@ -118,7 +118,7 @@ class urdd_client
         $this->username = $username;
         $this->password = $password;
         $this->timeout = (int) $timeout;
-        $this->sock = new socket();
+        $this->sock = new urd_socket();
         $this->sock->connect('', $hostname, $port, FALSE, $timeout);
         $rv = $this->sock->read_line();
         if ($rv === FALSE) {

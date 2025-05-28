@@ -81,7 +81,8 @@ class get_opt
 
         /* Preserve backwards compatibility with callers that relied on erroneous POSIX fix.  */
         reset($args);
-        while (list($i, $arg) = each($args)) {
+	#        while (list($i, $arg) = each($args)) {
+	foreach($args as $i => $arg) {
             /* The special element '--' means explicit end of options. Treat the rest of the arguments as non-options and end the loop. */
             if ($arg == '--') {
                 $non_opts = array_merge($non_opts, array_slice($args, $i + 1));
@@ -101,13 +102,14 @@ class get_opt
                 $error = self::parse_short_option(substr($arg, 1), $short_options, $opts, $args);
         }
 
+        //var_dump( array($opts, $non_opts));
         return array($opts, $non_opts);
     }
 
     private function parse_short_option($arg, $short_options, &$opts, &$args)
     {
         for ($i = 0; $i < strlen($arg); $i++) {
-            $opt = $arg{$i};
+            $opt = $arg[$i];
             $opt_arg = NULL;
 
             /* Try to find the short option in the specifier string. */
@@ -126,7 +128,11 @@ class get_opt
                     if ($i + 1 < strlen($arg)) {
                         $opts[] = array($opt,  substr($arg, $i + 1));
                         break;
-                    } elseif (list(, $opt_arg) = each($args)) {
+		    }
+		    elseif (key($args) !== null) {
+			    $opt_arg = current($args);
+			    next($args); // advance the pointer
+//		    elseif (list(, $opt_arg) = each($args)) {
                         /* Else use the next argument. */;
                         if (self::is_short_option($opt_arg) || self::is_long_option($opt_arg)) {
                             throw new exception("option requires an argument -- $opt");
@@ -189,7 +195,7 @@ class get_opt
                         throw new exception("option --$opt requires an argument");
                     }
 
-                    if (self::_isShortOpt($opt_arg) || self::_isLongOpt($opt_arg)) {
+                    if (self::is_short_option($opt_arg) || self::is_long_option($opt_arg)) {
                         throw new exception("option requires an argument --$opt");
                     }
 

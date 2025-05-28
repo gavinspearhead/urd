@@ -41,7 +41,7 @@ class period_c
         assert (is_numeric($LN_id) && ($i === NULL || is_numeric($i)) && is_numeric($index));
         global $LN;
         $this->id = $LN_id;
-        $this->text = $LN['periods'][$LN_id];
+        $this->text = (!is_null($LN_id) && !is_null($LN)  && in_array('periods', $LN)) ? ($LN['periods'][$LN_id]) : "";
         $this->interval = $i; // in hours
         $this->next = $n;
         $this->index = $index;
@@ -124,6 +124,7 @@ class periods_c
 }
 
 global $periods;
+global $LN;
 
 $periods = new periods_c;
 

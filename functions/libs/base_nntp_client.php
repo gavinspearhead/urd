@@ -116,7 +116,7 @@ class Base_NNTP_Client
     {
         $this->_socket = NULL;
         $this->_current_status_response = NULL;
-        $this->_socket = new socket();
+        $this->_socket = new urd_socket();
     }
 
     protected function __destruct()
@@ -464,7 +464,7 @@ class Base_NNTP_Client
      * @return mixed (bool) on success (true when posting allowed, otherwise false)
      *
      */
-    protected function connect($host, $encryption = NULL, $port = NULL, $timeout = socket::DEFAULT_SOCKET_TIMEOUT, $ipversion='both')
+    protected function connect($host, $encryption = NULL, $port = NULL, $timeout = urd_socket::DEFAULT_SOCKET_TIMEOUT, $ipversion='both')
     {
         assert('is_numeric($timeout) || is_null($timeout)');
         if ($this->_is_connected()) {
@@ -1740,6 +1740,6 @@ class Base_NNTP_Client
      */
     protected function _is_connected()
     {
-        return ($this->_socket instanceof socket) && is_resource($this->_socket->get_fp()) && !$this->_socket->eof();
+        return ($this->_socket instanceof urd_socket) && is_resource($this->_socket->get_fp()) && !$this->_socket->eof();
     }
 }

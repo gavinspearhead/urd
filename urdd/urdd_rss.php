@@ -100,7 +100,7 @@ class urdd_rss
         }
         $this->db->insert_query('rss_sets',
             array('setid', 'rss_id', 'setname', 'nzb_link', 'timestamp', 'description', 'summary', 'size'),
-            array(md5($link), $rss_id, $title, $link, $timestamp, $description, $summary, $size));
+            array(md5("$link $rss_id"), $rss_id, $title, $link, $timestamp, $description, $summary, $size));
     }
 
     public function update_feedcount($rss_id)

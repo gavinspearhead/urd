@@ -241,7 +241,7 @@ class usenet_server
         if ($check_nntp_connections) {
             $timeout = get_config($db, 'socket_timeout', '-1');
             if ($timeout <= 0) {
-                $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
+                $timeout = urd_socket::DEFAULT_SOCKET_TIMEOUT;
             }
             for ($i = 0; $i < $max_conn; $i++) {
                 try {
@@ -277,7 +277,7 @@ class usenet_server
         }
         $timeout = get_config($db, 'socket_timeout', '-1');
         if ($timeout <= 0) {
-            $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
+            $timeout = urd_socket::DEFAULT_SOCKET_TIMEOUT;
         }
         $found = $indexing = FALSE;
         try {
@@ -309,7 +309,7 @@ class usenet_server
 
         $timeout = get_config($db, 'socket_timeout');
         if ($timeout <= 0) {
-            $timeout = socket::DEFAULT_SOCKET_TIMEOUT;
+            $timeout = urd_socket::DEFAULT_SOCKET_TIMEOUT;
         }
         $hostname = $this->hostname;
         $encryption = ['off', 'ssl', 'tls'];
@@ -612,7 +612,8 @@ class usenet_servers
     {
         $current = 0;
         $count = count($this->servers);
-        foreach ($this->servers as $srv) {
+	foreach ($this->servers as $srv) {
+	//var_dump($this);
             $srv->find_max_connections($db, $this->update_server, $test_results, $check_nntp_connections);
             set_config($db, 'urdd_startup', 20 + floor(30 * ($current / $count)));
         }

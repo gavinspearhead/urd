@@ -44,7 +44,7 @@ function _stream_select (&$read, &$write, &$except, $tv_sec, $tv_usec = 0)
  * @author Chuck Hagenbuch <chuck@horde.org>
  * @author Gavin Spearhead
  */
-class socket
+class urd_socket
 {
     // timeout in seconds that a socket will timeout
     const DEFAULT_SOCKET_TIMEOUT = 60;
