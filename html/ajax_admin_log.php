@@ -131,6 +131,7 @@ try {
         'search'=> $search,
         'lines'=> $lines,
         'logfile'=> $log_file,
+        'logfile_inode'=> fileinode($log_file),
         'log_str'=> $log_str,
         'log_level'=> $min_log_level,
         'sort'=>	$sort,

@@ -28,6 +28,8 @@
 {if $sort == "level"}{if $sort_dir=='desc'}{$level_sort=$up}{else}{$level_sort=$down}{/if}{else}{$level_sort=""}{/if}
 {if $sort == "msg"}{if $sort_dir=='desc'}{$msg_sort=$up}{else}{$msg_sort=$down}{/if}{else}{$msg_sort=""}{/if}
 
+{$logfile} {$logfile_inode}
+
 <div class="log">
 <table class="tasks">
 <tr>

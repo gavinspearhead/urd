@@ -28,11 +28,16 @@ if (!defined('ORIGINAL_PAGE')) {
 
 function get_url_contents($url)
 {
-	$ch = curl_init($url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_USERAGENT, "URD/1.0 (foot@gmail.com)");
-	$response = curl_exec($ch);
-	curl_close($ch);
+	$response = '';
+	if (str_starts_with($url , "/")) {
+		$response = file_get_contents($url);
+	} else {
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, "URD/1.0 (foot@gmail.com)");
+		$response = curl_exec($ch);
+		curl_close($ch);
+	}
 	return $response;
 }
 

@@ -83,7 +83,7 @@ function set_assert($on)
 
 function debug_match($current_level, $presented_level)
 {
-    return ($current_level & $presented_level) != 0;
+    return ((int)$current_level & (int)$presented_level) != 0;
 }
 
 function socket_error_handler($die=FALSE)
